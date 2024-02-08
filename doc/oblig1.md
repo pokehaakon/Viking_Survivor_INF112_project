@@ -20,4 +20,12 @@ A2
 
 
 
-
+**Møter**
+Viking Survivors møter en gang i uken fysisk, hver torsdag 14:15-16:00.
+Kommunikasjon forutenom de fysiske møtene skal skje via Discord gruppen "Vampire Survivors".
+**Dev Lead** Haakon
+**Lead tech** Haakon
+**Testansvarlig**
+**Scrum master**
+**HR**
+****
