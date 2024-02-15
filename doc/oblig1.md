@@ -8,13 +8,13 @@
 # A1
 # Om spillet
 *"Viking Vidar"* har blitt etterlatt i England, og må forsvare seg selv mot horder av engelskmenn og andre unaturlige
-skapninger - Vidar sin skjebne er satt i stein, og den eneste veien leder til Valhalla, eneste spørsmålet er hvor
+skapninger - Vidar sin skjebne er satt i stein, og steinen faller mot Valhalla, det eneste spørsmålet er hvor
 sterk kan Vidar bli før han skal møte Odin.
 
 # Kjøring
 * kompilerer med 'mvn package'.
 * Kjøres med 'java -jar target/gdx-app-1.0-SNAPSHOT-fat.jar'
-* Krever Java
+* Krever Java 17
 
 # Kontroller
 * [W,A,S,D] for player movement, aswell as UI navigation
@@ -24,7 +24,7 @@ sterk kan Vidar bli før han skal møte Odin.
 * [Esc] for pause
 
 # Kjente feil
-Vidar er ikke komemt frem til England enda, og når spillet kompilerer, viser bare Hello World Crocodile isteden.
+Vidar er ikke komemt frem til England enda, og når spillet kjøres, viser bare Hello World Crocodile isteden.
 
 # Credits
 to be determined
