@@ -106,3 +106,4 @@ Alle på teamet har prøvd ut rammeverket libGDX, og laget libGDX's tutorial "si
 
 # Oppgave A5
 
+blablabla
