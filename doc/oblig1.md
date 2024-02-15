@@ -106,4 +106,18 @@ Alle på teamet har prøvd ut rammeverket libGDX, og laget libGDX's tutorial "si
 
 # Oppgave A5
 
-blablabla
+Det som gikk bra:
+- Enighet om at rammeverket libGDX er hensiktsmessig
+- Enighet om spillvisjon, alle synes ideen er god
+- God kommunikasjon i teamet  - vi lytter til hverandre og lar alle komme til ordet
+- Alle har møtt til satt tidspunkt,evnt gitt beskjed dersom vedkommende ikke kunne stille fysisk
+
+Det vi må jobbe med:
+
+Sette oss inn i Git-funksjonalitet
+- Problemer med forståelse av push, pull, merge og andre Git-begreper
+
+Inndeling av teamroller
+- Ikke alle har klare preferanser/ferdigheter innen spesifikke områder
+- Vi er tidlig i forløpet, ikke så lett å vite hvilke roller som kreves
+- Er ikke like åpenbart å skjønne funskjonen til alle rollene
