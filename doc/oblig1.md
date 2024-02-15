@@ -2,17 +2,21 @@
 
 # Opggave A1
 Teamnavn: virtualviking
+
 Gruppenummer: 6
+
 Prosjektnavn: Viking Survivor
 
-Beskrivelse:
-2D roguelite spill...
-Styrer viking/annet, prøve å overleve lengst mulig
-Få våpen og powerups underveis
-Fiendene blir gradvis vanskeligere/mer avansert
-Går opp levler underveis
+Kort beskrivelse:
+
+- 2D roguelite spill
+- Styrer en vikingfigur: målet er å overleve lengst mulig
+- Få våpen og powerups underveis
+- Fiendene blir gradvis vanskeligere/mer avansert
+- Går opp levler underveis
 
 Kontroller:
+
 Styrer med piltaster/WASD. Skyter med space. Bruker mus til aiming.
 
 # Oppgave A2
