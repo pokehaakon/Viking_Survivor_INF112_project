@@ -1,8 +1,26 @@
-# Rapport – innlevering 1
+# INF112 Project - *Viking Survivor*
+
+* Team: *VirtualVikings* (Gruppe 6): *Haakon Osmundsen Benning, Hallvard Stensrud Hardang, Ingmar Aarsland Forsberg,
+  Carl-Henrik Lien, Andreas Mærland, Eilif Eilifsen
+* https://git.app.uib.no/virtuellviking/inf112.24v.libgdx-template
+
+## Om spillet
+*"Viking Vidar" har blitt etterlatt i England, og må forsvare seg selv mot horder av engelskmenn og andre unaturlige
+skapninger - Vidar sin skjebne er satt i stein, og den eneste veien leder til Valhalla, eneste spørsmålet er hvor
+sterk kan Vidar bli før han skal møte Odin.
+
+
+## Kjøring
+* kompilerer med 'mvn package'.
+* Kjøres med 'java -jar target/gdx-app-1.0-SNAPSHOT-fat.jar'
+* Krever Java
 
 # Oppgave A1
 Teamnavn: virtualviking
 
+=======
+# Opggave A1
+Teamnavn: VirtualVikings
 Gruppenummer: 6
 
 Prosjektnavn: Viking Survivor
