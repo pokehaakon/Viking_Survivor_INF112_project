@@ -1,5 +1,4 @@
 # Rapport – innlevering 1
-<<<<<<<<< Temporary merge branch 1
 
 A1:
 Teamnavn: virtualviking
@@ -101,4 +100,4 @@ Brukerhistorie 3:
 1. Brukerhistorie 1: Karakterbevegelse - Dette er grunnlaget for spillopplevelsen og må prioriteres høyt.
 2. Brukerhistorie 2: Angrepsmekanikk - Nødvendig for å skape interaksjon med spillet og introdusere utfordringer.
 3. Brukerhistorie 3: Oppgraderinger - For å legge til dybde og progresjon i spillet, men dette kan startes etter at de to første historiene er på plass.
->>>>>>>>> Temporary merge branch 2
+
