@@ -30,7 +30,7 @@ Vidar er ikke komemt frem til England enda, og når spillet kjøres, viser bare 
 to be determined
 
 ---
-A2
+# A2
 # Konsept
 * Spillerfigur som kan styres sett ovenfra, Kan bevege seg i X/Y retninger.
 * Hovedmeny/startmeny
@@ -61,7 +61,7 @@ Når spiller har samlet nok av disse vil spilleren øke i nivå og det blir pres
 * Utfordringen i spillet er å overleve lenger og mer utfordrende bølger av angrep fra fiender fram til tiden går ut.
 
 ---
-A3-1
+# A3-1
 # Prosses
 Prosjekt-organiseringen følger **scrum** modellen. det blir holdt "daily" standups 2-3 ganger i uken på discord, 
 og ett sprint review i uken som er fysisk. Kommunikasjon mellom møter skjer på gruppens discord "Virtual Vikings"
@@ -80,7 +80,7 @@ til mulige endringer blir lagt frem. 1 møte fysisk ukentlig for sprint review, 
 hva som må gjøres, evt. om noe tar lenger tid enn forventet. også feedback på ting som er gjort bra.
 
 ---
-A3-2
+# A3-2
 # En kort beskrivelse av det overordnede målet for applikasjonen
 Målet med vår applikasjon, Viking survivor, er å tilby en engasjerende og underholdende spillopplevelse, som 
 kombinerer elementer av overlevelse og progresjon i en norrøn-inspirert verden. Spilleren vil kontrollere en karakter 
