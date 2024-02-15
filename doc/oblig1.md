@@ -1,6 +1,6 @@
 # Rapport – innlevering 1
 
-# Opggave A1
+# Oppgave A1
 Teamnavn: virtualviking
 
 Gruppenummer: 6
