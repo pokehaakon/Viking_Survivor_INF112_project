@@ -1,19 +1,23 @@
 # Rapport – innlevering 1
 
-A1:
+# Oppgave A1
 Teamnavn: virtualviking
-Gruppenummer: 6
-Prosjektnavn: Viking Survivors
 
-Beskrivelse:
-2D roguelite spill...
-Styrer viking/annet, prøve å overleve lengst mulig
-Få våpen og powerups underveis
-Fiendene blir gradvis vanskeligere/mer avansert
-Går opp levler underveis
+Gruppenummer: 6
+
+Prosjektnavn: Viking Survivor
+
+Kort beskrivelse:
+
+- 2D roguelite spill
+- Styrer en vikingfigur: målet er å overleve lengst mulig
+- Få våpen og powerups underveis
+- Fiendene blir gradvis vanskeligere/mer avansert
+- Går opp levler underveis
 
 Kontroller:
-Styrer spillerfigur med piltaster/WASD. 
+
+Styrer spillerfigur med piltaster/WASD.
 
 # Oppgave A2
 * Spillerfigur som kan styres sett ovenfra, Kan bevege seg i X/Y retninger.
@@ -22,30 +26,28 @@ Styrer spillerfigur med piltaster/WASD.
     * Deretter velg karakter å spille.
   * Globale spillerstatistikkoppgraderinger
     * En bruker penger en samler gjennom å utslette fiender i spillet til å oppgradere spillerstatistikk.
-  * Instillinger 
+  * Instillinger
 * Pausemeny
-  * Vises ved esc-knappen når en spiller i arenaen. Viser spillerstatistikk, gå til hovedmeny. 
+  * Vises ved esc-knappen når en spiller i arenaen. Viser spillerstatistikk, gå til hovedmeny.
 * Todimensjonal verden:
-    - Arena – området/brett hvor spilleren kan bevege seg.
-    - Avgrensning – vegg i enden av brettet på alle kanter hvor spiller ikke kan bevege seg utenfor.
-    - Objekter - fordelt utover arenaen er det ulike objekter som f. eks trær, gjerder som spiller/fiender ikke kan gå gjennom. 
-* Fiender som beveger seg mot spiller og er skadelig ved berøring. 
+  - Arena – området/brett hvor spilleren kan bevege seg.
+  - Avgrensning – vegg i enden av brettet på alle kanter hvor spiller ikke kan bevege seg utenfor.
+  - Objekter - fordelt utover arenaen er det ulike objekter som f. eks trær, gjerder som spiller/fiender ikke kan gå gjennom.
+* Fiender som beveger seg mot spiller og er skadelig ved berøring.
   * Nye bølger av fiender kommer ved visse tidspunkt (f. eks hver 2 minutt).
   * Disse bølgene kan inneholde mer og/eller nye fiender.
   * Elitefiender som er større og har mer liv/tar mer liv, legger fra seg skattekiste med penger/power-ups.
 * Spillerfiguren skyter tilbake for å ødelegge fiender. Dette skjer automatisk og uten sikting fra spilleren. "Sikting" utføres ved spillerfigurens bevegelser.
-  * Ulike våpen har ulik funksjon (f. eks skyter mot nærmeste fiende, skadeområde rundt spilleren, treffer tilfeldig fiende, osv.) 
-* Spilleren kan samle xp points som fiender legger fra seg når de dør. 
-Når spiller har samlet nok av disse vil spilleren øke i nivå og det blir presentert et valg mellom 3 power-ups.
+  * Ulike våpen har ulik funksjon (f. eks skyter mot nærmeste fiende, skadeområde rundt spilleren, treffer tilfeldig fiende, osv.)
+* Spilleren kan samle xp points som fiender legger fra seg når de dør.
+  Når spiller har samlet nok av disse vil spilleren øke i nivå og det blir presentert et valg mellom 3 power-ups.
 * Power-ups er i form av våpen eller tilbehør, og spilleren har plass til 7(?) av hver.
   * Tilbehør øker spillerens kraft indirekte ved f. eks øke +5% all skade, +10% skuddstørrelse, eller +20% XP-innsamlingsradius.
   * Hvis en får et våpen/tilbehør en har fra før kan man velge det igjen, som fører til at det øker i nivå.
     (Dette øker f. eks skade/størrelse/antall skudd) Power-ups har maksimumsnivå.
 * Utfordringen i spillet er å overleve lenger og mer utfordrende bølger av angrep fra fiender fram til tiden går ut.
 
-
-
-A3-1
+# Oppgave A3-1
 Prosjekt-organiseringen følger **scrum** modellen
 "daily" standups 2-3 ganer i uken på discord, 1 sprint review i uken som er fysisk
 kommunikasjon mellom møter skjer på gruppens discord "Vampyre Survivors"
@@ -73,6 +75,7 @@ codebase -> gitlab
 Google docs for sprint backlog
 project board -> ?
 =========
+
 # Oppgave A3, få oversikt over forventet produkt
 
 # En kort beskrivelse av det overordnede målet for applikasjonen
@@ -84,7 +87,6 @@ karakter som må overleve mot stadig sterkere bølger
 av fiender, samtidig som de samler ressurser og oppgraderer 
 ferdigheter. Målet er å overleve så lenge som mulig 
 og oppnå høyest mulig poengsum.
-
 
 # MVP - Minimum viable product:
 MVP i prioritert rekkefølge
@@ -118,3 +120,25 @@ Brukerhistorie 3:
 2. Brukerhistorie 2: Angrepsmekanikk - Nødvendig for å skape interaksjon med spillet og introdusere utfordringer.
 3. Brukerhistorie 3: Oppgraderinger - For å legge til dybde og progresjon i spillet, men dette kan startes etter at de to første historiene er på plass.
 
+# Oppgave A4
+
+Alle på teamet har prøvd ut rammeverket libGDX, og laget libGDX's tutorial "simple game" Drop 
+(https://libgdx.com/wiki/start/a-simple-game) og blitt kjent med spillets visjon.
+
+# Oppgave A5
+
+Det som gikk bra:
+- Enighet om at rammeverket libGDX er hensiktsmessig
+- Enighet om spillvisjon, alle synes ideen er god
+- God kommunikasjon i teamet  - vi lytter til hverandre og lar alle komme til ordet
+- Alle har møtt til satt tidspunkt,evnt gitt beskjed dersom vedkommende ikke kunne stille fysisk
+
+Det vi må jobbe med:
+
+Sette oss inn i Git-funksjonalitet
+- Problemer med forståelse av push, pull, merge og andre Git-begreper
+
+Inndeling av teamroller
+- Ikke alle har klare preferanser/ferdigheter innen spesifikke områder
+- Vi er tidlig i forløpet, ikke så lett å vite hvilke roller som kreves
+- Er ikke like åpenbart å skjønne funskjonen til alle rollene
