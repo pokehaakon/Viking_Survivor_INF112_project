@@ -6,34 +6,32 @@
 
 ---
 # A1
----
-## Om spillet
+# Om spillet
 *"Viking Vidar"* har blitt etterlatt i England, og må forsvare seg selv mot horder av engelskmenn og andre unaturlige
 skapninger - Vidar sin skjebne er satt i stein, og den eneste veien leder til Valhalla, eneste spørsmålet er hvor
 sterk kan Vidar bli før han skal møte Odin.
 
-## Kjøring
+# Kjøring
 * kompilerer med 'mvn package'.
 * Kjøres med 'java -jar target/gdx-app-1.0-SNAPSHOT-fat.jar'
 * Krever Java
 
-## Kontroller
+# Kontroller
 * [W,A,S,D] for player movement, aswell as UI navigation
 * mouselocation for projectile direction, aswell as UI navigation
 * [Enter] and mouseclick for UI navigation
 * [Spacebar] for special attack if this is possible to implement within the time-limit
 * [Esc] for pause
 
-## Kjente feil
+# Kjente feil
 Vidar er ikke komemt frem til England enda, og når spillet kompilerer, viser bare Hello World Crocodile isteden.
 
-## Credits
+# Credits
 to be determined
 
 ---
 A2
----
-## Konsept
+# Konsept
 * Spillerfigur som kan styres sett ovenfra, Kan bevege seg i X/Y retninger.
 * Hovedmeny/startmeny
   * Velg arena å spille i.
@@ -64,29 +62,25 @@ Når spiller har samlet nok av disse vil spilleren øke i nivå og det blir pres
 
 ---
 A3-1
----
-## Prosses
-Prosjekt-organiseringen følger **scrum** modellen
-"daily" standups 2-3 ganer i uken på discord, 1 sprint review i uken som er fysisk
-kommunikasjon mellom møter skjer på gruppens discord "Virtual Vikings"
+# Prosses
+Prosjekt-organiseringen følger **scrum** modellen. det blir holdt "daily" standups 2-3 ganger i uken på discord, 
+og ett sprint review i uken som er fysisk. Kommunikasjon mellom møter skjer på gruppens discord "Virtual Vikings"
 
-## Arbeidsfordeling
+# Arbeidsfordeling
 team lead velger arbeid fra bracklog, og distribuerer for sprint (en sprint er en 1 ukers tidsramme hvor teamet 
 fokuserer på arbeidet gitt fra team lead, eks. uke 11 "enemy_type_bat implementering", hvor det videre deles opp
 i arbeidet som ligger til grunn for å kunne implementere en flaggermus fiende. eks. sprite, testing, 
 characteristics(eks. abilities, movement, drops), sound) til scrum devs. Høyt fokus på fleksibilitet, da det ikke er 
-ønskelig at en scrum dev jobber 80% med graphics, og 20% med koding hver eneste sprint. code/test reviews vil bli 
-gjort underveis i sprinten via standups. (evt "parprogrammering", team lead velger backlog arbeid og gir 
-arbeidet gruppevis, slik at 2 og 2 jobber på de ulike arbeidsoppgavene sammen, sikrer konstant code/test reviewing)
+ønskelig at en scrum dev jobber 80% med graphics, og 20% med koding hver eneste sprint. 
+Code/test reviews vil bli gjort underveis i sprinten via standups.
 
-## Oppfølging av arbeid
+# Oppfølging av arbeid
 oppfølgingen skjer via "daily" standups, hvor progresjon eller oppståtte problemer blir rapportert, evt. forslag 
 til mulige endringer blir lagt frem. 1 møte fysisk ukentlig for sprint review, hvor det sees på hva som er blitt gjort,
 hva som må gjøres, evt. om noe tar lenger tid enn forventet. også feedback på ting som er gjort bra.
 
 ---
 A3-2
----
 # En kort beskrivelse av det overordnede målet for applikasjonen
 Målet med vår applikasjon, Viking survivor, er å tilby en engasjerende og underholdende spillopplevelse, som 
 kombinerer elementer av overlevelse og progresjon i en norrøn-inspirert verden. Spilleren vil kontrollere en karakter 
@@ -127,24 +121,22 @@ ferdigheter. Målet er å overleve så lenge som mulig og oppnå høyest mulig p
 
 ---
 # A4
----
 Alle på teamet har prøvd ut rammeverket libGDX, og laget libGDX's tutorial "simple game" Drop 
 (https://libgdx.com/wiki/start/a-simple-game), samt en egen mutasjon som ligner mer på modellen Vampire Survivor.
 
 ---
 # A5
----
 Det som gikk bra:
 - Enighet om at rammeverket libGDX er hensiktsmessig
 - Enighet om spillvisjon, alle synes ideen er god
 - God kommunikasjon i teamet  - vi lytter til hverandre og lar alle komme til ordet
 - Alle har møtt til satt tidspunkt,evnt gitt beskjed dersom vedkommende ikke kunne stille fysisk
 
-*Det vi må jobbe med:*
-Sette oss inn i Git-funksjonalitet
+Det vi må jobbe med:
+- Sette oss inn i Git-funksjonalitet
 - Problemer med forståelse av push, pull, merge og andre Git-begreper
 
-*Inndeling av teamroller*
+Inndeling av teamroller
 - Ikke alle har klare preferanser/ferdigheter innen spesifikke områder
 - Vi er tidlig i forløpet, ikke så lett å vite hvilke roller som kreves
 - Er ikke like åpenbart å skjønne funskjonen til alle rollene
