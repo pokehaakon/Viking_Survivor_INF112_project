@@ -12,6 +12,7 @@ Få våpen og powerups underveis
 Fiendene blir gradvis vanskeligere/mer avansert
 Går opp levler underveis
 
+
 Kontroller:
 Styrer med piltaster/WASD. Skyter med space. Bruker mus til diverse annet.
 
