@@ -1,9 +1,9 @@
 # Rapport – innlevering 1
 
-A1:
+# Opggave A1
 Teamnavn: virtualviking
 Gruppenummer: 6
-Prosjektnavn: Viking Survivors
+Prosjektnavn: Viking Survivor
 
 Beskrivelse:
 2D roguelite spill...
@@ -13,9 +13,9 @@ Fiendene blir gradvis vanskeligere/mer avansert
 Går opp levler underveis
 
 Kontroller:
-Styrer med piltaster/WASD. Skyter med space. Bruker mus til diverse annet.
+Styrer med piltaster/WASD. Skyter med space. Bruker mus til aiming.
 
-A2
+# Oppgave A2
 * Spillerfigur som kan styres sett ovenfra, Kan bevege seg i alle retninger.--
 * Todimensjonal verden:
     - Arena – området/brett hvor spilleren kan bevege seg.
@@ -26,9 +26,7 @@ A2
   bli presentert et valg mellom 3 power-ups.
 * Utfordringen i spillet er å overleve mer og mer utfordrende bølger av angrep fra fiender fram til tiden går ut.
 
-
-
-A3-1
+# Oppgave A3-1
 Prosjekt-organiseringen følger **scrum** modellen
 "daily" standups 2-3 ganer i uken på discord, 1 sprint review i uken som er fysisk
 kommunikasjon mellom møter skjer på gruppens discord "Vampyre Survivors"
@@ -56,6 +54,7 @@ codebase -> gitlab
 Google docs for sprint backlog
 project board -> ?
 =========
+
 # Oppgave A3, få oversikt over forventet produkt
 
 # En kort beskrivelse av det overordnede målet for applikasjonen
@@ -67,7 +66,6 @@ karakter som må overleve mot stadig sterkere bølger
 av fiender, samtidig som de samler ressurser og oppgraderer 
 ferdigheter. Målet er å overleve så lenge som mulig 
 og oppnå høyest mulig poengsum.
-
 
 # MVP - Minimum viable product:
 MVP i prioritert rekkefølge
@@ -101,3 +99,11 @@ Brukerhistorie 3:
 2. Brukerhistorie 2: Angrepsmekanikk - Nødvendig for å skape interaksjon med spillet og introdusere utfordringer.
 3. Brukerhistorie 3: Oppgraderinger - For å legge til dybde og progresjon i spillet, men dette kan startes etter at de to første historiene er på plass.
 
+# Oppgave A4
+
+Alle på teamet har prøvd ut rammeverket libGDX, og laget libGDX's tutorial "simple game" Drop 
+(https://libgdx.com/wiki/start/a-simple-game) og blitt kjent med spillets visjon.
+
+# Oppgave A5
+
+blablabla
