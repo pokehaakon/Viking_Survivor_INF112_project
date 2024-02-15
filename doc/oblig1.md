@@ -3,7 +3,7 @@
 # Opggave A1
 Teamnavn: virtualviking
 Gruppenummer: 6
-Prosjektnavn: Viking Survivors
+Prosjektnavn: Viking Survivor
 
 Beskrivelse:
 2D roguelite spill...
@@ -13,7 +13,7 @@ Fiendene blir gradvis vanskeligere/mer avansert
 Går opp levler underveis
 
 Kontroller:
-Styrer med piltaster/WASD. Skyter med space. Bruker mus til diverse annet.
+Styrer med piltaster/WASD. Skyter med space. Bruker mus til aiming.
 
 # Oppgave A2
 * Spillerfigur som kan styres sett ovenfra, Kan bevege seg i alle retninger.--
@@ -25,8 +25,6 @@ Styrer med piltaster/WASD. Skyter med space. Bruker mus til diverse annet.
 * Spilleren kan samle xp points som fiender legger fra seg når de dør. Når spiller har samlet nok av disse vil det
   bli presentert et valg mellom 3 power-ups.
 * Utfordringen i spillet er å overleve mer og mer utfordrende bølger av angrep fra fiender fram til tiden går ut.
-
-
 
 # Oppgave A3-1
 Prosjekt-organiseringen følger **scrum** modellen
@@ -69,7 +67,6 @@ av fiender, samtidig som de samler ressurser og oppgraderer
 ferdigheter. Målet er å overleve så lenge som mulig 
 og oppnå høyest mulig poengsum.
 
-
 # MVP - Minimum viable product:
 MVP i prioritert rekkefølge
 1. Vise et spillebrett og spilleren
@@ -101,4 +98,11 @@ Brukerhistorie 3:
 1. Brukerhistorie 1: Karakterbevegelse - Dette er grunnlaget for spillopplevelsen og må prioriteres høyt.
 2. Brukerhistorie 2: Angrepsmekanikk - Nødvendig for å skape interaksjon med spillet og introdusere utfordringer.
 3. Brukerhistorie 3: Oppgraderinger - For å legge til dybde og progresjon i spillet, men dette kan startes etter at de to første historiene er på plass.
+
+# Oppgave A4
+
+Alle på teamet har prøvd ut rammeverket libGDX, og laget libGDX's tutorial "simple game" Drop 
+(https://libgdx.com/wiki/start/a-simple-game) og blitt kjent med spillets visjon.
+
+# Oppgave A5
 
