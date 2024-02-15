@@ -1,6 +1,6 @@
 # Rapport – innlevering 1
 
-A1:
+# Opggave A1
 Teamnavn: virtualviking
 Gruppenummer: 6
 Prosjektnavn: Viking Survivors
@@ -15,7 +15,7 @@ Går opp levler underveis
 Kontroller:
 Styrer med piltaster/WASD. Skyter med space. Bruker mus til diverse annet.
 
-A2
+# Oppgave A2
 * Spillerfigur som kan styres sett ovenfra, Kan bevege seg i alle retninger.--
 * Todimensjonal verden:
     - Arena – området/brett hvor spilleren kan bevege seg.
@@ -28,7 +28,7 @@ A2
 
 
 
-A3-1
+# Oppgave A3-1
 Prosjekt-organiseringen følger **scrum** modellen
 "daily" standups 2-3 ganer i uken på discord, 1 sprint review i uken som er fysisk
 kommunikasjon mellom møter skjer på gruppens discord "Vampyre Survivors"
@@ -56,6 +56,7 @@ codebase -> gitlab
 Google docs for sprint backlog
 project board -> ?
 =========
+
 # Oppgave A3, få oversikt over forventet produkt
 
 # En kort beskrivelse av det overordnede målet for applikasjonen
