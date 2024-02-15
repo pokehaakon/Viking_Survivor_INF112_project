@@ -13,9 +13,9 @@ Fiendene blir gradvis vanskeligere/mer avansert
 Går opp levler underveis
 
 Kontroller:
-Styrer med piltaster/WASD. Skyter med space. Bruker mus til diverse annet.
+Styrer spillerfigur med piltaster/WASD. 
 
-A2
+# Oppgave A2
 * Spillerfigur som kan styres sett ovenfra, Kan bevege seg i X/Y retninger.
 * Hovedmeny/startmeny
   * Velg arena å spille i.
