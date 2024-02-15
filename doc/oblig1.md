@@ -4,36 +4,36 @@
   Carl-Henrik Lien, Andreas Mærland, Eilif Eilifsen
 * https://git.app.uib.no/virtuellviking/inf112.24v.libgdx-template
 
+---
+# A1
+---
 ## Om spillet
-*"Viking Vidar" har blitt etterlatt i England, og må forsvare seg selv mot horder av engelskmenn og andre unaturlige
+*"Viking Vidar"* har blitt etterlatt i England, og må forsvare seg selv mot horder av engelskmenn og andre unaturlige
 skapninger - Vidar sin skjebne er satt i stein, og den eneste veien leder til Valhalla, eneste spørsmålet er hvor
 sterk kan Vidar bli før han skal møte Odin.
-
 
 ## Kjøring
 * kompilerer med 'mvn package'.
 * Kjøres med 'java -jar target/gdx-app-1.0-SNAPSHOT-fat.jar'
 * Krever Java
 
-# Oppgave A1
-Teamnavn: VirtualVikings
-Gruppenummer: 6
+## Kontroller
+* [W,A,S,D] for player movement, aswell as UI navigation
+* mouselocation for projectile direction, aswell as UI navigation
+* [Enter] and mouseclick for UI navigation
+* [Spacebar] for special attack if this is possible to implement within the time-limit
+* [Esc] for pause
 
-Prosjektnavn: Viking Survivor
+## Kjente feil
+Vidar er ikke komemt frem til England enda, og når spillet kompilerer, viser bare Hello World Crocodile isteden.
 
-Kort beskrivelse:
+## Credits
+to be determined
 
-- 2D roguelite spill
-- Styrer en vikingfigur: målet er å overleve lengst mulig
-- Få våpen og powerups underveis
-- Fiendene blir gradvis vanskeligere/mer avansert
-- Går opp levler underveis
-
-Kontroller:
-
-Styrer med piltaster/WASD. 
-
-# Oppgave A2
+---
+A2
+---
+## Konsept
 * Spillerfigur som kan styres sett ovenfra, Kan bevege seg i X/Y retninger.
 * Hovedmeny/startmeny
   * Velg arena å spille i.
@@ -62,13 +62,16 @@ Når spiller har samlet nok av disse vil spilleren øke i nivå og det blir pres
     (Dette øker f. eks skade/størrelse/antall skudd) Power-ups har maksimumsnivå.
 * Utfordringen i spillet er å overleve lenger og mer utfordrende bølger av angrep fra fiender fram til tiden går ut.
 
-# Oppgave A3-1
+---
+A3-1
+---
+## Prosses
 Prosjekt-organiseringen følger **scrum** modellen
 "daily" standups 2-3 ganer i uken på discord, 1 sprint review i uken som er fysisk
-kommunikasjon mellom møter skjer på gruppens discord "Vampyre Survivors"
+kommunikasjon mellom møter skjer på gruppens discord "Virtual Vikings"
 
-**Arbeidsfordeling**:
-    team lead velger arbeid fra bracklog, og distribuerer for sprint (en sprint er en 1 ukers tidsramme hvor teamet 
+## Arbeidsfordeling
+team lead velger arbeid fra bracklog, og distribuerer for sprint (en sprint er en 1 ukers tidsramme hvor teamet 
 fokuserer på arbeidet gitt fra team lead, eks. uke 11 "enemy_type_bat implementering", hvor det videre deles opp
 i arbeidet som ligger til grunn for å kunne implementere en flaggermus fiende. eks. sprite, testing, 
 characteristics(eks. abilities, movement, drops), sound) til scrum devs. Høyt fokus på fleksibilitet, da det ikke er 
@@ -76,35 +79,22 @@ characteristics(eks. abilities, movement, drops), sound) til scrum devs. Høyt f
 gjort underveis i sprinten via standups. (evt "parprogrammering", team lead velger backlog arbeid og gir 
 arbeidet gruppevis, slik at 2 og 2 jobber på de ulike arbeidsoppgavene sammen, sikrer konstant code/test reviewing)
 
-**Oppfølging av arbeid**:
-    oppfølgingen skjer via "daily" standups, hvor progresjon eller oppståtte problemer blir rapportert, evt. forslag 
+## Oppfølging av arbeid
+oppfølgingen skjer via "daily" standups, hvor progresjon eller oppståtte problemer blir rapportert, evt. forslag 
 til mulige endringer blir lagt frem. 1 møte fysisk ukentlig for sprint review, hvor det sees på hva som er blitt gjort,
-hva som må gjøres, evt. om noe tar lenger tid enn forventet. også feedback på ting som er gjort bra. Her er det fokus
-på å skape et miljø hvor man ikke er redd for å be om hjelp, da "dårlig kode" ikke er noe annet enn en mulighet for å
-lære. (fokus på miljø blablabla, trenger en solid HR beskrivelse av arbeidsmiljøfokus)
+hva som må gjøres, evt. om noe tar lenger tid enn forventet. også feedback på ting som er gjort bra.
 
-Møtereferater etter hvert "daily standup" og sprint review.
-Møteleder -> referant -> 
-Google docs for møtereferat
-codebase -> gitlab
-Google docs for sprint backlog
-project board -> ?
-=========
-
-# Oppgave A3, få oversikt over forventet produkt
-
+---
+A3-2
+---
 # En kort beskrivelse av det overordnede målet for applikasjonen
-Målet med vår applikasjon, Viking survivors, 
-er å tilby en engasjerende og underholdende spillopplevelse 
-som kombinerer elementer av overlevelse og progresjon i en 
-norrøn-inspirert verden. Spilleren vil kontrollere en 
-karakter som må overleve mot stadig sterkere bølger 
-av fiender, samtidig som de samler ressurser og oppgraderer 
-ferdigheter. Målet er å overleve så lenge som mulig 
-og oppnå høyest mulig poengsum.
+Målet med vår applikasjon, Viking survivor, er å tilby en engasjerende og underholdende spillopplevelse, som 
+kombinerer elementer av overlevelse og progresjon i en norrøn-inspirert verden. Spilleren vil kontrollere en karakter 
+som må overleve mot stadig sterkere bølger av fiender, samtidig som spilleren samler inn ressurser og oppgraderer 
+ferdigheter. Målet er å overleve så lenge som mulig og oppnå høyest mulig poengsum.
 
 # MVP - Minimum viable product:
-MVP i prioritert rekkefølge
+**MVP i prioritert rekkefølge**
 1. Vise et spillebrett og spilleren
 2. Kunne bevege spilleren fritt på en begrenset bane.
 3. Et utvalg av grunnleggende fiender som angriper spilleren i bølger.
@@ -115,17 +105,17 @@ MVP i prioritert rekkefølge
 8. Et utvalg av karakterer som brukeren kan velge å spille som.
 
 # En liste over brukerhistorier
-brukerhistorie 1: 
+*brukerhistorie 1:* 
 - Som en spiller ønsker jeg å kunne bevege karakteren min, slik at jeg kan unngå fiender og samle ressurser.
 - Akseptansekriterier: Karakteren kan bevege seg i alle retninger. Bevegelse er intuitiv og responsiv.
 - Arbeidsoppgaver: Implementere karakterkontroller, teste på forskjellige enheter.
 
-Brukerhistorie 2: 
+*Brukerhistorie 2:* 
 - Som en spiller ønsker jeg å kunne angripe fiender, slik at jeg kan forsvare meg og tjene poeng.
 - Akseptansekriterier: Karakteren har et grunnleggende angrep som kan brukes mot fiender. Fiender reagerer på angrep og kan bli beseiret.
 - Arbeidsoppgaver: Designe og implementere angrepsmekanikk, opprette fiendens helse- og skadesystem.
 
-Brukerhistorie 3: 
+*Brukerhistorie 3:*
 - Som en spiller ønsker jeg å kunne oppgradere mine ferdigheter, slik at jeg kan overleve lengre og oppnå høyere poengsum.
 - Akseptansekriterier: Spilleren kan velge oppgraderinger etter visse kriterier er oppfylt (f.eks. antall beseirede fiender).
 - Arbeidsoppgaver: Utvikle oppgraderingssystem, integrere med spillets poengsystem.
@@ -135,25 +125,26 @@ Brukerhistorie 3:
 2. Brukerhistorie 2: Angrepsmekanikk - Nødvendig for å skape interaksjon med spillet og introdusere utfordringer.
 3. Brukerhistorie 3: Oppgraderinger - For å legge til dybde og progresjon i spillet, men dette kan startes etter at de to første historiene er på plass.
 
-# Oppgave A4
-
+---
+# A4
+---
 Alle på teamet har prøvd ut rammeverket libGDX, og laget libGDX's tutorial "simple game" Drop 
-(https://libgdx.com/wiki/start/a-simple-game) og blitt kjent med spillets visjon.
+(https://libgdx.com/wiki/start/a-simple-game), samt en egen mutasjon som ligner mer på modellen Vampire Survivor.
 
-# Oppgave A5
-
+---
+# A5
+---
 Det som gikk bra:
 - Enighet om at rammeverket libGDX er hensiktsmessig
 - Enighet om spillvisjon, alle synes ideen er god
 - God kommunikasjon i teamet  - vi lytter til hverandre og lar alle komme til ordet
 - Alle har møtt til satt tidspunkt,evnt gitt beskjed dersom vedkommende ikke kunne stille fysisk
 
-Det vi må jobbe med:
-
+*Det vi må jobbe med:*
 Sette oss inn i Git-funksjonalitet
 - Problemer med forståelse av push, pull, merge og andre Git-begreper
 
-Inndeling av teamroller
+*Inndeling av teamroller*
 - Ikke alle har klare preferanser/ferdigheter innen spesifikke områder
 - Vi er tidlig i forløpet, ikke så lett å vite hvilke roller som kreves
 - Er ikke like åpenbart å skjønne funskjonen til alle rollene
