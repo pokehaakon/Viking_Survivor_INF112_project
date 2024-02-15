@@ -17,7 +17,7 @@ Kontroller:
 Styrer med piltaster/WASD. Skyter med space. Bruker mus til diverse annet.
 
 A2
-* Spillerfigur som kan styres sett ovenfra, Kan bevege seg i alle retninger.
+* Spillerfigur som kan styres sett ovenfra, Kan bevege seg i alle retninger.--
 * Todimensjonal verden:
     - Arena – området/brett hvor spilleren kan bevege seg.
     - Avgrensning – vegg i enden av brettet på alle kanter hvor spiller ikke kan bevege seg utenfor.
