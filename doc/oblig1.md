@@ -9,7 +9,7 @@ norrøn-inspirert verden. Spilleren vil kontrollere en
 karakter som må overleve mot stadig sterkere bølger 
 av fiender, samtidig som de samler ressurser og oppgraderer 
 ferdigheter. Målet er å overleve så lenge som mulig 
-og oppnå høyest mulig poengsum. 
+og oppnå høyest mulig poengsum.
 
 
 # MVP - Minimum viable product:
