@@ -1,8 +1,22 @@
-# Rapport – innlevering 1
+# INF112 Project - *Viking Survivor*
+
+* Team: *VirtualVikings* (Gruppe 6): *Haakon Osmundsen Benning, Hallvard Stensrud Hardang, Ingmar Aarsland Forsberg,
+  Carl-Henrik Lien, Andreas Mærland, Eilif Eilifsen
+* https://git.app.uib.no/virtuellviking/inf112.24v.libgdx-template
+
+## Om spillet
+*"Viking Vidar" har blitt etterlatt i England, og må forsvare seg selv mot horder av engelskmenn og andre unaturlige
+skapninger - Vidar sin skjebne er satt i stein, og den eneste veien leder til Valhalla, eneste spørsmålet er hvor
+sterk kan Vidar bli før han skal møte Odin.
+
+
+## Kjøring
+* kompilerer med 'mvn package'.
+* Kjøres med 'java -jar target/gdx-app-1.0-SNAPSHOT-fat.jar'
+* Krever Java
 
 # Oppgave A1
-Teamnavn: virtualviking
-
+Teamnavn: VirtualVikings
 Gruppenummer: 6
 
 Prosjektnavn: Viking Survivor
@@ -17,7 +31,7 @@ Kort beskrivelse:
 
 Kontroller:
 
-Styrer spillerfigur med piltaster/WASD.
+Styrer med piltaster/WASD. 
 
 # Oppgave A2
 * Spillerfigur som kan styres sett ovenfra, Kan bevege seg i X/Y retninger.
@@ -26,21 +40,22 @@ Styrer spillerfigur med piltaster/WASD.
     * Deretter velg karakter å spille.
   * Globale spillerstatistikkoppgraderinger
     * En bruker penger en samler gjennom å utslette fiender i spillet til å oppgradere spillerstatistikk.
-  * Instillinger
+  * Instillinger 
 * Pausemeny
-  * Vises ved esc-knappen når en spiller i arenaen. Viser spillerstatistikk, gå til hovedmeny.
+  * Vises ved esc-knappen når en spiller i arenaen. Viser spillerstatistikk, gå til hovedmeny. 
+
 * Todimensjonal verden:
-  - Arena – området/brett hvor spilleren kan bevege seg.
-  - Avgrensning – vegg i enden av brettet på alle kanter hvor spiller ikke kan bevege seg utenfor.
-  - Objekter - fordelt utover arenaen er det ulike objekter som f. eks trær, gjerder som spiller/fiender ikke kan gå gjennom.
-* Fiender som beveger seg mot spiller og er skadelig ved berøring.
+    - Arena – området/brett hvor spilleren kan bevege seg.
+    - Avgrensning – vegg i enden av brettet på alle kanter hvor spiller ikke kan bevege seg utenfor.
+    - Objekter - fordelt utover arenaen er det ulike objekter som f. eks trær, gjerder som spiller/fiender ikke kan gå gjennom. 
+* Fiender som beveger seg mot spiller og er skadelig ved berøring. 
   * Nye bølger av fiender kommer ved visse tidspunkt (f. eks hver 2 minutt).
   * Disse bølgene kan inneholde mer og/eller nye fiender.
   * Elitefiender som er større og har mer liv/tar mer liv, legger fra seg skattekiste med penger/power-ups.
 * Spillerfiguren skyter tilbake for å ødelegge fiender. Dette skjer automatisk og uten sikting fra spilleren. "Sikting" utføres ved spillerfigurens bevegelser.
-  * Ulike våpen har ulik funksjon (f. eks skyter mot nærmeste fiende, skadeområde rundt spilleren, treffer tilfeldig fiende, osv.)
-* Spilleren kan samle xp points som fiender legger fra seg når de dør.
-  Når spiller har samlet nok av disse vil spilleren øke i nivå og det blir presentert et valg mellom 3 power-ups.
+  * Ulike våpen har ulik funksjon (f. eks skyter mot nærmeste fiende, skadeområde rundt spilleren, treffer tilfeldig fiende, osv.) 
+* Spilleren kan samle xp points som fiender legger fra seg når de dør. 
+Når spiller har samlet nok av disse vil spilleren øke i nivå og det blir presentert et valg mellom 3 power-ups.
 * Power-ups er i form av våpen eller tilbehør, og spilleren har plass til 7(?) av hver.
   * Tilbehør øker spillerens kraft indirekte ved f. eks øke +5% all skade, +10% skuddstørrelse, eller +20% XP-innsamlingsradius.
   * Hvis en får et våpen/tilbehør en har fra før kan man velge det igjen, som fører til at det øker i nivå.
