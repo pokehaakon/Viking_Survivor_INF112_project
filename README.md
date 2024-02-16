@@ -36,7 +36,7 @@ Pay attention to these folders:
 You can run the project with Maven using `mvn exec:java`. Change the main class by modifying the `main.class` setting in `pom.xml`:
 
 ```
-		<main.class>inf112.skeleton.app.Main</main.class>
+		<main.class>VikingSurvivor.app.Main</main.class>
 ```
 
 Running the program should open a window with the text “Hello, world!” and an alligator in the lower left corner.  Clicking inside the window should play a *blip* sound. Exit by pressing *Escape* or closing the window.

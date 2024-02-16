@@ -4,11 +4,11 @@
 	<!--virtualviking -->
 	<groupId>no.uib.ii.inf112</groupId>
 	<!-- FIXME - set artifact name -->
-	<artifactId>gdx-app</artifactId>
+	<artifactId>VikingSurvivor</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<!--Vampire Survivors-->
-	<name>gdx-app</name>
+	<!--Viking Survivor-->
+	<name>VikingSurvivor</name>
 	<!-- FIXME change it to the project's website -->
 	<url>http://www.example.com</url>
 	<properties>
@@ -18,7 +18,7 @@
 		<junit.jupiter.version>5.10.2</junit.jupiter.version>
 		<slf4j.version>2.0.11</slf4j.version>
 		<!-- FIXME - set to app's main class' -->
-		<main.class>inf112.skeleton.app.Main</main.class>
+		<main.class>VikingSurvivor.app.Main</main.class>
 		<jvm.extra.args></jvm.extra.args>
 	</properties>
 	<repositories>

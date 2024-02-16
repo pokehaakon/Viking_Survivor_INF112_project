@@ -1,4 +1,4 @@
-package inf112.skeleton.app;
+package VikingSurvivor.app;
 
 import InputProcessing.*;
 import Simulation.SimulationThread;
