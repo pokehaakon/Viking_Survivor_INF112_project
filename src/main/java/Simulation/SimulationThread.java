@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
 public class SimulationThread extends Thread {
@@ -15,31 +16,33 @@ public class SimulationThread extends Thread {
     private KeyStates keyStates;
     private World world;
     private RollingSum updateTime, UPS;
-    private Body player, enemy;
+    private Body player;
+    private Array<Body> enemies;
     private int SET_UPS = 60;
     private boolean quit = false;
+    private Set<Body> toBeKilled;
+    private boolean paused = false;
 
-    public SimulationThread(Lock renderLock, KeyStates keyStates, World world, RollingSum updateTime, RollingSum UPS, Body player) {
+    public SimulationThread(Lock renderLock, KeyStates keyStates, World world, Set<Body> toBeKilled, RollingSum updateTime, RollingSum UPS, Body player) {
         this.renderLock = renderLock;
         this.keyStates = keyStates;
         this.world = world;
         this.updateTime = updateTime;
         this.UPS = UPS;
+        this.toBeKilled = toBeKilled;
 
         Array<Body> a = new Array<>();
         world.getBodies(a);
         this.player = player;
+        enemies = new Array<>();
 
-        for (Body b : a.iterator()) {
+        for (Body b : a) {
             if (b == player) {
                 continue;
             }
-            enemy = b;
-
+            enemies.add(b);
         }
 
-        enemy.setFixedRotation(true);
-        player.setFixedRotation(true);
     }
 
     @Override
@@ -50,6 +53,9 @@ public class SimulationThread extends Thread {
 
 
         while (!quit) {
+            while(paused) {
+                synchronized (this) {try {this.wait();} catch (InterruptedException ignored) {}}
+            }
             doSleep(lastFrameStart, dt);
             UPS.add(System.nanoTime() - lastFrameStart);
 
@@ -75,12 +81,6 @@ public class SimulationThread extends Thread {
         long t0 = System.nanoTime();
 
         Vector2 vel = new Vector2(0, 0);
-
-        Vector2 eVel = new Vector2(0, 0);
-        //player.getWorldCenter();
-        eVel.add(player.getWorldCenter()).sub(enemy.getWorldCenter());
-
-        eVel.setLength(60 * 0.5f);
         int dy = 1, dx = 1;
         vel.x = 0;
         vel.y = 0;
@@ -100,11 +100,28 @@ public class SimulationThread extends Thread {
         if (keyStates.getState(GameKey.QUIT)) {
             stopSim();
         }
-        vel.setLength(60);
+        vel.setLength(60*2);
 
         player.setLinearVelocity(vel);
-        enemy.setLinearVelocity(eVel);
+
+        //calculation for enemies
+        Vector2 eVel = new Vector2(0, 0);
+        Vector2 playerPos = player.getWorldCenter();
+        for (Body enemy : enemies) {
+            eVel.x = 0;
+            eVel.y = 0;
+            eVel.add(playerPos).sub(enemy.getWorldCenter());
+
+            eVel.setLength(60 * 0.3f);
+            enemy.setLinearVelocity(eVel);
+        }
+
         world.step(1/(float) SET_UPS, 5, 5);
+
+        for (Body b : toBeKilled) {
+            world.destroyBody(b);
+        }
+        toBeKilled.clear();
 
         return System.nanoTime() - t0;
     }
@@ -112,4 +129,13 @@ public class SimulationThread extends Thread {
     public void stopSim() {
         quit = true;
     }
+
+    public void pause() {
+        paused = true;
+    }
+
+    public void unpause() {
+        paused = false;
+    }
+
 }

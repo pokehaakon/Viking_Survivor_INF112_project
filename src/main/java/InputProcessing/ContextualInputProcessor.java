@@ -1,30 +1,39 @@
 package InputProcessing;
 
+import InputProcessing.Contexts.Context;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import org.apache.maven.surefire.shared.lang3.tuple.ImmutablePair;
 import org.apache.maven.surefire.shared.lang3.tuple.Pair;
 
-import java.util.EventListener;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
-public class ContextualInputProccessor implements InputProcessor {
+public class ContextualInputProcessor implements InputProcessor {
     private Context currentContext;
-    private final Map<ContextName, Context> contexts;
-
     private ContextFactory contextFactory;
 
 
-    public ContextualInputProccessor(ContextFactory contextFactory){
-        this.contextFactory = contextFactory;
-        contexts = new HashMap<>();
+    public ContextualInputProcessor(SpriteBatch batch){
+        contextFactory = new ContextFactory(batch, this);
     };
 
+    public ContextFactory getContextFactory() {
+        return contextFactory;
+    }
 
-    public void setContext(ContextName c) {
+    public Context getCurrentContext() {
+        return currentContext;
+    }
+
+    /**
+     * Pauses the current context (if there is one) and switches to the context with name 'c'.
+     * Runs resume on the context at the end.
+     * @param c the name of the context to switch to.
+     */
+    public void setContext(String c) {
+        if (currentContext != null) {
+            currentContext.pause();
+        }
         currentContext = contextFactory.getContext(c);
+        currentContext.resume();
     }
 
     private boolean keyEvent(int keycode, KeyEvent e) {
@@ -83,5 +92,9 @@ public class ContextualInputProccessor implements InputProcessor {
     @Override
     public boolean scrolled(float amountX, float amountY) {
         return false;
+    }
+
+    public void dispose(){
+        contextFactory.dispose();
     }
 }
