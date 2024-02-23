@@ -21,7 +21,8 @@ public class HelloWorld implements ApplicationListener {
 
 		InputMultiplexer multiplexer = new InputMultiplexer();
 		inProc = new ContextualInputProcessor(batch);
-		inProc.setContext("GAME"); //set starting context
+		//inProc.setContext("GAME"); //set starting context
+		inProc.setContext("EXAMPLE2"); //set starting context
 		multiplexer.addProcessor(inProc);
 		Gdx.input.setInputProcessor(multiplexer);
 

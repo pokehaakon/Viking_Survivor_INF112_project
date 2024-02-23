@@ -32,7 +32,8 @@ public class ExampleContext extends Context {
 
         /*
         //
-        for (Drawable d : thingsToDraw) {
+        //List<IGameObjects> thingsToDraw
+        for (IGameObjects d : thingsToDraw) {
             d.draw(batch);
         }
         */
