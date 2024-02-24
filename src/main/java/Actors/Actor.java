@@ -17,10 +17,10 @@ public abstract class Actor implements IGameObject {
 
     public Actor(String name) {
         this.name = name;
-        spriteRect = new Rectangle();
+
     }
     public Actor() {
-        spriteRect = new Rectangle();
+
     }
 
     public String getName() {
@@ -51,7 +51,9 @@ public abstract class Actor implements IGameObject {
 
     @Override
     public void init(String spriteName, int x, int y) {
+
         spriteImage = new Texture(Gdx.files.internal(spriteName));
+        spriteRect = new Rectangle();
         spriteRect.x = x;
         spriteRect.y =  y;
         spriteRect.width = spriteImage.getWidth();
