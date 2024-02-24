@@ -1,9 +1,6 @@
 package InputProcessing;
 
-import InputProcessing.Contexts.Context;
-import InputProcessing.Contexts.ExampleContext;
-import InputProcessing.Contexts.ExampleContext2;
-import InputProcessing.Contexts.GameContext;
+import InputProcessing.Contexts.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.HashMap;
@@ -42,6 +39,8 @@ public class ContextFactory {
                 return new ExampleContext(contextName, batch, iProc);
             case "EXAMPLE2":
                 return new ExampleContext2(contextName, batch, iProc);
+            case "EXAMPLE3":
+                return new ExampleContext3(contextName, batch, iProc);
         }
         throw new RuntimeException("ContextFactory cannot make context: " +  contextName);
     }

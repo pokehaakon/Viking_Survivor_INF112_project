@@ -1,4 +1,4 @@
-package Simulation;
+package Actors;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -11,4 +11,13 @@ public interface IGameObject {
     void draw(SpriteBatch batch);
     Body getBody();
     boolean isDestroyed();
+
+    /**
+     * Initilize the actor on desired location
+     * @param spriteName
+     * @param x
+     * @param y
+     */
+    void init(String spriteName, int x, int y);
+
 }
