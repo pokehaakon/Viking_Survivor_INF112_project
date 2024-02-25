@@ -12,19 +12,15 @@ public abstract class Actor implements IGameObject {
     private String name;
     private Texture spriteImage;
     public Rectangle spriteRect;
-    public int x, y, width, height;
+    public int x, y;
 
-
-    public Actor(String name) {
-        this.name = name;
+    public Actor(int x, int y) {
+        this.x = x;
+        this.y = y;
 
     }
     public Actor() {
 
-    }
-
-    public String getName() {
-        return name;
     }
 
     public void destroy() {

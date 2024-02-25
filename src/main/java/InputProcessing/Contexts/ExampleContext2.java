@@ -18,7 +18,7 @@ public class ExampleContext2 extends Context {
         //se setupInputListener i GameContext
 
 
-        player = new PlayerExample("test");
+        player = new PlayerExample("test",100,100);
 
         this.addAction(Input.Keys.W, KeyEvent.KEYDOWN, (x) -> {
             player.spriteRect.y += 10;

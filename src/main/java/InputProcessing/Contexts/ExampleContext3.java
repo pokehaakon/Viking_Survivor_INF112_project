@@ -16,20 +16,23 @@ public class ExampleContext3 extends Context{
     PlayerExample player;
 
     SpriteBatch batch;
+    private final EnemyFactory enemyFactory;
 
-    Enemy enemy1;
-    Enemy enemy2;
     public ExampleContext3(String name, SpriteBatch batch, ContextualInputProcessor iProc) {
         super(name, iProc);
 
         this.batch = batch;
         //se setupInputListener i GameContext
 
+        enemyFactory = new EnemyFactory();
 
-        player = new PlayerExample("test1");
+        player = new PlayerExample("test1", 100,100);
 
-        enemy1 = EnemyFactory.create("enemy1");
-        enemy2 = EnemyFactory.create("enemy2");
+        for(int i = 0; i < 5; i++) {
+            enemyFactory.createRandom();
+        }
+
+
         this.addAction(Input.Keys.W, KeyEvent.KEYDOWN, (x) -> {
             player.spriteRect.y += 10;
         });
@@ -55,10 +58,13 @@ public class ExampleContext3 extends Context{
         batch.begin();
 
         player.draw(batch);
-        enemy1.draw(batch);
-        enemy2.draw(batch);
-
+        for(Enemy enemy: enemyFactory.getEnemyList()) {
+            enemy.draw(batch);
+            enemy.move();
+        }
         batch.end();
+
+        System.out.println(enemyFactory.getEnemyList().size());
 
     }
 

@@ -1,12 +1,20 @@
 package Actors.Enemy;
 
 import Actors.Actor;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Body;
 
-public abstract class Enemy extends Actor implements IEnemy {
+import java.util.ArrayList;
+import java.util.List;
 
-    public Enemy(String name) {
-        super(name);
+public abstract class Enemy extends Actor implements IEnemy {
+    public int HP;
+    public int speed;
+    public int damage;
+    public static final int DEFAULT_X = 200, DEFAULT_Y =  200;
+
+    public Enemy(int x, int y) {
+        super(x, y);
     }
 
     public Enemy() {
@@ -29,6 +37,11 @@ public abstract class Enemy extends Actor implements IEnemy {
     @Override
     public void attack() {
 
+    }
+
+    public void move() {
+
+        spriteRect.x+=speed;
     }
 
 

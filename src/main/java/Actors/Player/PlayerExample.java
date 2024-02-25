@@ -4,19 +4,16 @@ import Actors.Actor;
 import com.badlogic.gdx.physics.box2d.Body;
 
 public class PlayerExample extends Actor {
-    //private Texture spriteImage;
-    //public Rectangle spriteRect;
+    private String name;
 
-    public PlayerExample(String name) {
-        super(name);
+    public PlayerExample(String name, int x, int y) {
+        super(x,y);
+        this.name = name;
+
         init("obligator.png", 100,100);
 
     }
 
-   // @Override
-   // public void draw(SpriteBatch batch) {
-    //    batch.draw(spriteImage, spriteRect.x, spriteRect.y, spriteRect.width, spriteRect.height);
-    //}
 
     @Override
     public Body getBody() {

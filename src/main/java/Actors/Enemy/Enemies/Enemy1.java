@@ -4,15 +4,20 @@ import Actors.Enemy.Enemy;
 
 public class Enemy1 extends Enemy {
 
-    public Enemy1(String name) {
-        super(name);
-        init("img_1.png", 500,100);
+
+    public Enemy1(int x, int y) {
+        super(x,y);
+
+        init("img_1.png", x,y);
+
+        HP = 100;
+        speed = 3;
+        damage = 5;
 
     }
     public Enemy1() {
         super();
-        init("img_1.png", 500,100);
-
+        init("img_1.png", Enemy.DEFAULT_X,Enemy.DEFAULT_Y);
     }
 
     @Override
