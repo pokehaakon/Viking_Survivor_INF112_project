@@ -18,19 +18,19 @@ public class ExampleContext2 extends Context {
         //se setupInputListener i GameContext
 
 
-        player = new PlayerExample("test",100,100);
+       // player = new PlayerExample("test",100,100);
 
         this.addAction(Input.Keys.W, KeyEvent.KEYDOWN, (x) -> {
-            player.spriteRect.y += 10;
+            player.hitBox.y += 10;
         });
         this.addAction(Input.Keys.S, KeyEvent.KEYDOWN, (x) -> {
-            player.spriteRect.y -= 10;
+            player.hitBox.y -= 10;
         });
         this.addAction(Input.Keys.A, KeyEvent.KEYDOWN, (x) -> {
-            player.spriteRect.x -= 10;
+            player.hitBox.x -= 10;
         });
         this.addAction(Input.Keys.D, KeyEvent.KEYDOWN, (x) -> {
-            player.spriteRect.x += 10;
+            player.hitBox.x += 10;
         });
 
 

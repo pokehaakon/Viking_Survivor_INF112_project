@@ -2,32 +2,39 @@ package Actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.awt.*;
 import java.util.function.Consumer;
 
 public abstract class Actor implements IGameObject {
+    public int HP;
+    public int speed;
+    public int damage;
     private boolean destroyed = false;
-    private String name;
-    private Texture spriteImage;
-    public Rectangle spriteRect;
+    public Texture spriteImage;
+    public Rectangle.Float hitBox;
     public int x, y;
+    public Sprite sprite ;
 
-    public Actor(int x, int y) {
-        this.x = x;
-        this.y = y;
+    private Stats stats;
 
+    public Actor(Stats stats) {
+        this.stats = stats;
+        HP = stats.HP;
+        damage = stats.damage;
+        speed = stats.speed;
     }
-    public Actor() {
 
-    }
 
+    @Override
     public void destroy() {
         destroyed = true;
     }
 
     public boolean isDestroyed() {
+
         return destroyed;
     }
 
@@ -41,19 +48,41 @@ public abstract class Actor implements IGameObject {
 
     @Override
     public void draw(SpriteBatch spriteBatch) {
-        spriteBatch.draw(spriteImage, spriteRect.x, spriteRect.y, spriteRect.width, spriteRect.height);
+        spriteBatch.draw(sprite, hitBox.x, hitBox.y, hitBox.width, hitBox.height);
+        updateHitBox();
+    }
+
+    @Override
+    public void initialize(String spriteName,int x, int y) {
+        this.x = x;
+        this.y = y;
+        spriteImage = new Texture(Gdx.files.internal(spriteName));
+        sprite = new Sprite(spriteImage);
+        sprite.setSize(100,100);
+
+        hitBox = new Rectangle.Float();
+        hitBox.x = x;
+        hitBox.y =  y;
+        hitBox.width = sprite.getWidth();
+        hitBox.height =  sprite.getHeight();
+
+    }
+
+
+    public void updateHitBox() {
+        hitBox.x = this.x;
+        hitBox.y = this.y;
+    }
+
+    @Override
+    public void attack(Actor actor) {
 
     }
 
     @Override
-    public void init(String spriteName, int x, int y) {
-
-        spriteImage = new Texture(Gdx.files.internal(spriteName));
-        spriteRect = new Rectangle();
-        spriteRect.x = x;
-        spriteRect.y =  y;
-        spriteRect.width = spriteImage.getWidth();
-        spriteRect.height = spriteImage.getHeight();
+    public boolean collision(Actor actor) {
+        return this.hitBox.intersects(actor.hitBox);
     }
-    //enum collisionDetected(obj 1, obj2) //TODO
+
+
 }

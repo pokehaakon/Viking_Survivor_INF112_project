@@ -1,70 +1,114 @@
 package Actors.Enemy;
 
-import Actors.Enemy.Enemies.Enemy1;
-import Actors.Enemy.Enemies.Enemy2;
-import com.badlogic.gdx.Gdx;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import Actors.Coordinates;
+import Actors.Enemy.EnemyTypes.*;
+import Actors.Stats;
 
-public class EnemyFactory{
+import java.util.*;
 
-    private List<Enemy> enemyList = new ArrayList<>();
 
-    public Enemy create(String type){
 
-        Coordinates randomCor = randomCoordinates(0, Gdx.graphics.getWidth(),0,Gdx.graphics.getHeight());
+public class EnemyFactory implements IEnemyFactory{
+
+    private List<Enemy> createdEnemies;
+    private final EnemyType[] enemySelection;
+    private final Random random = new Random();
+
+
+
+    private Map<EnemyType, Integer> enemyTypeMap;
+    public EnemyFactory() {
+        createdEnemies = new ArrayList<>();
+        enemySelection = EnemyType.values();
+        enemyTypeMap = new HashMap<>();
+
+        for (EnemyType enemyType : enemySelection) {
+            enemyTypeMap.put(enemyType, 0);
+        }
+    }
+    @Override
+    public Enemy createEnemyType(EnemyType type, int x, int y){
+
         if(type == null) {
-            return null;
+            throw new NullPointerException("Type cannot be null!");
         }
-        Enemy enemy;
-        switch (type.toUpperCase()) {
-            case "ENEMY1" -> {
-                enemy = new Enemy1(randomCor.x, randomCor.y);
-                enemyList.add(enemy);
-                 // Add the created enemy to the list
-                return enemy;
-            }
-            case "ENEMY2" -> {
-                enemy = new Enemy2(randomCor.x, randomCor.y);
-                 // Add the created enemy to the list
-                enemyList.add(enemy);
-                return enemy;
-            }
+
+        Enemy enemy = switch (type) {
+            case ENEMY1 -> new Enemy1(x,y,Stats.enemy1());
+            case ENEMY2 -> new Enemy2(x,y,Stats.enemy2());
             default -> throw new IllegalArgumentException("Invalid enemy type");
+        };
+        addEnemyToInventory(enemy);
+        return enemy;
+    }
+
+    private void addEnemyToInventory(Enemy enemy) {
+        createdEnemies.add(enemy);
+        enemyTypeMap.put(enemy.enemyType, enemyTypeMap.get(enemy.enemyType)+1);
+    }
+
+    //things to test: number of enemies, total and in map, null values, remove function, not real types etc... 0 at start etc, minus 1 after destroyed
+
+
+    private EnemyType randomEnemyType() {
+        int randomIndex = random.nextInt(enemySelection.length);
+        return enemySelection[randomIndex];
+    }
+
+    @Override
+    public void createRandomEnemies(int count) {
+        Coordinates random = Coordinates.random();
+        for(int i = 0; i < count; i++) {
+            createEnemyType(randomEnemyType(), random.x, random.y);
         }
     }
 
-    public void createRandom() {
-        List<String> enemyList = Arrays.asList("enemy1", "enemy2");
-        String chosenEnemy = enemyList.get(new Random().nextInt(enemyList.size()));
-        create(chosenEnemy);
+    @Override
+    public List<Enemy> getCreatedEnemies() {
+        return createdEnemies;
+    }
+
+
+    public void createSwarm(int count, EnemyType type) {
+        List<Coordinates> swarmPoints = Coordinates.swarm(count, Coordinates.random());
+        for(int i = 0; i < count; i++) {
+            Enemy enemy = createEnemyType(type,swarmPoints.get(i).x , swarmPoints.get(i).y);
+            enemy.makeSwarmMember();
+        }
+    }
+
+
+    @Override
+    public int getEnemyTypeCount(EnemyType type) {
+        return enemyTypeMap.get(type);
+    }
+
+    @Override
+    public void removeDestroyedEnemies() {
+        Iterator<Enemy> iterator = createdEnemies.iterator();
+        while(iterator.hasNext()) {
+            Enemy enemy =  iterator.next();
+            EnemyType type = enemy.enemyType;
+            if(enemy.isDestroyed()) {
+                iterator.remove();
+                enemyTypeMap.put(type, enemyTypeMap.get(type)-1);
+            }
+        }
 
     }
 
-    private static Coordinates randomCoordinates(int minX, int maxX, int minY, int maxY) {
 
-        int randomX = new Random().nextInt(maxX - minX + 1) + minX;
-        int randomY = new Random().nextInt(maxY - minY + 1) + minY;
 
-        return new Coordinates(randomX, randomY);
+    public Iterator<Enemy> createdEnemyIterator() {
+        return createdEnemies.iterator();
     }
 
-    public List<Enemy> getEnemyList() {
-        return enemyList;
+    @Override
+    public int getEnemyCount() {
+        return createdEnemies.size();
     }
+
 
 }
 
-class Coordinates {
-    public int x;
-    public int y;
-
-    public Coordinates(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-}

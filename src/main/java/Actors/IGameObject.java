@@ -8,6 +8,8 @@ import com.badlogic.gdx.physics.box2d.Body;
  * (all objects rendered on the screen in the game)
  */
 public interface IGameObject {
+
+    void destroy();
     void draw(SpriteBatch batch);
     Body getBody();
     boolean isDestroyed();
@@ -18,6 +20,10 @@ public interface IGameObject {
      * @param x
      * @param y
      */
-    void init(String spriteName, int x, int y);
+    void initialize(String spriteName, int x, int y);
+
+    void attack(Actor actor);
+
+    boolean collision(Actor actor);
 
 }

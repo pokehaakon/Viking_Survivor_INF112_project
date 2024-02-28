@@ -40,7 +40,7 @@ public class ContextFactory {
             case "EXAMPLE2":
                 return new ExampleContext2(contextName, batch, iProc);
             case "EXAMPLE3":
-                return new ExampleContext3(contextName, batch, iProc);
+                return new IngmarsContext(contextName, batch, iProc);
         }
         throw new RuntimeException("ContextFactory cannot make context: " +  contextName);
     }
