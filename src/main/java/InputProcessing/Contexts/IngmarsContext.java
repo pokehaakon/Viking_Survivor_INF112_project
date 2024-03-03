@@ -62,8 +62,8 @@ public class IngmarsContext extends Context{
 
 
         if (TimeUtils.millis() - lastSpawnTime > SPAWN_TIME) {
-            //enemyFactory.createRandomEnemies(5);
-            enemyFactory.createSwarm(20,EnemyType.ENEMY1);
+            enemyFactory.createRandomEnemies(5);
+            //enemyFactory.createSwarm(20,EnemyType.ENEMY1);
             lastSpawnTime = TimeUtils.millis();
 
         }
