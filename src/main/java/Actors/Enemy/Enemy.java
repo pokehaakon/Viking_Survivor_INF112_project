@@ -52,7 +52,7 @@ public abstract class Enemy extends Actor {
 
     //write swarm member test: when does it get the label
 
-    public void moveTowardsPosition(int targetX, int targetY) {
+    private void moveTowardsPosition(int targetX, int targetY) {
         float deltaX = targetX - this.x;
         float deltaY = targetY - this.y;
 
@@ -71,12 +71,6 @@ public abstract class Enemy extends Actor {
             x += (int)(deltaX * speedX);
             y +=  (int)(deltaY * speedY);
         }
-    }
-
-    public void makeSwarmMember() {
-        state = EnemyState.SWARM_MEMBER;
-        speedX *= SWARM_SPEED_MULTIPLIER;
-        speedY *= SWARM_SPEED_MULTIPLIER;
     }
 
     @Override

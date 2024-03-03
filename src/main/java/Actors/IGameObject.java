@@ -20,8 +20,19 @@ public interface IGameObject {
      * @param x
      * @param y
      */
+
+    /**
+     * Initiliazes actor object with starting values
+     * @param spriteName
+     * @param x
+     * @param y
+     */
     void initialize(String spriteName, int x, int y);
 
+    /**
+     * Attacks actor by chasing it
+     * @param actor
+     */
     void attack(Actor actor);
 
     boolean collision(Actor actor);

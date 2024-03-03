@@ -26,7 +26,7 @@ public class IngmarsContext extends Context{
     private long lastSpawnTime;
     private long lastSwarmSpawnTime;
 
-    private static final int SPAWN_TIME= 1000;
+    private static final int SPAWN_TIME= 5000;
     private static final int SWARM_INTERVAL = 10000;
 
 
@@ -62,8 +62,8 @@ public class IngmarsContext extends Context{
 
 
         if (TimeUtils.millis() - lastSpawnTime > SPAWN_TIME) {
-            enemyFactory.createRandomEnemies(5);
-            //enemyFactory.createSwarm(50,EnemyType.ENEMY1);
+            //enemyFactory.createRandomEnemies(5);
+            enemyFactory.createSwarm(20,EnemyType.ENEMY1);
             lastSpawnTime = TimeUtils.millis();
 
         }

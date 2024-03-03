@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.*;
 
+import static Actors.Enemy.Enemy.SWARM_SPEED_MULTIPLIER;
 
 
 public class EnemyFactory implements IEnemyFactory{
@@ -78,7 +79,7 @@ public class EnemyFactory implements IEnemyFactory{
         System.out.println(swarmPoints.size());
         for(int i = 0; i < count; i++) {
             Enemy enemy = createEnemyType(type,(int)swarmPoints.get(i).x , (int)swarmPoints.get(i).y);
-            enemy.makeSwarmMember();
+            makeSwarmMember(enemy);
         }
     }
 
@@ -108,6 +109,16 @@ public class EnemyFactory implements IEnemyFactory{
         return createdEnemies.size();
     }
 
+
+    /**
+     * turns enemy into a swarm member by changing state and speed
+     * @param enemy
+     */
+    private void makeSwarmMember(Enemy enemy) {
+        enemy.state = EnemyState.SWARM_MEMBER;
+        enemy.speedX *= SWARM_SPEED_MULTIPLIER;
+        enemy.speedY *= SWARM_SPEED_MULTIPLIER;
+    }
 
 }
 

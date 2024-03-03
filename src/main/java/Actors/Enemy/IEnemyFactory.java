@@ -19,12 +19,30 @@ public interface IEnemyFactory {
      */
     Enemy createEnemyType(EnemyType type,int x, int y);
 
+
+    /**
+     * creates a desired number of random enemies
+     * @param count
+     */
     void createRandomEnemies(int count);
 
+    /**
+     * removing enemies who as isDestroyed = true
+     */
     void removeDestroyedEnemies();
 
+    /**
+     * returns  number of active enemies of a specific type
+     * @param type
+     * @return
+     */
     int getEnemyTypeCount(EnemyType type);
 
+
+    /**
+     *
+     * @return totol number of active enemies
+     */
     int getEnemyCount();
 
 }
