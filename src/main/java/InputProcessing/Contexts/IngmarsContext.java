@@ -1,6 +1,5 @@
 package InputProcessing.Contexts;
 
-import Actors.Enemy.EnemyTypes.EnemyState;
 import Actors.Enemy.EnemyTypes.EnemyType;
 import Actors.Stats;
 import Actors.Enemy.Enemy;
@@ -27,7 +26,7 @@ public class IngmarsContext extends Context{
     private long lastSpawnTime;
     private long lastSwarmSpawnTime;
 
-    private static final int SPAWN_TIME= 2000;
+    private static final int SPAWN_TIME= 1000;
     private static final int SWARM_INTERVAL = 10000;
 
 
@@ -40,7 +39,6 @@ public class IngmarsContext extends Context{
         lastSpawnTime = 0;
         lastSwarmSpawnTime = 0;
 
-        //enemyFactory.createSwarm(20, EnemyType.ENEMY1);
     }
 
         @Override
@@ -56,34 +54,39 @@ public class IngmarsContext extends Context{
         drawInfo();
 
         player.draw(batch);
-        handleEnemies();
+        for(Enemy enemy: enemyFactory.getCreatedEnemies()) {
+            enemy.draw(batch);
+        }
 
         batch.end();
-        handleInputs();
+
 
         if (TimeUtils.millis() - lastSpawnTime > SPAWN_TIME) {
-            //enemyFactory.createRandomEnemies(5);
-            enemyFactory.createSwarm(20,EnemyType.ENEMY1);
+            enemyFactory.createRandomEnemies(5);
+            //enemyFactory.createSwarm(50,EnemyType.ENEMY1);
             lastSpawnTime = TimeUtils.millis();
 
         }
+        handleEnemies();
+        handleInputs();
+        System.out.println(player.speedX);
+        System.out.println(player.speedY);
+
     }
 
-    public void handleEnemies(){
-        for(Enemy enemy: enemyFactory.getCreatedEnemies()) {
-            enemy.draw(batch);
-            enemy.attack(player);
+    public void handleEnemies() {
 
+        for (Enemy enemy : enemyFactory.getCreatedEnemies()) {
+            enemy.attack(player);
+            enemy.updateMovement(player);
             if (enemy.collision(player)) {
                 player.HP -= enemy.damage;
                 enemy.destroy();
             }
+
         }
         enemyFactory.removeDestroyedEnemies();
     }
-
-
-
 
         @Override
     public void resize(int i, int i1) {
@@ -111,22 +114,22 @@ public class IngmarsContext extends Context{
     }
 
     public void handleInputs() {
-        for(Enemy enemy:enemyFactory.getCreatedEnemies()) {
 
-            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                enemy.x -= (int) player.speed;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                enemy.x += (int) player.speed;
-            }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                enemy.y -= (int)player.speed;
-            }
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            player.setSpeedX(Stats.player().speedX);
+        } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            player.setSpeedX(-Stats.player().speedX);
+        } else {
+            player.setSpeedX(0);
+        }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                enemy.y += (int)player.speed;
-            }
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            player.setSpeedY(Stats.player().speedY);
+        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            player.setSpeedY(-Stats.player().speedX);
+        } else {
+            player.setSpeedY(0);
         }
     }
 
@@ -141,7 +144,7 @@ public class IngmarsContext extends Context{
         );
         font.draw(
                 batch,
-                "Currently "+ Integer.toString(enemyFactory.getEnemyTypeCount(EnemyType.ENEMY2))+" type 2 enemies alive",
+                "Currently total "+ enemyFactory.getCreatedEnemies().size(),
                 10,Gdx.graphics.getHeight()-90
         );
 

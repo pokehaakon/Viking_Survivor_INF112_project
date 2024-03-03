@@ -2,58 +2,64 @@ package Actors;
 
 import Actors.Enemy.EnemyTypes.EnemyType;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class Coordinates {
-    Random random;
-    public int x;
-    public int y;
+public class Coordinates extends Vector2 {
 
-    public Coordinates(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public static final List<Vector2> spawnPoints = Arrays.asList(
+            new Vector2((float)-0.5*Gdx.graphics.getWidth(),0),
+            new Vector2((float)-0.5*Gdx.graphics.getWidth(), (float)0.5*Gdx.graphics.getHeight()),
+            new Vector2((float)-0.5*Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight()),
+
+            new Vector2(0, (float)1.5*Gdx.graphics.getHeight()),
+            new Vector2((float)0.5*Gdx.graphics.getWidth(), (float)1.5*Gdx.graphics.getHeight()),
+            new Vector2((float)Gdx.graphics.getWidth(), (float)1.5*Gdx.graphics.getHeight()),
+
+            new Vector2((float)1.5*Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight()),
+            new Vector2((float)1.5*Gdx.graphics.getWidth(), (float)0.5*Gdx.graphics.getHeight()),
+            new Vector2((float)1.5*Gdx.graphics.getWidth(), 0),
+
+            new Vector2(0, (float)-0.5*Gdx.graphics.getHeight()),
+            new Vector2((float)0.5*Gdx.graphics.getWidth(), (float)-0.5*Gdx.graphics.getHeight()),
+            new Vector2((float)Gdx.graphics.getWidth(), (float)-0.5*Gdx.graphics.getHeight())
+    );
+
+
+    public Coordinates(float x, float y) {
+        super(x,y);
     }
-    public static Coordinates random() {
-        int minX = - Gdx.graphics.getWidth();
-        int maxX = 2*Gdx.graphics.getWidth();
-        int minY = -Gdx.graphics.getHeight();
-        int maxY = 2*Gdx.graphics.getHeight();
-
-        int randomX = new Random().nextInt(maxX - minX + 1) + minX;
-        int randomY = new Random().nextInt(maxY - minY + 1) + minY;
-        return new Coordinates(randomX, randomY);
+    public static Vector2 random() {
+        Random random = new Random();
+        int randomIndex = random.nextInt(spawnPoints.size());
+        return spawnPoints.get(randomIndex);
     }
 
 
-
-    public static List<Coordinates> swarm(int hordeSize,Coordinates startPoint) {
+    public static List<Vector2> swarm(int hordeSize,Vector2 startPoint) {
         Random random = new Random();
         double sideLength = Math.sqrt(hordeSize);
-        List<Coordinates> hordeCoordinates = new ArrayList<>();
+        List<Vector2> hordeCoordinates = new ArrayList<>();
 
         int distanceBetween = 60;
 
         for (int i = 0; i < Math.floor(sideLength); i++) {
             for (int j = 0; j < Math.ceil(sideLength); j++) {
-                int randomSpacing = random.nextInt( 60 -30) + 30;
-                Coordinates newCor = new Coordinates(startPoint.x + j * distanceBetween, startPoint.y + i * distanceBetween);
+                Vector2 newCor = new Vector2(startPoint.x + j * distanceBetween, startPoint.y + i * distanceBetween);
                 hordeCoordinates.add(newCor);
             }
 
         }
-        if(hordeSize%2 == 0) {
-            return hordeCoordinates;
-        }
-        else{
-            return hordeCoordinates.subList(0, hordeSize);
-        }
+        return hordeCoordinates;
 
         //test this: number of coordinates in list
-
     }
+
+
 
 }
 

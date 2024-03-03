@@ -4,6 +4,7 @@ package Actors.Enemy;
 import Actors.Coordinates;
 import Actors.Enemy.EnemyTypes.*;
 import Actors.Stats;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.*;
 
@@ -27,6 +28,7 @@ public class EnemyFactory implements IEnemyFactory{
             enemyTypeMap.put(enemyType, 0);
         }
     }
+
     @Override
     public Enemy createEnemyType(EnemyType type, int x, int y){
 
@@ -58,9 +60,10 @@ public class EnemyFactory implements IEnemyFactory{
 
     @Override
     public void createRandomEnemies(int count) {
-        Coordinates random = Coordinates.random();
+
         for(int i = 0; i < count; i++) {
-            createEnemyType(randomEnemyType(), random.x, random.y);
+            Vector2 random = Coordinates.random();
+            createEnemyType(randomEnemyType(), (int)random.x, (int)random.y);
         }
     }
 
@@ -71,9 +74,10 @@ public class EnemyFactory implements IEnemyFactory{
 
 
     public void createSwarm(int count, EnemyType type) {
-        List<Coordinates> swarmPoints = Coordinates.swarm(count, Coordinates.random());
+        List<Vector2> swarmPoints = Coordinates.swarm(count, Coordinates.random());
+        System.out.println(swarmPoints.size());
         for(int i = 0; i < count; i++) {
-            Enemy enemy = createEnemyType(type,swarmPoints.get(i).x , swarmPoints.get(i).y);
+            Enemy enemy = createEnemyType(type,(int)swarmPoints.get(i).x , (int)swarmPoints.get(i).y);
             enemy.makeSwarmMember();
         }
     }
@@ -96,6 +100,10 @@ public class EnemyFactory implements IEnemyFactory{
             }
         }
 
+    }
+
+    public Iterator<Enemy> iterator(){
+        return createdEnemies.iterator();
     }
 
 

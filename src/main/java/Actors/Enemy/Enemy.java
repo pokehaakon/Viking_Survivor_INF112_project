@@ -63,18 +63,20 @@ public abstract class Enemy extends Actor {
         }
 
         if (state == EnemyState.SWARM_MEMBER) {
-            x +=  (int)(initDeltaX * speed);
-            y +=  (int)(initDeltaY * speed);
+            x +=  (int)(initDeltaX * speedX);
+            y +=  (int)(initDeltaY * speedY);
+        }
 
-        } else {
-            x += (int)(deltaX * speed);
-            y +=  (int)(deltaY * speed);
+        else {
+            x += (int)(deltaX * speedX);
+            y +=  (int)(deltaY * speedY);
         }
     }
 
     public void makeSwarmMember() {
         state = EnemyState.SWARM_MEMBER;
-        speed *= SWARM_SPEED_MULTIPLIER;
+        speedX *= SWARM_SPEED_MULTIPLIER;
+        speedY *= SWARM_SPEED_MULTIPLIER;
     }
 
     @Override
@@ -89,4 +91,21 @@ public abstract class Enemy extends Actor {
     public int hashCode() {
         return Objects.hash(initDeltaX, initDeltaY, initMovement, stats, enemyType, state);
     }
+
+    public void updateMovement(Actor actor) {
+        move(actor);
+        //updateHitBox();
+    }
+
+    /**
+     * Determined by inputs. Enemy moves so it appears as the player moves.
+     * @param actor
+     */
+    public void move(Actor actor) {
+        x -= actor.speedX;
+        y -= actor.speedY;
+
+    }
+
+
 }
