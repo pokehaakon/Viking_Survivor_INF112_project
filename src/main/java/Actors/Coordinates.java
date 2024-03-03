@@ -39,28 +39,38 @@ public class Coordinates extends Vector2 {
     public Coordinates(float x, float y) {
         super(x,y);
     }
+
+    /**
+     *
+     * @return random start coordinate from the spawn points list
+     */
     public static Vector2 random() {
         Random random = new Random();
         int randomIndex = random.nextInt(spawnPoints.size());
         return spawnPoints.get(randomIndex);
     }
 
-
-    public static List<Vector2> swarm(int hordeSize,Vector2 startPoint) {
+    /**
+     * Creating a list of coordinates for the swarm
+     * @param swarmSize
+     * @param startPoint
+     * @return
+     */
+    public static List<Vector2> swarm(int swarmSize,Vector2 startPoint) {
         Random random = new Random();
-        double sideLength = Math.sqrt(hordeSize);
-        List<Vector2> hordeCoordinates = new ArrayList<>();
+        double sideLength = Math.sqrt(swarmSize);
+        List<Vector2> swarmCoordinates = new ArrayList<>();
 
         int randomDistance = 60;
 
         for (int i = 0; i < Math.floor(sideLength); i++) {
             for (int j = 0; j < Math.ceil(sideLength); j++) {
                 Vector2 newCor = new Vector2(startPoint.x + j * randomDistance, startPoint.y + i * randomDistance);
-                hordeCoordinates.add(newCor);
+                swarmCoordinates.add(newCor);
             }
 
         }
-        return hordeCoordinates;
+        return swarmCoordinates;
 
         //test this: number of coordinates in list
     }
