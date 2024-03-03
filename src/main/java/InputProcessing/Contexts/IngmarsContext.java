@@ -78,7 +78,7 @@ public class IngmarsContext extends Context{
 
         for (Enemy enemy : enemyFactory.getCreatedEnemies()) {
             enemy.attack(player);
-            enemy.updateMovement(player);
+            enemy.move(player);
             if (enemy.collision(player)) {
                 player.HP -= enemy.damage;
                 enemy.destroy();

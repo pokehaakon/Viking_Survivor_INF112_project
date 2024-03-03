@@ -92,10 +92,7 @@ public abstract class Enemy extends Actor {
         return Objects.hash(initDeltaX, initDeltaY, initMovement, stats, enemyType, state);
     }
 
-    public void updateMovement(Actor actor) {
-        move(actor);
-        //updateHitBox();
-    }
+
 
     /**
      * Determined by inputs. Enemy moves so it appears as the player moves.
