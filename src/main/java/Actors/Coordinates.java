@@ -12,18 +12,24 @@ import java.util.Random;
 public class Coordinates extends Vector2 {
 
     public static final List<Vector2> spawnPoints = Arrays.asList(
+
+            // along left side of screen
             new Vector2((float)-0.5*Gdx.graphics.getWidth(),0),
             new Vector2((float)-0.5*Gdx.graphics.getWidth(), (float)0.5*Gdx.graphics.getHeight()),
             new Vector2((float)-0.5*Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight()),
 
+            // along top of screen
             new Vector2(0, (float)1.5*Gdx.graphics.getHeight()),
             new Vector2((float)0.5*Gdx.graphics.getWidth(), (float)1.5*Gdx.graphics.getHeight()),
             new Vector2((float)Gdx.graphics.getWidth(), (float)1.5*Gdx.graphics.getHeight()),
 
+
+            // along right side of screen
             new Vector2((float)1.5*Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight()),
             new Vector2((float)1.5*Gdx.graphics.getWidth(), (float)0.5*Gdx.graphics.getHeight()),
             new Vector2((float)1.5*Gdx.graphics.getWidth(), 0),
 
+            //along bottom of screen
             new Vector2(0, (float)-0.5*Gdx.graphics.getHeight()),
             new Vector2((float)0.5*Gdx.graphics.getWidth(), (float)-0.5*Gdx.graphics.getHeight()),
             new Vector2((float)Gdx.graphics.getWidth(), (float)-0.5*Gdx.graphics.getHeight())
