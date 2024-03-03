@@ -102,15 +102,6 @@ public class EnemyFactory implements IEnemyFactory{
 
     }
 
-    public Iterator<Enemy> iterator(){
-        return createdEnemies.iterator();
-    }
-
-
-
-    public Iterator<Enemy> createdEnemyIterator() {
-        return createdEnemies.iterator();
-    }
 
     @Override
     public int getEnemyCount() {

@@ -103,6 +103,4 @@ public abstract class Enemy extends Actor {
         y -= actor.speedY;
 
     }
-
-
 }
