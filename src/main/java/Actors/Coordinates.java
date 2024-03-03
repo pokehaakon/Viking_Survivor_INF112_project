@@ -45,11 +45,11 @@ public class Coordinates extends Vector2 {
         double sideLength = Math.sqrt(hordeSize);
         List<Vector2> hordeCoordinates = new ArrayList<>();
 
-        int distanceBetween = 60;
+        int randomDistance = 60;
 
         for (int i = 0; i < Math.floor(sideLength); i++) {
             for (int j = 0; j < Math.ceil(sideLength); j++) {
-                Vector2 newCor = new Vector2(startPoint.x + j * distanceBetween, startPoint.y + i * distanceBetween);
+                Vector2 newCor = new Vector2(startPoint.x + j * randomDistance, startPoint.y + i * randomDistance);
                 hordeCoordinates.add(newCor);
             }
 
