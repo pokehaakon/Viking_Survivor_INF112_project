@@ -9,6 +9,7 @@ import Simulation.SimulationThread;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -20,6 +21,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+import org.apache.maven.surefire.shared.lang3.tuple.ImmutablePair;
+import org.apache.maven.surefire.shared.lang3.tuple.Pair;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,27 +32,30 @@ import java.util.concurrent.locks.ReentrantLock;
 import static Rendering.Shapes.makeRectangle;
 import static java.lang.Math.random;
 
-public class GameContext extends Context{
-    private SpriteBatch batch;
-    private World world;
+public class GameContext extends Context {
+    private final SpriteBatch batch;
+    private final Camera camera;
+    private final World world;
     private Body player;
     private Array<Body> enemies;
-    private BitmapFont font;
-    private Texture spriteImage, rectSprite;
-    private Rectangle spriteRect, spriteRectEnemy;
-    private ShapeRenderer shape;
+    private final BitmapFont font;
+    final private Texture spriteImage, rectSprite;
+    final private Rectangle spriteRect, spriteRectEnemy;
+    final private ShapeRenderer shape;
     private RollingSum UpdateTime, FrameTime, FPS, UPS;
     private long previousFrameStart = System.nanoTime();
     private final Lock renderLock;
     private KeyStates keyStates;
     private final SimulationThread simThread;
+    private float zoomLevel = 1f;
 
 
 
-    public GameContext(String name, SpriteBatch batch, ContextualInputProcessor iProc) {
+    public GameContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
         super(name, iProc);
 
         this.batch = batch;
+        this.camera = camera;
 
         setupInputListener();
         setupDebug();
@@ -87,6 +93,8 @@ public class GameContext extends Context{
         FPS = new RollingSum(60 * 3);
         UPS = new RollingSum(60 * 3);
     }
+
+
     private void setupInputListener() {
         keyStates = new KeyStates(); //this should load some config!
 
@@ -110,6 +118,23 @@ public class GameContext extends Context{
         this.addAction(Input.Buttons.LEFT, MouseEvent.MOUSE_UNCLICKED, (x, y) -> System.out.println("DROPPED -> " + x + ", " + y));
         this.addAction(0, MouseEvent.MOUSE_DRAGGED, (x, y) -> System.out.println("DRAGGED -> " + x + ", " + y));
         this.addAction(0, MouseEvent.MOUSE_MOVED, (x, y) -> System.out.println("MOVED -> " + x + ", " + y));
+
+        this.addAction(Input.Buttons.MIDDLE, MouseEvent.MOUSE_CLICKED, (x, y) -> {
+            zoomLevel = 1f;
+            camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
+            camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
+        });
+        this.addAction(0, MouseEvent.MOUSE_SCROLLED, (x, y) -> {
+            if (y > 0 && zoomLevel < 2f) {
+                zoomLevel += 0.25f;
+            }
+            if (y < 0 && zoomLevel > 0.5f) {
+                zoomLevel -= 0.25f;
+            }
+            camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
+            camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
+        });
+
     }
 
     @Override
@@ -122,7 +147,6 @@ public class GameContext extends Context{
 
         FPS.add(System.nanoTime() - previousFrameStart);
         previousFrameStart = System.nanoTime();
-
 
         //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         renderLock.lock();
@@ -153,18 +177,23 @@ public class GameContext extends Context{
             enemiesPosCirlce.add(e.getPosition());
             enemiesCenter.add(e.getWorldCenter());
         }
+
         //spriteRectEnemy.setPosition(enemy.getPosition());
-        Vector2 playerCenter = new Vector2().add(player.getWorldCenter());
+        //Vector2 playerCenter = new Vector2().add(player.getWorldCenter());
+        Vector2 playerCenter = player.getWorldCenter();
         //Vector2 enemyCenter = new Vector2().add(enemy.getWorldCenter());
+
+        //center camera at player
+        camera.position.x = playerCenter.x;
+        camera.position.y = playerCenter.y;
 
         batch.begin();
 
-        font.draw(batch, "fps: " + (int)(1_000_000_000F/FPS.avg()), 10, 80);
-        font.draw(batch, "ups: " + (int)(1_000_000_000F/UPS.avg()), 10, 60);
-        font.draw(batch, "us/f: " + (int)(FrameTime.avg()/1_000), 10, 40);
-        font.draw(batch, "us/u: " + (int)(UpdateTime.avg()/1_000), 10, 20);
 
-
+        font.draw(batch, "fps: " + String.format("%.1f", 1_000_000_000F/FPS.avg()), 10, 80);
+        font.draw(batch, "ups: " + String.format("%.1f",1_000_000_000F/UPS.avg()), 10, 60);
+        font.draw(batch, "us/f: " + String.format("%.0f",FrameTime.avg()/1_000), 10, 40);
+        font.draw(batch, "us/u: " + String.format("%.0f",UpdateTime.avg()/1_000), 10, 20);
 
 
         for (Vector2 v : enemiesPos) {
@@ -183,17 +212,21 @@ public class GameContext extends Context{
         shape.setAutoShapeType(true);
         shape.begin();
 
+
+        float xc = camera.viewportWidth / zoomLevel / 2f - playerCenter.x / zoomLevel, yc = camera.viewportHeight / zoomLevel / 2f - playerCenter.y / zoomLevel;
+
         shape.setColor(Color.GREEN);
-        shape.rect(spriteRect.x, spriteRect.y, spriteRect.width, spriteRect.height);
+        shape.rect(spriteRect.x / zoomLevel + xc, spriteRect.y / zoomLevel + yc, spriteRect.width / zoomLevel, spriteRect.height / zoomLevel);
 
         shape.setColor(Color.RED);
 
         for (Vector2 v : enemiesPosCirlce) {
-            shape.circle(v.x, v.y, radius);
+            shape.circle(v.x / zoomLevel + xc, v.y / zoomLevel + yc, radius / zoomLevel);
         }
         shape.end();
 
         batch.begin();
+        batch.draw(new Texture(5,5, Pixmap.Format.RGB888), 0, 0);
         batch.draw(new Texture(2,2, Pixmap.Format.RGB888), playerCenter.x, playerCenter.y);
 
         for (Vector2 v : enemiesCenter) {

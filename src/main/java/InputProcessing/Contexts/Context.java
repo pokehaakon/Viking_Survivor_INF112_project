@@ -52,7 +52,7 @@ public abstract class Context implements Screen {
      * @param action the action to be performed when a 'keycode, event' event is encountered.
      */
     public void addAction(int keycode, MouseEvent event, BiConsumer<Integer, Integer> action) {
-        if (event == MouseEvent.MOUSE_DRAGGED || event == MouseEvent.MOUSE_MOVED) {
+        if (event == MouseEvent.MOUSE_DRAGGED || event == MouseEvent.MOUSE_MOVED || event == MouseEvent.MOUSE_SCROLLED) {
             keycode = 0; //should be 0, as these events have no associated keycode
         }
         addTAction(keycode, event, action, mouseActions);

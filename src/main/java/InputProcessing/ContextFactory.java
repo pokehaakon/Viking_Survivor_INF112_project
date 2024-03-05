@@ -4,6 +4,7 @@ import InputProcessing.Contexts.Context;
 import InputProcessing.Contexts.ExampleContext;
 import InputProcessing.Contexts.ExampleContext2;
 import InputProcessing.Contexts.GameContext;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.HashMap;
@@ -12,10 +13,12 @@ import java.util.Map;
 public class ContextFactory {
     private final Map<String, Context> createdContexts;
     private final SpriteBatch batch;
+    private final Camera camera;
     private final ContextualInputProcessor iProc;
-    public ContextFactory(SpriteBatch batch, ContextualInputProcessor iProc) {
+    public ContextFactory(SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
         this.batch = batch;
         this.iProc = iProc;
+        this.camera = camera;
         createdContexts = new HashMap<>();
     }
 
@@ -37,7 +40,7 @@ public class ContextFactory {
     private Context spawnContext(String contextName) { //this is the only place where context instances are bound to contextNames!
         switch (contextName) {
             case "GAME":
-                return new GameContext(contextName, batch, iProc);
+                return new GameContext(contextName, batch, camera, iProc);
             case "EXAMPLE":
                 return new ExampleContext(contextName, batch, iProc);
             case "EXAMPLE2":
