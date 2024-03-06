@@ -1,5 +1,6 @@
 package Actors;
 
+import Actors.Player.PlayerExample;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
@@ -39,11 +40,14 @@ public class Coordinates extends Vector2 {
      * @param numMembers
      * @param centerPoint
      * @param spacing
-     * @param target
      * @return list coordinates that forms a line
      */
-    public static List<Vector2> lineSwarm(int numMembers,Vector2 centerPoint, int spacing, Vector2 target) {
+    public static List<Vector2> lineSwarm(int numMembers,Vector2 centerPoint, int spacing) {
         List<Vector2> swarmCoordinates = new ArrayList<>();
+
+        //want the normal of the line to always face the middle of the screen
+        Vector2 target = new Vector2((float)Gdx.graphics.getWidth()/2,(float)Gdx.graphics.getHeight()/2);
+
 
         // Calculate the direction vector from centerPoint to targetCoordinate
         Vector2 direction = new Vector2(target.x - centerPoint.x, target.y - centerPoint.y).nor();

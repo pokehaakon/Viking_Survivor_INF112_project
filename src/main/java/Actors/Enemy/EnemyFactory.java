@@ -73,7 +73,7 @@ public class EnemyFactory implements IEnemyFactory{
         }
         else if(swarmType == SwarmType.LINE){
             swarm.setSwarmType(SwarmType.LINE);
-            swarmPoints = Coordinates.lineSwarm(numMembers,startPoint, 60, new Vector2(PlayerExample.x, PlayerExample.y));
+            swarmPoints = Coordinates.lineSwarm(numMembers,startPoint, 60);
         }
         else{
             throw new IllegalArgumentException("Cannot find swarm type");

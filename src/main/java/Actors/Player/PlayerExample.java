@@ -8,7 +8,7 @@ public class PlayerExample extends Actor {
     private String name;
     public Stats stats;
 
-    public static float x, y;
+    //public static float x, y;
 
     public boolean idle, up, down, left, rigth;
 
