@@ -20,11 +20,11 @@ public class Stats {
     }
 
     public static Stats enemy2() {
-        return new Stats(100,10,10,4);
+        return new Stats(100,5,5,4);
     }
 
     public static Stats player() {
-        return new Stats(100,15,15, 10);
+        return new Stats(100,8,8, 10);
     }
 
 

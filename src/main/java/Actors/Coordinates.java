@@ -43,11 +43,10 @@ public class Coordinates extends Vector2 {
      * @return list coordinates that forms a line
      */
     public static List<Vector2> lineSwarm(int numMembers,Vector2 centerPoint, int spacing, Vector2 target) {
-        Vector2 targetCoordinate = new Vector2(800, 500);
         List<Vector2> swarmCoordinates = new ArrayList<>();
 
         // Calculate the direction vector from centerPoint to targetCoordinate
-        Vector2 direction = new Vector2(targetCoordinate.x - centerPoint.x, targetCoordinate.y - centerPoint.y).nor();
+        Vector2 direction = new Vector2(target.x - centerPoint.x, target.y - centerPoint.y).nor();
 
         // Calculate the perpendicular vector (normal) to the direction vector
         Vector2 normal = new Vector2(-direction.y, direction.x);
@@ -73,7 +72,7 @@ public class Coordinates extends Vector2 {
 
         Vector2 center = new Vector2((float)Gdx.graphics.getWidth()/2, (float)Gdx.graphics.getHeight()/2);
         double innerRadius = (float)Gdx.graphics.getWidth()/2;
-        double outerRadius = Gdx.graphics.getWidth();
+        double outerRadius = 0.7*Gdx.graphics.getWidth();
         double angle = Math.toRadians(Math.random() * 360);
         double randomRadius = innerRadius + Math.random() * (outerRadius - innerRadius);
         double x = center.x + randomRadius * Math.cos(angle);
