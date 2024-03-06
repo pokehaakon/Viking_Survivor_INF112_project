@@ -65,7 +65,7 @@ public class EnemyFactory implements IEnemyFactory{
 
     public static List<Enemy> createSwarm(int count, String type) {
         List<Enemy> swarm = new ArrayList<>();
-        List<Vector2> swarmPoints = Coordinates.swarm(count, Coordinates.random());
+        List<Vector2> swarmPoints = Coordinates.squareSwarm(count, new Vector2(0,0), 60);
 
         for(int i = 0; i < count; i++) {
             Enemy enemy = createEnemyType(type,(int)swarmPoints.get(i).x , (int)swarmPoints.get(i).y);
