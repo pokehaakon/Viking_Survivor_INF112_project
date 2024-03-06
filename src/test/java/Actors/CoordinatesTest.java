@@ -60,9 +60,9 @@ public class CoordinatesTest {
         }
     }
 
-    @ParameterizedTest
-    @MethodSource("lineSwarm")
+    @Test
     void lineSwarm() {
+        //TODO
 
     }
 
