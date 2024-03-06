@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 public abstract class Actor implements IGameObject {
     public int HP;
-    public int speedX, speedY;
+    public float speedX, speedY;
     public int damage;
     private boolean destroyed = false;
     public Texture spriteImage;
@@ -27,8 +27,8 @@ public abstract class Actor implements IGameObject {
         this.stats = stats;
         HP = stats.HP;
         damage = stats.damage;
-        speedX = stats.speedX;
-        speedY = stats.speedY;
+        speedX = stats.speed;
+        speedY = stats.speed;
     }
     public Actor() {
 

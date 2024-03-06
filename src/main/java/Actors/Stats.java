@@ -2,29 +2,27 @@ package Actors;
 
 public class Stats {
     public int HP;
-    public int speedX;
-    public int speedY;
+    public float speed;
     public int damage;
 
     public final static int SWARM_MULTIPLIER = 2;
 
-    public Stats(int HP, int speedY,  int speedX, int damage) {
+    public Stats(int HP, float speed, int damage) {
         this.HP = HP;
-        this.speedX = speedX;
-        this.speedY =  speedY;
+        this.speed = speed;
         this.damage = damage;
     }
 
     public static Stats enemy1() {
-        return new Stats(100,5,5,4);
+        return new Stats(100,3,4);
     }
 
     public static Stats enemy2() {
-        return new Stats(100,5,5,4);
+        return new Stats(100,3,4);
     }
 
     public static Stats player() {
-        return new Stats(100,8,8, 10);
+        return new Stats(100,5, 10);
     }
 
 

@@ -22,11 +22,11 @@ public class PlayerExample extends Actor {
 
 
 
-    public void setSpeedX(int newSpeed) {
+    public void setSpeedX(float newSpeed) {
         speedX = newSpeed;
     }
 
-    public void setSpeedY(int newSpeed){
+    public void setSpeedY(float newSpeed){
         speedY = newSpeed;
     }
 

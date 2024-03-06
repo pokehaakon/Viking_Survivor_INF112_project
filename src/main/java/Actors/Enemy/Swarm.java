@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Swarm extends Enemy{
-    private static final int SWARM_SPEED_MULTIPLIER = 2;
+    private static final float SWARM_SPEED_MULTIPLIER = 1.5f;
 
     private float startDeltaX;
     private float startDeltaY;

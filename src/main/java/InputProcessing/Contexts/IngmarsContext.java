@@ -121,17 +121,17 @@ public class IngmarsContext extends Context{
 
 
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            player.setSpeedX(Stats.player().speedX);
+            player.setSpeedX(Stats.player().speed);
         } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            player.setSpeedX(-Stats.player().speedX);
+            player.setSpeedX(-Stats.player().speed);
         } else {
             player.setSpeedX(0);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            player.setSpeedY(Stats.player().speedY);
+            player.setSpeedY(Stats.player().speed);
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            player.setSpeedY(-Stats.player().speedX);
+            player.setSpeedY(-Stats.player().speed);
         } else {
             player.setSpeedY(0);
         }
