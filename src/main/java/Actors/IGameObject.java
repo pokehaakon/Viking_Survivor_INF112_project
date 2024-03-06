@@ -27,7 +27,7 @@ public interface IGameObject {
      * @param x
      * @param y
      */
-    void initialize(String spriteName, int x, int y);
+    void initialize(String spriteName, float x, float y, float width, float height);
 
     /**
      * Attacks actor by chasing it
@@ -36,5 +36,7 @@ public interface IGameObject {
     void attack(Actor actor);
 
     boolean collision(Actor actor);
+
+
 
 }

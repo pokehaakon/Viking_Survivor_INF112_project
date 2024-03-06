@@ -3,87 +3,89 @@ package Actors.Enemy;
 
 import Actors.Coordinates;
 import Actors.Enemy.EnemyTypes.*;
+import Actors.Player.PlayerExample;
 import Actors.Stats;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.*;
 
-import static Actors.Enemy.Enemy.SWARM_SPEED_MULTIPLIER;
-
 
 public class EnemyFactory implements IEnemyFactory{
-
 
     private final static List<String> enemyTypes = Arrays.asList("ENEMY1", "ENEMY2");
 
 
-
-    private static Enemy createEnemyType(String type, int x, int y){
+    @Override
+    public Enemy createEnemyType(String type, float x, float y){
 
         if(type == null) {
             throw new NullPointerException("Type cannot be null!");
         }
 
         Enemy enemy = switch (type.toUpperCase()) {
-            case "ENEMY1" -> new Enemy(Stats.enemy1(),"img.png", x,y);
-            case "ENEMY2" -> new Enemy(Stats.enemy2(),"img_3.png",x,y);
+            case "ENEMY1" -> new Enemy(Stats.enemy1(),Sprites.ENEMY_1_PNG, x,y, 100, 100);
+            case "ENEMY2" -> new Enemy(Stats.enemy2(),Sprites.ENEMY_2_PNG,x,y, 100, 100);
             default -> throw new IllegalArgumentException("Invalid enemy type");
         };
         return enemy;
     }
 
-    public static List<Enemy> createEnemies(int count, String type) {
+    @Override
+    public List<Enemy> createEnemies(int count, String type) {
 
         List<Enemy> enemies = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            Enemy newEnemy = createEnemyType(type, (int)Coordinates.random().x, (int)Coordinates.random().y);
+            Vector2 startPoint = Coordinates.randomPoint();
+            Enemy newEnemy = createEnemyType(type, startPoint.x, startPoint.y);
             enemies.add(newEnemy);
         }
         return enemies;
     }
 
 
-    //things to test: number of enemies, total and in map, null values, remove function, not real types etc... 0 at start etc, minus 1 after destroyed
-
-
-    private static String randomEnemyType() {
+    private  String randomEnemyType() {
         Random random = new Random();
         int randomIndex = random.nextInt(enemyTypes.size());
         return enemyTypes.get(randomIndex);
     }
 
 
-    public static List<Enemy> createRandomEnemies(int count) {
+    @Override
+    public  List<Enemy> createRandomEnemies(int count) {
         List<Enemy> enemyList = new ArrayList<>();
         for(int i = 0; i < count; i++) {
-            Enemy enemy = createEnemyType(randomEnemyType(), (int)Coordinates.random().x, (int)Coordinates.random().y);
+            Vector2 startPoint = Coordinates.randomPoint();
+            Enemy enemy = createEnemyType(randomEnemyType(), startPoint.x, startPoint.y);
             enemyList.add(enemy);
         }
         return enemyList;
     }
 
+    @Override
+    public Swarm createSwarm(int numMembers, String enemyType, SwarmType swarmType) {
+        Swarm swarm = new Swarm();
+        Vector2 startPoint = Coordinates.randomPoint();
+        List<Vector2> swarmPoints;
 
-    public static List<Enemy> createSwarm(int count, String type) {
-        List<Enemy> swarm = new ArrayList<>();
-        List<Vector2> swarmPoints = Coordinates.squareSwarm(count, new Vector2(0,0), 60);
+        if(swarmType == SwarmType.SQUARE) {
+            swarm.setSwarmType(SwarmType.SQUARE);
+            swarmPoints = Coordinates.squareSwarm(numMembers,startPoint, 60);
+        }
+        else if(swarmType == SwarmType.LINE){
+            swarm.setSwarmType(SwarmType.LINE);
+            swarmPoints = Coordinates.lineSwarm(numMembers,startPoint, 60, new Vector2(PlayerExample.x, PlayerExample.y));
+        }
+        else{
+            throw new IllegalArgumentException("Cannot find swarm type");
+        }
 
-        for(int i = 0; i < count; i++) {
-            Enemy enemy = createEnemyType(type,(int)swarmPoints.get(i).x , (int)swarmPoints.get(i).y);
-            makeSwarmMember(enemy);
+        for(int i = 0; i < numMembers; i++) {
+            Enemy enemy = createEnemyType(enemyType,swarmPoints.get(i).x , swarmPoints.get(i).y);
             swarm.add(enemy);
         }
         return swarm;
     }
 
-    /**
-     * turns enemy into a swarm member by changing state and speed
-     * @param enemy
-     */
-    private static void makeSwarmMember(Enemy enemy) {
-        enemy.state = EnemyState.SWARM_MEMBER;
-        enemy.speedX *= SWARM_SPEED_MULTIPLIER;
-        enemy.speedY *= SWARM_SPEED_MULTIPLIER;
-    }
 
 }
 

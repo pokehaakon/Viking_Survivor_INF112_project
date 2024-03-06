@@ -1,6 +1,8 @@
 package InputProcessing.Contexts;
 
 import Actors.Enemy.Enemy;
+import Actors.Enemy.EnemyTypes.SwarmType;
+import Actors.Enemy.Swarm;
 import Actors.Stats;
 import Actors.Enemy.EnemyFactory;
 import InputProcessing.ContextualInputProcessor;
@@ -31,7 +33,9 @@ public class IngmarsContext extends Context{
     private static final int SWARM_INTERVAL = 10000;
 
     private List<Enemy> enemies;
+    private EnemyFactory enemyFactory;
 
+    private List<Swarm> swarms;
     public IngmarsContext(String name, SpriteBatch batch, ContextualInputProcessor iProc) {
         super(name, iProc);
         this.batch = batch;
@@ -41,6 +45,8 @@ public class IngmarsContext extends Context{
         lastSpawnTime = 0;
 
         enemies = new ArrayList<>();
+        swarms = new ArrayList<>();
+        enemyFactory = new EnemyFactory();
 
     }
 
@@ -59,12 +65,14 @@ public class IngmarsContext extends Context{
         for(Enemy enemy:enemies) {
             enemy.draw(batch);
         }
-
         batch.end();
 
         if (TimeUtils.millis() - lastSpawnTime > SPAWN_TIME) {
-            enemies.addAll(EnemyFactory.createRandomEnemies(10));
-            enemies.addAll(EnemyFactory.createSwarm(5, "enemy1"));
+            enemies.addAll(enemyFactory.createRandomEnemies(10));
+
+            enemies.add(enemyFactory.createSwarm(20,"enemy1", SwarmType.SQUARE));
+            enemies.add(enemyFactory.createSwarm(20,"enemy1", SwarmType.LINE));
+            //enemies.addAll(EnemyFactory.createLineSwarm(10, "enemy1"));
             lastSpawnTime = TimeUtils.millis();
         }
         System.out.println(enemies.size());
@@ -80,15 +88,8 @@ public class IngmarsContext extends Context{
     public void handleEnemies() {
         for (Enemy enemy : enemies) {
             enemy.attack(player);
-            player.move(enemy);
-            if (enemy.collision(player)) {
-                player.HP -= enemy.damage;
-                enemy.destroy();
-            }
-
+            enemy.moveInRelationTo(player);
         }
-        //enemyFactory.removeDestroyedEnemies();
-
     }
 
         @Override

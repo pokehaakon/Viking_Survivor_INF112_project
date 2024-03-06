@@ -8,13 +8,14 @@ public class PlayerExample extends Actor {
     private String name;
     public Stats stats;
 
+    public static float x, y;
 
     public boolean idle, up, down, left, rigth;
 
     public PlayerExample(String name, Stats stats) {
         super(stats);
         this.name = name;
-        initialize("img_4.png", 800, 500);
+        initialize("img_4.png", 800, 500, 100,100);
         speedX = 0;
         speedY = 0;
     }
@@ -28,16 +29,6 @@ public class PlayerExample extends Actor {
     public void setSpeedY(int newSpeed){
         speedY = newSpeed;
     }
-
-    /**
-     * Determined by inputs. Enemy moves so it appears as the player moves.
-     * @param actor
-     */
-    public void move(Actor actor) {
-        actor.x -= speedX;
-        actor.y -= speedY;
-    }
-
 
 
     @Override

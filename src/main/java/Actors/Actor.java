@@ -1,6 +1,6 @@
 package Actors;
 
-import Actors.Enemy.Sprites;
+import Actors.Enemy.EnemyTypes.Sprites;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -11,13 +11,13 @@ import java.util.function.Consumer;
 
 public abstract class Actor implements IGameObject {
     public int HP;
-    //public int speed;
     public int speedX, speedY;
     public int damage;
     private boolean destroyed = false;
     public Texture spriteImage;
     public Rectangle.Float hitBox;
-    public int x, y;
+    public float x, y;
+    public float width, height;
     public Sprite sprite ;
 
     private Stats stats;
@@ -30,10 +30,14 @@ public abstract class Actor implements IGameObject {
         speedX = stats.speedX;
         speedY = stats.speedY;
     }
+    public Actor() {
+
+    }
 
 
     @Override
     public void destroy() {
+
         destroyed = true;
     }
 
@@ -57,14 +61,12 @@ public abstract class Actor implements IGameObject {
     }
 
     @Override
-    public void initialize(String spriteName,int x, int y) {
+    public void initialize(String spriteName,float x, float y, float width, float height) {
         this.x = x;
         this.y = y;
-        spriteImage = new Texture(Gdx.files.internal(spriteName));
-        sprite = new Sprite(spriteImage);
-        sprite.setSize(100,100);
-
-        sprite = Sprites.getSprite(spriteName, 100,100);
+        this.width = width;
+        this.height = height;
+        sprite = Sprites.getSprite(spriteName, (int)width, (int)height);
 
         hitBox = new Rectangle.Float();
         hitBox.x = x;
@@ -75,7 +77,7 @@ public abstract class Actor implements IGameObject {
     }
 
 
-    public void updateHitBox() {
+    private void updateHitBox() {
         hitBox.x = this.x;
         hitBox.y = this.y;
     }
