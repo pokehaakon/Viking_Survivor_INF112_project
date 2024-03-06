@@ -1,5 +1,6 @@
 package Actors;
 
+import Actors.Enemy.Sprites;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -63,6 +64,8 @@ public abstract class Actor implements IGameObject {
         sprite = new Sprite(spriteImage);
         sprite.setSize(100,100);
 
+        sprite = Sprites.getSprite(spriteName, 100,100);
+
         hitBox = new Rectangle.Float();
         hitBox.x = x;
         hitBox.y =  y;
@@ -84,6 +87,7 @@ public abstract class Actor implements IGameObject {
 
     @Override
     public boolean collision(Actor actor) {
+
         return this.hitBox.intersects(actor.hitBox);
     }
 

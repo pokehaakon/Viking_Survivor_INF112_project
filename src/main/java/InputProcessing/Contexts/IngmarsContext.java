@@ -1,8 +1,7 @@
 package InputProcessing.Contexts;
 
-import Actors.Enemy.EnemyTypes.EnemyType;
-import Actors.Stats;
 import Actors.Enemy.Enemy;
+import Actors.Stats;
 import Actors.Enemy.EnemyFactory;
 import InputProcessing.ContextualInputProcessor;
 import Actors.Player.PlayerExample;
@@ -15,6 +14,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class IngmarsContext extends Context{
 
     private BitmapFont font;
@@ -22,22 +24,23 @@ public class IngmarsContext extends Context{
     PlayerExample player;
 
     SpriteBatch batch;
-    private final EnemyFactory enemyFactory;
+
     private long lastSpawnTime;
-    private long lastSwarmSpawnTime;
 
     private static final int SPAWN_TIME= 5000;
     private static final int SWARM_INTERVAL = 10000;
 
+    private List<Enemy> enemies;
 
     public IngmarsContext(String name, SpriteBatch batch, ContextualInputProcessor iProc) {
         super(name, iProc);
         this.batch = batch;
-        enemyFactory = new EnemyFactory();
+        //enemyFactory = new EnemyFactory();
         player = new PlayerExample("Bro", Stats.player());
         font = new BitmapFont();
         lastSpawnTime = 0;
-        lastSwarmSpawnTime = 0;
+
+        enemies = new ArrayList<>();
 
     }
 
@@ -51,22 +54,20 @@ public class IngmarsContext extends Context{
         ScreenUtils.clear(Color.GREEN);
         batch.begin();
 
-        drawInfo();
-
         player.draw(batch);
-        for(Enemy enemy: enemyFactory.getCreatedEnemies()) {
+
+        for(Enemy enemy:enemies) {
             enemy.draw(batch);
         }
 
         batch.end();
 
-
         if (TimeUtils.millis() - lastSpawnTime > SPAWN_TIME) {
-            enemyFactory.createRandomEnemies(5);
-            //enemyFactory.createSwarm(20,EnemyType.ENEMY1);
+            enemies.addAll(EnemyFactory.createRandomEnemies(10));
+            enemies.addAll(EnemyFactory.createSwarm(5, "enemy1"));
             lastSpawnTime = TimeUtils.millis();
-
         }
+        System.out.println(enemies.size());
         handleEnemies();
         handleInputs();
         System.out.println(player.speedX);
@@ -74,18 +75,20 @@ public class IngmarsContext extends Context{
 
     }
 
-    public void handleEnemies() {
 
-        for (Enemy enemy : enemyFactory.getCreatedEnemies()) {
+
+    public void handleEnemies() {
+        for (Enemy enemy : enemies) {
             enemy.attack(player);
-            enemy.move(player);
+            player.move(enemy);
             if (enemy.collision(player)) {
                 player.HP -= enemy.damage;
                 enemy.destroy();
             }
 
         }
-        enemyFactory.removeDestroyedEnemies();
+        //enemyFactory.removeDestroyedEnemies();
+
     }
 
         @Override
@@ -133,32 +136,7 @@ public class IngmarsContext extends Context{
         }
     }
 
-    public void drawInfo() {
-        font.getData().setScale(2);
-        font.setColor(Color.BLACK);
-        font.draw(batch,"Player HP: "+ Integer.toString(player.HP), 10,Gdx.graphics.getHeight()-10);
-        font.draw(
-                batch,
-                "Currently "+ Integer.toString(enemyFactory.getEnemyTypeCount(EnemyType.ENEMY1))+" type 1 enemies alive",
-                10,Gdx.graphics.getHeight()-50
-        );
-        font.draw(
-                batch,
-                "Currently total "+ enemyFactory.getCreatedEnemies().size(),
-                10,Gdx.graphics.getHeight()-90
-        );
 
-        if(player.HP <= 0)
-            font.draw(
-                    batch,
-                    "Player is dead!",
-                    10,
-                    Gdx.graphics.getHeight()-130
-            );
-
-
-
-    }
 
 
 }

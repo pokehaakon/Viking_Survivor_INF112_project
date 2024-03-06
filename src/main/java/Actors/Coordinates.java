@@ -1,6 +1,5 @@
 package Actors;
 
-import Actors.Enemy.EnemyTypes.EnemyType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 

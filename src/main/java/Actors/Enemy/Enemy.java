@@ -2,36 +2,30 @@ package Actors.Enemy;
 
 import Actors.Actor;
 import Actors.Enemy.EnemyTypes.EnemyState;
-import Actors.Enemy.EnemyTypes.EnemyType;
 import Actors.Stats;
 import com.badlogic.gdx.physics.box2d.Body;
 
-import java.util.Objects;
-
-public abstract class Enemy extends Actor {
-
+public class Enemy extends Actor {
     private float initDeltaX;
     private float initDeltaY;
 
     private boolean initMovement;
     public Stats stats;
 
-    public EnemyType enemyType;
     public EnemyState state;
 
     public static final int SWARM_SPEED_MULTIPLIER = 2;
 
-    public Enemy(Stats stats) {
+    public Enemy(Stats stats, String spriteName, int x, int y) {
         super(stats);
+        initialize(spriteName, x, y);
         state = EnemyState.SOLO;
         initMovement = false;
     }
-
     @Override
     public Body getBody() {
         return null;
     }
-
 
     @Override
     public void attack(Actor actor) {
@@ -42,7 +36,7 @@ public abstract class Enemy extends Actor {
             if (length != 0) {
                 initDeltaX /= length;
                 initDeltaY /= length;
-           }
+            }
             initMovement = true;
         }
         moveTowardsPosition(actor.x, actor.y);
@@ -73,28 +67,4 @@ public abstract class Enemy extends Actor {
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Enemy enemy = (Enemy) o;
-        return Float.compare(initDeltaX, enemy.initDeltaX) == 0 && Float.compare(initDeltaY, enemy.initDeltaY) == 0 && initMovement == enemy.initMovement && Objects.equals(stats, enemy.stats) && enemyType == enemy.enemyType && state == enemy.state;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(initDeltaX, initDeltaY, initMovement, stats, enemyType, state);
-    }
-
-
-
-    /**
-     * Determined by inputs. Enemy moves so it appears as the player moves.
-     * @param actor
-     */
-    public void move(Actor actor) {
-        x -= actor.speedX;
-        y -= actor.speedY;
-
-    }
 }

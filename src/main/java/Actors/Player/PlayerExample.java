@@ -29,9 +29,16 @@ public class PlayerExample extends Actor {
         speedY = newSpeed;
     }
 
-    public void setSpeed() {
-
+    /**
+     * Determined by inputs. Enemy moves so it appears as the player moves.
+     * @param actor
+     */
+    public void move(Actor actor) {
+        actor.x -= speedX;
+        actor.y -= speedY;
     }
+
+
 
     @Override
     public Body getBody() {
