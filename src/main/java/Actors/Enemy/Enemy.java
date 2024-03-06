@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.Body;
 
 public class Enemy extends Actor {
-    public Stats stats;
 
     public Enemy(Stats stats, String spriteName, float x, float y, float width, float height) {
         super(stats);
