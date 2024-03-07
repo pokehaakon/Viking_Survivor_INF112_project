@@ -1,8 +1,6 @@
 package InputProcessing.Contexts;
 
 import InputProcessing.ContextualInputProcessor;
-import InputProcessing.KeyEvent;
-import InputProcessing.MouseEvent;
 import com.badlogic.gdx.Screen;
 import org.apache.maven.surefire.shared.lang3.tuple.ImmutablePair;
 import org.apache.maven.surefire.shared.lang3.tuple.Pair;
@@ -13,8 +11,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public abstract class Context implements Screen {
-    final private Map<Pair<Integer, KeyEvent>, Consumer<Integer>> keyActions;
-    final private Map<Pair<Integer, MouseEvent>, BiConsumer<Integer, Integer>> mouseActions;
+    final private Map<Pair<Integer, ContextualInputProcessor.KeyEvent>, Consumer<Integer>> keyActions;
+    final private Map<Pair<Integer, ContextualInputProcessor.MouseEvent>, BiConsumer<Integer, Integer>> mouseActions;
     final private String contextName;
     final private ContextualInputProcessor iProc;
 
@@ -40,7 +38,7 @@ public abstract class Context implements Screen {
      * @param event the type of event
      * @param action the action to be performed when a 'keycode, event' event is encountered.
      */
-    public void addAction(int keycode, KeyEvent event, Consumer<Integer> action) {
+    public void addAction(int keycode, ContextualInputProcessor.KeyEvent event, Consumer<Integer> action) {
         addTAction(keycode, event, action, keyActions);
     }
 
@@ -51,8 +49,8 @@ public abstract class Context implements Screen {
      * @param event the type of event
      * @param action the action to be performed when a 'keycode, event' event is encountered.
      */
-    public void addAction(int keycode, MouseEvent event, BiConsumer<Integer, Integer> action) {
-        if (event == MouseEvent.MOUSE_DRAGGED || event == MouseEvent.MOUSE_MOVED) {
+    public void addAction(int keycode, ContextualInputProcessor.MouseEvent event, BiConsumer<Integer, Integer> action) {
+        if (event == ContextualInputProcessor.MouseEvent.MOUSE_DRAGGED || event == ContextualInputProcessor.MouseEvent.MOUSE_MOVED || event == ContextualInputProcessor.MouseEvent.MOUSE_SCROLLED) {
             keycode = 0; //should be 0, as these events have no associated keycode
         }
         addTAction(keycode, event, action, mouseActions);
@@ -73,9 +71,9 @@ public abstract class Context implements Screen {
      * @param <E> Either KeyEvent or MouseEvent
      */
     public <E> boolean hasAction(Pair<Integer, E> e) {
-        if (e.getRight() instanceof KeyEvent)
+        if (e.getRight() instanceof ContextualInputProcessor.KeyEvent)
             return keyActions.containsKey(e);
-        if (e.getRight() instanceof MouseEvent)
+        if (e.getRight() instanceof ContextualInputProcessor.MouseEvent)
             return mouseActions.containsKey(e);
 
         return false;
@@ -86,7 +84,7 @@ public abstract class Context implements Screen {
      * @param e (keycode, keyevent) pair
      * @param p the input for the action to accept
      */
-    public void doAction(Pair<Integer, KeyEvent> e, int p) {
+    public void doAction(Pair<Integer, ContextualInputProcessor.KeyEvent> e, int p) {
         keyActions.get(e).accept(p);
     }
 
@@ -96,7 +94,7 @@ public abstract class Context implements Screen {
      * @param p1 the first input for the action to accept
      * @param p2 the second input for the action to accept
      */
-    public void doAction(Pair<Integer, MouseEvent> e, int p1, int p2) {
+    public void doAction(Pair<Integer, ContextualInputProcessor.MouseEvent> e, int p1, int p2) {
         mouseActions.get(e).accept(p1, p2);
     }
 }

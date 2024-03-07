@@ -1,7 +1,6 @@
 package InputProcessing.Contexts;
 
 import InputProcessing.ContextualInputProcessor;
-import InputProcessing.KeyEvent;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,7 +14,7 @@ public class ExampleContext extends Context {
         super(name, iProc);
         this.batch = batch;
 
-        this.addAction(Input.Keys.P, KeyEvent.KEYDOWN, (x) -> this.getInputProcessor().setContext("GAME"));
+        this.addAction(Input.Keys.P, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> this.getInputProcessor().setContext("GAME"));
 
     }
     @Override

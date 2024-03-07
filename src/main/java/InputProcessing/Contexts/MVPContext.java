@@ -1,5 +1,8 @@
 package InputProcessing.Contexts;
 
+import Actors.Enemy.Enemy;
+import Actors.Player.PlayerExample;
+import Actors.Stats;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
@@ -29,12 +32,12 @@ import static Rendering.Shapes.makeRectangle;
 import static Tools.ShapeTools.*;
 import static java.lang.Math.random;
 
-public class GameContext extends Context {
+public class MVPContext extends Context {
     private final SpriteBatch batch;
     private final Camera camera;
     private final World world;
-    private Body player;
-    private Array<Body> enemies;
+    private PlayerExample player;
+    private Array<Enemy> enemies;
     private final BitmapFont font;
     final private Texture spriteImage, rectSprite;
     final private Rectangle spriteRect, spriteRectEnemy;
@@ -46,10 +49,10 @@ public class GameContext extends Context {
     private final SimulationThread simThread;
     private float zoomLevel = 1f;
     private long frameCount = 0;
-    private static boolean SHOW_DEBUG_RENDER_INFO = true;
+    private static boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
 
 
-    public GameContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
+    public MVPContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
         super(name, iProc);
 
         this.batch = batch;
@@ -82,9 +85,9 @@ public class GameContext extends Context {
         //create and start simulation
         world = createWorld();
         Set<Body> toBoKilled = new HashSet<>();
-        ContactListener contactListener = new EnemyContactListener(world, player, toBoKilled);
+        ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
         world.setContactListener(contactListener);
-        simThread = new SimulationThread(renderLock, keyStates, world, toBoKilled, UpdateTime, UPS, player);
+        simThread = new SimulationThread(renderLock, keyStates, world, toBoKilled, UpdateTime, UPS, player.getBody());
         simThread.start();
 
     }
@@ -150,16 +153,13 @@ public class GameContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.WHITE);
 
-        Vector2 playerPos = player.getPosition().cpy();
-
-
         float radius = spriteRectEnemy.getWidth() / 2;
 
 
         Vector2 origin;
         //origin = player.getWorldCenter().cpy();
-        origin = playerPos.cpy();
-        origin.add(getBottomLeftCorrection(player.getFixtureList().get(0).getShape()));
+        origin = player.getBody().getPosition().cpy();
+        origin.add(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
 
         //origin = player.getPosition().cpy();
         //center camera at player
@@ -170,25 +170,19 @@ public class GameContext extends Context {
 
 
 
-
-
         batch.begin();
+        for (Enemy e : enemies) {
+            e.draw(batch);
+        }
         Array<Vector2> enemiesCenter = new Array<>(enemies.size);
-        drawEnemies(enemiesCenter);
+        //drawEnemies(enemiesCenter);
 
         //draw player sprite
+        player.draw(batch);
 
-        Vector2 correctionVector = player.getLinearVelocity().cpy();
-        correctionVector.scl(1f/simThread.SET_UPS);
 
         //for some reason the sprite batch renders "last" frame...
-        batch.draw(
-                spriteImage,
-                playerPos.x - correctionVector.x,
-                playerPos.y - correctionVector.y,
-                spriteRect.width,
-                spriteRect.height
-        );
+
 
 
         batch.end();
@@ -202,31 +196,11 @@ public class GameContext extends Context {
         frameCount++;
     }
     private void drawEnemies(Array<Vector2> enemiesCenter) {
-        Array<Body> tempE = new Array<>();
-        world.getBodies(tempE);
-        enemies.clear();
-        for (Body b : tempE) {
-            if (b == player) continue;
-            enemies.add(b);
+        for (Enemy e : enemies) {
+            if (e.isDestroyed()) {continue;}
+            e.draw(batch);
         }
 
-        float radius = spriteRectEnemy.getWidth() / 2;
-
-        Array<Vector2> enemiesPos = new Array<>(enemies.size);
-        Vector2 temp;
-        for (Body e : enemies) {
-            temp = new Vector2();
-            temp.add(e.getPosition());
-            temp.sub(radius, radius);
-            enemiesPos.add(temp);
-            enemiesCenter.add(e.getWorldCenter());
-        }
-
-        for (Vector2 v : enemiesPos) {
-            batch.draw(spriteImage, v.x, v.y, spriteRectEnemy.width, spriteRectEnemy.height);
-            //shape.circle(v.x, v.y, rectSpriteEnemy.getWidth());
-            //batch.draw(rectSpriteEnemy, v.x, v.y, rectSpriteEnemy.getWidth(), rectSpriteEnemy.getHeight());
-        }
     }
 
     private void drawDebug(Vector2 origin, float radius, Array<Vector2> enemiesCenter) {
@@ -240,7 +214,7 @@ public class GameContext extends Context {
         shape.setColor(Color.GREEN);
         //shape.rect(spriteRect.x / zoomLevel + xc, spriteRect.y / zoomLevel + yc, spriteRect.width / zoomLevel, spriteRect.height / zoomLevel);
 
-        PolygonShape p = (PolygonShape) player.getFixtureList().get(0).getShape();
+        PolygonShape p = (PolygonShape) player.getBody().getFixtureList().get(0).getShape();
         float [] points = new float[2*p.getVertexCount()];
         Vector2 temp2 = new Vector2();
         Vector2 playerPositionCorrection = getBottomLeftCorrection(p);
@@ -329,7 +303,7 @@ public class GameContext extends Context {
         playerBodyDef.fixedRotation = true;
         enemyBodyDef.fixedRotation = true;
 
-        player = world.createBody(playerBodyDef);
+        Body playerBody = world.createBody(playerBodyDef);
 
         PolygonShape squarePlayer = squarePlayer = createSquareShape(
                 spriteRect.getWidth(),
@@ -343,7 +317,8 @@ public class GameContext extends Context {
         fixtureDefPlayer.restitution = 0;
         fixtureDefPlayer.isSensor = false;
 
-        Fixture fixturePlayer = player.createFixture(fixtureDefPlayer);
+        Fixture fixturePlayer = playerBody.createFixture(fixtureDefPlayer);
+        player = new PlayerExample("player", Stats.player(), playerBody);
 
 
         CircleShape circle = createCircleShape(spriteRectEnemy.getWidth() / 2);
@@ -357,12 +332,17 @@ public class GameContext extends Context {
 
 
         enemies = new Array<>();
-        Body enemy;
+        Body enemyBody;
         for (int i = 0; i < 10; i++) {
-            enemy = world.createBody(enemyBodyDef);
-            enemy.createFixture(fixtureDefEnemy);
+            enemyBody = world.createBody(enemyBodyDef);
+            enemyBody.createFixture(fixtureDefEnemy);
+            enemyBody.setLinearVelocity((float) random(),(float) random());
+            Enemy enemy = new Enemy(
+                    Stats.enemy1(),
+                    "obligator.png", 0,0,spriteRectEnemy.getWidth() / 2, spriteRectEnemy.getHeight() / 2,
+                    enemyBody
+            );
             enemies.add(enemy);
-            enemy.setLinearVelocity((float) random(),(float) random());
         }
 
         circle.dispose();
