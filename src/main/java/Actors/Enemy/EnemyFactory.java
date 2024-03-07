@@ -2,19 +2,14 @@ package Actors.Enemy;
 
 
 import Actors.Coordinates;
-import Actors.Enemy.EnemyTypes.*;
-import Actors.Player.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.Array;
 
 import java.util.*;
 
 import static Tools.ShapeTools.createCircleShape;
-import static Tools.ShapeTools.createSquareShape;
-import static java.lang.Math.random;
 
 
 public class EnemyFactory implements IEnemyFactory {

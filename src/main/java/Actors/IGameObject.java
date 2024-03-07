@@ -15,6 +15,8 @@ public interface IGameObject {
     Body getBody();
     boolean isDestroyed();
 
+
+
     void update();
 
 

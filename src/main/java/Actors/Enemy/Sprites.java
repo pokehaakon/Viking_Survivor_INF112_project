@@ -1,4 +1,4 @@
-package Actors.Enemy.EnemyTypes;
+package Actors.Enemy;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;

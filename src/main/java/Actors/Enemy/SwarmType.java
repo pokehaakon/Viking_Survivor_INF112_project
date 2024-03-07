@@ -1,4 +1,4 @@
-package Actors.Enemy.EnemyTypes;
+package Actors.Enemy;
 
 public enum SwarmType {
     SQUARE,

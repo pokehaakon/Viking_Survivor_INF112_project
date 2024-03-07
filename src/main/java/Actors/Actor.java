@@ -1,4 +1,4 @@
-package Actors.Player;
+package Actors;
 
 import Actors.IGameObject;
 import com.badlogic.gdx.graphics.Texture;

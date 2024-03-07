@@ -1,7 +1,7 @@
 //package Actors.Enemy;
 //
-//import Actors.Enemy.EnemyTypes.Enemy;
-//import Actors.Enemy.EnemyTypes.SwarmType;
+//import Actors.Enemy.Enemy;
+//import Actors.Enemy.SwarmType;
 //import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //
 //import java.util.ArrayList;

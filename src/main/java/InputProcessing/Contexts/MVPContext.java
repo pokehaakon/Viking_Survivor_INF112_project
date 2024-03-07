@@ -1,9 +1,8 @@
 package InputProcessing.Contexts;
 
 import Actors.Enemy.EnemyFactory;
-import Actors.Enemy.EnemyTypes.Enemy;
+import Actors.Enemy.Enemy;
 import Actors.Player.Player;
-import Actors.Stats;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
@@ -23,7 +22,6 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -31,7 +29,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static Rendering.Shapes.makeRectangle;
 import static Tools.ShapeTools.*;
-import static java.lang.Math.random;
 
 public class MVPContext extends Context {
     private final SpriteBatch batch;

@@ -1,8 +1,5 @@
 package Actors.Enemy;
 
-import Actors.Enemy.EnemyTypes.Enemy;
-import Actors.Enemy.EnemyTypes.SwarmType;
-
 import java.util.List;
 
 public interface IEnemyFactory {
