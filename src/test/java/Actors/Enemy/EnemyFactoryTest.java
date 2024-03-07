@@ -11,18 +11,18 @@ class EnemyFactoryTest {
 
     @BeforeEach
     void initialize() {
-        factory = new EnemyFactory();
+        factory = new EnemyFactory(null);
     }
 
     @Test
     void invalidEnemyType() {
 
         assertThrows(NullPointerException.class, () -> {
-            factory.createEnemyType(null, 0, 0);
+            factory.createEnemyType(null ,0, 0,0);
         });
 
         assertThrows(IllegalArgumentException.class, () -> {
-            factory.createEnemyType("hello", 0, 0);
+            factory.createEnemyType("hello", 0, 0,0);
         });
     }
 
