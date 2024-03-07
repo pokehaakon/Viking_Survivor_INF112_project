@@ -38,15 +38,12 @@ public class ContextFactory {
     }
 
     private Context spawnContext(String contextName) { //this is the only place where context instances are bound to contextNames!
-        switch (contextName) {
-            case "GAME":
-                return new GameContext(contextName, batch, camera, iProc);
-            case "EXAMPLE":
-                return new ExampleContext(contextName, batch, iProc);
-            case "EXAMPLE2":
-                return new ExampleContext2(contextName, batch, iProc);
-        }
-        throw new RuntimeException("ContextFactory cannot make context: " +  contextName);
+        return switch (contextName) {
+            case "GAME" -> new GameContext(contextName, batch, camera, iProc);
+            case "EXAMPLE" -> new ExampleContext(contextName, batch, iProc);
+            case "EXAMPLE2" -> new ExampleContext2(contextName, batch, iProc);
+            default -> throw new RuntimeException("ContextFactory cannot make context: " + contextName);
+        };
     }
 
     /**

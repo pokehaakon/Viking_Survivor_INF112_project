@@ -53,6 +53,7 @@ public class HelloWorld implements ApplicationListener {
 		currentContext = inProc.getCurrentContext();
 		batch.setProjectionMatrix(camera.combined); //probably not needed
 		currentContext.render(0f); //delta not used
+
 	}
 
 	@Override

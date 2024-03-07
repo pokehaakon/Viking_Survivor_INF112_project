@@ -9,12 +9,12 @@ import org.apache.maven.surefire.shared.lang3.tuple.Pair;
 
 public class ContextualInputProcessor implements InputProcessor {
     private Context currentContext;
-    private ContextFactory contextFactory;
+    private final ContextFactory contextFactory;
 
 
     public ContextualInputProcessor(SpriteBatch batch, Camera camera){
         contextFactory = new ContextFactory(batch, camera, this);
-    };
+    }
 
     public ContextFactory getContextFactory() {
         return contextFactory;
@@ -97,5 +97,13 @@ public class ContextualInputProcessor implements InputProcessor {
 
     public void dispose(){
         contextFactory.dispose();
+    }
+
+    public enum MouseEvent {
+        MOUSE_CLICKED, MOUSE_UNCLICKED, MOUSE_MOVED, MOUSE_DRAGGED, MOUSE_SCROLLED
+    }
+
+    public enum KeyEvent {
+        KEYDOWN, KEYUP
     }
 }

@@ -1,6 +1,5 @@
 package Simulation;
 
-import InputProcessing.GameKey;
 import InputProcessing.KeyStates;
 import Tools.RollingSum;
 import com.badlogic.gdx.math.Vector2;
@@ -18,10 +17,11 @@ public class SimulationThread extends Thread {
     private RollingSum updateTime, UPS;
     private Body player;
     private Array<Body> enemies;
-    private int SET_UPS = 60;
     private boolean quit = false;
     private Set<Body> toBeKilled;
     private boolean paused = false;
+    private long frame = 0;
+    public final int SET_UPS = 60;
 
     public SimulationThread(Lock renderLock, KeyStates keyStates, World world, Set<Body> toBeKilled, RollingSum updateTime, RollingSum UPS, Body player) {
         this.renderLock = renderLock;
@@ -56,7 +56,8 @@ public class SimulationThread extends Thread {
             while(paused) {
                 synchronized (this) {try {this.wait();} catch (InterruptedException ignored) {}}
             }
-            doSleep(lastFrameStart, dt);
+            //doSleep(lastFrameStart, dt);
+            doSpinSleep(lastFrameStart, dt);
             UPS.add(System.nanoTime() - lastFrameStart);
 
             renderLock.lock();
@@ -66,15 +67,20 @@ public class SimulationThread extends Thread {
             renderLock.unlock();
 
             updateTime.add(simTimeToUpdate);
+            frame++;
         }
     }
 
     private void doSleep(long lastFrameStart, long dt) {
         long sleepTime = lastFrameStart + dt - System.nanoTime(); //time to sleep in nanoseconds
         //if sleepTime non-Positive updates take to long for the set UPS!
-        if (sleepTime >= 0) {
+        if (sleepTime > 0) {
             try {Thread.sleep(sleepTime/1_000_000, (int) (sleepTime % 1_000_000));} catch (InterruptedException ignored) {}
         }
+    }
+
+    private void doSpinSleep(long lastFrameStart, long dt) {
+        while(lastFrameStart + dt - System.nanoTime() > 0) {}
     }
 
     private long doSimStep() {
@@ -85,19 +91,19 @@ public class SimulationThread extends Thread {
         vel.x = 0;
         vel.y = 0;
 
-        if (keyStates.getState(GameKey.UP)) {
+        if (keyStates.getState(KeyStates.GameKey.UP)) {
             vel.y += dy;
         }
-        if (keyStates.getState(GameKey.DOWN)) {
+        if (keyStates.getState(KeyStates.GameKey.DOWN)) {
             vel.y += -dy;
         }
-        if (keyStates.getState(GameKey.LEFT)) {
+        if (keyStates.getState(KeyStates.GameKey.LEFT)) {
             vel.x += -dx;
         }
-        if (keyStates.getState(GameKey.RIGHT)) {
+        if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
             vel.x += dx;
         }
-        if (keyStates.getState(GameKey.QUIT)) {
+        if (keyStates.getState(KeyStates.GameKey.QUIT)) {
             stopSim();
         }
         vel.setLength(60*2);
@@ -116,7 +122,7 @@ public class SimulationThread extends Thread {
             enemy.setLinearVelocity(eVel);
         }
 
-        world.step(1/(float) SET_UPS, 5, 5);
+        world.step(1/(float) SET_UPS, 10, 10);
 
         for (Body b : toBeKilled) {
             world.destroyBody(b);
@@ -137,5 +143,7 @@ public class SimulationThread extends Thread {
     public void unpause() {
         paused = false;
     }
-
+    public long getFrameNumber() {
+        return frame;
+    }
 }

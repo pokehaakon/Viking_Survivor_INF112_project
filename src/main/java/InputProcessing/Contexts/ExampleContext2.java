@@ -1,15 +1,11 @@
 package InputProcessing.Contexts;
 
 import InputProcessing.ContextualInputProcessor;
-import InputProcessing.KeyEvent;
-import Simulation.Actor;
 import Simulation.PlayerExample;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
-
-import java.util.HashMap;
 
 public class ExampleContext2 extends Context {
     PlayerExample player;
@@ -23,16 +19,16 @@ public class ExampleContext2 extends Context {
 
         player = new PlayerExample("test");
 
-        this.addAction(Input.Keys.W, KeyEvent.KEYDOWN, (x) -> {
+        this.addAction(Input.Keys.W, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> {
             player.spriteRect.y += 10;
         });
-        this.addAction(Input.Keys.S, KeyEvent.KEYDOWN, (x) -> {
+        this.addAction(Input.Keys.S, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> {
             player.spriteRect.y -= 10;
         });
-        this.addAction(Input.Keys.A, KeyEvent.KEYDOWN, (x) -> {
+        this.addAction(Input.Keys.A, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> {
             player.spriteRect.x -= 10;
         });
-        this.addAction(Input.Keys.D, KeyEvent.KEYDOWN, (x) -> {
+        this.addAction(Input.Keys.D, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> {
             player.spriteRect.x += 10;
         });
 
