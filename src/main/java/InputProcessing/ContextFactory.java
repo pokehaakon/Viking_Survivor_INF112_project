@@ -39,7 +39,7 @@ public class ContextFactory {
             case "GAME" -> new GameContext(contextName, batch, camera, iProc);
             case "MVP" -> new MVPContext(contextName, batch, camera, iProc);
             case "EXAMPLE" -> new ExampleContext(contextName, batch, iProc);
-            case "EXAMPLE2" -> new IngmarsContext(contextName, batch, iProc);
+            //case "EXAMPLE2" -> new IngmarsContext(contextName, batch, iProc);
             default -> throw new RuntimeException("ContextFactory cannot make context: " + contextName);
         };
     }

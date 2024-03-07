@@ -15,28 +15,7 @@ public interface IGameObject {
     Body getBody();
     boolean isDestroyed();
 
-    /**
-     * Initilize the actor on desired location
-     * @param spriteName
-     * @param x
-     * @param y
-     */
-
-    /**
-     * Initiliazes actor object with starting values
-     * @param spriteName
-     * @param x
-     * @param y
-     */
-    void initialize(String spriteName, float x, float y, float width, float height);
-
-    /**
-     * Attacks actor by chasing it
-     * @param actor
-     */
-    void attack(Actor actor);
-
-    boolean collision(Actor actor);
+    void update();
 
 
 

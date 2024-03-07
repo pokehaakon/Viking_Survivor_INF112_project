@@ -1,7 +1,8 @@
 package InputProcessing.Contexts;
 
-import Actors.Enemy.Enemy;
-import Actors.Player.PlayerExample;
+import Actors.Enemy.EnemyFactory;
+import Actors.Enemy.EnemyTypes.Enemy;
+import Actors.Player.Player;
 import Actors.Stats;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
@@ -12,7 +13,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -23,6 +23,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -36,7 +37,9 @@ public class MVPContext extends Context {
     private final SpriteBatch batch;
     private final Camera camera;
     private final World world;
-    private PlayerExample player;
+//    private PlayerExample player;
+    private Player player;
+    //private Array<Enemy> enemies;
     private Array<Enemy> enemies;
     private final BitmapFont font;
     final private Texture spriteImage, rectSprite;
@@ -47,6 +50,7 @@ public class MVPContext extends Context {
     private final Lock renderLock;
     private KeyStates keyStates;
     private final SimulationThread simThread;
+    private  EnemyFactory enemyFactory;
     private float zoomLevel = 1f;
     private long frameCount = 0;
     private static boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
@@ -171,9 +175,13 @@ public class MVPContext extends Context {
 
 
         batch.begin();
+        Array<Enemy> tempEnemies = new Array<>();
         for (Enemy e : enemies) {
+            if (!e.getBody().isActive()) {continue;}
+            tempEnemies.add(e);
             e.draw(batch);
         }
+        enemies = tempEnemies;
         Array<Vector2> enemiesCenter = new Array<>(enemies.size);
         //drawEnemies(enemiesCenter);
 
@@ -187,9 +195,6 @@ public class MVPContext extends Context {
 
         batch.end();
 
-        if (SHOW_DEBUG_RENDER_INFO) {
-            drawDebug(origin, radius, enemiesCenter);
-        }
 
         renderLock.unlock();
         FrameTime.add(System.nanoTime() - renderStartTime);
@@ -203,61 +208,7 @@ public class MVPContext extends Context {
 
     }
 
-    private void drawDebug(Vector2 origin, float radius, Array<Vector2> enemiesCenter) {
-        shape.setAutoShapeType(true);
-        shape.begin();
 
-
-        float xc = camera.viewportWidth / zoomLevel / 2f - origin.x / zoomLevel;
-        float yc = camera.viewportHeight / zoomLevel / 2f - origin.y / zoomLevel;
-
-        shape.setColor(Color.GREEN);
-        //shape.rect(spriteRect.x / zoomLevel + xc, spriteRect.y / zoomLevel + yc, spriteRect.width / zoomLevel, spriteRect.height / zoomLevel);
-
-        PolygonShape p = (PolygonShape) player.getBody().getFixtureList().get(0).getShape();
-        float [] points = new float[2*p.getVertexCount()];
-        Vector2 temp2 = new Vector2();
-        Vector2 playerPositionCorrection = getBottomLeftCorrection(p);
-        for(int i = 0; i < points.length; i += 2) {
-            p.getVertex(i/2, temp2);
-//            points[i] = temp2.x / zoomLevel + player.getPosition().x / zoomLevel + xc;
-//            points[i+1] = temp2.y / zoomLevel + player.getPosition().y / zoomLevel + yc;
-
-            temp2.sub(playerPositionCorrection).add(origin).scl(1/zoomLevel);
-            points[i] = temp2.x + xc;
-            points[i+1] = temp2.y + yc;
-        }
-
-        shape.polygon(points);
-
-        shape.setColor(Color.RED);
-
-        for (Vector2 v : enemiesCenter) {
-            shape.circle(v.x / zoomLevel + xc, v.y / zoomLevel + yc, radius / zoomLevel);
-        }
-        shape.end();
-
-        batch.begin();
-        batch.draw(new Texture(5,5, Pixmap.Format.RGB888), 0f, 0f);
-        batch.draw(new Texture(1,1, Pixmap.Format.RGB888), origin.x, origin.y);
-//        batch.draw(
-//                new Texture(2,2, Pixmap.Format.RGB888),
-//                player.getPosition().x + playerPositionCorrection.x,
-//                player.getPosition().y + playerPositionCorrection.y
-//        );
-
-        for (Vector2 v : enemiesCenter) {
-            batch.draw(new Texture(1,1, Pixmap.Format.RGB888), v.x, v.y);
-        }
-
-        font.draw(batch, "fps: " + String.format("%.1f", 1_000_000_000F/FPS.avg()), 10, 80);
-        font.draw(batch, "ups: " + String.format("%.1f",1_000_000_000F/UPS.avg()), 10, 60);
-        font.draw(batch, "us/f: " + String.format("%.0f",FrameTime.avg()/1_000), 10, 40);
-        font.draw(batch, "us/u: " + String.format("%.0f",UpdateTime.avg()/1_000), 10, 20);
-
-        batch.end();
-
-    }
 
     @Override
     public void resize(int width, int height) {
@@ -292,16 +243,14 @@ public class MVPContext extends Context {
     private World createWorld() {
         Box2D.init();
         World world = new World(new Vector2(0, 0), true);
+        enemyFactory = new EnemyFactory(world);
+
 
         BodyDef playerBodyDef = new BodyDef();
-        BodyDef enemyBodyDef = new BodyDef();
         //playerBodyDef.type = BodyDef.BodyType.KinematicBody; //we are not able to get the mass center of a Kinematic Body :(
         playerBodyDef.type = BodyDef.BodyType.DynamicBody;
-        enemyBodyDef.type = BodyDef.BodyType.DynamicBody;
         playerBodyDef.position.set(20, 20);
-        enemyBodyDef.position.set(1000, 1000);
         playerBodyDef.fixedRotation = true;
-        enemyBodyDef.fixedRotation = true;
 
         Body playerBody = world.createBody(playerBodyDef);
 
@@ -318,34 +267,16 @@ public class MVPContext extends Context {
         fixtureDefPlayer.isSensor = false;
 
         Fixture fixturePlayer = playerBody.createFixture(fixtureDefPlayer);
-        player = new PlayerExample("player", Stats.player(), playerBody);
+        player = new Player(playerBody, spriteImage, 1);
 
 
-        CircleShape circle = createCircleShape(spriteRectEnemy.getWidth() / 2);
-
-        FixtureDef fixtureDefEnemy = new FixtureDef();
-        fixtureDefEnemy.shape = circle;
-        fixtureDefEnemy.density = 1f;
-        fixtureDefEnemy.friction = 0;
-        fixtureDefEnemy.restitution = 0;
-        fixtureDefEnemy.isSensor = false;
 
 
         enemies = new Array<>();
-        Body enemyBody;
-        for (int i = 0; i < 10; i++) {
-            enemyBody = world.createBody(enemyBodyDef);
-            enemyBody.createFixture(fixtureDefEnemy);
-            enemyBody.setLinearVelocity((float) random(),(float) random());
-            Enemy enemy = new Enemy(
-                    Stats.enemy1(),
-                    "obligator.png", 0,0,spriteRectEnemy.getWidth() / 2, spriteRectEnemy.getHeight() / 2,
-                    enemyBody
-            );
-            enemies.add(enemy);
-        }
+        //enemies.add(enemyFactory.createEnemyType("ENEMY1", 50,  50, 1));
+        for(Enemy e : enemyFactory.createRandomEnemies(10))
+            enemies.add(e);
 
-        circle.dispose();
         squarePlayer.dispose();
 
         world.step(1/60f, 10, 10);

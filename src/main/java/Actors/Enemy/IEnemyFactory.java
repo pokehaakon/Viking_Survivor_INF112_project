@@ -1,14 +1,9 @@
 package Actors.Enemy;
 
-import Actors.Coordinates;
+import Actors.Enemy.EnemyTypes.Enemy;
 import Actors.Enemy.EnemyTypes.SwarmType;
-import Actors.Player.PlayerExample;
-import Actors.Stats;
-import com.badlogic.gdx.math.Vector2;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public interface IEnemyFactory {
 
@@ -20,7 +15,7 @@ public interface IEnemyFactory {
      * @param y
      * @return a enemy with a given start position
      */
-    Enemy createEnemyType(String type, float x, float y);
+    Enemy createEnemyType(String type, float x, float y, float scale);
 
     /**
      *
@@ -37,14 +32,14 @@ public interface IEnemyFactory {
      */
     List<Enemy> createRandomEnemies(int count);
 
-    /**
-     *
-     * @param numMembers
-     * @param enemyType
-     * @param swarmType
-     * @return creates a swarm of enemies
-     */
-    Swarm createSwarm(int numMembers, String enemyType, SwarmType swarmType);
+//    /**
+//     *
+//     * @param numMembers
+//     * @param enemyType
+//     * @param swarmType
+//     * @return creates a swarm of enemies
+//     */
+//    Swarm createSwarm(int numMembers, String enemyType, SwarmType swarmType);
 
 
 }
