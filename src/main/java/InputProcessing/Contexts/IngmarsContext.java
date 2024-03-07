@@ -71,7 +71,7 @@ public class IngmarsContext extends Context{
             enemies.addAll(enemyFactory.createRandomEnemies(10));
 
             enemies.add(enemyFactory.createSwarm(20,"enemy1", SwarmType.SQUARE));
-            enemies.add(enemyFactory.createSwarm(20,"enemy1", SwarmType.LINE));
+            //enemies.add(enemyFactory.createSwarm(20,"enemy1", SwarmType.LINE));
             //enemies.addAll(EnemyFactory.createLineSwarm(10, "enemy1"));
             lastSpawnTime = TimeUtils.millis();
         }
