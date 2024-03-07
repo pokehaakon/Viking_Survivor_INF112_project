@@ -1,10 +1,7 @@
 package VikingSurvivor.app;
 
-import Actors.Coordinates;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
