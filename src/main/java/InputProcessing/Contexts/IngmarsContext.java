@@ -40,7 +40,7 @@ public class IngmarsContext extends Context{
         super(name, iProc);
         this.batch = batch;
         //enemyFactory = new EnemyFactory();
-        player = new PlayerExample("Bro", Stats.player());
+        //player = new PlayerExample("Bro", Stats.player());
         font = new BitmapFont();
         lastSpawnTime = 0;
 

@@ -22,12 +22,13 @@ public class EnemyFactory implements IEnemyFactory{
             throw new NullPointerException("Type cannot be null!");
         }
 
-        Enemy enemy = switch (type.toUpperCase()) {
-            case "ENEMY1" -> new Enemy(Stats.enemy1(),Sprites.ENEMY_1_PNG, x,y, 100, 100);
-            case "ENEMY2" -> new Enemy(Stats.enemy2(),Sprites.ENEMY_2_PNG,x,y, 100, 100);
-            default -> throw new IllegalArgumentException("Invalid enemy type");
-        };
-        return enemy;
+//        Enemy enemy = switch (type.toUpperCase()) {
+//            case "ENEMY1" -> new Enemy(Stats.enemy1(),Sprites.ENEMY_1_PNG, x,y, 100f, 100f);
+//            case "ENEMY2" -> new Enemy(Stats.enemy2(),Sprites.ENEMY_2_PNG,x,y, 100f, 100f);
+//            default -> throw new IllegalArgumentException("Invalid enemy type");
+//        };
+//        return enemy;
+        return null;
     }
 
     @Override

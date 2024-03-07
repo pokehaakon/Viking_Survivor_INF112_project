@@ -6,21 +6,20 @@ import Actors.Stats;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
 public class Enemy extends Actor {
 
-    public Enemy(Stats stats, String spriteName, float x, float y, float width, float height) {
-        super(stats);
+    public Enemy(Stats stats, String spriteName, float x, float y, float width, float height, Body body) {
+        super(stats, body);
         initialize(spriteName, x, y, width, height);
     }
     public Enemy() {
 
     }
-    @Override
-    public Body getBody() {
-        return null;
-    }
+
 
     @Override
     public void attack(Actor actor) {
@@ -55,4 +54,11 @@ public class Enemy extends Actor {
         y -= actor.speedY;
     }
 
+    @Override
+    public void draw(SpriteBatch batch) {
+        Vector2 p = body.getPosition();
+        hitBox.x = p.x;
+        hitBox.y = p.y;
+        super.draw(batch);
+    }
 }

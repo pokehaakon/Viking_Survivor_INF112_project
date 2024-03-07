@@ -2,6 +2,8 @@ package Actors.Player;
 
 import Actors.Actor;
 import Actors.Stats;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
 public class PlayerExample extends Actor {
@@ -12,8 +14,8 @@ public class PlayerExample extends Actor {
 
     public boolean idle, up, down, left, rigth;
 
-    public PlayerExample(String name, Stats stats) {
-        super(stats);
+    public PlayerExample(String name, Stats stats, Body body) {
+        super(stats, body);
         this.name = name;
         initialize("img_4.png", 800, 500, 100,100);
         speedX = 0;
@@ -30,9 +32,19 @@ public class PlayerExample extends Actor {
         speedY = newSpeed;
     }
 
-
     @Override
-    public Body getBody() {
-        return null;
+    public void draw(SpriteBatch batch) {
+        Vector2 playerPos = body.getPosition().cpy();
+
+        Vector2 correctionVector = body.getLinearVelocity().cpy();
+        correctionVector.scl(1f/60);
+        batch.draw(
+                spriteImage,
+                playerPos.x - correctionVector.x,
+                playerPos.y - correctionVector.y,
+                this.hitBox.width,
+                this.hitBox.height
+        );
     }
+
 }

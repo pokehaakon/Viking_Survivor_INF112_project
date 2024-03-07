@@ -11,6 +11,7 @@ public interface IGameObject {
 
     void destroy();
     void draw(SpriteBatch batch);
+
     Body getBody();
     boolean isDestroyed();
 

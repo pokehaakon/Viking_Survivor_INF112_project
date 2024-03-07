@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.physics.box2d.Body;
 
 import java.awt.*;
 import java.util.function.Consumer;
@@ -20,15 +21,17 @@ public abstract class Actor implements IGameObject {
     public float width, height;
     public Sprite sprite ;
 
+    protected Body body;
     private Stats stats;
 
 
-    public Actor(Stats stats) {
+    public Actor(Stats stats, Body body) {
         this.stats = stats;
         HP = stats.HP;
         damage = stats.damage;
         speedX = stats.speed;
         speedY = stats.speed;
+        this.body = body;
     }
     public Actor() {
 
@@ -57,7 +60,7 @@ public abstract class Actor implements IGameObject {
     @Override
     public void draw(SpriteBatch spriteBatch) {
         spriteBatch.draw(sprite, hitBox.x, hitBox.y, hitBox.width, hitBox.height);
-        updateHitBox();
+        //updateHitBox();
     }
 
     @Override
@@ -67,7 +70,7 @@ public abstract class Actor implements IGameObject {
         this.width = width;
         this.height = height;
         sprite = Sprites.getSprite(spriteName, (int)width, (int)height);
-
+        spriteImage = new Texture(Gdx.files.internal(spriteName));
         hitBox = new Rectangle.Float();
         hitBox.x = x;
         hitBox.y =  y;
@@ -91,6 +94,12 @@ public abstract class Actor implements IGameObject {
     public boolean collision(Actor actor) {
 
         return this.hitBox.intersects(actor.hitBox);
+    }
+
+
+    @Override
+    public Body getBody() {
+        return body;
     }
 
 

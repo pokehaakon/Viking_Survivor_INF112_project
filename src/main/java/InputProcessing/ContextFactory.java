@@ -1,9 +1,6 @@
 package InputProcessing;
 
-import InputProcessing.Contexts.Context;
-import InputProcessing.Contexts.ExampleContext;
-import InputProcessing.Contexts.ExampleContext2;
-import InputProcessing.Contexts.GameContext;
+import InputProcessing.Contexts.*;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -40,8 +37,9 @@ public class ContextFactory {
     private Context spawnContext(String contextName) { //this is the only place where context instances are bound to contextNames!
         return switch (contextName) {
             case "GAME" -> new GameContext(contextName, batch, camera, iProc);
+            case "MVP" -> new MVPContext(contextName, batch, camera, iProc);
             case "EXAMPLE" -> new ExampleContext(contextName, batch, iProc);
-            case "EXAMPLE2" -> new ExampleContext2(contextName, batch, iProc);
+            case "EXAMPLE2" -> new IngmarsContext(contextName, batch, iProc);
             default -> throw new RuntimeException("ContextFactory cannot make context: " + contextName);
         };
     }
