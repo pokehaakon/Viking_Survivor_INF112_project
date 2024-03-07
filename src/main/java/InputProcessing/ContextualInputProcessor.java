@@ -2,18 +2,19 @@ package InputProcessing;
 
 import InputProcessing.Contexts.Context;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import org.apache.maven.surefire.shared.lang3.tuple.ImmutablePair;
 import org.apache.maven.surefire.shared.lang3.tuple.Pair;
 
 public class ContextualInputProcessor implements InputProcessor {
     private Context currentContext;
-    private ContextFactory contextFactory;
+    private final ContextFactory contextFactory;
 
 
-    public ContextualInputProcessor(SpriteBatch batch){
-        contextFactory = new ContextFactory(batch, this);
-    };
+    public ContextualInputProcessor(SpriteBatch batch, Camera camera){
+        contextFactory = new ContextFactory(batch, camera, this);
+    }
 
     public ContextFactory getContextFactory() {
         return contextFactory;
@@ -91,10 +92,18 @@ public class ContextualInputProcessor implements InputProcessor {
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
-        return false;
+        return mouseEvent((int)(amountX*1000), (int)(amountY*1000), 0, MouseEvent.MOUSE_SCROLLED); //Button is ignored
     }
 
     public void dispose(){
         contextFactory.dispose();
+    }
+
+    public enum MouseEvent {
+        MOUSE_CLICKED, MOUSE_UNCLICKED, MOUSE_MOVED, MOUSE_DRAGGED, MOUSE_SCROLLED
+    }
+
+    public enum KeyEvent {
+        KEYDOWN, KEYUP
     }
 }

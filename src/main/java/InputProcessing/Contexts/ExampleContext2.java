@@ -1,8 +1,7 @@
 package InputProcessing.Contexts;
 
 import InputProcessing.ContextualInputProcessor;
-import InputProcessing.KeyEvent;
-import Actors.Player.PlayerExample;
+import Simulation.PlayerExample;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,19 +17,19 @@ public class ExampleContext2 extends Context {
         //se setupInputListener i GameContext
 
 
-       // player = new PlayerExample("test",100,100);
+        player = new PlayerExample("test");
 
-        this.addAction(Input.Keys.W, KeyEvent.KEYDOWN, (x) -> {
-            player.hitBox.y += 10;
+        this.addAction(Input.Keys.W, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> {
+            player.spriteRect.y += 10;
         });
-        this.addAction(Input.Keys.S, KeyEvent.KEYDOWN, (x) -> {
-            player.hitBox.y -= 10;
+        this.addAction(Input.Keys.S, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> {
+            player.spriteRect.y -= 10;
         });
-        this.addAction(Input.Keys.A, KeyEvent.KEYDOWN, (x) -> {
-            player.hitBox.x -= 10;
+        this.addAction(Input.Keys.A, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> {
+            player.spriteRect.x -= 10;
         });
-        this.addAction(Input.Keys.D, KeyEvent.KEYDOWN, (x) -> {
-            player.hitBox.x += 10;
+        this.addAction(Input.Keys.D, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> {
+            player.spriteRect.x += 10;
         });
 
 

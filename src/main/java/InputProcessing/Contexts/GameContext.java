@@ -1,14 +1,13 @@
 package InputProcessing.Contexts;
 
 import InputProcessing.ContextualInputProcessor;
-import InputProcessing.KeyEvent;
 import InputProcessing.KeyStates;
-import InputProcessing.MouseEvent;
 import Simulation.EnemyContactListener;
 import Simulation.SimulationThread;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -27,29 +26,34 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static Rendering.Shapes.makeRectangle;
+import static Tools.ShapeTools.*;
 import static java.lang.Math.random;
 
-public class GameContext extends Context{
-    private SpriteBatch batch;
-    private World world;
+public class GameContext extends Context {
+    private final SpriteBatch batch;
+    private final Camera camera;
+    private final World world;
     private Body player;
     private Array<Body> enemies;
-    private BitmapFont font;
-    private Texture spriteImage, rectSprite;
-    private Rectangle spriteRect, spriteRectEnemy;
-    private ShapeRenderer shape;
+    private final BitmapFont font;
+    final private Texture spriteImage, rectSprite;
+    final private Rectangle spriteRect, spriteRectEnemy;
+    final private ShapeRenderer shape;
     private RollingSum UpdateTime, FrameTime, FPS, UPS;
     private long previousFrameStart = System.nanoTime();
     private final Lock renderLock;
     private KeyStates keyStates;
     private final SimulationThread simThread;
+    private float zoomLevel = 1f;
+    private long frameCount = 0;
+    private static boolean SHOW_DEBUG_RENDER_INFO = true;
 
 
-
-    public GameContext(String name, SpriteBatch batch, ContextualInputProcessor iProc) {
+    public GameContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
         super(name, iProc);
 
         this.batch = batch;
+        this.camera = camera;
 
         setupInputListener();
         setupDebug();
@@ -59,7 +63,9 @@ public class GameContext extends Context{
         float enemyScale = 0.3f;
         spriteImage = new Texture(Gdx.files.internal("obligator.png"));
 
-        spriteRect = new Rectangle(1, 1, spriteImage.getWidth() / 2f, spriteImage.getHeight() / 2f);
+
+
+        spriteRect = new Rectangle(0f, 0f, spriteImage.getWidth(), spriteImage.getHeight());
         spriteRectEnemy = new Rectangle(1, 1, spriteImage.getWidth() / 2f * enemyScale, spriteImage.getHeight() / 2f * enemyScale);
 
         rectSprite = makeRectangle(spriteImage.getWidth() / 2, spriteImage.getHeight() / 2, 2,2,2,2, Color.GREEN, Color.CLEAR);
@@ -80,6 +86,7 @@ public class GameContext extends Context{
         world.setContactListener(contactListener);
         simThread = new SimulationThread(renderLock, keyStates, world, toBoKilled, UpdateTime, UPS, player);
         simThread.start();
+
     }
     private void setupDebug() {
         UpdateTime = new RollingSum(60*3);
@@ -87,29 +94,46 @@ public class GameContext extends Context{
         FPS = new RollingSum(60 * 3);
         UPS = new RollingSum(60 * 3);
     }
+
+
     private void setupInputListener() {
         keyStates = new KeyStates(); //this should load some config!
 
-        this.addAction(Input.Keys.W, KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.A, KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.S, KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.D, KeyEvent.KEYDOWN, keyStates::setInputKey);
+        this.addAction(Input.Keys.W, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
+        this.addAction(Input.Keys.A, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
+        this.addAction(Input.Keys.S, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
+        this.addAction(Input.Keys.D, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
         //this.addAction(Input.Keys.ESCAPE, KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.ESCAPE, KeyEvent.KEYDOWN, (x) -> {keyStates.setInputKey(Input.Keys.ESCAPE);System.exit(0);});
+        this.addAction(Input.Keys.ESCAPE, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> {keyStates.setInputKey(Input.Keys.ESCAPE);System.exit(0);});
 
-        this.addAction(Input.Keys.P, KeyEvent.KEYDOWN, (x) -> {
-            this.getInputProcessor().setContext("EXAMPLE");
+        this.addAction(Input.Keys.P, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> this.getInputProcessor().setContext("EXAMPLE"));
+
+        this.addAction(Input.Keys.W, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
+        this.addAction(Input.Keys.A, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
+        this.addAction(Input.Keys.S, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
+        this.addAction(Input.Keys.D, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
+
+        this.addAction(Input.Buttons.LEFT, ContextualInputProcessor.MouseEvent.MOUSE_CLICKED, (x, y) -> System.out.println("CLICKED -> " + x + ", " + y));
+        this.addAction(Input.Buttons.LEFT, ContextualInputProcessor.MouseEvent.MOUSE_UNCLICKED, (x, y) -> System.out.println("DROPPED -> " + x + ", " + y));
+        this.addAction(0, ContextualInputProcessor.MouseEvent.MOUSE_DRAGGED, (x, y) -> System.out.println("DRAGGED -> " + x + ", " + y));
+        this.addAction(0, ContextualInputProcessor.MouseEvent.MOUSE_MOVED, (x, y) -> System.out.println("MOVED -> " + x + ", " + y));
+
+        this.addAction(Input.Buttons.MIDDLE, ContextualInputProcessor.MouseEvent.MOUSE_CLICKED, (x, y) -> {
+            zoomLevel = 1f;
+            camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
+            camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
+        });
+        this.addAction(0, ContextualInputProcessor.MouseEvent.MOUSE_SCROLLED, (x, y) -> {
+            if (y > 0 && zoomLevel < 2) {
+                zoomLevel *= 1.25f;
+            }
+            if (y < 0 && zoomLevel > 0.01f) {
+                zoomLevel /= 1.25f;
+            }
+            camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
+            camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
         });
 
-        this.addAction(Input.Keys.W, KeyEvent.KEYUP, keyStates::unsetInputKey);
-        this.addAction(Input.Keys.A, KeyEvent.KEYUP, keyStates::unsetInputKey);
-        this.addAction(Input.Keys.S, KeyEvent.KEYUP, keyStates::unsetInputKey);
-        this.addAction(Input.Keys.D, KeyEvent.KEYUP, keyStates::unsetInputKey);
-
-        this.addAction(Input.Buttons.LEFT, MouseEvent.MOUSE_CLICKED, (x, y) -> System.out.println("CLICKED -> " + x + ", " + y));
-        this.addAction(Input.Buttons.LEFT, MouseEvent.MOUSE_UNCLICKED, (x, y) -> System.out.println("DROPPED -> " + x + ", " + y));
-        this.addAction(0, MouseEvent.MOUSE_DRAGGED, (x, y) -> System.out.println("DRAGGED -> " + x + ", " + y));
-        this.addAction(0, MouseEvent.MOUSE_MOVED, (x, y) -> System.out.println("MOVED -> " + x + ", " + y));
     }
 
     @Override
@@ -119,18 +143,65 @@ public class GameContext extends Context{
 
     @Override
     public void render(float delta) {
-
         FPS.add(System.nanoTime() - previousFrameStart);
         previousFrameStart = System.nanoTime();
 
-
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         renderLock.lock();
+        long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.WHITE);
 
+        Vector2 playerPos = player.getPosition().cpy();
 
-        long renderStartTime = System.nanoTime();
 
+        float radius = spriteRectEnemy.getWidth() / 2;
+
+
+        Vector2 origin;
+        //origin = player.getWorldCenter().cpy();
+        origin = playerPos.cpy();
+        origin.add(getBottomLeftCorrection(player.getFixtureList().get(0).getShape()));
+
+        //origin = player.getPosition().cpy();
+        //center camera at player
+        camera.position.x = origin.x;
+        camera.position.y = origin.y;
+        camera.position.z = 0;
+        camera.update(true);
+
+
+
+
+
+        batch.begin();
+        Array<Vector2> enemiesCenter = new Array<>(enemies.size);
+        drawEnemies(enemiesCenter);
+
+        //draw player sprite
+
+        Vector2 correctionVector = player.getLinearVelocity().cpy();
+        correctionVector.scl(1f/simThread.SET_UPS);
+
+        //for some reason the sprite batch renders "last" frame...
+        batch.draw(
+                spriteImage,
+                playerPos.x - correctionVector.x,
+                playerPos.y - correctionVector.y,
+                spriteRect.width,
+                spriteRect.height
+        );
+
+
+        batch.end();
+
+        if (SHOW_DEBUG_RENDER_INFO) {
+            drawDebug(origin, radius, enemiesCenter);
+        }
+
+        renderLock.unlock();
+        FrameTime.add(System.nanoTime() - renderStartTime);
+        frameCount++;
+    }
+    private void drawEnemies(Array<Vector2> enemiesCenter) {
         Array<Body> tempE = new Array<>();
         world.getBodies(tempE);
         enemies.clear();
@@ -140,71 +211,77 @@ public class GameContext extends Context{
         }
 
         float radius = spriteRectEnemy.getWidth() / 2;
-        spriteRect.setPosition(player.getPosition());
+
         Array<Vector2> enemiesPos = new Array<>(enemies.size);
-        Array<Vector2> enemiesPosCirlce = new Array<>(enemies.size);
-        Array<Vector2> enemiesCenter = new Array<>(enemies.size);
         Vector2 temp;
         for (Body e : enemies) {
             temp = new Vector2();
             temp.add(e.getPosition());
             temp.sub(radius, radius);
             enemiesPos.add(temp);
-            enemiesPosCirlce.add(e.getPosition());
             enemiesCenter.add(e.getWorldCenter());
         }
-        //spriteRectEnemy.setPosition(enemy.getPosition());
-        Vector2 playerCenter = new Vector2().add(player.getWorldCenter());
-        //Vector2 enemyCenter = new Vector2().add(enemy.getWorldCenter());
-
-        batch.begin();
-
-        font.draw(batch, "fps: " + (int)(1_000_000_000F/FPS.avg()), 10, 80);
-        font.draw(batch, "ups: " + (int)(1_000_000_000F/UPS.avg()), 10, 60);
-        font.draw(batch, "us/f: " + (int)(FrameTime.avg()/1_000), 10, 40);
-        font.draw(batch, "us/u: " + (int)(UpdateTime.avg()/1_000), 10, 20);
-
-
-
 
         for (Vector2 v : enemiesPos) {
             batch.draw(spriteImage, v.x, v.y, spriteRectEnemy.width, spriteRectEnemy.height);
             //shape.circle(v.x, v.y, rectSpriteEnemy.getWidth());
             //batch.draw(rectSpriteEnemy, v.x, v.y, rectSpriteEnemy.getWidth(), rectSpriteEnemy.getHeight());
         }
-        //draw player sprite
-        batch.draw(spriteImage, spriteRect.x, spriteRect.y, spriteRect.width, spriteRect.height);
-        //batch.draw(rectSprite, spriteRect.x, spriteRect.y, spriteRect.width, spriteRect.height);
+    }
 
-
-
-        batch.end();
-
+    private void drawDebug(Vector2 origin, float radius, Array<Vector2> enemiesCenter) {
         shape.setAutoShapeType(true);
         shape.begin();
 
+
+        float xc = camera.viewportWidth / zoomLevel / 2f - origin.x / zoomLevel;
+        float yc = camera.viewportHeight / zoomLevel / 2f - origin.y / zoomLevel;
+
         shape.setColor(Color.GREEN);
-        shape.rect(spriteRect.x, spriteRect.y, spriteRect.width, spriteRect.height);
+        //shape.rect(spriteRect.x / zoomLevel + xc, spriteRect.y / zoomLevel + yc, spriteRect.width / zoomLevel, spriteRect.height / zoomLevel);
+
+        PolygonShape p = (PolygonShape) player.getFixtureList().get(0).getShape();
+        float [] points = new float[2*p.getVertexCount()];
+        Vector2 temp2 = new Vector2();
+        Vector2 playerPositionCorrection = getBottomLeftCorrection(p);
+        for(int i = 0; i < points.length; i += 2) {
+            p.getVertex(i/2, temp2);
+//            points[i] = temp2.x / zoomLevel + player.getPosition().x / zoomLevel + xc;
+//            points[i+1] = temp2.y / zoomLevel + player.getPosition().y / zoomLevel + yc;
+
+            temp2.sub(playerPositionCorrection).add(origin).scl(1/zoomLevel);
+            points[i] = temp2.x + xc;
+            points[i+1] = temp2.y + yc;
+        }
+
+        shape.polygon(points);
 
         shape.setColor(Color.RED);
 
-        for (Vector2 v : enemiesPosCirlce) {
-            shape.circle(v.x, v.y, radius);
+        for (Vector2 v : enemiesCenter) {
+            shape.circle(v.x / zoomLevel + xc, v.y / zoomLevel + yc, radius / zoomLevel);
         }
         shape.end();
 
         batch.begin();
-        batch.draw(new Texture(2,2, Pixmap.Format.RGB888), playerCenter.x, playerCenter.y);
+        batch.draw(new Texture(5,5, Pixmap.Format.RGB888), 0f, 0f);
+        batch.draw(new Texture(1,1, Pixmap.Format.RGB888), origin.x, origin.y);
+//        batch.draw(
+//                new Texture(2,2, Pixmap.Format.RGB888),
+//                player.getPosition().x + playerPositionCorrection.x,
+//                player.getPosition().y + playerPositionCorrection.y
+//        );
 
         for (Vector2 v : enemiesCenter) {
-            batch.draw(new Texture(2,2, Pixmap.Format.RGB888), v.x, v.y);
+            batch.draw(new Texture(1,1, Pixmap.Format.RGB888), v.x, v.y);
         }
 
+        font.draw(batch, "fps: " + String.format("%.1f", 1_000_000_000F/FPS.avg()), 10, 80);
+        font.draw(batch, "ups: " + String.format("%.1f",1_000_000_000F/UPS.avg()), 10, 60);
+        font.draw(batch, "us/f: " + String.format("%.0f",FrameTime.avg()/1_000), 10, 40);
+        font.draw(batch, "us/u: " + String.format("%.0f",UpdateTime.avg()/1_000), 10, 20);
+
         batch.end();
-
-
-        renderLock.unlock();
-        FrameTime.add(System.nanoTime() - renderStartTime);
 
     }
 
@@ -252,22 +329,12 @@ public class GameContext extends Context{
         playerBodyDef.fixedRotation = true;
         enemyBodyDef.fixedRotation = true;
 
-        Body body = world.createBody(playerBodyDef);
+        player = world.createBody(playerBodyDef);
 
-
-        player = body;
-
-
-        PolygonShape squarePlayer = new PolygonShape();
-        float width = spriteRect.getWidth();
-        float height = spriteRect.getHeight();
-        squarePlayer.set(new float[] {0,0, width,0, width,height, 0,height});
-
-
-
-        //square.set(new float[] {0,height, width,height, width,0, 0,0});
-
-
+        PolygonShape squarePlayer = squarePlayer = createSquareShape(
+                spriteRect.getWidth(),
+                spriteRect.getHeight()
+        );
 
         FixtureDef fixtureDefPlayer = new FixtureDef();
         fixtureDefPlayer.shape = squarePlayer;
@@ -276,17 +343,10 @@ public class GameContext extends Context{
         fixtureDefPlayer.restitution = 0;
         fixtureDefPlayer.isSensor = false;
 
-
         Fixture fixturePlayer = player.createFixture(fixtureDefPlayer);
-        PolygonShape squareEnemy = new PolygonShape();
-        float widthEnemy = spriteRectEnemy.getWidth();
-        float heightEnemy = spriteRectEnemy.getHeight();
-        squareEnemy.set(new float[] {0,0, widthEnemy,0, widthEnemy,heightEnemy, 0,heightEnemy});
-
-        CircleShape circle = new CircleShape();
 
 
-        circle.setRadius(widthEnemy / 2);
+        CircleShape circle = createCircleShape(spriteRectEnemy.getWidth() / 2);
 
         FixtureDef fixtureDefEnemy = new FixtureDef();
         fixtureDefEnemy.shape = circle;
@@ -302,12 +362,11 @@ public class GameContext extends Context{
             enemy = world.createBody(enemyBodyDef);
             enemy.createFixture(fixtureDefEnemy);
             enemies.add(enemy);
-            enemy.setLinearVelocity((float) random(),(float) random()); ;
+            enemy.setLinearVelocity((float) random(),(float) random());
         }
 
         circle.dispose();
         squarePlayer.dispose();
-        squareEnemy.dispose();
 
         world.step(1/60f, 10, 10);
 

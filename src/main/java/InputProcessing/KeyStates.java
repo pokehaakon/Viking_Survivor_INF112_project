@@ -100,5 +100,7 @@ public class KeyStates {
     }
 
 
-
+    public enum GameKey {
+        UP,RIGHT,DOWN,LEFT,QUIT
+    }
 }
