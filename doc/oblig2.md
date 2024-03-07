@@ -90,7 +90,7 @@ Ingmar:
 
 Viste fram en skisse til en EnemyFactory.  Denne klasser tar Enum enemyType og ønsket antall som input, og produserer instanser av Enemy-objekter på et random sted utenfor skjermen. I tillegg kan den produsere Swarms; hærer av enemies som beveger seg som en unit.
 
-Det lagget litt når Swarmene spawner. Det ble blant annet diskutert hvorvidt det å blant annet redusere antall mulige spawn points kan gjøre at iterasjonen går raskere. Ingmar poengterte at det er mye som kan forbedres, og at dette bare er en skisse.
+Det lagget litt når Swarmene spawner. Det ble blant annet diskutert hvorvidt ulike måter å forhindre lag, feks å redusere antall mulige spawn points.Ingmar poengterte at det er mye som kan forbedres, og at dette bare er en skisse.
 
 Andreas:
 Viste fram et forslag til en meny. Det var bred enighet om at menyen var estetisk vakker og passer bra med spillets tema.
@@ -122,7 +122,7 @@ Plan for neste gang: sette sammen et MVP bestående av en player som kan bevege 
 Tilstede: Ingmar, Eilif, Haakon
 
 Under møtet:
-Merger Ingmar sin branch i Haakon sitt rammeverk. Justert klassene deretter. Vi sørget for å få et MVP som kjører i main uten feil. Samarbeidet litt med de skriftlige som skal inn til oblig2.
+Merger Ingmar sin branch i Haakon sitt rammeverk. Justert klassene deretter. Endte opp med en en MVP der man har en player som kan beveges, og enemies som spawner gjennom en enemyfactory. Vi sørget for å få et MVP som kjører i main uten feil. Samarbeidet litt med det skriftlige arbeidet som skal inn til oblig2.
 
 
 # ProsjektRapport
@@ -160,7 +160,7 @@ Til nå foregår kommunikasjon både via Discord  og fysiske møter. I Discord p
 
 Hva vi har klart
 
-Til nå har teamet klart å dele seg inn i roller, og det er ganske klart for medlemmene hva de rollene innebærer. Vi har klart å opprettholde en rytme med minst ett møte i uka, og har god kommunikasjonsflyt på Discord. Vi har også blitt litt kjent med hverandre og opparbeidet god kjemi, og medlemmene har fått bidratt til prosjektets gang på hver sin måte.
+Til nå har teamet klart å dele seg inn i roller, og det er ganske klart for medlemmene hva de rollene innebærer. Vi har klart å opprettholde en rytme med minst ett møte i uka, og har god kommunikasjonsflyt på Discord. Vi har også blitt litt kjent med hverandre og opparbeidet god kjemi, og medlemmene har fått bidratt til prosjektets gang på hver sin måte. Vi holder på å utvikle et solid rammeverk for fysikkhåndtering, og har levert et MVP.
 
 Ting som må forbedres
 
