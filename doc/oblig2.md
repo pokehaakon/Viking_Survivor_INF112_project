@@ -81,29 +81,41 @@ Plan for neste møte: teamet viser fram det de har gjort siden sist.
 
 
 ### torsdag 29.02
-Tilstede: Andreas, Carl, Ingmar, Hallvard, Eilif
+Tilstedeværene: Eilif, Carl-Henrik, Ingmar, Hallvard,
+Andreas
 
-Under møtet:
-Medlemmene viste fram det de hadde jobbet på siden forrige gang.
+Vi møtes på grupperom og viser fram hva vi har gjort siden forrige møte.
 
-Ingmar:
+Hallvard
+Laget sprites for første player, enemy, og bakgrunn.
 
-Viste fram en skisse til en EnemyFactory.  Denne klasser tar Enum enemyType og ønsket antall som input, og produserer instanser av Enemy-objekter på et random sted utenfor skjermen. I tillegg kan den produsere Swarms; hærer av enemies som beveger seg som en unit.
+Ingmar
+Laget midlertidig rammeverk for å spawne enemies (enemyfactory).
+Vi har diskutert hvordan vi kan best spawne og håndtere enemies. Vi
+diskuterte om vi skal ha flere ulike klasser; en klasse per ulik enemy,
+eller om vi skal ha kun en enemy-klasse som kan initialiseres med ulike
+parametre. Vi ble enig om at vi skal ha kun èn enemy klasse.
 
-Det lagget litt når Swarmene spawner. Det ble blant annet diskutert hvorvidt ulike måter å forhindre lag, feks å redusere antall mulige spawn points.Ingmar poengterte at det er mye som kan forbedres, og at dette bare er en skisse.
+Andreas
+Har laget et første-utkast til visuell framvisning av hvordan
+hovedmenyen skal se ut.
 
-Andreas:
-Viste fram et forslag til en meny. Det var bred enighet om at menyen var estetisk vakker og passer bra med spillets tema.
+Vi diskuterer hvordan vi best kan få til å lage angrep som spilleren kan
+utføre på enemies. Vi kom fram til at vi trengte minst 2 ulike typer: et
+"melee" angrep og et "range" angrep. Vi diskuterte så hvilke
+funksjonelle likheter disse to typer angrepene har for å finne ut
+hvordan best implementere dem med kode. Vi kom ikke fram til en endelig
+løsning, men vi betemte oss for at dette er noe vi vil være i bedre
+stand til å finne ut av mens vi prøver å implementere det. Vi diskuterer
+også hvordan vi best kan spawne enemies. Vi finner ut at vi vil forsøke
+å ha 10 ulike spawn-points som er spredd rundt på brettet.
 
-Eilif:
-Eilif hadde satt seg inn i config, men teamet ble enige om at det er for tidlig å sette seg inn i og bruke tid på dette på et så tidlig stadium av prosjektet. Eilif fikk da i oppgave å starte på en Playerklasse som har en form angrepsfunksjon.
+Til neste gang:
 
-Hallvard:
-Viste fram forslag til spritedesign for Player og diverse enemies. Han hadde utviklet en GIF-dekoder så man kan representere spritesheets som GIFs. Teamet var enige om å  fortsette å benytte seg av denne løsningen.
-
-Hjemmelekse til neste møte: fortsette på de respektive klassene.
-
-Plan for neste møte: merge branchene til en felles branch, og sette sammen et MVP.
+ønsker å ha ferdig pixel-art til et grunnlegende
+angrep spilleren kan utføre, og vi øsnker at spilleren skal kunne utføre
+et angrep som påvirker en enemy. Vi vil også ha gjort at xp-krystaller
+skal bli droppet av enemies når de dør.
 
 
 ### tirsdag 05.03
