@@ -4,6 +4,8 @@ import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -29,7 +31,6 @@ public class MainMenuContext extends Context{
     private Table table;
     private Texture mmTexture;
     private Image backgroundImage;
-    private KeyStates keyStates;
 
     public MainMenuContext(String name, SpriteBatch batch, ContextualInputProcessor iProc) {
         super(name, iProc);
@@ -37,7 +38,7 @@ public class MainMenuContext extends Context{
 
 
         // Input listener for possible use of ContextualInputListener for buttons
-        setupInputListener();
+        //setupInputListener();
 
         // Stage is created im constructor since render is called before stage initialization
         this.stage = new Stage();
@@ -75,18 +76,11 @@ public class MainMenuContext extends Context{
         table.add(optionsButton).width(250).height(60).padLeft(10).spaceBottom(30).row();
         table.add(exitButton).width(250).height(60).padLeft(10).spaceBottom(20);
 
-        // Add table to stage
-        stage.addActor(table);
 
-        Gdx.input.setInputProcessor(stage);
-
-        // Event listeners for button presses. Currently nonfunctional because of conflict
-        // with ContextualInputProcessor. Needs addressing by using CIP or resolving conflict
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed (ChangeEvent click, Actor exitButton) {
                 Gdx.app.exit();
-
             }
         });
         startButton.addListener(new ClickListener() {
@@ -95,21 +89,65 @@ public class MainMenuContext extends Context{
                 System.out.println("Start game button clicked!");
             }
         });
+        optionsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                System.out.println("Options button clicked!");
+            }
+        });
 
         table.setDebug(true);
+
+
+
+        // Add table to stage
+        stage.addActor(table);
+
+        InputMultiplexer multiplexer = new InputMultiplexer();
+		multiplexer.addProcessor(stage);
+        multiplexer.addProcessor(createInputProcessor());
+        //Gdx.input.setInputProcessor(stage);
+        this.setInputProcessor(multiplexer);
     }
 
 
-    private void setupInputListener() {
-        keyStates = new KeyStates();
-        // ContextualInputProcessor currently lacks actor click event handling for buttons
+    private InputProcessor createInputProcessor() {
+        Context me = this;
+        return new InputProcessor() {
+            @Override
+            public boolean keyDown(int keycode) {
 
-        // Temp keymapping for buttons:
-        // Start, enter character select screen
-        this.addAction(Input.Keys.S, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> this.getInputProcessor().setContext("MVP"));
-        // Exit
-        this.addAction(Input.Keys.ESCAPE, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> Gdx.app.exit());
+                return switch (keycode) {
+                    case Input.Keys.S -> {System.out.println("S button clicked!"); yield true;}
+                    case Input.Keys.ESCAPE -> {Gdx.app.exit(); yield true;}
+                    default -> false;
+                };
+            }
 
+            @Override
+            public boolean keyUp(int keycode) {return false;}
+
+            @Override
+            public boolean keyTyped(char character) {return false;}
+
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {return false;}
+
+            @Override
+            public boolean touchUp(int screenX, int screenY, int pointer, int button) {return false;}
+
+            @Override
+            public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {return false;}
+
+            @Override
+            public boolean touchDragged(int screenX, int screenY, int pointer) {return false;}
+
+            @Override
+            public boolean mouseMoved(int screenX, int screenY) {return false;}
+
+            @Override
+            public boolean scrolled(float amountX, float amountY) {return false;}
+        };
     }
 
     @Override

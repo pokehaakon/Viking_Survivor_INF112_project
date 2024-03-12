@@ -7,6 +7,7 @@ import Simulation.SimulationThread;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -51,11 +52,11 @@ public class GameContext extends Context {
 
     public GameContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
         super(name, iProc);
+        this.setInputProcessor(createInputProcessor());
 
         this.batch = batch;
         this.camera = camera;
 
-        setupInputListener();
         setupDebug();
 
         enemies = new Array<>();
@@ -96,44 +97,83 @@ public class GameContext extends Context {
     }
 
 
-    private void setupInputListener() {
-        keyStates = new KeyStates(); //this should load some config!
+    private  InputProcessor createInputProcessor() {
+        Context me = this;
+        keyStates = new KeyStates();
+        return new InputProcessor() {
+            @Override
+            public boolean keyDown(int keycode) {
 
-        this.addAction(Input.Keys.W, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.A, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.S, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.D, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
-        //this.addAction(Input.Keys.ESCAPE, KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.ESCAPE, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> {keyStates.setInputKey(Input.Keys.ESCAPE);System.exit(0);});
-
-        this.addAction(Input.Keys.P, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> this.getInputProcessor().setContext("EXAMPLE"));
-
-        this.addAction(Input.Keys.W, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
-        this.addAction(Input.Keys.A, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
-        this.addAction(Input.Keys.S, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
-        this.addAction(Input.Keys.D, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
-
-        this.addAction(Input.Buttons.LEFT, ContextualInputProcessor.MouseEvent.MOUSE_CLICKED, (x, y) -> System.out.println("CLICKED -> " + x + ", " + y));
-        this.addAction(Input.Buttons.LEFT, ContextualInputProcessor.MouseEvent.MOUSE_UNCLICKED, (x, y) -> System.out.println("DROPPED -> " + x + ", " + y));
-        this.addAction(0, ContextualInputProcessor.MouseEvent.MOUSE_DRAGGED, (x, y) -> System.out.println("DRAGGED -> " + x + ", " + y));
-        this.addAction(0, ContextualInputProcessor.MouseEvent.MOUSE_MOVED, (x, y) -> System.out.println("MOVED -> " + x + ", " + y));
-
-        this.addAction(Input.Buttons.MIDDLE, ContextualInputProcessor.MouseEvent.MOUSE_CLICKED, (x, y) -> {
-            zoomLevel = 1f;
-            camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
-            camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
-        });
-        this.addAction(0, ContextualInputProcessor.MouseEvent.MOUSE_SCROLLED, (x, y) -> {
-            if (y > 0 && zoomLevel < 2) {
-                zoomLevel *= 1.25f;
+                return switch (keycode) {
+                    case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.setInputKey(keycode);
+                    case Input.Keys.ESCAPE -> {keyStates.setInputKey(keycode); System.exit(0); yield true;}
+                    case Input.Keys.P -> {me.getContextualInputProcessor().setContext("EXAMPLE"); yield true;}
+                    default -> false;
+                };
             }
-            if (y < 0 && zoomLevel > 0.01f) {
-                zoomLevel /= 1.25f;
-            }
-            camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
-            camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
-        });
 
+            @Override
+            public boolean keyUp(int keycode) {
+                return switch (keycode) {
+                    case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.setInputKey(keycode);
+                    default -> false;
+                };
+            }
+
+            @Override
+            public boolean keyTyped(char character) {
+                return false;
+            }
+
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                //ignore pointer for now...
+                return switch (button) {
+                    case Input.Buttons.MIDDLE -> {
+                        zoomLevel = 1f;
+                        camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
+                        camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
+                        yield true;
+                    }
+                    default -> false;
+                };
+
+            }
+
+            @Override
+            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+                return false;
+            }
+
+            @Override
+            public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
+                return false;
+            }
+
+            @Override
+            public boolean touchDragged(int screenX, int screenY, int pointer) {
+                return false;
+            }
+
+            @Override
+            public boolean mouseMoved(int screenX, int screenY) {
+                return false;
+            }
+
+            @Override
+            public boolean scrolled(float amountX, float amountY) {
+                if (amountY > 0 && zoomLevel < 2) {
+                    zoomLevel *= 1.25f;
+                }
+                if (amountY < 0 && zoomLevel > 0.01f) {
+                    zoomLevel /= 1.25f;
+                }
+                camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
+                camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
+
+                return true;
+            }
+        };
     }
 
     @Override

@@ -24,8 +24,8 @@ public class PauseContext extends Context {
         super(name, iProc);
         this.batch = batch;
 
-        this.addAction(Input.Keys.P, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> this.getInputProcessor().setContext("GAME"));
-        this.addAction(Input.Keys.ESCAPE, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> this.getInputProcessor().setContext("MAINMENU"));
+//        this.addAction(Input.Keys.P, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> this.getInputProcessor().setContext("GAME"));
+//        this.addAction(Input.Keys.ESCAPE, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> this.getInputProcessor().setContext("MAINMENU"));
 
         this.stage = new Stage();
 
@@ -39,7 +39,8 @@ public class PauseContext extends Context {
 
         stage.addActor(table);
 
-        Gdx.input.setInputProcessor(stage);
+        //Gdx.input.setInputProcessor(stage);
+        this.setInputProcessor(stage);
 
         table.setDebug(true);
 

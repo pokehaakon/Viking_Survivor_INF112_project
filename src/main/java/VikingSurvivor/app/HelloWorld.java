@@ -26,12 +26,14 @@ public class HelloWorld implements ApplicationListener {
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 
-		InputMultiplexer multiplexer = new InputMultiplexer();
 		inProc = new ContextualInputProcessor(batch, camera);
 		inProc.setContext("MAINMENU"); //set starting context
-		//inProc.setContext("EXAMPLE2"); //set starting context
-		multiplexer.addProcessor(inProc);
-		Gdx.input.setInputProcessor(multiplexer);
+
+//		InputMultiplexer multiplexer = new InputMultiplexer();
+//		multiplexer.addProcessor(inProc);
+
+
+		Gdx.input.setInputProcessor(inProc);
 
 		currentContext = inProc.getCurrentContext();
 

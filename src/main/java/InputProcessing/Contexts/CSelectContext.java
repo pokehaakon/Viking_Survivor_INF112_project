@@ -24,7 +24,7 @@ public class CSelectContext extends Context{
         this.batch = batch;
 
         // Starts game
-        this.addAction(Input.Keys.M, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> this.getInputProcessor().setContext("MVP"));
+        //this.addAction(Input.Keys.M, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> this.getInputProcessor().setContext("MVP"));
 
         this.stage = new Stage();
 
@@ -38,7 +38,8 @@ public class CSelectContext extends Context{
 
         stage.addActor(table);
 
-        Gdx.input.setInputProcessor(stage);
+        //Gdx.input.setInputProcessor(stage);
+        this.setInputProcessor(stage);
 
         table.setDebug(true);
 
