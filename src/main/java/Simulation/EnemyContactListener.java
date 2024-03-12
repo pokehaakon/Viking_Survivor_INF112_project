@@ -22,7 +22,7 @@ public class EnemyContactListener implements ContactListener {
 
     private void killIfNotPlayer(Body b) {
         if(b == player) return;
-        toBeKilled.add(b);
+        //toBeKilled.add(b);
     }
 
     @Override

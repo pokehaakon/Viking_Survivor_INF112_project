@@ -1,4 +1,4 @@
-package Simulation;
+package Actors;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -8,7 +8,17 @@ import com.badlogic.gdx.physics.box2d.Body;
  * (all objects rendered on the screen in the game)
  */
 public interface IGameObject {
+
+    void destroy();
     void draw(SpriteBatch batch);
+
     Body getBody();
     boolean isDestroyed();
+
+
+
+    void update();
+
+
+
 }
