@@ -7,6 +7,7 @@ import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
 import Simulation.SimulationThread;
+import Tools.FilterTool;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -29,6 +30,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static Rendering.Shapes.makeRectangle;
+import static Tools.BodyTool.createBody;
+import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.*;
 
 public class MVPContext extends Context {
@@ -119,7 +122,7 @@ public class MVPContext extends Context {
             @Override
             public boolean keyUp(int keycode) {
                 return switch (keycode) {
-                    case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.setInputKey(keycode);
+                    case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.unsetInputKey(keycode);
                     default -> false;
                 };
             }
@@ -283,30 +286,24 @@ public class MVPContext extends Context {
         enemyFactory = new EnemyFactory(world);
 
 
-        BodyDef playerBodyDef = new BodyDef();
-        //playerBodyDef.type = BodyDef.BodyType.KinematicBody; //we are not able to get the mass center of a Kinematic Body :(
-        playerBodyDef.type = BodyDef.BodyType.DynamicBody;
-        playerBodyDef.position.set(20, 20);
-        playerBodyDef.fixedRotation = true;
-
-        Body playerBody = world.createBody(playerBodyDef);
-
         PolygonShape squarePlayer = squarePlayer = createSquareShape(
                 spriteRect.getWidth(),
                 spriteRect.getHeight()
         );
 
-        FixtureDef fixtureDefPlayer = new FixtureDef();
-        fixtureDefPlayer.shape = squarePlayer;
-        fixtureDefPlayer.density = 1f;
-        fixtureDefPlayer.friction = 0;
-        fixtureDefPlayer.restitution = 0;
-        fixtureDefPlayer.isSensor = false;
-
-        Fixture fixturePlayer = playerBody.createFixture(fixtureDefPlayer);
+        Body playerBody = createBody(
+                world,
+                new Vector2(),
+                squarePlayer,
+                createFilter(
+                        FilterTool.Category.PLAYER,
+                        new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL}
+                ),
+                1f,
+                0,
+                0
+        );
         player = new Player(playerBody, spriteImage, 1);
-
-
 
 
         enemies = new Array<>();

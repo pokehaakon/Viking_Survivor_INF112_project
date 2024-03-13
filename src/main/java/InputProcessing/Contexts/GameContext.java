@@ -4,6 +4,7 @@ import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
 import Simulation.SimulationThread;
+import Tools.FilterTool;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -22,11 +23,15 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static Rendering.Shapes.makeRectangle;
+import static Tools.BodyTool.createBodies;
+import static Tools.BodyTool.createBody;
+import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.*;
 import static java.lang.Math.random;
 
@@ -115,7 +120,7 @@ public class GameContext extends Context {
             @Override
             public boolean keyUp(int keycode) {
                 return switch (keycode) {
-                    case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.setInputKey(keycode);
+                    case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.unsetInputKey(keycode);
                     default -> false;
                 };
             }
@@ -359,56 +364,55 @@ public class GameContext extends Context {
         Box2D.init();
         World world = new World(new Vector2(0, 0), true);
 
-        BodyDef playerBodyDef = new BodyDef();
-        BodyDef enemyBodyDef = new BodyDef();
-        //playerBodyDef.type = BodyDef.BodyType.KinematicBody; //we are not able to get the mass center of a Kinematic Body :(
-        playerBodyDef.type = BodyDef.BodyType.DynamicBody;
-        enemyBodyDef.type = BodyDef.BodyType.DynamicBody;
-        playerBodyDef.position.set(20, 20);
-        enemyBodyDef.position.set(1000, 1000);
-        playerBodyDef.fixedRotation = true;
-        enemyBodyDef.fixedRotation = true;
-
-        player = world.createBody(playerBodyDef);
-
-        PolygonShape squarePlayer = squarePlayer = createSquareShape(
+        PolygonShape squarePlayer = createSquareShape(
                 spriteRect.getWidth(),
                 spriteRect.getHeight()
         );
-
-        FixtureDef fixtureDefPlayer = new FixtureDef();
-        fixtureDefPlayer.shape = squarePlayer;
-        fixtureDefPlayer.density = 1f;
-        fixtureDefPlayer.friction = 0;
-        fixtureDefPlayer.restitution = 0;
-        fixtureDefPlayer.isSensor = false;
-
-        Fixture fixturePlayer = player.createFixture(fixtureDefPlayer);
-
-
         CircleShape circle = createCircleShape(spriteRectEnemy.getWidth() / 2);
 
-        FixtureDef fixtureDefEnemy = new FixtureDef();
-        fixtureDefEnemy.shape = circle;
-        fixtureDefEnemy.density = 1f;
-        fixtureDefEnemy.friction = 0;
-        fixtureDefEnemy.restitution = 0;
-        fixtureDefEnemy.isSensor = false;
 
 
-        enemies = new Array<>();
-        Body enemy;
-        for (int i = 0; i < 10; i++) {
-            enemy = world.createBody(enemyBodyDef);
-            enemy.createFixture(fixtureDefEnemy);
-            enemies.add(enemy);
-            enemy.setLinearVelocity((float) random(),(float) random());
-        }
+        player = createBody(
+                world,
+                new Vector2(0,0),
+                squarePlayer,
+                createFilter(
+                        FilterTool.Category.PLAYER,
+                        new FilterTool.Category[]{
+                                FilterTool.Category.ENEMY,
+                                FilterTool.Category.WALL
+                        }
+                ),
+                1,
+                0,
+                0
+        );
+
+        Filter enemyFilter = createFilter(
+                FilterTool.Category.ENEMY,
+                new FilterTool.Category[]{
+                        FilterTool.Category.WALL,
+                        FilterTool.Category.ENEMY,
+                        FilterTool.Category.PLAYER
+                }
+        );
+        int enemiesToSpawn = 10;
+        enemies = createBodies(enemiesToSpawn, world, new Iterable<Vector2>() {
+            @Override
+            public Iterator<Vector2> iterator() {
+                return new Iterator<Vector2>() {
+                    @Override
+                    public boolean hasNext() {return true;}
+
+                    @Override
+                    public Vector2 next() {return new Vector2((float) (1000f + random() - 0.5f), (float) (1000f + random() - 0.5f));}
+                };
+            }
+        }, circle, enemyFilter, 1, 0, 0, false);
 
         circle.dispose();
         squarePlayer.dispose();
 
-        world.step(1/60f, 10, 10);
 
         return world;
     }

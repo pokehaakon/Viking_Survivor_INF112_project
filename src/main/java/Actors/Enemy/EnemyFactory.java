@@ -2,13 +2,18 @@ package Actors.Enemy;
 
 
 import Actors.Coordinates;
+import Tools.FilterTool;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 
 import java.util.*;
 
+import static Tools.BodyTool.createBodies;
+import static Tools.BodyTool.createBody;
+import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
 
@@ -22,7 +27,7 @@ public class EnemyFactory implements IEnemyFactory {
     }
 
     @Override
-    public Enemy createEnemyType(String type, float x, float y, float scale){
+    public Enemy createEnemyType(String type, Vector2 pos, float scale){
 
         if(type == null) {
             throw new NullPointerException("Type cannot be null!");
@@ -32,7 +37,7 @@ public class EnemyFactory implements IEnemyFactory {
             case "ENEMY1": {
                 Shape shape = createCircleShape(scale/2);
                 Texture texture = new Texture(Gdx.files.internal(Sprites.ENEMY_1_PNG));
-                enemy = new Enemy(createEnemyBody(x, y, shape), texture, scale);
+                enemy = new Enemy(createEnemyBody(pos, shape), texture, scale);
                 shape.dispose();
                 //texture.dispose();
                 break;
@@ -40,7 +45,7 @@ public class EnemyFactory implements IEnemyFactory {
             case "ENEMY2": {
                 Shape shape = createCircleShape(scale/2);
                 Texture texture = new Texture(Gdx.files.internal(Sprites.ENEMY_2_PNG));
-                enemy = new Enemy(createEnemyBody(x, y, shape), texture, scale);
+                enemy = new Enemy(createEnemyBody(pos, shape), texture, scale);
                 shape.dispose();
                 //texture.dispose();
                 break;
@@ -58,7 +63,7 @@ public class EnemyFactory implements IEnemyFactory {
         List<Enemy> enemies = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             Vector2 startPoint = Coordinates.randomPoint();
-            Enemy newEnemy = createEnemyType(type, startPoint.x, startPoint.y, 1); //TODO add scale!
+            Enemy newEnemy = createEnemyType(type, startPoint, 1); //TODO add scale!
             enemies.add(newEnemy);
         }
         return enemies;
@@ -77,7 +82,7 @@ public class EnemyFactory implements IEnemyFactory {
         List<Enemy> enemyList = new ArrayList<>();
         for(int i = 0; i < count; i++) {
             Vector2 startPoint = Coordinates.randomPoint();
-            Enemy enemy = createEnemyType(randomEnemyType(), startPoint.x, startPoint.y, 1); //TODO add scale!
+            Enemy enemy = createEnemyType(randomEnemyType(), startPoint, 1); //TODO add scale!
             enemyList.add(enemy);
         }
         return enemyList;
@@ -108,25 +113,29 @@ public class EnemyFactory implements IEnemyFactory {
 //        return swarm;
 //    }
 
-    private Body createEnemyBody(float x, float y, Shape shape) {
-        BodyDef enemyBodyDef = new BodyDef();
+    private Body createEnemyBody(Vector2 pos, Shape shape) {
+        Filter enemyFilter = createFilter(
+                FilterTool.Category.ENEMY,
+                new FilterTool.Category[]{
+                        FilterTool.Category.WALL,
+                        FilterTool.Category.ENEMY,
+                        FilterTool.Category.PLAYER
+                }
+        );
 
-        enemyBodyDef.type = BodyDef.BodyType.DynamicBody;
-        enemyBodyDef.position.set(x, y);
-        enemyBodyDef.fixedRotation = true;
+        return createBody(world, pos, shape, enemyFilter, 1, 0, 0);
+    }
 
-        FixtureDef fixtureDefEnemy = new FixtureDef();
-        fixtureDefEnemy.shape = shape;
-        fixtureDefEnemy.density = 1f;
-        fixtureDefEnemy.friction = 0;
-        fixtureDefEnemy.restitution = 0;
-        fixtureDefEnemy.isSensor = false;
-
-
-        Body enemyBody = world.createBody(enemyBodyDef);
-        enemyBody.createFixture(fixtureDefEnemy);
-
-        return enemyBody;
+    private Array<Body> createEnemyBodies(int n, Iterable<Vector2> poss, Shape shape) {
+        Filter enemyFilter = createFilter(
+                FilterTool.Category.ENEMY,
+                new FilterTool.Category[]{
+                        FilterTool.Category.WALL,
+                        FilterTool.Category.ENEMY,
+                        FilterTool.Category.PLAYER
+                }
+        );
+        return createBodies(n, world, poss, shape, enemyFilter, 1, 0, 0, false);
     }
 }
 

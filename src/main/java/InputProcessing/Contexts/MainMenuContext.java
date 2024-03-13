@@ -87,6 +87,7 @@ public class MainMenuContext extends Context{
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Start game button clicked!");
+                iProc.setContext("MVP");
             }
         });
         optionsButton.addListener(new ClickListener() {
