@@ -49,7 +49,7 @@ public class GameContext extends Context {
     private long previousFrameStart = System.nanoTime();
     private final Lock renderLock;
     private KeyStates keyStates;
-    private final SimulationThread simThread;
+    //private final SimulationThread simThread;
     private float zoomLevel = 1f;
     private long frameCount = 0;
     private static boolean SHOW_DEBUG_RENDER_INFO = true;
@@ -90,8 +90,8 @@ public class GameContext extends Context {
         Set<Body> toBoKilled = new HashSet<>();
         ContactListener contactListener = new EnemyContactListener(world, player, toBoKilled);
         world.setContactListener(contactListener);
-        simThread = new SimulationThread(renderLock, keyStates, world, toBoKilled, UpdateTime, UPS, player);
-        simThread.start();
+        //simThread = new SimulationThread(renderLock, keyStates, world, toBoKilled, UpdateTime, UPS, player);
+        //simThread.start();
 
     }
     private void setupDebug() {
@@ -224,7 +224,7 @@ public class GameContext extends Context {
         //draw player sprite
 
         Vector2 correctionVector = player.getLinearVelocity().cpy();
-        correctionVector.scl(1f/simThread.SET_UPS);
+        //correctionVector.scl(1f/simThread.SET_UPS);
 
         //for some reason the sprite batch renders "last" frame...
         batch.draw(
@@ -338,16 +338,16 @@ public class GameContext extends Context {
     @Override
     public void pause() {
         renderLock.lock();
-        simThread.pause();
+        //simThread.pause();
         renderLock.unlock();
     }
 
     @Override
     public void resume() {
-        simThread.unpause();
-        synchronized (simThread) {
-            simThread.notify();
-        }
+        //simThread.unpause();
+        //synchronized (simThread) {
+        //    simThread.notify();
+        //}
     }
 
     @Override

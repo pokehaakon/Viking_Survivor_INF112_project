@@ -1,5 +1,6 @@
 package InputProcessing.Contexts;
 
+import Actors.Actor;
 import Actors.Enemy.EnemyFactory;
 import Actors.Enemy.Enemy;
 import Actors.Player.Player;
@@ -92,7 +93,7 @@ public class MVPContext extends Context {
         Set<Body> toBoKilled = new HashSet<>();
         ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
         world.setContactListener(contactListener);
-        simThread = new SimulationThread(renderLock, keyStates, world, toBoKilled, UpdateTime, UPS, player.getBody());
+        simThread = new SimulationThread(renderLock, keyStates, world, toBoKilled, UpdateTime, UPS, player, enemies);
         simThread.start();
 
     }
@@ -221,7 +222,9 @@ public class MVPContext extends Context {
             tempEnemies.add(e);
             e.draw(batch);
         }
-        enemies = tempEnemies;
+        enemies.clear();
+        enemies.addAll(tempEnemies);
+        //enemies = tempEnemies;
         Array<Vector2> enemiesCenter = new Array<>(enemies.size);
         //drawEnemies(enemiesCenter);
 
@@ -304,12 +307,42 @@ public class MVPContext extends Context {
                 0
         );
         player = new Player(playerBody, spriteImage, 1);
+        player.setAction((p) -> {
+            Vector2 vel = new Vector2();
+            if (keyStates.getState(KeyStates.GameKey.UP)) {
+                vel.y += 1;
+            }
+            if (keyStates.getState(KeyStates.GameKey.DOWN)) {
+                vel.y += -1;
+            }
+            if (keyStates.getState(KeyStates.GameKey.LEFT)) {
+                vel.x += -1;
+            }
+            if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
+                vel.x += 1;
+            }
 
+            vel.setLength(60*2);
+
+            p.getBody().setLinearVelocity(vel);
+        });
+
+        Actor.ActorAction enemyAction = (e) -> {
+            Vector2 eVel = new Vector2();
+            Vector2 playerPos = player.getBody().getWorldCenter();
+            eVel.add(playerPos).sub(e.getBody().getWorldCenter());
+
+            eVel.setLength(60 * 0.3f);
+            e.getBody().setLinearVelocity(eVel);
+        };
 
         enemies = new Array<>();
         //enemies.add(enemyFactory.createEnemyType("ENEMY1", 50,  50, 1));
-        for(Enemy e : enemyFactory.createRandomEnemies(10))
+        for(Enemy e : enemyFactory.createRandomEnemies(10)) {
             enemies.add(e);
+            e.setAction(enemyAction);
+        }
+
 
         squarePlayer.dispose();
 

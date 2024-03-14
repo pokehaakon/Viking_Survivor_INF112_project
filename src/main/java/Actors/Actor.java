@@ -7,7 +7,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
 public abstract class Actor implements IGameObject{
-
+    public interface ActorAction {
+        void act(Actor actor);
+    }
     protected Body body;
     protected Texture spriteImage;
 
@@ -15,6 +17,7 @@ public abstract class Actor implements IGameObject{
 
     protected Texture sprite;
 
+    private ActorAction action;
     private boolean destroyed = false;
 
     public Actor(Body body, Texture sprite, float scale) {
@@ -23,6 +26,13 @@ public abstract class Actor implements IGameObject{
         this.sprite = sprite;
     }
 
+    public void setAction(ActorAction action) {
+        this.action = action;
+    }
+
+    public void step(){
+        action.act(this);
+    }
 
     @Override
     public void destroy() {

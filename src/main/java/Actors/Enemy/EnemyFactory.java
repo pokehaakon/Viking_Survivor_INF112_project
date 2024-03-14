@@ -39,7 +39,8 @@ public class EnemyFactory implements IEnemyFactory {
                 Texture texture = new Texture(Gdx.files.internal(Sprites.ENEMY_1_PNG));
                 enemy = new Enemy(createEnemyBody(pos, shape), texture, scale);
                 shape.dispose();
-                //texture.dispose();
+                //enemy.setAction((a) -> a.getBody().setLinearVelocity(0, -30)); // <-- use this to set the actor (enemy) 'AI'
+                //texture.dispose();                                             // currently this is set in the MVPContext
                 break;
             }
             case "ENEMY2": {
