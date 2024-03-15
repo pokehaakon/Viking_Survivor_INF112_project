@@ -2,6 +2,7 @@ package VikingSurvivor.app;
 
 import InputProcessing.*;
 import InputProcessing.Contexts.Context;
+import InputProcessing.Contexts.TrainingContext;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -37,6 +38,8 @@ public class HelloWorld implements ApplicationListener {
 
 
 		Gdx.graphics.setForegroundFPS(60);
+
+
 	}
 
 
