@@ -8,10 +8,7 @@ import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
 import Simulation.SimulationThread;
 import Tools.RollingSum;
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -99,74 +96,92 @@ public class TrainingContext extends Context {
         groundFixture.restitution = 0;
         groundFixture.shape = groundShape;
         Body groundBody = world.createBody(groundDef);
+
         Fixture groundFix = groundBody.createFixture(groundFixture);
         ground = new Player(groundBody,new Texture(Gdx.files.internal("obligator.png")),0.5f);
         groundShape.dispose();
 
         // box
 
-        BodyDef boxDef = new BodyDef();
-        groundDef.type = BodyDef.BodyType.StaticBody;
-        groundDef.position.set(500,0);
+//
+//        FixtureDef groundFixture = new FixtureDef();
+//        groundFixture.density = 1f;
+//        groundFixture.friction = 0.5f;
+//        groundFixture.restitution = 0;
+//        groundFixture.shape = groundShape;
+//        Body groundBody = world.createBody(groundDef);
+//        Fixture groundFix = groundBody.createFixture(groundFixture);
+//        ground = new Player(groundBody,new Texture(Gdx.files.internal("obligator.png")),0.5f);
+//        groundShape.dispose();
 
-        PolygonShape boxShape = new PolygonShape();
-        groundShape.createChain(new Vector2[] {new Vector2(-500,200), new Vector2(3000,200)});
+        Gdx.input.setInputProcessor(new InputProcessor() {
+            @Override
+            public boolean keyDown(int i) {
+                Vector2 vel = new Vector2(0, 0);
+                switch (i) {
+                    case Input.Keys.W:
+                        vel.y += 10;
+                        break;
 
-        FixtureDef groundFixture = new FixtureDef();
-        groundFixture.density = 1f;
-        groundFixture.friction = 0.5f;
-        groundFixture.restitution = 0;
-        groundFixture.shape = groundShape;
-        Body groundBody = world.createBody(groundDef);
-        Fixture groundFix = groundBody.createFixture(groundFixture);
-        ground = new Player(groundBody,new Texture(Gdx.files.internal("obligator.png")),0.5f);
-        groundShape.dispose();
+                    case Input.Keys.S:
+                        vel.y -= 10;
+                        break;
+                    case Input.Keys.A:
+                        vel.x -= 10;
+                        break;
+                    case Input.Keys.D:
+                        vel.x += 10;
+                        break;
+                }
+                playerBody.setLinearVelocity(vel);
+                return true;
 
+            }
 
+            @Override
+            public boolean keyUp(int i) {
+                return false;
+            }
 
+            @Override
+            public boolean keyTyped(char c) {
+                return false;
+            }
 
+            @Override
+            public boolean touchDown(int i, int i1, int i2, int i3) {
+                return false;
+            }
+
+            @Override
+            public boolean touchUp(int i, int i1, int i2, int i3) {
+                return false;
+            }
+
+            @Override
+            public boolean touchCancelled(int i, int i1, int i2, int i3) {
+                return false;
+            }
+
+            @Override
+            public boolean touchDragged(int i, int i1, int i2) {
+                return false;
+            }
+
+            @Override
+            public boolean mouseMoved(int i, int i1) {
+                return false;
+            }
+
+            @Override
+            public boolean scrolled(float v, float v1) {
+                return false;
+            }
+        });
     }
 
 
-    private void setupInputListener() {
-        keyStates = new KeyStates(); //this should load some config!
 
-        this.addAction(Input.Keys.W, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.A, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.S, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.D, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
-        //this.addAction(Input.Keys.ESCAPE, KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.ESCAPE, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> {keyStates.setInputKey(Input.Keys.ESCAPE);System.exit(0);});
-
-        this.addAction(Input.Keys.P, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> this.getInputProcessor().setContext("EXAMPLE"));
-
-        this.addAction(Input.Keys.W, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
-        this.addAction(Input.Keys.A, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
-        this.addAction(Input.Keys.S, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
-        this.addAction(Input.Keys.D, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
-
-        this.addAction(Input.Buttons.LEFT, ContextualInputProcessor.MouseEvent.MOUSE_CLICKED, (x, y) -> System.out.println("CLICKED -> " + x + ", " + y));
-        this.addAction(Input.Buttons.LEFT, ContextualInputProcessor.MouseEvent.MOUSE_UNCLICKED, (x, y) -> System.out.println("DROPPED -> " + x + ", " + y));
-        this.addAction(0, ContextualInputProcessor.MouseEvent.MOUSE_DRAGGED, (x, y) -> System.out.println("DRAGGED -> " + x + ", " + y));
-        this.addAction(0, ContextualInputProcessor.MouseEvent.MOUSE_MOVED, (x, y) -> System.out.println("MOVED -> " + x + ", " + y));
-
-        this.addAction(Input.Buttons.MIDDLE, ContextualInputProcessor.MouseEvent.MOUSE_CLICKED, (x, y) -> {
-            zoomLevel = 1f;
-            camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
-            camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
-        });
-        this.addAction(0, ContextualInputProcessor.MouseEvent.MOUSE_SCROLLED, (x, y) -> {
-            if (y > 0 && zoomLevel < 2) {
-                zoomLevel *= 1.25f;
-            }
-            if (y < 0 && zoomLevel > 0.01f) {
-                zoomLevel /= 1.25f;
-            }
-            camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
-            camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
-        });
-
-    }
 
 
     @Override
