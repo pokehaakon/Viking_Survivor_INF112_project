@@ -1,21 +1,22 @@
 package InputProcessing;
 
-import InputProcessing.Contexts.Context;
-import InputProcessing.Contexts.ExampleContext;
-import InputProcessing.Contexts.ExampleContext2;
-import InputProcessing.Contexts.GameContext;
+import InputProcessing.Contexts.*;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Disposable;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ContextFactory {
+public class ContextFactory implements Disposable {
     private final Map<String, Context> createdContexts;
     private final SpriteBatch batch;
+    private final Camera camera;
     private final ContextualInputProcessor iProc;
-    public ContextFactory(SpriteBatch batch, ContextualInputProcessor iProc) {
+    public ContextFactory(SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
         this.batch = batch;
         this.iProc = iProc;
+        this.camera = camera;
         createdContexts = new HashMap<>();
     }
 
@@ -35,20 +36,17 @@ public class ContextFactory {
     }
 
     private Context spawnContext(String contextName) { //this is the only place where context instances are bound to contextNames!
-        switch (contextName) {
-            case "GAME":
-                return new GameContext(contextName, batch, iProc);
-            case "EXAMPLE":
-                return new ExampleContext(contextName, batch, iProc);
-            case "EXAMPLE2":
-                return new ExampleContext2(contextName, batch, iProc);
-        }
-        throw new RuntimeException("ContextFactory cannot make context: " +  contextName);
+        return switch (contextName) {
+            //case "GAME" -> new GameContext(contextName, batch, camera, iProc);
+            case "MVP" -> new MVPContext(contextName, batch, camera, iProc);
+            case "MAINMENU" -> new MainMenuContext(contextName, batch, iProc);
+            case "PAUSEMENU" -> new PauseContext(contextName, batch, iProc);
+            case "CSELECT" -> new CSelectContext(contextName, batch, iProc);
+            default -> throw new RuntimeException("ContextFactory cannot make context: " + contextName);
+        };
     }
 
-    /**
-     * Runs dispose on all the 'open' contexts
-     */
+    @Override
     public void dispose() {
         for (Context c : createdContexts.values()) {
             c.dispose();

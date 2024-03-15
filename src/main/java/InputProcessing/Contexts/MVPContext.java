@@ -1,5 +1,9 @@
 package InputProcessing.Contexts;
 
+import Actors.Actor;
+import Actors.Enemy.EnemyFactory;
+import Actors.Enemy.Enemy;
+import Actors.Player.Player;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
@@ -11,7 +15,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -23,24 +26,23 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static Rendering.Shapes.makeRectangle;
-import static Tools.BodyTool.createBodies;
 import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.*;
-import static java.lang.Math.random;
 
-public class GameContext extends Context {
+public class MVPContext extends Context {
     private final SpriteBatch batch;
     private final Camera camera;
     private final World world;
-    private Body player;
-    private Array<Body> enemies;
+//    private PlayerExample player;
+    private Player player;
+    //private Array<Enemy> enemies;
+    private Array<Enemy> enemies;
     private final BitmapFont font;
     final private Texture spriteImage, rectSprite;
     final private Rectangle spriteRect, spriteRectEnemy;
@@ -49,19 +51,20 @@ public class GameContext extends Context {
     private long previousFrameStart = System.nanoTime();
     private final Lock renderLock;
     private KeyStates keyStates;
-    //private final SimulationThread simThread;
+    private final SimulationThread simThread;
+    private  EnemyFactory enemyFactory;
     private float zoomLevel = 1f;
     private long frameCount = 0;
-    private static boolean SHOW_DEBUG_RENDER_INFO = true;
+    private static boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
 
 
-    public GameContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
+    public MVPContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
         super(name, iProc);
-        this.setInputProcessor(createInputProcessor());
 
         this.batch = batch;
         this.camera = camera;
 
+        this.setInputProcessor(createInputProcessor());
         setupDebug();
 
         enemies = new Array<>();
@@ -88,10 +91,10 @@ public class GameContext extends Context {
         //create and start simulation
         world = createWorld();
         Set<Body> toBoKilled = new HashSet<>();
-        ContactListener contactListener = new EnemyContactListener(world, player, toBoKilled);
+        ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
         world.setContactListener(contactListener);
-        //simThread = new SimulationThread(renderLock, keyStates, world, toBoKilled, UpdateTime, UPS, player);
-        //simThread.start();
+        simThread = new SimulationThread(renderLock, keyStates, world, toBoKilled, UpdateTime, UPS, player, enemies);
+        simThread.start();
 
     }
     private void setupDebug() {
@@ -102,7 +105,7 @@ public class GameContext extends Context {
     }
 
 
-    private  InputProcessor createInputProcessor() {
+    private InputProcessor createInputProcessor() {
         Context me = this;
         keyStates = new KeyStates();
         return new InputProcessor() {
@@ -195,16 +198,13 @@ public class GameContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.WHITE);
 
-        Vector2 playerPos = player.getPosition().cpy();
-
-
         float radius = spriteRectEnemy.getWidth() / 2;
 
 
         Vector2 origin;
         //origin = player.getWorldCenter().cpy();
-        origin = playerPos.cpy();
-        origin.add(getBottomLeftCorrection(player.getFixtureList().get(0).getShape()));
+        origin = player.getBody().getPosition().cpy();
+        origin.add(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
 
         //origin = player.getPosition().cpy();
         //center camera at player
@@ -215,120 +215,43 @@ public class GameContext extends Context {
 
 
 
-
-
         batch.begin();
+        Array<Enemy> tempEnemies = new Array<>();
+        for (Enemy e : enemies) {
+            if (!e.getBody().isActive()) {continue;}
+            tempEnemies.add(e);
+            e.draw(batch);
+        }
+        enemies.clear();
+        enemies.addAll(tempEnemies);
+        //enemies = tempEnemies;
         Array<Vector2> enemiesCenter = new Array<>(enemies.size);
-        drawEnemies(enemiesCenter);
+        //drawEnemies(enemiesCenter);
 
         //draw player sprite
+        player.draw(batch);
 
-        Vector2 correctionVector = player.getLinearVelocity().cpy();
-        //correctionVector.scl(1f/simThread.SET_UPS);
 
         //for some reason the sprite batch renders "last" frame...
-        batch.draw(
-                spriteImage,
-                playerPos.x - correctionVector.x,
-                playerPos.y - correctionVector.y,
-                spriteRect.width,
-                spriteRect.height
-        );
+
 
 
         batch.end();
 
-        if (SHOW_DEBUG_RENDER_INFO) {
-            drawDebug(origin, radius, enemiesCenter);
-        }
 
         renderLock.unlock();
         FrameTime.add(System.nanoTime() - renderStartTime);
         frameCount++;
     }
     private void drawEnemies(Array<Vector2> enemiesCenter) {
-        Array<Body> tempE = new Array<>();
-        world.getBodies(tempE);
-        enemies.clear();
-        for (Body b : tempE) {
-            if (b == player) continue;
-            enemies.add(b);
+        for (Enemy e : enemies) {
+            if (e.isDestroyed()) {continue;}
+            e.draw(batch);
         }
 
-        float radius = spriteRectEnemy.getWidth() / 2;
-
-        Array<Vector2> enemiesPos = new Array<>(enemies.size);
-        Vector2 temp;
-        for (Body e : enemies) {
-            temp = new Vector2();
-            temp.add(e.getPosition());
-            temp.sub(radius, radius);
-            enemiesPos.add(temp);
-            enemiesCenter.add(e.getWorldCenter());
-        }
-
-        for (Vector2 v : enemiesPos) {
-            batch.draw(spriteImage, v.x, v.y, spriteRectEnemy.width, spriteRectEnemy.height);
-            //shape.circle(v.x, v.y, rectSpriteEnemy.getWidth());
-            //batch.draw(rectSpriteEnemy, v.x, v.y, rectSpriteEnemy.getWidth(), rectSpriteEnemy.getHeight());
-        }
     }
 
-    private void drawDebug(Vector2 origin, float radius, Array<Vector2> enemiesCenter) {
-        shape.setAutoShapeType(true);
-        shape.begin();
 
-
-        float xc = camera.viewportWidth / zoomLevel / 2f - origin.x / zoomLevel;
-        float yc = camera.viewportHeight / zoomLevel / 2f - origin.y / zoomLevel;
-
-        shape.setColor(Color.GREEN);
-        //shape.rect(spriteRect.x / zoomLevel + xc, spriteRect.y / zoomLevel + yc, spriteRect.width / zoomLevel, spriteRect.height / zoomLevel);
-
-        PolygonShape p = (PolygonShape) player.getFixtureList().get(0).getShape();
-        float [] points = new float[2*p.getVertexCount()];
-        Vector2 temp2 = new Vector2();
-        Vector2 playerPositionCorrection = getBottomLeftCorrection(p);
-        for(int i = 0; i < points.length; i += 2) {
-            p.getVertex(i/2, temp2);
-//            points[i] = temp2.x / zoomLevel + player.getPosition().x / zoomLevel + xc;
-//            points[i+1] = temp2.y / zoomLevel + player.getPosition().y / zoomLevel + yc;
-
-            temp2.sub(playerPositionCorrection).add(origin).scl(1/zoomLevel);
-            points[i] = temp2.x + xc;
-            points[i+1] = temp2.y + yc;
-        }
-
-        shape.polygon(points);
-
-        shape.setColor(Color.RED);
-
-        for (Vector2 v : enemiesCenter) {
-            shape.circle(v.x / zoomLevel + xc, v.y / zoomLevel + yc, radius / zoomLevel);
-        }
-        shape.end();
-
-        batch.begin();
-        batch.draw(new Texture(5,5, Pixmap.Format.RGB888), 0f, 0f);
-        batch.draw(new Texture(1,1, Pixmap.Format.RGB888), origin.x, origin.y);
-//        batch.draw(
-//                new Texture(2,2, Pixmap.Format.RGB888),
-//                player.getPosition().x + playerPositionCorrection.x,
-//                player.getPosition().y + playerPositionCorrection.y
-//        );
-
-        for (Vector2 v : enemiesCenter) {
-            batch.draw(new Texture(1,1, Pixmap.Format.RGB888), v.x, v.y);
-        }
-
-        font.draw(batch, "fps: " + String.format("%.1f", 1_000_000_000F/FPS.avg()), 10, 80);
-        font.draw(batch, "ups: " + String.format("%.1f",1_000_000_000F/UPS.avg()), 10, 60);
-        font.draw(batch, "us/f: " + String.format("%.0f",FrameTime.avg()/1_000), 10, 40);
-        font.draw(batch, "us/u: " + String.format("%.0f",UpdateTime.avg()/1_000), 10, 20);
-
-        batch.end();
-
-    }
 
     @Override
     public void resize(int width, int height) {
@@ -338,16 +261,16 @@ public class GameContext extends Context {
     @Override
     public void pause() {
         renderLock.lock();
-        //simThread.pause();
+        simThread.pause();
         renderLock.unlock();
     }
 
     @Override
     public void resume() {
-        //simThread.unpause();
-        //synchronized (simThread) {
-        //    simThread.notify();
-        //}
+        simThread.unpause();
+        synchronized (simThread) {
+            simThread.notify();
+        }
     }
 
     @Override
@@ -363,56 +286,67 @@ public class GameContext extends Context {
     private World createWorld() {
         Box2D.init();
         World world = new World(new Vector2(0, 0), true);
+        enemyFactory = new EnemyFactory(world);
 
-        PolygonShape squarePlayer = createSquareShape(
+
+        PolygonShape squarePlayer = squarePlayer = createSquareShape(
                 spriteRect.getWidth(),
                 spriteRect.getHeight()
         );
-        CircleShape circle = createCircleShape(spriteRectEnemy.getWidth() / 2);
 
-
-
-        player = createBody(
+        Body playerBody = createBody(
                 world,
-                new Vector2(0,0),
+                new Vector2(),
                 squarePlayer,
                 createFilter(
                         FilterTool.Category.PLAYER,
-                        new FilterTool.Category[]{
-                                FilterTool.Category.ENEMY,
-                                FilterTool.Category.WALL
-                        }
+                        new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL}
                 ),
-                1,
+                1f,
                 0,
                 0
         );
-
-        Filter enemyFilter = createFilter(
-                FilterTool.Category.ENEMY,
-                new FilterTool.Category[]{
-                        FilterTool.Category.WALL,
-                        FilterTool.Category.ENEMY,
-                        FilterTool.Category.PLAYER
-                }
-        );
-        int enemiesToSpawn = 10;
-        enemies = createBodies(enemiesToSpawn, world, new Iterable<Vector2>() {
-            @Override
-            public Iterator<Vector2> iterator() {
-                return new Iterator<Vector2>() {
-                    @Override
-                    public boolean hasNext() {return true;}
-
-                    @Override
-                    public Vector2 next() {return new Vector2((float) (1000f + random() - 0.5f), (float) (1000f + random() - 0.5f));}
-                };
+        player = new Player(playerBody, spriteImage, 1);
+        player.setAction((p) -> {
+            Vector2 vel = new Vector2();
+            if (keyStates.getState(KeyStates.GameKey.UP)) {
+                vel.y += 1;
             }
-        }, circle, enemyFilter, 1, 0, 0, false);
+            if (keyStates.getState(KeyStates.GameKey.DOWN)) {
+                vel.y += -1;
+            }
+            if (keyStates.getState(KeyStates.GameKey.LEFT)) {
+                vel.x += -1;
+            }
+            if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
+                vel.x += 1;
+            }
 
-        circle.dispose();
+            vel.setLength(60*2);
+
+            p.getBody().setLinearVelocity(vel);
+        });
+
+        Actor.ActorAction enemyAction = (e) -> {
+            Vector2 eVel = new Vector2();
+            Vector2 playerPos = player.getBody().getWorldCenter();
+            eVel.add(playerPos).sub(e.getBody().getWorldCenter());
+
+            eVel.setLength(60 * 0.3f);
+            e.getBody().setLinearVelocity(eVel);
+        };
+
+        enemies = new Array<>();
+        //enemies.add(enemyFactory.createEnemyType("ENEMY1", 50,  50, 1));
+        for(Enemy e : enemyFactory.createRandomEnemies(10)) {
+            enemies.add(e);
+            e.setAction(enemyAction);
+        }
+
+
         squarePlayer.dispose();
 
+        world.step(1/60f, 10, 10);
 
         return world;
     }

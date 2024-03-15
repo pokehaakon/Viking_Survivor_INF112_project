@@ -19,21 +19,26 @@ public class HelloWorld implements ApplicationListener {
 	public void create() {
 		batch = new SpriteBatch();
 
-		InputMultiplexer multiplexer = new InputMultiplexer();
-		inProc = new ContextualInputProcessor(batch);
-		//inProc.setContext("GAME"); //set starting context
-		inProc.setContext("EXAMPLE2"); //set starting context
-		multiplexer.addProcessor(inProc);
-		Gdx.input.setInputProcessor(multiplexer);
-
-		currentContext = inProc.getCurrentContext();
-
-		Gdx.graphics.setForegroundFPS(60);
-
+		//camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera.position.x = Gdx.graphics.getWidth() / 2f;
 		camera.position.y = Gdx.graphics.getHeight() / 2f;
 		camera.update();
+		batch.setProjectionMatrix(camera.combined);
+
+		inProc = new ContextualInputProcessor(batch, camera);
+		inProc.setContext("MAINMENU"); //set starting context
+
+//		InputMultiplexer multiplexer = new InputMultiplexer();
+//		multiplexer.addProcessor(inProc);
+
+
+		Gdx.input.setInputProcessor(inProc);
+
+		currentContext = inProc.getCurrentContext();
+
+
+		Gdx.graphics.setForegroundFPS(60);
 	}
 
 
@@ -45,10 +50,12 @@ public class HelloWorld implements ApplicationListener {
 
 	@Override
 	public void render() {
-		//camera.update();
+		//camera.position.x += 0.1f;
+		camera.update();
 		currentContext = inProc.getCurrentContext();
 		batch.setProjectionMatrix(camera.combined); //probably not needed
 		currentContext.render(0f); //delta not used
+
 	}
 
 	@Override
