@@ -9,7 +9,9 @@ import org.apache.maven.surefire.shared.lang3.tuple.Pair;
 
 public class ContextualInputProcessor implements InputProcessor {
     private Context currentContext;
+    private InputProcessor currentInputProcessor;
     private final ContextFactory contextFactory;
+
 
 
     public ContextualInputProcessor(SpriteBatch batch, Camera camera){
@@ -34,76 +36,44 @@ public class ContextualInputProcessor implements InputProcessor {
             currentContext.pause();
         }
         currentContext = contextFactory.getContext(c);
+        currentInputProcessor = currentContext.getInputProcessor();
         currentContext.resume();
     }
 
-    private boolean keyEvent(int keycode, KeyEvent e) {
-        Pair<Integer, KeyEvent> event = new ImmutablePair<>(keycode, e);
-        if (!currentContext.hasAction(event)) return false;
-        currentContext.doAction(event, keycode);
-        return true;
-    }
     @Override
     public boolean keyDown(int keycode) {
-        return keyEvent(keycode, KeyEvent.KEYDOWN);
+        return currentInputProcessor.keyDown(keycode);
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        return keyEvent(keycode, KeyEvent.KEYUP);
+        return currentInputProcessor.keyUp(keycode);
     }
 
     @Override
     public boolean keyTyped(char character) {
-        return false;
-    }
-
-    private boolean mouseEvent(int x, int y, int button, MouseEvent e) {
-        Pair<Integer, MouseEvent> event = new ImmutablePair<>(button, e);
-        if (!currentContext.hasAction(event)) return false;
-        currentContext.doAction(event, x, y);
-        return true;
+        return currentInputProcessor.keyTyped(character);
     }
 
     @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return mouseEvent(screenX, screenY, button, MouseEvent.MOUSE_CLICKED);
-    }
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {return currentInputProcessor.touchDown(screenX, screenY, pointer, button);}
 
     @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return mouseEvent(screenX, screenY, button, MouseEvent.MOUSE_UNCLICKED);
-    }
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {return currentInputProcessor.touchUp(screenX, screenY, pointer, button);}
 
     @Override
-    public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
+    public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {return currentInputProcessor.touchCancelled(screenX, screenY, pointer, button);}
 
     @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return mouseEvent(screenX, screenY, 0, MouseEvent.MOUSE_DRAGGED); //button is ignored
-    }
+    public boolean touchDragged(int screenX, int screenY, int pointer) {return currentInputProcessor.touchDragged(screenX, screenY, pointer);}
 
     @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return mouseEvent(screenX, screenY, 0, MouseEvent.MOUSE_MOVED); //button is ignored
-    }
+    public boolean mouseMoved(int screenX, int screenY) {return currentInputProcessor.mouseMoved(screenX, screenY);}
 
     @Override
-    public boolean scrolled(float amountX, float amountY) {
-        return mouseEvent((int)(amountX*1000), (int)(amountY*1000), 0, MouseEvent.MOUSE_SCROLLED); //Button is ignored
-    }
+    public boolean scrolled(float amountX, float amountY) {return currentInputProcessor.scrolled(amountX, amountY);}
 
     public void dispose(){
         contextFactory.dispose();
-    }
-
-    public enum MouseEvent {
-        MOUSE_CLICKED, MOUSE_UNCLICKED, MOUSE_MOVED, MOUSE_DRAGGED, MOUSE_SCROLLED
-    }
-
-    public enum KeyEvent {
-        KEYDOWN, KEYUP
     }
 }

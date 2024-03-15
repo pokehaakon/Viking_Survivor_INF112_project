@@ -4,9 +4,11 @@ import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
 import Simulation.SimulationThread;
+import Tools.FilterTool;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -21,11 +23,15 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static Rendering.Shapes.makeRectangle;
+import static Tools.BodyTool.createBodies;
+import static Tools.BodyTool.createBody;
+import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.*;
 import static java.lang.Math.random;
 
@@ -43,7 +49,7 @@ public class GameContext extends Context {
     private long previousFrameStart = System.nanoTime();
     private final Lock renderLock;
     private KeyStates keyStates;
-    private final SimulationThread simThread;
+    //private final SimulationThread simThread;
     private float zoomLevel = 1f;
     private long frameCount = 0;
     private static boolean SHOW_DEBUG_RENDER_INFO = true;
@@ -51,11 +57,11 @@ public class GameContext extends Context {
 
     public GameContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
         super(name, iProc);
+        this.setInputProcessor(createInputProcessor());
 
         this.batch = batch;
         this.camera = camera;
 
-        setupInputListener();
         setupDebug();
 
         enemies = new Array<>();
@@ -84,8 +90,8 @@ public class GameContext extends Context {
         Set<Body> toBoKilled = new HashSet<>();
         ContactListener contactListener = new EnemyContactListener(world, player, toBoKilled);
         world.setContactListener(contactListener);
-        simThread = new SimulationThread(renderLock, keyStates, world, toBoKilled, UpdateTime, UPS, player);
-        simThread.start();
+        //simThread = new SimulationThread(renderLock, keyStates, world, toBoKilled, UpdateTime, UPS, player);
+        //simThread.start();
 
     }
     private void setupDebug() {
@@ -96,44 +102,83 @@ public class GameContext extends Context {
     }
 
 
-    private void setupInputListener() {
-        keyStates = new KeyStates(); //this should load some config!
+    private  InputProcessor createInputProcessor() {
+        Context me = this;
+        keyStates = new KeyStates();
+        return new InputProcessor() {
+            @Override
+            public boolean keyDown(int keycode) {
 
-        this.addAction(Input.Keys.W, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.A, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.S, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.D, ContextualInputProcessor.KeyEvent.KEYDOWN, keyStates::setInputKey);
-        //this.addAction(Input.Keys.ESCAPE, KeyEvent.KEYDOWN, keyStates::setInputKey);
-        this.addAction(Input.Keys.ESCAPE, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> {keyStates.setInputKey(Input.Keys.ESCAPE);System.exit(0);});
-
-        this.addAction(Input.Keys.P, ContextualInputProcessor.KeyEvent.KEYDOWN, (x) -> this.getInputProcessor().setContext("EXAMPLE"));
-
-        this.addAction(Input.Keys.W, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
-        this.addAction(Input.Keys.A, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
-        this.addAction(Input.Keys.S, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
-        this.addAction(Input.Keys.D, ContextualInputProcessor.KeyEvent.KEYUP, keyStates::unsetInputKey);
-
-        this.addAction(Input.Buttons.LEFT, ContextualInputProcessor.MouseEvent.MOUSE_CLICKED, (x, y) -> System.out.println("CLICKED -> " + x + ", " + y));
-        this.addAction(Input.Buttons.LEFT, ContextualInputProcessor.MouseEvent.MOUSE_UNCLICKED, (x, y) -> System.out.println("DROPPED -> " + x + ", " + y));
-        this.addAction(0, ContextualInputProcessor.MouseEvent.MOUSE_DRAGGED, (x, y) -> System.out.println("DRAGGED -> " + x + ", " + y));
-        this.addAction(0, ContextualInputProcessor.MouseEvent.MOUSE_MOVED, (x, y) -> System.out.println("MOVED -> " + x + ", " + y));
-
-        this.addAction(Input.Buttons.MIDDLE, ContextualInputProcessor.MouseEvent.MOUSE_CLICKED, (x, y) -> {
-            zoomLevel = 1f;
-            camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
-            camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
-        });
-        this.addAction(0, ContextualInputProcessor.MouseEvent.MOUSE_SCROLLED, (x, y) -> {
-            if (y > 0 && zoomLevel < 2) {
-                zoomLevel *= 1.25f;
+                return switch (keycode) {
+                    case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.setInputKey(keycode);
+                    case Input.Keys.ESCAPE -> {keyStates.setInputKey(keycode); System.exit(0); yield true;}
+                    case Input.Keys.P -> {me.getContextualInputProcessor().setContext("EXAMPLE"); yield true;}
+                    default -> false;
+                };
             }
-            if (y < 0 && zoomLevel > 0.01f) {
-                zoomLevel /= 1.25f;
-            }
-            camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
-            camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
-        });
 
+            @Override
+            public boolean keyUp(int keycode) {
+                return switch (keycode) {
+                    case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.unsetInputKey(keycode);
+                    default -> false;
+                };
+            }
+
+            @Override
+            public boolean keyTyped(char character) {
+                return false;
+            }
+
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                //ignore pointer for now...
+                return switch (button) {
+                    case Input.Buttons.MIDDLE -> {
+                        zoomLevel = 1f;
+                        camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
+                        camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
+                        yield true;
+                    }
+                    default -> false;
+                };
+
+            }
+
+            @Override
+            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+                return false;
+            }
+
+            @Override
+            public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
+                return false;
+            }
+
+            @Override
+            public boolean touchDragged(int screenX, int screenY, int pointer) {
+                return false;
+            }
+
+            @Override
+            public boolean mouseMoved(int screenX, int screenY) {
+                return false;
+            }
+
+            @Override
+            public boolean scrolled(float amountX, float amountY) {
+                if (amountY > 0 && zoomLevel < 2) {
+                    zoomLevel *= 1.25f;
+                }
+                if (amountY < 0 && zoomLevel > 0.01f) {
+                    zoomLevel /= 1.25f;
+                }
+                camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
+                camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
+
+                return true;
+            }
+        };
     }
 
     @Override
@@ -179,7 +224,7 @@ public class GameContext extends Context {
         //draw player sprite
 
         Vector2 correctionVector = player.getLinearVelocity().cpy();
-        correctionVector.scl(1f/simThread.SET_UPS);
+        //correctionVector.scl(1f/simThread.SET_UPS);
 
         //for some reason the sprite batch renders "last" frame...
         batch.draw(
@@ -293,16 +338,16 @@ public class GameContext extends Context {
     @Override
     public void pause() {
         renderLock.lock();
-        simThread.pause();
+        //simThread.pause();
         renderLock.unlock();
     }
 
     @Override
     public void resume() {
-        simThread.unpause();
-        synchronized (simThread) {
-            simThread.notify();
-        }
+        //simThread.unpause();
+        //synchronized (simThread) {
+        //    simThread.notify();
+        //}
     }
 
     @Override
@@ -319,56 +364,55 @@ public class GameContext extends Context {
         Box2D.init();
         World world = new World(new Vector2(0, 0), true);
 
-        BodyDef playerBodyDef = new BodyDef();
-        BodyDef enemyBodyDef = new BodyDef();
-        //playerBodyDef.type = BodyDef.BodyType.KinematicBody; //we are not able to get the mass center of a Kinematic Body :(
-        playerBodyDef.type = BodyDef.BodyType.DynamicBody;
-        enemyBodyDef.type = BodyDef.BodyType.DynamicBody;
-        playerBodyDef.position.set(20, 20);
-        enemyBodyDef.position.set(1000, 1000);
-        playerBodyDef.fixedRotation = true;
-        enemyBodyDef.fixedRotation = true;
-
-        player = world.createBody(playerBodyDef);
-
-        PolygonShape squarePlayer = squarePlayer = createSquareShape(
+        PolygonShape squarePlayer = createSquareShape(
                 spriteRect.getWidth(),
                 spriteRect.getHeight()
         );
-
-        FixtureDef fixtureDefPlayer = new FixtureDef();
-        fixtureDefPlayer.shape = squarePlayer;
-        fixtureDefPlayer.density = 1f;
-        fixtureDefPlayer.friction = 0;
-        fixtureDefPlayer.restitution = 0;
-        fixtureDefPlayer.isSensor = false;
-
-        Fixture fixturePlayer = player.createFixture(fixtureDefPlayer);
-
-
         CircleShape circle = createCircleShape(spriteRectEnemy.getWidth() / 2);
 
-        FixtureDef fixtureDefEnemy = new FixtureDef();
-        fixtureDefEnemy.shape = circle;
-        fixtureDefEnemy.density = 1f;
-        fixtureDefEnemy.friction = 0;
-        fixtureDefEnemy.restitution = 0;
-        fixtureDefEnemy.isSensor = false;
 
 
-        enemies = new Array<>();
-        Body enemy;
-        for (int i = 0; i < 10; i++) {
-            enemy = world.createBody(enemyBodyDef);
-            enemy.createFixture(fixtureDefEnemy);
-            enemies.add(enemy);
-            enemy.setLinearVelocity((float) random(),(float) random());
-        }
+        player = createBody(
+                world,
+                new Vector2(0,0),
+                squarePlayer,
+                createFilter(
+                        FilterTool.Category.PLAYER,
+                        new FilterTool.Category[]{
+                                FilterTool.Category.ENEMY,
+                                FilterTool.Category.WALL
+                        }
+                ),
+                1,
+                0,
+                0
+        );
+
+        Filter enemyFilter = createFilter(
+                FilterTool.Category.ENEMY,
+                new FilterTool.Category[]{
+                        FilterTool.Category.WALL,
+                        FilterTool.Category.ENEMY,
+                        FilterTool.Category.PLAYER
+                }
+        );
+        int enemiesToSpawn = 10;
+        enemies = createBodies(enemiesToSpawn, world, new Iterable<Vector2>() {
+            @Override
+            public Iterator<Vector2> iterator() {
+                return new Iterator<Vector2>() {
+                    @Override
+                    public boolean hasNext() {return true;}
+
+                    @Override
+                    public Vector2 next() {return new Vector2((float) (1000f + random() - 0.5f), (float) (1000f + random() - 0.5f));}
+                };
+            }
+        }, circle, enemyFilter, 1, 0, 0, false);
 
         circle.dispose();
         squarePlayer.dispose();
 
-        world.step(1/60f, 10, 10);
 
         return world;
     }

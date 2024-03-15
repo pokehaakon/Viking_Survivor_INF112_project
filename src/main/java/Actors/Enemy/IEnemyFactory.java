@@ -1,5 +1,7 @@
 package Actors.Enemy;
 
+import com.badlogic.gdx.math.Vector2;
+
 import java.util.List;
 
 public interface IEnemyFactory {
@@ -8,11 +10,9 @@ public interface IEnemyFactory {
     /**
      *
      * @param type
-     * @param x
-     * @param y
      * @return a enemy with a given start position
      */
-    Enemy createEnemyType(String type, float x, float y, float scale);
+    Enemy createEnemyType(String type, Vector2 pos, float scale);
 
     /**
      *

@@ -3,11 +3,12 @@ package InputProcessing;
 import InputProcessing.Contexts.*;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Disposable;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ContextFactory {
+public class ContextFactory implements Disposable {
     private final Map<String, Context> createdContexts;
     private final SpriteBatch batch;
     private final Camera camera;
@@ -36,17 +37,16 @@ public class ContextFactory {
 
     private Context spawnContext(String contextName) { //this is the only place where context instances are bound to contextNames!
         return switch (contextName) {
-            case "GAME" -> new GameContext(contextName, batch, camera, iProc);
+            //case "GAME" -> new GameContext(contextName, batch, camera, iProc);
             case "MVP" -> new MVPContext(contextName, batch, camera, iProc);
-            case "EXAMPLE" -> new ExampleContext(contextName, batch, iProc);
-            case "Training" -> new TrainingContext(contextName,batch, camera, iProc);
+            case "MAINMENU" -> new MainMenuContext(contextName, batch, iProc);
+            case "PAUSEMENU" -> new PauseContext(contextName, batch, iProc);
+            case "CSELECT" -> new CSelectContext(contextName, batch, iProc);
             default -> throw new RuntimeException("ContextFactory cannot make context: " + contextName);
         };
     }
 
-    /**
-     * Runs dispose on all the 'open' contexts
-     */
+    @Override
     public void dispose() {
         for (Context c : createdContexts.values()) {
             c.dispose();

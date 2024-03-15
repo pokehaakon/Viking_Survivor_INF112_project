@@ -18,11 +18,11 @@ class EnemyFactoryTest {
     void invalidEnemyType() {
 
         assertThrows(NullPointerException.class, () -> {
-            factory.createEnemyType(null ,0, 0,0);
+            factory.createEnemyType(null , new Vector2(),0);
         });
 
         assertThrows(IllegalArgumentException.class, () -> {
-            factory.createEnemyType("hello", 0, 0,0);
+            factory.createEnemyType("hello", new Vector2(),0);
         });
     }
 
