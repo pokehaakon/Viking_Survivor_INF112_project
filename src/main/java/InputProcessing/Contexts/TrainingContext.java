@@ -3,6 +3,7 @@ package InputProcessing.Contexts;
 import Actors.Enemy.Enemy;
 import Actors.Enemy.EnemyFactory;
 import Actors.Player.Player;
+import Actors.Stats.Stats;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
@@ -78,7 +79,7 @@ public class TrainingContext extends Context {
 
         Body playerBody = world.createBody(ballDef);
         Fixture playerFixture = playerBody.createFixture(fixtureDef);
-        player = new Player(playerBody,new Texture(Gdx.files.internal("obligator.png")),0.5f);
+        player = new Player(playerBody,new Texture(Gdx.files.internal("obligator.png")),0.5f, Stats.player());
         ballShape.dispose();
 
         // ground
@@ -98,7 +99,7 @@ public class TrainingContext extends Context {
         Body groundBody = world.createBody(groundDef);
 
         Fixture groundFix = groundBody.createFixture(groundFixture);
-        ground = new Player(groundBody,new Texture(Gdx.files.internal("obligator.png")),0.5f);
+        ground = new Player(groundBody,new Texture(Gdx.files.internal("obligator.png")),0.5f, Stats.player());
         groundShape.dispose();
 
         // box
@@ -206,7 +207,7 @@ public class TrainingContext extends Context {
 
         Body playerBody = world.createBody(ballDef);
         Fixture playerFixture = playerBody.createFixture(fixtureDef);
-        player = new Player(playerBody,new Texture(Gdx.files.internal("obligator.png")),0.5f);
+        player = new Player(playerBody,new Texture(Gdx.files.internal("obligator.png")),0.5f, Stats.player());
         ballShape.dispose();
 
 

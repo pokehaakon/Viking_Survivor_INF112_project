@@ -12,7 +12,7 @@ public interface IEnemyFactory {
      * @param type
      * @return a enemy with a given start position
      */
-    Enemy createEnemyType(String type, Vector2 pos, float scale);
+    Enemy createEnemyType(String type, Vector2 pos);
 
     /**
      *

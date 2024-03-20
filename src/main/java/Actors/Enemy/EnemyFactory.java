@@ -2,6 +2,7 @@ package Actors.Enemy;
 
 
 import Actors.Coordinates;
+import Actors.Stats.Stats;
 import Tools.FilterTool;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -19,6 +20,10 @@ import static Tools.ShapeTools.createCircleShape;
 
 public class EnemyFactory implements IEnemyFactory {
 
+    private static float ENEMY1_SCALE = 0.2f;
+    private static float ENEMY2_SCALE = 0.2f;
+
+
     private final static List<String> enemyTypes = Arrays.asList("ENEMY1", "ENEMY2");
     private final World world;
 
@@ -27,28 +32,31 @@ public class EnemyFactory implements IEnemyFactory {
     }
 
     @Override
-    public Enemy createEnemyType(String type, Vector2 pos, float scale){
+    public Enemy createEnemyType(String type, Vector2 pos){
 
         if(type == null) {
             throw new NullPointerException("Type cannot be null!");
         }
         Enemy enemy;
+        float scale;
         switch (type.toUpperCase()) {
             case "ENEMY1": {
+                scale = ENEMY1_SCALE;
                 Shape shape = createCircleShape(scale/2);
                 Texture texture = new Texture(Gdx.files.internal(Sprites.ENEMY_1_PNG));
-                enemy = new Enemy(createEnemyBody(pos, shape), texture, scale);
+                enemy = new Enemy(createEnemyBody(pos, shape), texture, scale, Stats.enemy1());
                 shape.dispose();
                 //enemy.setAction((a) -> a.getBody().setLinearVelocity(0, -30)); // <-- use this to set the actor (enemy) 'AI'
-                //texture.dispose();                                             // currently this is set in the MVPContext
+                                                            // currently this is set in the MVPContext
                 break;
             }
             case "ENEMY2": {
+                scale = ENEMY2_SCALE;
                 Shape shape = createCircleShape(scale/2);
                 Texture texture = new Texture(Gdx.files.internal(Sprites.ENEMY_2_PNG));
-                enemy = new Enemy(createEnemyBody(pos, shape), texture, scale);
+                enemy = new Enemy(createEnemyBody(pos, shape), texture, scale, Stats.enemy2());
                 shape.dispose();
-                //texture.dispose();
+
                 break;
             }
             default:
@@ -64,7 +72,7 @@ public class EnemyFactory implements IEnemyFactory {
         List<Enemy> enemies = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             Vector2 startPoint = Coordinates.randomPoint();
-            Enemy newEnemy = createEnemyType(type, startPoint, 1); //TODO add scale!
+            Enemy newEnemy = createEnemyType(type, startPoint); //TODO add scale!
             enemies.add(newEnemy);
         }
         return enemies;
@@ -83,7 +91,7 @@ public class EnemyFactory implements IEnemyFactory {
         List<Enemy> enemyList = new ArrayList<>();
         for(int i = 0; i < count; i++) {
             Vector2 startPoint = Coordinates.randomPoint();
-            Enemy enemy = createEnemyType(randomEnemyType(), startPoint, 1); //TODO add scale!
+            Enemy enemy = createEnemyType(randomEnemyType(), startPoint); //TODO add scale!
             enemyList.add(enemy);
         }
         return enemyList;

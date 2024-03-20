@@ -98,6 +98,7 @@ public class SimulationThread extends Thread {
             stopSim();
         }
         player.step();
+        System.out.println(player.getBody().getLinearVelocity());
 //        vel.setLength(60*2);
 //
 //        player.setLinearVelocity(vel);
@@ -117,6 +118,7 @@ public class SimulationThread extends Thread {
 
         for (Enemy enemy : enemies) {
             enemy.step();
+
         }
 
         world.step(1/(float) SET_UPS, 10, 10);

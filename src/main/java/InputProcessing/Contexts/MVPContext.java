@@ -1,9 +1,12 @@
 package InputProcessing.Contexts;
 
 import Actors.Actor;
+import Actors.ActorAction;
 import Actors.Enemy.EnemyFactory;
 import Actors.Enemy.Enemy;
 import Actors.Player.Player;
+
+import Actors.Stats.Stats;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
@@ -36,9 +39,10 @@ import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.*;
 
 public class MVPContext extends Context {
+    private static final float PLAYER_SCALE = 0.5f;
     private final SpriteBatch batch;
     private final Camera camera;
-    private final World world;
+    private World world;
 //    private PlayerExample player;
     private Player player;
     //private Array<Enemy> enemies;
@@ -56,6 +60,10 @@ public class MVPContext extends Context {
     private float zoomLevel = 1f;
     private long frameCount = 0;
     private static boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
+
+    private ActorAction playerAction;
+    private ActorAction enemyAction;
+
 
 
     public MVPContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
@@ -89,7 +97,7 @@ public class MVPContext extends Context {
         renderLock = new ReentrantLock(true);
 
         //create and start simulation
-        world = createWorld();
+        createWorld();
         Set<Body> toBoKilled = new HashSet<>();
         ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
         world.setContactListener(contactListener);
@@ -283,12 +291,28 @@ public class MVPContext extends Context {
         spriteImage.dispose();
     }
 
-    private World createWorld() {
+    private void createWorld() {
         Box2D.init();
-        World world = new World(new Vector2(0, 0), true);
+        world = new World(new Vector2(0, 0), true);
         enemyFactory = new EnemyFactory(world);
+        setPlayerAction();
+        setEnemyAction();
+        initializePlayer();
+
+        enemies = new Array<>();
+
+        for(Enemy e : enemyFactory.createRandomEnemies(10)) {
+            enemies.add(e);
+            e.setAction(enemyAction);
+        }
 
 
+        world.step(1/60f, 10, 10);
+
+        //return world;
+    }
+
+    private void initializePlayer() {
         PolygonShape squarePlayer = squarePlayer = createSquareShape(
                 spriteRect.getWidth(),
                 spriteRect.getHeight()
@@ -306,48 +330,37 @@ public class MVPContext extends Context {
                 0,
                 0
         );
-        player = new Player(playerBody, spriteImage, 1);
-        player.setAction((p) -> {
-            Vector2 vel = new Vector2();
-            if (keyStates.getState(KeyStates.GameKey.UP)) {
-                vel.y += 1;
-            }
-            if (keyStates.getState(KeyStates.GameKey.DOWN)) {
-                vel.y += -1;
-            }
-            if (keyStates.getState(KeyStates.GameKey.LEFT)) {
-                vel.x += -1;
-            }
-            if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
-                vel.x += 1;
-            }
-
-            vel.setLength(60*2);
-
-            p.getBody().setLinearVelocity(vel);
-        });
-
-        Actor.ActorAction enemyAction = (e) -> {
-            Vector2 eVel = new Vector2();
-            Vector2 playerPos = player.getBody().getWorldCenter();
-            eVel.add(playerPos).sub(e.getBody().getWorldCenter());
-
-            eVel.setLength(60 * 0.3f);
-            e.getBody().setLinearVelocity(eVel);
-        };
-
-        enemies = new Array<>();
-        //enemies.add(enemyFactory.createEnemyType("ENEMY1", 50,  50, 1));
-        for(Enemy e : enemyFactory.createRandomEnemies(10)) {
-            enemies.add(e);
-            e.setAction(enemyAction);
-        }
+        player = new Player(playerBody, spriteImage, PLAYER_SCALE, Stats.player());
+        player.setAction(playerAction);
 
 
         squarePlayer.dispose();
+    }
 
-        world.step(1/60f, 10, 10);
+    private void setEnemyAction() {
 
-        return world;
+        enemyAction = (e) -> {
+            //se.resetVelocity();
+            e.chase(player);
+        };
+    }
+
+    private void setPlayerAction() {
+        playerAction = (p) -> {
+            player.resetVelocity();
+            if (keyStates.getState(KeyStates.GameKey.UP)) {
+                p.setVelocityVector(0,1);
+            }
+            if (keyStates.getState(KeyStates.GameKey.DOWN)) {
+                p.setVelocityVector(0,-1);
+            }
+            if (keyStates.getState(KeyStates.GameKey.LEFT)) {
+                p.setVelocityVector(-1,0);
+            }
+            if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
+                p.setVelocityVector(1,0);
+            }
+            p.move();
+        };
     }
 }
