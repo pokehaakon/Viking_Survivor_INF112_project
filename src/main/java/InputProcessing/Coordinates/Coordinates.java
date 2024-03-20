@@ -1,4 +1,4 @@
-package Actors;
+package InputProcessing.Coordinates;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
@@ -36,14 +36,11 @@ public class Coordinates extends Vector2 {
      *
      * @param numMembers
      * @param centerPoint
-     * @param spacing
+     * @param spacing the distance between each enemy
      * @return list coordinates that forms a line
      */
-    public static List<Vector2> lineSwarm(int numMembers,Vector2 centerPoint, int spacing) {
+    public static List<Vector2> lineSwarm(int numMembers, int spacing, Vector2 centerPoint, Vector2 target) {
         List<Vector2> swarmCoordinates = new ArrayList<>();
-
-        //want the normal of the line to always face the middle of the screen
-        Vector2 target = new Vector2((float)Gdx.graphics.getWidth()/2,(float)Gdx.graphics.getHeight()/2);
 
 
         // Calculate the direction vector from centerPoint to targetCoordinate
@@ -67,11 +64,12 @@ public class Coordinates extends Vector2 {
 
     /**
      *
-     * @return a random coordinates outside of screen
+     * @param center the player position
+     * @return  a random coordinates outside of screen
      */
-    public static Vector2 randomPoint() {
+    public static Vector2 randomPoint(Vector2 center) {
 
-        Vector2 center = new Vector2((float)Gdx.graphics.getWidth()/2, (float)Gdx.graphics.getHeight()/2);
+
         double innerRadius = (float)Gdx.graphics.getWidth()/2;
         double outerRadius = 0.7*Gdx.graphics.getWidth();
         double angle = Math.toRadians(Math.random() * 360);
@@ -80,7 +78,20 @@ public class Coordinates extends Vector2 {
         double y = center.y + randomRadius * Math.sin(angle);
 
         return new Vector2((float)x,(float)y);
+    }
 
+    /**
+     *
+     * @param num
+     * @param center player's position
+     * @return a list of random points outside of screen
+     */
+    public static List<Vector2> randomPoints(int num, Vector2 center) {
+        List<Vector2> points = new ArrayList<>();
+        for(int i = 0; i < num; i++) {
+            points.add(randomPoint(center));
+        }
+        return points;
     }
 
 
