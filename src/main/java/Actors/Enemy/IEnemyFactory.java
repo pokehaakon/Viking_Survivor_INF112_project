@@ -20,23 +20,25 @@ public interface IEnemyFactory {
      * @param type
      * @return a desired amount of enemies
      */
-    List<Enemy> createEnemies(int count, String type);
+    List<Enemy> createEnemies(int count, String type, List<Vector2> startPoints);
 
     /**
      *
      * @param count
      * @return desired number of random enemies
      */
-    List<Enemy> createRandomEnemies(int count);
+    List<Enemy> createRandomEnemies(int count, List<Vector2> startPoints);
 
-//    /**
-//     *
-//     * @param numMembers
-//     * @param enemyType
-//     * @param swarmType
-//     * @return creates a swarm of enemies
-//     */
-//    Swarm createSwarm(int numMembers, String enemyType, SwarmType swarmType);
+
+    /**
+     *
+     * @param numMembers
+     * @param enemyType
+     * @param swarmType
+     * @param startPoints
+     * @return a swarm: a list of enemies with the state SWARM_MEMBER
+     */
+    List<Enemy> createSwarm(int numMembers, String enemyType, SwarmType swarmType, List<Vector2> startPoints);
 
 
 }
