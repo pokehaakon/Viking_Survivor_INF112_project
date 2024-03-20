@@ -2,6 +2,7 @@ package VikingSurvivor.app;
 
 import InputProcessing.*;
 import InputProcessing.Contexts.Context;
+import InputProcessing.Contexts.TrainingContext;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -28,6 +29,8 @@ public class HelloWorld implements ApplicationListener {
 
 		inProc = new ContextualInputProcessor(batch, camera);
 		inProc.setContext("MAINMENU"); //set starting context
+		//inProc.setContext("Training");
+
 
 //		InputMultiplexer multiplexer = new InputMultiplexer();
 //		multiplexer.addProcessor(inProc);

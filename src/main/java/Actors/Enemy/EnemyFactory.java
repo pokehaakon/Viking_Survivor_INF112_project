@@ -20,8 +20,8 @@ import static Tools.ShapeTools.createCircleShape;
 
 public class EnemyFactory implements IEnemyFactory {
 
-    private static float ENEMY1_SCALE = 0.2f;
-    private static float ENEMY2_SCALE = 0.2f;
+    private static float ENEMY1_SCALE = 0.1f;
+    private static float ENEMY2_SCALE = 0.1f;
 
 
     private final static List<String> enemyTypes = Arrays.asList("ENEMY1", "ENEMY2");

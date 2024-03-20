@@ -28,6 +28,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -39,18 +40,19 @@ import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.*;
 
 public class MVPContext extends Context {
-    private static final float PLAYER_SCALE = 0.5f;
+
+    // player info
+    private static final float PLAYER_SCALE = 0.2f;
+    private static final String PLAYER_IMG = "obligator.png";
+
     private final SpriteBatch batch;
     private final Camera camera;
     private World world;
-//    private PlayerExample player;
     private Player player;
     //private Array<Enemy> enemies;
     private Array<Enemy> enemies;
     private final BitmapFont font;
-    final private Texture spriteImage, rectSprite;
-    final private Rectangle spriteRect, spriteRectEnemy;
-    final private ShapeRenderer shape;
+    //final private ShapeRenderer shape;
     private RollingSum UpdateTime, FrameTime, FPS, UPS;
     private long previousFrameStart = System.nanoTime();
     private final Lock renderLock;
@@ -66,6 +68,8 @@ public class MVPContext extends Context {
 
 
 
+
+
     public MVPContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
         super(name, iProc);
 
@@ -77,20 +81,10 @@ public class MVPContext extends Context {
 
         enemies = new Array<>();
 
-        float enemyScale = 0.3f;
-        spriteImage = new Texture(Gdx.files.internal("obligator.png"));
 
-
-
-        spriteRect = new Rectangle(0f, 0f, spriteImage.getWidth(), spriteImage.getHeight());
-        spriteRectEnemy = new Rectangle(1, 1, spriteImage.getWidth() / 2f * enemyScale, spriteImage.getHeight() / 2f * enemyScale);
-
-        rectSprite = makeRectangle(spriteImage.getWidth() / 2, spriteImage.getHeight() / 2, 2,2,2,2, Color.GREEN, Color.CLEAR);
 
         font = new BitmapFont();
         font.setColor(Color.RED);
-
-        this.shape = new ShapeRenderer();
 
 
 
@@ -206,7 +200,7 @@ public class MVPContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.WHITE);
 
-        float radius = spriteRectEnemy.getWidth() / 2;
+
 
 
         Vector2 origin;
@@ -288,7 +282,7 @@ public class MVPContext extends Context {
 
     @Override
     public void dispose() {
-        spriteImage.dispose();
+
     }
 
     private void createWorld() {
@@ -313,9 +307,10 @@ public class MVPContext extends Context {
     }
 
     private void initializePlayer() {
+        Texture playerSprite = new Texture(Gdx.files.internal(PLAYER_IMG));
         PolygonShape squarePlayer = squarePlayer = createSquareShape(
-                spriteRect.getWidth(),
-                spriteRect.getHeight()
+                playerSprite.getWidth()*PLAYER_SCALE,
+                playerSprite.getHeight()*PLAYER_SCALE
         );
 
         Body playerBody = createBody(
@@ -330,7 +325,8 @@ public class MVPContext extends Context {
                 0,
                 0
         );
-        player = new Player(playerBody, spriteImage, PLAYER_SCALE, Stats.player());
+
+        player = new Player(playerBody, playerSprite, PLAYER_SCALE, Stats.player());
         player.setAction(playerAction);
 
 

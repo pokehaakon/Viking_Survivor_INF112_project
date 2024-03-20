@@ -3,22 +3,22 @@ package Actors.Stats;
 
 public class Stats {
 
-    //player
+    //player: random values
     public static final float PLAYER_HP = 100;
-    public static final float PLAYER_SPEED = 10000 ;
+    public static final float PLAYER_SPEED = 120 ;
     public static final float PLAYER_DAMAGE = 100;
     public static final float PLAYER_ARMOUR = 100;
 
-    //enemy 1
+    //enemy 1: random values
     public static final float ENEMY1_HP = 100;
-    public static final float ENEMY1_SPEED = 100;
+    public static final float ENEMY1_SPEED = 20;
     public static final float ENEMY1_DAMAGE = 100;
     public static final float ENEMY1_ARMOUR = 100;
     public static final float ENEMY1_KNOCKBACK_RESISTANCE = 100;
 
-    //enemy 2
+    //enemy 2 : random values
     public static final float ENEMY2_HP = 100;
-    public static final float ENEMY2_SPEED = 100;
+    public static final float ENEMY2_SPEED = 20;
     public static final float ENEMY2_DAMAGE = 100;
     public static final float ENEMY2_ARMOUR = 100;
     public static final float ENEMY2_KNOCKBACK_RESISTANCE = 100;

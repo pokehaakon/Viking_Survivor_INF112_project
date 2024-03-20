@@ -32,7 +32,7 @@ import static Rendering.Shapes.makeRectangle;
 import static Tools.ShapeTools.createSquareShape;
 import static Tools.ShapeTools.getBottomLeftCorrection;
 
-public class TrainingContext extends Context {
+public class TrainingContext extends Context{
 
     //    private PlayerExample player;
 
@@ -48,6 +48,8 @@ public class TrainingContext extends Context {
     Player player;
     Player ground;
 
+    Body playerBody;
+
 
 
     private World world;
@@ -61,15 +63,16 @@ public class TrainingContext extends Context {
         super(name, iProc);
         this.batch = batch;
         this.camera = camera;
-        world = new World(new Vector2(0, -20), true);
+
+        world = new World(new Vector2(0, 0), true);
         debugRenderer = new Box2DDebugRenderer();
 
         BodyDef ballDef = new BodyDef();
         ballDef.type = BodyDef.BodyType.DynamicBody;
-        ballDef.position.set(500,500);
+        ballDef.position.set(200,200);
 
         CircleShape ballShape = new CircleShape();
-        ballShape.setRadius(30);
+        ballShape.setRadius(1);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = ballShape;
@@ -77,7 +80,7 @@ public class TrainingContext extends Context {
         fixtureDef.friction = 0;
         fixtureDef.restitution = 0.75f;
 
-        Body playerBody = world.createBody(ballDef);
+        playerBody = world.createBody(ballDef);
         Fixture playerFixture = playerBody.createFixture(fixtureDef);
         player = new Player(playerBody,new Texture(Gdx.files.internal("obligator.png")),0.5f, Stats.player());
         ballShape.dispose();
@@ -115,32 +118,36 @@ public class TrainingContext extends Context {
 //        ground = new Player(groundBody,new Texture(Gdx.files.internal("obligator.png")),0.5f);
 //        groundShape.dispose();
 
-        Gdx.input.setInputProcessor(new InputProcessor() {
+        this.setInputProcessor(new InputProcessor() {
             @Override
             public boolean keyDown(int i) {
-                Vector2 vel = new Vector2(0, 0);
+                Vector2 vel = new Vector2();
                 switch (i) {
                     case Input.Keys.W:
-                        vel.y += 10;
+                        vel.y =10000;
                         break;
 
                     case Input.Keys.S:
-                        vel.y -= 10;
+                        vel.y =- 1;
                         break;
                     case Input.Keys.A:
-                        vel.x -= 10;
+                        vel.x =- 1;
                         break;
                     case Input.Keys.D:
-                        vel.x += 10;
+                        vel.x = 1;
                         break;
                 }
-                playerBody.setLinearVelocity(vel);
+
+                //vel.setLength(100000000);
+                playerBody.setLinearVelocity(new Vector2(0,-10000));
+
                 return true;
 
             }
 
             @Override
             public boolean keyUp(int i) {
+
                 return false;
             }
 
@@ -178,7 +185,8 @@ public class TrainingContext extends Context {
             public boolean scrolled(float v, float v1) {
                 return false;
             }
-        });
+        }
+        );
     }
 
 
@@ -188,7 +196,7 @@ public class TrainingContext extends Context {
     @Override
     public void show() {
         camera = new OrthographicCamera();
-        world = new World(new Vector2(0, -20), true);
+        world = new World(new Vector2(0, 0), true);
         debugRenderer = new Box2DDebugRenderer();
 
         BodyDef ballDef = new BodyDef();
@@ -196,7 +204,7 @@ public class TrainingContext extends Context {
         ballDef.position.set(500,500);
 
         CircleShape ballShape = new CircleShape();
-        ballShape.setRadius(100f);
+        ballShape.setRadius(0.9f);
 
 
         FixtureDef fixtureDef = new FixtureDef();
@@ -205,9 +213,9 @@ public class TrainingContext extends Context {
         fixtureDef.friction = 0;
         fixtureDef.restitution = 0.75f;
 
-        Body playerBody = world.createBody(ballDef);
+        //playerBody = world.createBody(ballDef);
         Fixture playerFixture = playerBody.createFixture(fixtureDef);
-        player = new Player(playerBody,new Texture(Gdx.files.internal("obligator.png")),0.5f, Stats.player());
+        //player = new Player(playerBody,new Texture(Gdx.files.internal("obligator.png")),0.5f, Stats.player());
         ballShape.dispose();
 
 
@@ -218,11 +226,10 @@ public class TrainingContext extends Context {
     public void render(float v) {
         ScreenUtils.clear(Color.WHITE);
         debugRenderer.render(world, camera.combined);
-//        batch.begin();
-//        player.draw(batch);
-//        ground.draw(batch);
-//        batch.end();
-        world.step(1/60f, 10, 10);
+//
+        playerBody.setLinearVelocity(0,-120);
+
+        world.step(1/60f, 6, 8);
     }
 
     @Override
