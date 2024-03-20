@@ -10,7 +10,6 @@ public class Player extends Actor {
     public Vector2 velocityVector;
     public int level;
 
-
     private final PlayerStats stats;
 
     public Player(Body body, Texture sprite, float scale, PlayerStats stats) {
@@ -20,22 +19,9 @@ public class Player extends Actor {
         speed = stats.speed();
         damage = stats.damage();
         armour = stats.armour();
+
         level = 1;
     }
 
-    @Override
-    public void update() {
 
-
-    }
-
-
-//    public void resetVelocity(){
-//        velocityVector = new Vector2();
-//    }
-
-//    public void move(){
-//        velocityVector.setLength(speed);
-//        body.setLinearVelocity(velocityVector);
-//    }
 }

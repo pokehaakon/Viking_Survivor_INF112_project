@@ -7,7 +7,7 @@ import Actors.Stats.Stats;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
-import Simulation.SimulationThread;
+//import Simulation.SimulationThread;
 import Tools.RollingSum;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Camera;
