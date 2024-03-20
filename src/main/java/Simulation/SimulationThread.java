@@ -1,13 +1,10 @@
 package Simulation;
 
-import Actors.Enemy.Enemy;
-import Actors.Player.Player;
+import InputProcessing.Contexts.MVPContext;
 import InputProcessing.KeyStates;
 import Tools.RollingSum;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
 
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -17,23 +14,24 @@ public class SimulationThread extends Thread {
     private KeyStates keyStates;
     private World world;
     private RollingSum updateTime, UPS;
-    private Player player;
-    private Array<Enemy> enemies;
+
     private boolean quit = false;
     private Set<Body> toBeKilled;
     private boolean paused = false;
     private long frame = 0;
     public final int SET_UPS = 60;
 
-    public SimulationThread(Lock renderLock, KeyStates keyStates, World world, Set<Body> toBeKilled, RollingSum updateTime, RollingSum UPS, Player player, Array<Enemy> enemies) {
-        this.renderLock = renderLock;
-        this.keyStates = keyStates;
-        this.world = world;
-        this.updateTime = updateTime;
-        this.UPS = UPS;
-        this.toBeKilled = toBeKilled;
-        this.enemies = enemies;
-        this.player = player;
+    private final MVPContext context;
+
+    public SimulationThread(MVPContext context) {
+        this.context = context;
+        renderLock = context.getRenderLock();
+        keyStates = context.getKeyStates();
+        world = context.getWorld();
+        updateTime = context.getUpdateTime();
+        UPS = context.getUPS();
+        toBeKilled = context.getToBoKilled();
+
     }
 
     @Override
@@ -77,49 +75,11 @@ public class SimulationThread extends Thread {
     private long doSimStep() {
         long t0 = System.nanoTime();
 
-        Vector2 vel = new Vector2(0, 0);
-        int dy = 1, dx = 1;
-        vel.x = 0;
-        vel.y = 0;
-
-//        if (keyStates.getState(KeyStates.GameKey.UP)) {
-//            vel.y += dy;
-//        }
-//        if (keyStates.getState(KeyStates.GameKey.DOWN)) {
-//            vel.y += -dy;
-//        }
-//        if (keyStates.getState(KeyStates.GameKey.LEFT)) {
-//            vel.x += -dx;
-//        }
-//        if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
-//            vel.x += dx;
-//        }
         if (keyStates.getState(KeyStates.GameKey.QUIT)) {
             stopSim();
         }
-        player.step();
-        System.out.println(player.getBody().getLinearVelocity());
-//        vel.setLength(60*2);
-//
-//        player.setLinearVelocity(vel);
 
-        //calculation for enemies
-
-//        Vector2 eVel = new Vector2(0, 0);
-//        Vector2 playerPos = player.getBody().getWorldCenter();
-//        for (Enemy enemy : enemies) {
-//            eVel.x = 0;
-//            eVel.y = 0;
-//            eVel.add(playerPos).sub(enemy.getBody().getWorldCenter());
-//
-//            eVel.setLength(60 * 0.3f);
-//            enemy.getBody().setLinearVelocity(eVel);
-//        }
-
-        for (Enemy enemy : enemies) {
-            enemy.step();
-
-        }
+        context.updateActors();
 
         world.step(1/(float) SET_UPS, 10, 10);
 
@@ -146,3 +106,5 @@ public class SimulationThread extends Thread {
         return frame;
     }
 }
+
+
