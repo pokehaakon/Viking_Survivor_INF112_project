@@ -1,13 +1,11 @@
 package Actors;
 
-import Actors.Enemy.Enemy;
-import Actors.IGameObject;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
-public abstract class Actor implements IGameObject{
+public abstract class Actor implements IGameObject,IActor{
 
     protected float HP, speed, damage, armour;
 
@@ -17,10 +15,10 @@ public abstract class Actor implements IGameObject{
 
     protected Texture sprite;
 
-    protected ActorAction action;
 
     private boolean destroyed = false;
 
+    // unit vector, direction of movement
     protected Vector2 velocityVector;
 
     public Actor(Body body, Texture sprite, float scale) {
@@ -29,16 +27,6 @@ public abstract class Actor implements IGameObject{
         this.sprite = sprite;
     }
 
-    public void setAction(ActorAction action) {
-        this.action = action;
-    }
-
-    public void step(){
-
-        action.act(this);
-
-
-    }
 
     @Override
     public void destroy() {
@@ -62,29 +50,27 @@ public abstract class Actor implements IGameObject{
         batch.draw(sprite,p.x,p.y, sprite.getWidth()*scale,  sprite.getHeight()*scale);
     }
 
+    @Override
     public void resetVelocity(){
         velocityVector = new Vector2();
     }
 
+    @Override
     public void setVelocityVector(float x, float y) {
         velocityVector.x += x;
         velocityVector.y += y;
     }
 
+
+    @Override
     public void move(){
         velocityVector.setLength(speed);
         body.setLinearVelocity(velocityVector);
     }
 
-    public void chase(Actor actor){
-        Vector2 actorPos = actor.getBody().getWorldCenter();
-        velocityVector.add(actorPos).sub(body.getWorldCenter());
-
-        move();
-    }
-
-    public Vector2 getVelocityVector() {
-        return velocityVector;
+    @Override
+    public void setSpeed(int speedMultiplier) {
+        speed *= speedMultiplier;
     }
 
 
