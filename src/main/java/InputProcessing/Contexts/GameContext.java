@@ -294,7 +294,7 @@ public class GameContext extends Context {
 //            points[i] = temp2.x / zoomLevel + player.getPosition().x / zoomLevel + xc;
 //            points[i+1] = temp2.y / zoomLevel + player.getPosition().y / zoomLevel + yc;
 
-            temp2.sub(playerPositionCorrection).add(origin).scl(1/zoomLevel);
+            temp2.add(playerPositionCorrection).add(origin).scl(1/zoomLevel);
             points[i] = temp2.x + xc;
             points[i+1] = temp2.y + yc;
         }

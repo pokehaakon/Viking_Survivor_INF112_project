@@ -204,7 +204,7 @@ public class MVPContext extends Context {
         Vector2 origin;
         //origin = player.getWorldCenter().cpy();
         origin = player.getBody().getPosition().cpy();
-        origin.add(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
+        origin.sub(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
 
         //origin = player.getPosition().cpy();
         //center camera at player
