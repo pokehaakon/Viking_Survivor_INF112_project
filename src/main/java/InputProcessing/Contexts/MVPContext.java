@@ -1,13 +1,15 @@
 package InputProcessing.Contexts;
 
-import Actors.Actor;
-import Actors.ActorAction;
-import InputProcessing.Coordinates.Coordinates;
+import Actors.ActorAction.ActorAction;
+import Actors.ActorAction.EnemyActions;
+import Actors.ActorAction.PlayerActions;
+import InputProcessing.Coordinates.RandomCoordinates;
 import Actors.Enemy.*;
 import Actors.Player.Player;
 
 import Actors.Stats.Stats;
 import InputProcessing.ContextualInputProcessor;
+import InputProcessing.Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
 import Simulation.SimulationThread;
@@ -93,8 +95,8 @@ public class MVPContext extends Context {
 
         // spawns start enemies
         spawnRandomEnemies(10);
-        spawnSwarm("Enemy1", SwarmType.LINE, 10, 20);
-        spawnSwarm("Enemy2", SwarmType.SQUARE, 1000,60);
+        //spawnSwarm("Enemy1", SwarmType.LINE, 10, 20);
+        spawnSwarm("Enemy2", SwarmType.SQUARE, 12,60);
 
         toBoKilled = new HashSet<>();
         ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
@@ -288,33 +290,43 @@ public class MVPContext extends Context {
 
     private void spawnEnemies(String enemyType, int num) {
         // random start coordinates
-        List<Vector2> startPoints = Coordinates.randomPoints(num, player.getBody().getPosition());
+        List<Vector2> startPoints = RandomCoordinates.randomPoints(num, player.getBody().getPosition());
 
-        enemies.addAll(enemyFactory.createEnemies(num, enemyType, startPoints));
+        for(Enemy enemy: enemyFactory.createEnemies(num, enemyType, startPoints)) {
+            enemy.setAction(EnemyActions.chasePlayer(player));
+            enemies.add(enemy);
+        }
+
     }
 
     private void spawnRandomEnemies(int num) {
         // random start coordinates
-        List<Vector2> startPoints = Coordinates.randomPoints(num, player.getBody().getPosition());
+        List<Vector2> startPoints = RandomCoordinates.randomPoints(num, player.getBody().getPosition());
 
-        enemies.addAll(enemyFactory.createRandomEnemies(num, startPoints));
+        for(Enemy enemy: enemyFactory.createRandomEnemies(num, startPoints)) {
+            //sets action
+            enemy.setAction(EnemyActions.chasePlayer(player));
+            enemies.add(enemy);
+        }
+
     }
 
     private void spawnSwarm(String enemyType, SwarmType swarmType, int size, int spacing) {
-        List<Vector2> startPoints;
-        Vector2 randomCenter = Coordinates.randomPoint(player.getBody().getPosition());
+        Vector2 swarmDirection;
+        Vector2 center = player.getBody().getPosition();
+        Vector2 randomStartPoint = RandomCoordinates.randomPoint(center);
 
-        // swarm velocity vector is the player's initial position
-        Vector2 target = player.getBody().getPosition();
+        List<Vector2> swarmCoordinates = SwarmCoordinates.getSwarmCoordinates(swarmType,size,spacing,randomStartPoint,center);
 
-        if(swarmType == SwarmType.LINE) {
-            startPoints = Coordinates.lineSwarm(size, spacing,randomCenter,target);
+        swarmDirection = SwarmCoordinates.swarmDirection(center, swarmType, swarmCoordinates);
+
+        for(Enemy enemy: enemyFactory.createEnemies(size,enemyType,swarmCoordinates)) {
+            enemy.setSpeed(Stats.SWARM_SPEED_MULTIPLIER);
+            // sets action
+            enemy.setAction(EnemyActions.swarmStrike(swarmDirection));
+            enemies.add(enemy);
         }
-        else {
-            startPoints = Coordinates.squareSwarm(size, randomCenter,spacing);
-        }
 
-        enemies.addAll(enemyFactory.createSwarm(size, enemyType, swarmType, startPoints));
 
     }
 
@@ -343,44 +355,22 @@ public class MVPContext extends Context {
         );
 
         player = new Player(playerBody, playerSprite, Sprites.PLAYER_SCALE, Stats.player());
+        player.setAction(PlayerActions.moveToInput(keyStates));
 
 
         squarePlayer.dispose();
     }
 
 
-    private void movePlayer() {
-        // moves player according to input
-        player.resetVelocity();
-        if (keyStates.getState(KeyStates.GameKey.UP)) {
-            player.setVelocityVector(0,1);
-        }
-        if (keyStates.getState(KeyStates.GameKey.DOWN)) {
-            player.setVelocityVector(0,-1);
-        }
-        if (keyStates.getState(KeyStates.GameKey.LEFT)) {
-            player.setVelocityVector(-1,0);
-        }
-        if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
-            player.setVelocityVector(1,0);
-        }
-        player.move();
-    }
     private void updatePlayer() {
-        movePlayer();
+        player.step();
     }
 
     private void updateEnemies() {
         for(Enemy enemy:enemies) {
-            if(enemy.getEnemyState() ==  EnemyState.SOLO) {
-                enemy.chase(player);
-            }
-            // if swarm
-            else {
-                enemy.swarmStrike(player);
-            }
-
+            enemy.step();
         }
+
 
     }
 
@@ -392,7 +382,6 @@ public class MVPContext extends Context {
         updateEnemies();
 
     }
-
 
     public Lock getRenderLock() {
         return renderLock;
@@ -423,27 +412,12 @@ public class MVPContext extends Context {
         return toBoKilled;
     }
 
-    private ActorAction playerInputAction() {
 
-        return (p) ->{
 
-        }
-        // moves player according to input
-        player.resetVelocity();
-        if (keyStates.getState(KeyStates.GameKey.UP)) {
-            player.setVelocityVector(0,1);
-        }
-        if (keyStates.getState(KeyStates.GameKey.DOWN)) {
-            player.setVelocityVector(0,-1);
-        }
-        if (keyStates.getState(KeyStates.GameKey.LEFT)) {
-            player.setVelocityVector(-1,0);
-        }
-        if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
-            player.setVelocityVector(1,0);
-        }
-        player.move();
-    }
+
+
+
+
 
 
 

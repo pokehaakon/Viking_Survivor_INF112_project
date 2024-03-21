@@ -1,5 +1,6 @@
 package Actors;
 
+import Actors.ActorAction.ActorAction;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -19,7 +20,7 @@ public abstract class Actor implements IGameObject,IActor{
     private boolean destroyed = false;
 
     // unit vector, direction of movement
-    protected Vector2 velocityVector;
+    public Vector2 velocityVector;
 
     public Actor(Body body, Texture sprite, float scale) {
         this.body = body;
@@ -70,6 +71,7 @@ public abstract class Actor implements IGameObject,IActor{
     }
 
 
+
     @Override
     public void move(){
         velocityVector.setLength(speed);
@@ -80,7 +82,5 @@ public abstract class Actor implements IGameObject,IActor{
     public void setSpeed(int speedMultiplier) {
         speed *= speedMultiplier;
     }
-
-
 
 }

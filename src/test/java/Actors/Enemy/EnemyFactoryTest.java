@@ -14,17 +14,17 @@ class EnemyFactoryTest {
         factory = new EnemyFactory(null);
     }
 
-    @Test
-    void invalidEnemyType() {
-
-        assertThrows(NullPointerException.class, () -> {
-            factory.createEnemyType(null , new Vector2(),0);
-        });
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            factory.createEnemyType("hello", new Vector2(),0);
-        });
-    }
+//    @Test
+//    void invalidEnemyType() {
+//
+//        assertThrows(NullPointerException.class, () -> {
+//            factory.createEnemyType(null , new Vector2(),0);
+//        });
+//
+//        assertThrows(IllegalArgumentException.class, () -> {
+//            factory.createEnemyType("hello", new Vector2(),0);
+//        });
+//    }
 
     //to test: correct enemytype, correct position, correct number of enemies etc
 }

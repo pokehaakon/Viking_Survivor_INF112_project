@@ -24,9 +24,7 @@ public class EnemyFactory implements IEnemyFactory {
             "ENEMY1",
             "ENEMY2"
     );
-    private World world;
-
-    private static final int SWARM_SPEED_MULTIPLIER = 5;
+    private final World world;
 
     public EnemyFactory(World world) {
         this.world = world;
@@ -105,32 +103,6 @@ public class EnemyFactory implements IEnemyFactory {
         return enemyList;
     }
 
-    @Override
-    public List<Enemy> createSwarm(int numMembers, String enemyType, SwarmType swarmType, List<Vector2> startPoints) {
-        List<Enemy> enemies = new ArrayList<>();
-
-        Vector2 centerPos;
-
-        if(swarmType == SwarmType.SQUARE) {
-            centerPos = startPoints.get((int)Math.ceil(Math.sqrt(startPoints.size())));
-
-        }
-        else if(swarmType == SwarmType.LINE){
-            centerPos = startPoints.get(startPoints.size()/2);
-        }
-        else{
-            throw new IllegalArgumentException("Cannot find swarm type");
-        }
-
-        for(int i = 0; i < numMembers; i++) {
-            Enemy enemy = createEnemyType(enemyType, startPoints.get(i));
-            enemy.setEnemyState(EnemyState.SWARM_MEMBER);
-            enemy.setSwarmCenter(centerPos);
-            enemy.setSpeed(SWARM_SPEED_MULTIPLIER);
-            enemies.add(enemy);
-        }
-        return enemies;
-    }
 
     private Body createEnemyBody(Vector2 pos, Shape shape) {
         Filter enemyFilter = createFilter(
