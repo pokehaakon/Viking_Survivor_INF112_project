@@ -1,7 +1,6 @@
 package Actors.ActorAction;
 
 import Actors.Actor;
-import Actors.Enemy.SwarmType;
 import com.badlogic.gdx.math.Vector2;
 
 public class EnemyActions {
@@ -15,7 +14,7 @@ public class EnemyActions {
         return (e)-> {
             e.resetVelocity();
             e.setVelocityVector(swarmDirection.x, swarmDirection.y);
-            e.move();
+            e.moveWithConstantSpeed();
         };
     }
 
@@ -28,7 +27,7 @@ public class EnemyActions {
 
         return (e) ->{
             e.velocityVector.add(player.getBody().getPosition()).sub(e.getBody().getWorldCenter());
-            e.move();
+            e.moveWithConstantSpeed();
         };
 
     }

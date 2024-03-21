@@ -1,7 +1,5 @@
 package Actors;
 
-import com.badlogic.gdx.math.Vector2;
-
 public interface IActor {
     /**
      * resets velocity vector to default conditions
@@ -19,7 +17,7 @@ public interface IActor {
     /**
      * moves actor according to its velocity vector and speed
      */
-    void move();
+    void moveWithConstantSpeed();
 
 
     /**

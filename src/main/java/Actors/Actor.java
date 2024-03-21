@@ -79,7 +79,7 @@ public abstract class Actor implements IGameObject,IActor{
 
 
     @Override
-    public void move(){
+    public void moveWithConstantSpeed(){
         velocityVector.setLength(speed);
         body.setLinearVelocity(velocityVector);
     }

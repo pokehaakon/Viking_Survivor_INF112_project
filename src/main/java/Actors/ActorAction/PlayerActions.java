@@ -20,7 +20,7 @@ public class PlayerActions {
             if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
                 p.setVelocityVector(1,0);
             }
-            p.move();
+            p.moveWithConstantSpeed();
         };
     }
 }
