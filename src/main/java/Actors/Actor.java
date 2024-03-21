@@ -15,7 +15,7 @@ public abstract class Actor implements IGameObject,IActor{
 
     protected Texture sprite;
 
-
+    private ActorAction action;
     private boolean destroyed = false;
 
     // unit vector, direction of movement
@@ -27,6 +27,14 @@ public abstract class Actor implements IGameObject,IActor{
         this.sprite = sprite;
     }
 
+
+    public void setAction(ActorAction action) {
+        this.action = action;
+    }
+
+    public void step(){
+        action.act(this);
+    }
 
     @Override
     public void destroy() {

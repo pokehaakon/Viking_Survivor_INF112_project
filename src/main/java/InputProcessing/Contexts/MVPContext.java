@@ -1,5 +1,7 @@
 package InputProcessing.Contexts;
 
+import Actors.Actor;
+import Actors.ActorAction;
 import InputProcessing.Coordinates.Coordinates;
 import Actors.Enemy.*;
 import Actors.Player.Player;
@@ -91,8 +93,8 @@ public class MVPContext extends Context {
 
         // spawns start enemies
         spawnRandomEnemies(10);
-        spawnSwarm("Enemy1", SwarmType.LINE, 10, 60);
-        spawnSwarm("Enemy2", SwarmType.SQUARE, 10,60);
+        spawnSwarm("Enemy1", SwarmType.LINE, 10, 20);
+        spawnSwarm("Enemy2", SwarmType.SQUARE, 1000,60);
 
         toBoKilled = new HashSet<>();
         ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
@@ -197,11 +199,16 @@ public class MVPContext extends Context {
     @Override
     public void render(float delta) {
         FPS.add(System.nanoTime() - previousFrameStart);
+        if(frameCount % 60 ==0) {
+            System.out.println(FPS.avg());
+            System.out.println(UPS.avg());
+            System.out.println("");
+        }
         previousFrameStart = System.nanoTime();
 
         renderLock.lock();
         long renderStartTime = System.nanoTime();
-        ScreenUtils.clear(Color.WHITE);
+        ScreenUtils.clear(Color.GREEN);
 
         debugRenderer.render(world, camera.combined);
 
@@ -414,6 +421,28 @@ public class MVPContext extends Context {
 
     public Set<Body> getToBoKilled() {
         return toBoKilled;
+    }
+
+    private ActorAction playerInputAction() {
+
+        return (p) ->{
+
+        }
+        // moves player according to input
+        player.resetVelocity();
+        if (keyStates.getState(KeyStates.GameKey.UP)) {
+            player.setVelocityVector(0,1);
+        }
+        if (keyStates.getState(KeyStates.GameKey.DOWN)) {
+            player.setVelocityVector(0,-1);
+        }
+        if (keyStates.getState(KeyStates.GameKey.LEFT)) {
+            player.setVelocityVector(-1,0);
+        }
+        if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
+            player.setVelocityVector(1,0);
+        }
+        player.move();
     }
 
 
