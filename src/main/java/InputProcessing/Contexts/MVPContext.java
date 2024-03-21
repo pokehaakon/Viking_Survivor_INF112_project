@@ -1,5 +1,6 @@
 package InputProcessing.Contexts;
 
+import Actors.GifDecoder;
 import InputProcessing.Coordinates.Coordinates;
 import Actors.Enemy.*;
 import Actors.Player.Player;
@@ -17,8 +18,10 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -220,11 +223,11 @@ public class MVPContext extends Context {
 
         // draw enemies
         for (Enemy e : enemies) {
-            e.draw(batch);
+            e.draw(batch, Gdx.graphics.getDeltaTime());
         }
 
         //draw player
-        player.draw(batch);
+        player.draw(batch, Gdx.graphics.getDeltaTime());
 
 
         batch.end();
@@ -313,12 +316,13 @@ public class MVPContext extends Context {
 
     private void initializePlayer() {
         // player sprite
-        Texture playerSprite = new Texture(Gdx.files.internal(Sprites.PLAYER_PNG));
+        // Texture playerSprite = new Texture(Gdx.files.internal(Sprites.PLAYER_PNG));
+        Animation<TextureRegion> playerSprite = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("vikingright.gif").read());
 
         // player hitbox
         PolygonShape squarePlayer = createSquareShape(
-                playerSprite.getWidth()*Sprites.PLAYER_SCALE,
-                playerSprite.getHeight()*Sprites.PLAYER_SCALE
+                playerSprite.getKeyFrame(0).getRegionWidth()*Sprites.PLAYER_SCALE,
+                playerSprite.getKeyFrame(0).getRegionHeight()*Sprites.PLAYER_SCALE
         );
 
         // player body

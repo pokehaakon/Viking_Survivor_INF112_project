@@ -10,7 +10,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 public interface IGameObject {
 
     void destroy();
-    void draw(SpriteBatch batch);
+    void draw(SpriteBatch batch, float delta);
 
     Body getBody();
     boolean isDestroyed();

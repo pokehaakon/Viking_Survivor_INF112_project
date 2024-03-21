@@ -1,7 +1,9 @@
 package Actors;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
@@ -10,18 +12,17 @@ public abstract class Actor implements IGameObject,IActor{
     protected float HP, speed, damage, armour;
 
     protected Body body;
-
     protected float scale;
 
-    protected Texture sprite;
-
+    protected Animation<TextureRegion> sprite;
+    private float animationTime = 0;
 
     private boolean destroyed = false;
 
     // unit vector, direction of movement
     protected Vector2 velocityVector;
 
-    public Actor(Body body, Texture sprite, float scale) {
+    public Actor(Body body, Animation<TextureRegion> sprite, float scale) {
         this.body = body;
         this.scale = scale;
         this.sprite = sprite;
@@ -43,13 +44,15 @@ public abstract class Actor implements IGameObject,IActor{
     public boolean isDestroyed() {
         return destroyed;
     }
-
     @Override
-    public void draw(SpriteBatch batch) {
-        Vector2 p = body.getPosition();
-        batch.draw(sprite,p.x,p.y, sprite.getWidth()*scale,  sprite.getHeight()*scale);
-    }
+    public void draw(SpriteBatch batch, float delta){
+        // Added delta as a parameter to draw() such that it is animating the sprite
+        animationTime += delta;
+        TextureRegion currentFrame = sprite.getKeyFrame(animationTime);
+        Vector2 p2 = body.getPosition();
 
+        batch.draw(currentFrame,p2.x,p2.y, sprite.getKeyFrame(0).getRegionWidth()*scale,  sprite.getKeyFrame(0).getRegionHeight()*scale);
+    }
     @Override
     public void resetVelocity(){
         velocityVector = new Vector2();

@@ -3,6 +3,8 @@ package Actors.Enemy;
 import Actors.Actor;
 import Actors.Stats.EnemyStats;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
@@ -25,7 +27,7 @@ public class Enemy extends Actor implements IEnemy{
 
 
 
-    public Enemy(Body body, Texture sprite, float scale, EnemyStats stats) {
+    public Enemy(Body body, Animation<TextureRegion> sprite, float scale, EnemyStats stats) {
         super(body, sprite, scale);
         this.stats = stats;
 

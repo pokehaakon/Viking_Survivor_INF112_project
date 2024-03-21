@@ -7,9 +7,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 public class Sprites {
 
     // sprites
-    public static final String PLAYER_PNG = "obligator.png";
-    public static final String ENEMY_1_PNG = "img.png";
-    public static final String ENEMY_2_PNG = "img_3.png";
+    public static final String PLAYER_PNG = "vikingright.gif";
+    public static final String ENEMY_1_PNG = "raven.gif";
+    public static final String ENEMY_2_PNG = "viking_idle_left.gif";
 
     // scales
 

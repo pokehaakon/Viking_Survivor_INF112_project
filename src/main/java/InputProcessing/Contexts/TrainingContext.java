@@ -14,8 +14,10 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -82,7 +84,7 @@ public class TrainingContext extends Context{
 
         playerBody = world.createBody(ballDef);
         Fixture playerFixture = playerBody.createFixture(fixtureDef);
-        player = new Player(playerBody,new Texture(Gdx.files.internal("obligator.png")),0.5f, Stats.player());
+        player = new Player(playerBody,new Animation<TextureRegion>(0.5f),0.5f, Stats.player());
         ballShape.dispose();
 
         // ground
@@ -102,7 +104,7 @@ public class TrainingContext extends Context{
         Body groundBody = world.createBody(groundDef);
 
         Fixture groundFix = groundBody.createFixture(groundFixture);
-        ground = new Player(groundBody,new Texture(Gdx.files.internal("obligator.png")),0.5f, Stats.player());
+        ground = new Player(groundBody,new Animation<TextureRegion>(0.5f),0.5f, Stats.player());
         groundShape.dispose();
 
         // box

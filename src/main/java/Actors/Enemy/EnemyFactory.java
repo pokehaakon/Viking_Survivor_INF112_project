@@ -1,10 +1,13 @@
 package Actors.Enemy;
 
 
+import Actors.GifDecoder;
 import Actors.Stats.Stats;
 import Tools.FilterTool;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -42,15 +45,18 @@ public class EnemyFactory implements IEnemyFactory {
         Enemy enemy;
         float scale;
         Shape shape;
-        Texture texture;
+        Animation<TextureRegion> texture;
 
         switch (type.toUpperCase()) {
             case "ENEMY1": {
                 scale = Sprites.ENEMY1_SCALE;
-                texture = new Texture(Gdx.files.internal(Sprites.ENEMY_1_PNG));
+                texture = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal(Sprites.ENEMY_1_PNG).read());
+                if (texture == null) {
+                    throw new IllegalStateException("Failed to load texture for ENEMY1. Check if the file exists and is a valid GIF.");
+                }
                 shape = createSquareShape(
-                        texture.getWidth()*scale,
-                        texture.getHeight()*scale
+                        texture.getKeyFrame(0).getRegionWidth()*scale,
+                        texture.getKeyFrame(0).getRegionHeight()*scale
                 );
 
                 enemy = new Enemy(createEnemyBody(pos, shape), texture, scale, Stats.enemy1());
@@ -59,10 +65,14 @@ public class EnemyFactory implements IEnemyFactory {
             }
             case "ENEMY2": {
                 scale = Sprites.ENEMY2_SCALE;
-                texture = new Texture(Gdx.files.internal(Sprites.ENEMY_2_PNG));
+                texture = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal(Sprites.ENEMY_2_PNG).read());
+                if (texture == null) {
+                    throw new IllegalStateException("Failed to load texture for ENEMY2. Check if the file exists and is a valid GIF.");
+                }
                 shape = createSquareShape(
-                        texture.getWidth()*scale,
-                        texture.getHeight()*scale);
+                        texture.getKeyFrame(0).getRegionWidth()*scale,
+                        texture.getKeyFrame(0).getRegionHeight()*scale
+                );
 
                 enemy = new Enemy(createEnemyBody(pos, shape), texture, scale, Stats.enemy2());
                 shape.dispose();
