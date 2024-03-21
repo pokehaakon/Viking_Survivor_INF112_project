@@ -3,7 +3,7 @@ package InputProcessing.Contexts;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
-import Simulation.SimulationThread;
+//import Simulation.SimulationThread;
 import Tools.FilterTool;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;

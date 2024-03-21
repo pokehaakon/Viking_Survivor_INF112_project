@@ -1,9 +1,10 @@
 package InputProcessing.Contexts;
 
-import Actors.Actor;
-import Actors.Enemy.EnemyFactory;
-import Actors.Enemy.Enemy;
+import InputProcessing.Coordinates.Coordinates;
+import Actors.Enemy.*;
 import Actors.Player.Player;
+
+import Actors.Stats.Stats;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
@@ -18,44 +19,59 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static Rendering.Shapes.makeRectangle;
 import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.*;
 
 public class MVPContext extends Context {
+
+
     private final SpriteBatch batch;
     private final Camera camera;
-    private final World world;
-//    private PlayerExample player;
+
+    private World world;
+
     private Player player;
-    //private Array<Enemy> enemies;
-    private Array<Enemy> enemies;
+
+    private ArrayList<Enemy> enemies;
     private final BitmapFont font;
-    final private Texture spriteImage, rectSprite;
-    final private Rectangle spriteRect, spriteRectEnemy;
-    final private ShapeRenderer shape;
-    private RollingSum UpdateTime, FrameTime, FPS, UPS;
+
+    private RollingSum UpdateTime;
+    private RollingSum FrameTime;
+    private RollingSum FPS;
+
+
+
+    private RollingSum UPS;
     private long previousFrameStart = System.nanoTime();
+
     private final Lock renderLock;
+
+
     private KeyStates keyStates;
+
     private final SimulationThread simThread;
     private  EnemyFactory enemyFactory;
     private float zoomLevel = 1f;
     private long frameCount = 0;
     private static boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
+
+    private Box2DDebugRenderer debugRenderer;
+
+
+
+    private Set<Body> toBoKilled;
 
 
     public MVPContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
@@ -66,34 +82,23 @@ public class MVPContext extends Context {
 
         this.setInputProcessor(createInputProcessor());
         setupDebug();
-
-        enemies = new Array<>();
-
-        float enemyScale = 0.3f;
-        spriteImage = new Texture(Gdx.files.internal("obligator.png"));
-
-
-
-        spriteRect = new Rectangle(0f, 0f, spriteImage.getWidth(), spriteImage.getHeight());
-        spriteRectEnemy = new Rectangle(1, 1, spriteImage.getWidth() / 2f * enemyScale, spriteImage.getHeight() / 2f * enemyScale);
-
-        rectSprite = makeRectangle(spriteImage.getWidth() / 2, spriteImage.getHeight() / 2, 2,2,2,2, Color.GREEN, Color.CLEAR);
-
         font = new BitmapFont();
         font.setColor(Color.RED);
-
-        this.shape = new ShapeRenderer();
-
-
-
         renderLock = new ReentrantLock(true);
 
         //create and start simulation
-        world = createWorld();
-        Set<Body> toBoKilled = new HashSet<>();
+        createWorld();
+
+        // spawns start enemies
+        spawnRandomEnemies(10);
+        spawnSwarm("Enemy1", SwarmType.LINE, 10, 60);
+        spawnSwarm("Enemy2", SwarmType.SQUARE, 10,60);
+
+        toBoKilled = new HashSet<>();
         ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
         world.setContactListener(contactListener);
-        simThread = new SimulationThread(renderLock, keyStates, world, toBoKilled, UpdateTime, UPS, player, enemies);
+        simThread = new SimulationThread(this);
+
         simThread.start();
 
     }
@@ -198,15 +203,12 @@ public class MVPContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.WHITE);
 
-        float radius = spriteRectEnemy.getWidth() / 2;
-
+        debugRenderer.render(world, camera.combined);
 
         Vector2 origin;
-        //origin = player.getWorldCenter().cpy();
         origin = player.getBody().getPosition().cpy();
         origin.add(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
 
-        //origin = player.getPosition().cpy();
         //center camera at player
         camera.position.x = origin.x;
         camera.position.y = origin.y;
@@ -214,26 +216,15 @@ public class MVPContext extends Context {
         camera.update(true);
 
 
-
         batch.begin();
-        Array<Enemy> tempEnemies = new Array<>();
+
+        // draw enemies
         for (Enemy e : enemies) {
-            if (!e.getBody().isActive()) {continue;}
-            tempEnemies.add(e);
             e.draw(batch);
         }
-        enemies.clear();
-        enemies.addAll(tempEnemies);
-        //enemies = tempEnemies;
-        Array<Vector2> enemiesCenter = new Array<>(enemies.size);
-        //drawEnemies(enemiesCenter);
 
-        //draw player sprite
+        //draw player
         player.draw(batch);
-
-
-        //for some reason the sprite batch renders "last" frame...
-
 
 
         batch.end();
@@ -243,14 +234,6 @@ public class MVPContext extends Context {
         FrameTime.add(System.nanoTime() - renderStartTime);
         frameCount++;
     }
-    private void drawEnemies(Array<Vector2> enemiesCenter) {
-        for (Enemy e : enemies) {
-            if (e.isDestroyed()) {continue;}
-            e.draw(batch);
-        }
-
-    }
-
 
 
     @Override
@@ -280,20 +263,65 @@ public class MVPContext extends Context {
 
     @Override
     public void dispose() {
-        spriteImage.dispose();
+
     }
 
-    private World createWorld() {
+    private void createWorld() {
+        // sets up world
+
+        debugRenderer = new Box2DDebugRenderer();
         Box2D.init();
-        World world = new World(new Vector2(0, 0), true);
+        world = new World(new Vector2(0, 0), true);
         enemyFactory = new EnemyFactory(world);
+        initializePlayer();
+        enemies = new ArrayList<>();
 
+        world.step(1/60f, 10, 10);
+    }
 
-        PolygonShape squarePlayer = squarePlayer = createSquareShape(
-                spriteRect.getWidth(),
-                spriteRect.getHeight()
+    private void spawnEnemies(String enemyType, int num) {
+        // random start coordinates
+        List<Vector2> startPoints = Coordinates.randomPoints(num, player.getBody().getPosition());
+
+        enemies.addAll(enemyFactory.createEnemies(num, enemyType, startPoints));
+    }
+
+    private void spawnRandomEnemies(int num) {
+        // random start coordinates
+        List<Vector2> startPoints = Coordinates.randomPoints(num, player.getBody().getPosition());
+
+        enemies.addAll(enemyFactory.createRandomEnemies(num, startPoints));
+    }
+
+    private void spawnSwarm(String enemyType, SwarmType swarmType, int size, int spacing) {
+        List<Vector2> startPoints;
+        Vector2 randomCenter = Coordinates.randomPoint(player.getBody().getPosition());
+
+        // swarm velocity vector is the player's initial position
+        Vector2 target = player.getBody().getPosition();
+
+        if(swarmType == SwarmType.LINE) {
+            startPoints = Coordinates.lineSwarm(size, spacing,randomCenter,target);
+        }
+        else {
+            startPoints = Coordinates.squareSwarm(size, randomCenter,spacing);
+        }
+
+        enemies.addAll(enemyFactory.createSwarm(size, enemyType, swarmType, startPoints));
+
+    }
+
+    private void initializePlayer() {
+        // player sprite
+        Texture playerSprite = new Texture(Gdx.files.internal(Sprites.PLAYER_PNG));
+
+        // player hitbox
+        PolygonShape squarePlayer = createSquareShape(
+                playerSprite.getWidth()*Sprites.PLAYER_SCALE,
+                playerSprite.getHeight()*Sprites.PLAYER_SCALE
         );
 
+        // player body
         Body playerBody = createBody(
                 world,
                 new Vector2(),
@@ -306,48 +334,88 @@ public class MVPContext extends Context {
                 0,
                 0
         );
-        player = new Player(playerBody, spriteImage, 1);
-        player.setAction((p) -> {
-            Vector2 vel = new Vector2();
-            if (keyStates.getState(KeyStates.GameKey.UP)) {
-                vel.y += 1;
-            }
-            if (keyStates.getState(KeyStates.GameKey.DOWN)) {
-                vel.y += -1;
-            }
-            if (keyStates.getState(KeyStates.GameKey.LEFT)) {
-                vel.x += -1;
-            }
-            if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
-                vel.x += 1;
-            }
 
-            vel.setLength(60*2);
-
-            p.getBody().setLinearVelocity(vel);
-        });
-
-        Actor.ActorAction enemyAction = (e) -> {
-            Vector2 eVel = new Vector2();
-            Vector2 playerPos = player.getBody().getWorldCenter();
-            eVel.add(playerPos).sub(e.getBody().getWorldCenter());
-
-            eVel.setLength(60 * 0.3f);
-            e.getBody().setLinearVelocity(eVel);
-        };
-
-        enemies = new Array<>();
-        //enemies.add(enemyFactory.createEnemyType("ENEMY1", 50,  50, 1));
-        for(Enemy e : enemyFactory.createRandomEnemies(10)) {
-            enemies.add(e);
-            e.setAction(enemyAction);
-        }
+        player = new Player(playerBody, playerSprite, Sprites.PLAYER_SCALE, Stats.player());
 
 
         squarePlayer.dispose();
+    }
 
-        world.step(1/60f, 10, 10);
 
+    private void movePlayer() {
+        // moves player according to input
+        player.resetVelocity();
+        if (keyStates.getState(KeyStates.GameKey.UP)) {
+            player.setVelocityVector(0,1);
+        }
+        if (keyStates.getState(KeyStates.GameKey.DOWN)) {
+            player.setVelocityVector(0,-1);
+        }
+        if (keyStates.getState(KeyStates.GameKey.LEFT)) {
+            player.setVelocityVector(-1,0);
+        }
+        if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
+            player.setVelocityVector(1,0);
+        }
+        player.move();
+    }
+    private void updatePlayer() {
+        movePlayer();
+    }
+
+    private void updateEnemies() {
+        for(Enemy enemy:enemies) {
+            if(enemy.getEnemyState() ==  EnemyState.SOLO) {
+                enemy.chase(player);
+            }
+            // if swarm
+            else {
+                enemy.swarmStrike(player);
+            }
+
+        }
+
+    }
+
+    /**
+     * updates the in-game actors. this could be attack, movement etc
+     */
+    public void updateActors() {
+        updatePlayer();
+        updateEnemies();
+
+    }
+
+
+    public Lock getRenderLock() {
+        return renderLock;
+    }
+    public ArrayList<Enemy> getEnemies() {
+        return enemies;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+    public RollingSum getUPS() {
+        return UPS;
+    }
+    public KeyStates getKeyStates() {
+        return keyStates;
+    }
+
+    public World getWorld() {
         return world;
     }
+
+    public RollingSum getUpdateTime() {
+        return UpdateTime;
+    }
+
+    public Set<Body> getToBoKilled() {
+        return toBoKilled;
+    }
+
+
+
 }

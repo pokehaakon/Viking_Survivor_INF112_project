@@ -42,6 +42,7 @@ public class ContextFactory implements Disposable {
             case "MAINMENU" -> new MainMenuContext(contextName, batch, iProc);
             case "PAUSEMENU" -> new PauseContext(contextName, batch, iProc);
             case "CSELECT" -> new CSelectContext(contextName, batch, iProc);
+            case "Training" -> new TrainingContext(contextName,batch, camera, iProc);
             default -> throw new RuntimeException("ContextFactory cannot make context: " + contextName);
         };
     }

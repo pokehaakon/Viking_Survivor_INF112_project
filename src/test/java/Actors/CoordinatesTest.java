@@ -1,5 +1,6 @@
 package Actors;
 
+import InputProcessing.Coordinates.Coordinates;
 import com.badlogic.gdx.math.Vector2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
