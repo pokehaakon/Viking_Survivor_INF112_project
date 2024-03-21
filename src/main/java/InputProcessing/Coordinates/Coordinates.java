@@ -9,15 +9,15 @@ import java.util.List;
 public class Coordinates extends Vector2 {
 
     public Coordinates(float x, float y) {
-
         super(x,y);
     }
 
     /**
-     * Creating a list of coordinates for the swarm
+     *
      * @param numMembers
-     * @param startPoint
-     * @return a list of coordinates that forms a square grid
+     * @param startPoint random point outside of screen
+     * @param spacing distance between each enemy
+     * @return list of coordinates that forms a square grid
      */
     public static List<Vector2> squareSwarm(int numMembers, Vector2 startPoint, int spacing) {
         float sideLength = (float)Math.ceil(Math.sqrt(numMembers));
@@ -35,9 +35,10 @@ public class Coordinates extends Vector2 {
     /**
      *
      * @param numMembers
-     * @param centerPoint
-     * @param spacing the distance between each enemy
-     * @return list coordinates that forms a line
+     * @param spacing distance between enemies
+     * @param centerPoint random point outside of screen
+     * @param target player's position
+     * @return list of coordinates that forms a line
      */
     public static List<Vector2> lineSwarm(int numMembers, int spacing, Vector2 centerPoint, Vector2 target) {
         List<Vector2> swarmCoordinates = new ArrayList<>();
@@ -65,7 +66,7 @@ public class Coordinates extends Vector2 {
     /**
      *
      * @param center the player position
-     * @return  a random coordinates outside of screen
+     * @return a random coordinates outside of screen
      */
     public static Vector2 randomPoint(Vector2 center) {
 
