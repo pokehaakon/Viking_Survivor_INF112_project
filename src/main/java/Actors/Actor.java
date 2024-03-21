@@ -28,11 +28,17 @@ public abstract class Actor implements IGameObject,IActor{
         this.sprite = sprite;
     }
 
-
+    /**
+     * Defines a set of actions for the actor
+     * @param action the ActorAction object which represents the action
+     */
     public void setAction(ActorAction action) {
         this.action = action;
     }
 
+    /**
+     * The actor performs its actions
+     */
     public void step(){
         action.act(this);
     }
