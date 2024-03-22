@@ -1,14 +1,16 @@
 package InputProcessing.Contexts;
 
-import Actors.ActorAction.ActorAction;
+import Actors.ActorAction.Animations;
 import Actors.ActorAction.EnemyActions;
 import Actors.ActorAction.PlayerActions;
-import InputProcessing.Coordinates.RandomCoordinates;
-import Actors.Enemy.*;
+import Actors.Enemy.Enemy;
+import Actors.Enemy.EnemyFactory;
+import Actors.Enemy.Sprites;
+import Actors.Enemy.SwarmType;
 import Actors.Player.Player;
-
 import Actors.Stats.Stats;
 import InputProcessing.ContextualInputProcessor;
+import InputProcessing.Coordinates.RandomCoordinates;
 import InputProcessing.Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
@@ -36,7 +38,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;
-import static Tools.ShapeTools.*;
+import static Tools.ShapeTools.createSquareShape;
+import static Tools.ShapeTools.getBottomLeftCorrection;
 
 public class MVPContext extends Context {
 
@@ -72,6 +75,9 @@ public class MVPContext extends Context {
     private static boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
 
     private Box2DDebugRenderer debugRenderer;
+
+    boolean setRightAnimation = false;
+    boolean setLeftAnimation = false;
 
 
     float elapsedTime;
@@ -245,6 +251,29 @@ public class MVPContext extends Context {
         renderLock.unlock();
         FrameTime.add(System.nanoTime() - renderStartTime);
         frameCount++;
+
+        player.updateAnimation();
+
+//        if(keyStates.getState(KeyStates.GameKey.LEFT)) {
+//            setRightAnimation = false;
+//            if(!setLeftAnimation) {
+//                player.setNewAnimation(Sprites.PLAYER_LEFT);
+//                System.out.println("left");
+//                setLeftAnimation = true;
+//            }
+//
+//        }
+//        else if(keyStates.getState(KeyStates.GameKey.RIGHT)) {
+//            setLeftAnimation = false;
+//            if(!setRightAnimation) {
+//                player.setNewAnimation(Sprites.PLAYER_RIGHT);
+//                System.out.println("right");
+//                setRightAnimation = true;
+//            }
+//
+//        }
+
+
     }
 
 
@@ -357,19 +386,21 @@ public class MVPContext extends Context {
 
         player = new Player(playerBody, playerSprite, Sprites.PLAYER_SCALE, Stats.player());
         player.setAction(PlayerActions.moveToInput(keyStates));
+        player.setAnimation(Animations.playerAnimation(keyStates));
+        //player.setNewAnimation(GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("vikingleft.gif").read()));
 
         squarePlayer.dispose();
     }
 
 
     private void updatePlayer() {
-        player.step();
+        player.updateAction();
 
     }
 
     private void updateEnemies() {
         for(Enemy enemy:enemies) {
-            enemy.step();
+            enemy.updateAction();
         }
 
 

@@ -1,14 +1,13 @@
 package Actors;
 
 import Actors.ActorAction.ActorAction;
+import Actors.ActorAction.ActorAnimation;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-
-import javax.swing.event.AncestorEvent;
 
 public abstract class Actor implements IGameObject,IActor{
 
@@ -21,12 +20,13 @@ public abstract class Actor implements IGameObject,IActor{
     protected Texture sprite;
 
     private ActorAction action;
+    private ActorAnimation animation;
     private boolean destroyed = false;
 
     // unit vector, direction of movement
     public Vector2 velocityVector;
 
-    private Animation<TextureRegion> currentAnimation;
+    protected Animation<TextureRegion> currentAnimation;
 
     public Actor(Body body, Texture sprite, float scale) {
         this.body = body;
@@ -42,10 +42,19 @@ public abstract class Actor implements IGameObject,IActor{
         this.action = action;
     }
 
+    public void setAnimation(ActorAnimation animation) {
+        this.animation = animation;
+    }
+
+    public void updateAnimation(){
+        animation.animate(this);
+    }
+
+
     /**
      * The actor performs its actions
      */
-    public void step(){
+    public void updateAction(){
         action.act(this);
     }
 

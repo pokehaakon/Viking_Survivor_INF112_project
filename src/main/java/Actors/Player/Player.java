@@ -18,7 +18,10 @@ public class Player extends Actor {
 
     private final PlayerStats stats;
 
-    private Animation<TextureRegion> animation;
+    // for animation
+    public boolean rightAnimation = false, leftAnimation = false, idleAnimation = true;
+
+    //private Animation<TextureRegion> animation;
 
     public Player(Body body, Texture sprite, float scale, PlayerStats stats) {
         super(body, sprite, scale);
@@ -30,18 +33,18 @@ public class Player extends Actor {
         armour = stats.armour();
         XP = stats.XP();
         level = 1;
-        animation = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("vikingright.gif").read());
+        currentAnimation = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("vikingright.gif").read());
     }
 
     //@Override
-    public void draw(SpriteBatch batch, float elapsedTime) {
-        Vector2 p = body.getPosition();
-        animation.setFrameDuration(0.2f);
-
-        batch.draw(animation.getKeyFrame(elapsedTime), p.x, p.y, 500.0f, 500.0f);
-        //batch.d
+//    public void draw(SpriteBatch batch, float elapsedTime) {
 //        Vector2 p = body.getPosition();
-//        batch.draw(sprite,p.x,p.y, sprite.getWidth()*scale,  sprite.getHeight()*scale);
-    }
+//        animation.setFrameDuration(0.2f);
+//
+//        batch.draw(animation.getKeyFrame(elapsedTime), p.x, p.y, 500.0f, 500.0f);
+//        //batch.d
+////        Vector2 p = body.getPosition();
+////        batch.draw(sprite,p.x,p.y, sprite.getWidth()*scale,  sprite.getHeight()*scale);
+//    }
 
 }
