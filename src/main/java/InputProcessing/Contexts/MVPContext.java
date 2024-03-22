@@ -74,7 +74,7 @@ public class MVPContext extends Context {
     private Box2DDebugRenderer debugRenderer;
 
 
-
+    float elapsedTime;
     private Set<Body> toBoKilled;
 
 
@@ -232,8 +232,11 @@ public class MVPContext extends Context {
             e.draw(batch);
         }
 
+        elapsedTime += Gdx.graphics.getDeltaTime();
+
         //draw player
-        player.draw(batch);
+        //player.draw(batch);
+        player.draw(batch,elapsedTime);
 
 
         batch.end();

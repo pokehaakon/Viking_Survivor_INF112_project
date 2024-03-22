@@ -2,9 +2,13 @@ package Actors;
 
 import Actors.ActorAction.ActorAction;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+
+import javax.swing.event.AncestorEvent;
 
 public abstract class Actor implements IGameObject,IActor{
 
@@ -21,6 +25,8 @@ public abstract class Actor implements IGameObject,IActor{
 
     // unit vector, direction of movement
     public Vector2 velocityVector;
+
+    private Animation<TextureRegion> currentAnimation;
 
     public Actor(Body body, Texture sprite, float scale) {
         this.body = body;
@@ -87,6 +93,20 @@ public abstract class Actor implements IGameObject,IActor{
     @Override
     public void setSpeed(int speedMultiplier) {
         speed *= speedMultiplier;
+    }
+
+    public void draw(SpriteBatch batch, float elapsedTime) {
+        Vector2 p = body.getPosition();
+        currentAnimation.setFrameDuration(0.2f);
+
+        batch.draw(currentAnimation.getKeyFrame(elapsedTime), p.x, p.y, 500.0f, 500.0f);
+        //batch.d
+//        Vector2 p = body.getPosition();
+//        batch.draw(sprite,p.x,p.y, sprite.getWidth()*scale,  sprite.getHeight()*scale);
+    }
+
+    public void setNewAnimation(Animation<TextureRegion> newAnimation) {
+        currentAnimation = newAnimation;
     }
 
 }
