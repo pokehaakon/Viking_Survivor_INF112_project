@@ -65,14 +65,14 @@ public class SwarmCoordinates {
      * @return a Vector2 representing the swarm direction
      */
     public static Vector2 swarmDirection(Vector2 target, SwarmType swarmType, List<Vector2> swarmCoordinates) {
-        Vector2 swarmCenter;
         Vector2 swarmDirection = new Vector2();
+        Vector2 swarmCenter;
 
-        if(swarmType == SwarmType.SQUARE) {
-            swarmCenter = swarmCoordinates.get((int)Math.ceil(Math.sqrt(swarmCoordinates.size())));
-        }
-        else{
+        if(swarmType == SwarmType.LINE) {
             swarmCenter = swarmCoordinates.get(swarmCoordinates.size()/2);
+        }
+        else {
+            swarmCenter = swarmCoordinates.get((int)Math.ceil(Math.sqrt(swarmCoordinates.size())));
         }
 
         swarmDirection.add(target).sub(swarmCenter);
@@ -84,16 +84,16 @@ public class SwarmCoordinates {
      * @param swarmType the type of swarm
      * @param size number of enemies in swarm
      * @param spacing distance between enemies
-     * @param startPoints acts as reference point for the coordinates
      * @param target the position which the swarm moves towards
      * @return a list of Vector2 which represents the coordinates
      */
-    public static List<Vector2> getSwarmCoordinates(SwarmType swarmType, int size, int spacing, Vector2 startPoints, Vector2 target) {
+    public static List<Vector2> getSwarmCoordinates(SwarmType swarmType, int size, int spacing, Vector2 target) {
+        Vector2 startPoint = RandomCoordinates.randomPoint(target);
         if(swarmType == SwarmType.LINE) {
-            return SwarmCoordinates.lineSwarm(size,spacing,startPoints, target);
+            return SwarmCoordinates.lineSwarm(size,spacing,startPoint, target);
         }
         else {
-            return SwarmCoordinates.squareSwarm(size,startPoints,spacing);
+            return SwarmCoordinates.squareSwarm(size,startPoint,spacing);
         }
     }
 }

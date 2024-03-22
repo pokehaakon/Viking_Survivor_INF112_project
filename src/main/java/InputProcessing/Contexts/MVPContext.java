@@ -94,9 +94,9 @@ public class MVPContext extends Context {
         createWorld();
 
         // spawns start enemies
-        spawnRandomEnemies(10);
-        //spawnSwarm("Enemy1", SwarmType.LINE, 10, 20);
-        spawnSwarm("Enemy2", SwarmType.SQUARE, 12,60);
+        //spawnRandomEnemies(10);
+        spawnSwarm("Enemy1", SwarmType.LINE, 10, 20);
+        //spawnSwarm("Enemy2", SwarmType.SQUARE, 12,60);
 
         toBoKilled = new HashSet<>();
         ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
@@ -312,13 +312,9 @@ public class MVPContext extends Context {
     }
 
     private void spawnSwarm(String enemyType, SwarmType swarmType, int size, int spacing) {
-        Vector2 swarmDirection;
-        Vector2 center = player.getBody().getPosition();
-        Vector2 randomStartPoint = RandomCoordinates.randomPoint(center);
-
-        List<Vector2> swarmCoordinates = SwarmCoordinates.getSwarmCoordinates(swarmType,size,spacing,randomStartPoint,center);
-
-        swarmDirection = SwarmCoordinates.swarmDirection(center, swarmType, swarmCoordinates);
+        Vector2 target = player.getBody().getPosition();
+        List<Vector2> swarmCoordinates = SwarmCoordinates.getSwarmCoordinates(swarmType,size,spacing,target);
+        Vector2 swarmDirection = SwarmCoordinates.swarmDirection(target, swarmType,swarmCoordinates);
 
         for(Enemy enemy: enemyFactory.createEnemies(size,enemyType,swarmCoordinates)) {
             enemy.setSpeed(Stats.SWARM_SPEED_MULTIPLIER);
