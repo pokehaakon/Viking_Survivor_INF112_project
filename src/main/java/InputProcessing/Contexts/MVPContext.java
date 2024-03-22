@@ -94,8 +94,8 @@ public class MVPContext extends Context {
         createWorld();
 
         // spawns start enemies
-        //spawnRandomEnemies(10);
-        spawnSwarm("Enemy1", SwarmType.LINE, 10, 20);
+        spawnRandomEnemies(10);
+        //spawnSwarm("Enemy1", SwarmType.LINE, 10, 20);
         //spawnSwarm("Enemy2", SwarmType.SQUARE, 12,60);
 
         toBoKilled = new HashSet<>();
@@ -305,7 +305,9 @@ public class MVPContext extends Context {
 
         for(Enemy enemy: enemyFactory.createRandomEnemies(num, startPoints)) {
             //sets action
-            enemy.setAction(EnemyActions.chasePlayer(player));
+            enemy.setAction(EnemyActions.rotate());
+            //enemy.setAction(EnemyActions.chasePlayer(player));
+            //enemy.setAction(EnemyActions.accelerate(player));
             enemies.add(enemy);
         }
 
@@ -332,8 +334,8 @@ public class MVPContext extends Context {
 
         // player hitbox
         PolygonShape squarePlayer = createSquareShape(
-                playerSprite.getWidth()*Sprites.PLAYER_SCALE,
-                playerSprite.getHeight()*Sprites.PLAYER_SCALE
+                (playerSprite.getWidth()-100)*Sprites.PLAYER_SCALE ,
+                (playerSprite.getHeight())*Sprites.PLAYER_SCALE
         );
 
         // player body
@@ -353,13 +355,13 @@ public class MVPContext extends Context {
         player = new Player(playerBody, playerSprite, Sprites.PLAYER_SCALE, Stats.player());
         player.setAction(PlayerActions.moveToInput(keyStates));
 
-
         squarePlayer.dispose();
     }
 
 
     private void updatePlayer() {
         player.step();
+
     }
 
     private void updateEnemies() {

@@ -32,4 +32,21 @@ public class EnemyActions {
 
     }
 
+    public static ActorAction accelerate(Actor player) {
+        return (e) -> {
+            //e.velocityVector.add(player.getBody().getPosition()).sub(e.getBody().getWorldCenter());
+            Vector2 force = new Vector2(200000,0);
+            e.getBody().applyForceToCenter(force, true);
+            System.out.println(e.getBody().getLinearVelocity());
+
+        };
+    }
+
+    public static ActorAction rotate() {
+        return (e) -> {
+            e.getBody().applyTorque(10,true);
+
+        };
+    }
+
 }
