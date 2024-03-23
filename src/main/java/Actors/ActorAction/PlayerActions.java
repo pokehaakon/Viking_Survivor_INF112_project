@@ -1,30 +1,34 @@
 package Actors.ActorAction;
 
+import Actors.Player.Player;
 import InputProcessing.KeyStates;
-import Tools.GifDecoder;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Animation;
 
 public class PlayerActions {
 
     public static ActorAction moveToInput(KeyStates keyStates) {
 
         return (p) ->{
-            p.resetVelocity();
+            Player player = (Player) p;
+            player.idle = true;
+            player.resetVelocity();
             if (keyStates.getState(KeyStates.GameKey.UP)) {
-                p.setVelocityVector(0,1);
+                player.setVelocityVector(0,1);
+                player.idle = false;
             }
             if (keyStates.getState(KeyStates.GameKey.DOWN)) {
-                p.setVelocityVector(0,-1);
+                player.setVelocityVector(0,-1);
+                player.idle = false;
             }
             if (keyStates.getState(KeyStates.GameKey.LEFT)) {
-                p.setVelocityVector(-1,0);
+                player.setVelocityVector(-1,0);
+                player.lastMoveRight = false;
+                player.idle = false;
 
-                //p.setNewAnimation(GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("vikingleft.gif").read()));
             }
             if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
-                p.setVelocityVector(1,0);
-                //p.setNewAnimation(GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("vikingright.gif").read()));
+                player.setVelocityVector(1,0);
+                player.lastMoveRight = true;
+                player.idle = false;
             }
             p.moveWithConstantSpeed();
         };

@@ -5,7 +5,7 @@ import Actors.ActorAction.EnemyActions;
 import Actors.ActorAction.PlayerActions;
 import Actors.Enemy.Enemy;
 import Actors.Enemy.EnemyFactory;
-import Actors.Enemy.Sprites;
+import Animations.GIFs;
 import Actors.Enemy.SwarmType;
 import Actors.Player.Player;
 import Actors.Stats.Stats;
@@ -126,7 +126,6 @@ public class MVPContext extends Context {
         return new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
-
                 return switch (keycode) {
                     case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.setInputKey(keycode);
                     case Input.Keys.ESCAPE -> {keyStates.setInputKey(keycode); System.exit(0); yield true;}
@@ -137,6 +136,7 @@ public class MVPContext extends Context {
 
             @Override
             public boolean keyUp(int keycode) {
+
                 return switch (keycode) {
                     case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.unsetInputKey(keycode);
                     default -> false;
@@ -206,6 +206,7 @@ public class MVPContext extends Context {
 
     @Override
     public void render(float delta) {
+        player.updateAnimation();
         FPS.add(System.nanoTime() - previousFrameStart);
         if(frameCount % 60 ==0) {
             System.out.println(FPS.avg());
@@ -245,6 +246,7 @@ public class MVPContext extends Context {
         player.draw(batch,elapsedTime);
 
 
+
         batch.end();
 
 
@@ -252,26 +254,7 @@ public class MVPContext extends Context {
         FrameTime.add(System.nanoTime() - renderStartTime);
         frameCount++;
 
-        player.updateAnimation();
 
-//        if(keyStates.getState(KeyStates.GameKey.LEFT)) {
-//            setRightAnimation = false;
-//            if(!setLeftAnimation) {
-//                player.setNewAnimation(Sprites.PLAYER_LEFT);
-//                System.out.println("left");
-//                setLeftAnimation = true;
-//            }
-//
-//        }
-//        else if(keyStates.getState(KeyStates.GameKey.RIGHT)) {
-//            setLeftAnimation = false;
-//            if(!setRightAnimation) {
-//                player.setNewAnimation(Sprites.PLAYER_RIGHT);
-//                System.out.println("right");
-//                setRightAnimation = true;
-//            }
-//
-//        }
 
 
     }
@@ -337,8 +320,8 @@ public class MVPContext extends Context {
 
         for(Enemy enemy: enemyFactory.createRandomEnemies(num, startPoints)) {
             //sets action
-            enemy.setAction(EnemyActions.rotate());
-            //enemy.setAction(EnemyActions.chasePlayer(player));
+            //enemy.setAction(EnemyActions.rotate());
+            enemy.setAction(EnemyActions.chasePlayer(player));
             //enemy.setAction(EnemyActions.accelerate(player));
             enemies.add(enemy);
         }
@@ -362,12 +345,12 @@ public class MVPContext extends Context {
 
     private void initializePlayer() {
         // player sprite
-        Texture playerSprite = new Texture(Gdx.files.internal(Sprites.PLAYER_PNG));
+        Texture playerSprite = new Texture(Gdx.files.internal(GIFs.PLAYER_PNG));
 
         // player hitbox
         PolygonShape squarePlayer = createSquareShape(
-                (playerSprite.getWidth()-100)*Sprites.PLAYER_SCALE ,
-                (playerSprite.getHeight())*Sprites.PLAYER_SCALE
+                (playerSprite.getWidth()-100)* GIFs.PLAYER_SCALE ,
+                (playerSprite.getHeight())* GIFs.PLAYER_SCALE
         );
 
         // player body
@@ -384,10 +367,10 @@ public class MVPContext extends Context {
                 0
         );
 
-        player = new Player(playerBody, playerSprite, Sprites.PLAYER_SCALE, Stats.player());
+        player = new Player(playerBody, playerSprite, GIFs.PLAYER_SCALE, Stats.player());
         player.setAction(PlayerActions.moveToInput(keyStates));
-        player.setAnimation(Animations.playerAnimation(keyStates));
-        //player.setNewAnimation(GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("vikingleft.gif").read()));
+        player.setAnimation(Animations.playerAnimation());
+
 
         squarePlayer.dispose();
     }

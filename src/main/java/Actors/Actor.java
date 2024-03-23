@@ -2,6 +2,7 @@ package Actors;
 
 import Actors.ActorAction.ActorAction;
 import Actors.ActorAction.ActorAnimation;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -27,6 +28,7 @@ public abstract class Actor implements IGameObject,IActor{
     public Vector2 velocityVector;
 
     protected Animation<TextureRegion> currentAnimation;
+    protected Texture currentSprite;
 
     public Actor(Body body, Texture sprite, float scale) {
         this.body = body;
@@ -105,17 +107,24 @@ public abstract class Actor implements IGameObject,IActor{
     }
 
     public void draw(SpriteBatch batch, float elapsedTime) {
-        Vector2 p = body.getPosition();
+        Vector2 bodyPosition = body.getPosition();
         currentAnimation.setFrameDuration(0.2f);
-
-        batch.draw(currentAnimation.getKeyFrame(elapsedTime), p.x, p.y, 500.0f, 500.0f);
-        //batch.d
-//        Vector2 p = body.getPosition();
-//        batch.draw(sprite,p.x,p.y, sprite.getWidth()*scale,  sprite.getHeight()*scale);
+        batch.draw(
+                currentAnimation.getKeyFrame(elapsedTime),
+                bodyPosition.x,
+                bodyPosition.y,
+                500f,
+                500f
+                //sprite.getWidth()*scale,
+                //sprite.getHeight()*scale
+        );
     }
 
     public void setNewAnimation(Animation<TextureRegion> newAnimation) {
         currentAnimation = newAnimation;
+    }
+    public void setNewSprite(String newSprite) {
+        currentSprite = new Texture(Gdx.files.internal(newSprite));
     }
 
 }

@@ -1,33 +1,36 @@
 package Actors.ActorAction;
 
-import Actors.Enemy.Sprites;
+import Animations.GIFs;
 import Actors.Player.Player;
-import InputProcessing.KeyStates;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import Animations.GIFs.*;
+
+import static Animations.GIFs.*;
 
 public class Animations {
 
-    public static ActorAnimation playerAnimation(KeyStates keyStates) {
+    public static ActorAnimation playerAnimation() {
         return (p) -> {
             Player player = (Player) p;
-            if(keyStates.getState(KeyStates.GameKey.LEFT)) {
-                player.idleAnimation = false;
-                player.rightAnimation = false;
-                if(!player.leftAnimation) {
-                    player.setNewAnimation(Sprites.PLAYER_LEFT);
-                    System.out.println("left");
-                    player.leftAnimation = true;
-                }
+            Animation<TextureRegion> newAnimation;
+            String newSprite;
+
+            if(player.idle){
+                newAnimation = player.lastMoveRight ? getGIF(PLAYER_IDLE_RIGHT) : getGIF(PLAYER_IDLE_LEFT);
+                newSprite = player.lastMoveRight ? PLAYER_IDLE_RIGHT : PLAYER_IDLE_LEFT;
             }
-            else if(keyStates.getState(KeyStates.GameKey.RIGHT)) {
-                player.leftAnimation = false;
-                player.idleAnimation = false;
-                if(!player.rightAnimation) {
-                    player.setNewAnimation(Sprites.PLAYER_RIGHT);
-                    System.out.println("right");
-                    player.rightAnimation = true;
-                }
+            else {
+                newAnimation = player.lastMoveRight ? getGIF(PLAYER_RIGHT) : getGIF(PLAYER_LEFT);
+                newSprite = player.lastMoveRight ? PLAYER_RIGHT : PLAYER_LEFT;
 
             }
+            player.setNewAnimation(newAnimation);
+            //player.setNewSprite(newSprite);
+
         };
     }
+
+
 }

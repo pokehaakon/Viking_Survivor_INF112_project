@@ -6,8 +6,6 @@ import Tools.GifDecoder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
@@ -18,10 +16,9 @@ public class Player extends Actor {
 
     private final PlayerStats stats;
 
-    // for animation
-    public boolean rightAnimation = false, leftAnimation = false, idleAnimation = true;
+    // for animation, from Hallvards code
+    public boolean lastMoveRight = true, idle = true;
 
-    //private Animation<TextureRegion> animation;
 
     public Player(Body body, Texture sprite, float scale, PlayerStats stats) {
         super(body, sprite, scale);
@@ -33,18 +30,8 @@ public class Player extends Actor {
         armour = stats.armour();
         XP = stats.XP();
         level = 1;
-        currentAnimation = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("vikingright.gif").read());
+        //currentAnimation = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("vikingright.gif").read());
     }
 
-    //@Override
-//    public void draw(SpriteBatch batch, float elapsedTime) {
-//        Vector2 p = body.getPosition();
-//        animation.setFrameDuration(0.2f);
-//
-//        batch.draw(animation.getKeyFrame(elapsedTime), p.x, p.y, 500.0f, 500.0f);
-//        //batch.d
-////        Vector2 p = body.getPosition();
-////        batch.draw(sprite,p.x,p.y, sprite.getWidth()*scale,  sprite.getHeight()*scale);
-//    }
 
 }

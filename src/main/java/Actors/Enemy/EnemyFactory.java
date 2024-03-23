@@ -2,6 +2,7 @@ package Actors.Enemy;
 
 
 import Actors.Stats.Stats;
+import Animations.GIFs;
 import Tools.FilterTool;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -44,8 +45,8 @@ public class EnemyFactory implements IEnemyFactory {
 
         switch (type.toUpperCase()) {
             case "ENEMY1": {
-                scale = Sprites.ENEMY1_SCALE;
-                texture = new Texture(Gdx.files.internal(Sprites.ENEMY_1_PNG));
+                scale = GIFs.ENEMY1_SCALE;
+                texture = new Texture(Gdx.files.internal(GIFs.ENEMY_1_PNG));
                 shape = createSquareShape(
                         texture.getWidth()*scale,
                         texture.getHeight()*scale
@@ -56,8 +57,8 @@ public class EnemyFactory implements IEnemyFactory {
                 break;
             }
             case "ENEMY2": {
-                scale = Sprites.ENEMY2_SCALE;
-                texture = new Texture(Gdx.files.internal(Sprites.ENEMY_2_PNG));
+                scale = GIFs.ENEMY2_SCALE;
+                texture = new Texture(Gdx.files.internal(GIFs.ENEMY_2_PNG));
                 shape = createSquareShape(
                         texture.getWidth()*scale,
                         texture.getHeight()*scale);
