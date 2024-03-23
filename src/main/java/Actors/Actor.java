@@ -113,8 +113,8 @@ public abstract class Actor implements IGameObject,IActor{
                 currentAnimation.getKeyFrame(elapsedTime),
                 bodyPosition.x,
                 bodyPosition.y,
-                500f,
-                500f
+                sprite.getWidth()*scale,
+                sprite.getHeight()*scale
                 //sprite.getWidth()*scale,
                 //sprite.getHeight()*scale
         );

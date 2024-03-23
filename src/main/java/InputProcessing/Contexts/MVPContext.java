@@ -100,7 +100,7 @@ public class MVPContext extends Context {
         createWorld();
 
         // spawns start enemies
-        spawnRandomEnemies(10);
+        //spawnRandomEnemies(10);
         //spawnSwarm("Enemy1", SwarmType.LINE, 10, 20);
         //spawnSwarm("Enemy2", SwarmType.SQUARE, 12,60);
 
@@ -208,18 +208,14 @@ public class MVPContext extends Context {
     public void render(float delta) {
         player.updateAnimation();
         FPS.add(System.nanoTime() - previousFrameStart);
-        if(frameCount % 60 ==0) {
-            System.out.println(FPS.avg());
-            System.out.println(UPS.avg());
-            System.out.println("");
-        }
+
         previousFrameStart = System.nanoTime();
 
         renderLock.lock();
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.GREEN);
 
-        debugRenderer.render(world, camera.combined);
+        //debugRenderer.render(world, camera.combined);
 
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();

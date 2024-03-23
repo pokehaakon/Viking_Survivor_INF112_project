@@ -15,15 +15,15 @@ public class Animations {
         return (p) -> {
             Player player = (Player) p;
             Animation<TextureRegion> newAnimation;
-            String newSprite;
+            //String newSprite;
 
             if(player.idle){
                 newAnimation = player.lastMoveRight ? getGIF(PLAYER_IDLE_RIGHT) : getGIF(PLAYER_IDLE_LEFT);
-                newSprite = player.lastMoveRight ? PLAYER_IDLE_RIGHT : PLAYER_IDLE_LEFT;
+                //newSprite = player.lastMoveRight ? PLAYER_IDLE_RIGHT : PLAYER_IDLE_LEFT;
             }
             else {
                 newAnimation = player.lastMoveRight ? getGIF(PLAYER_RIGHT) : getGIF(PLAYER_LEFT);
-                newSprite = player.lastMoveRight ? PLAYER_RIGHT : PLAYER_LEFT;
+               // newSprite = player.lastMoveRight ? PLAYER_RIGHT : PLAYER_LEFT;
 
             }
             player.setNewAnimation(newAnimation);
