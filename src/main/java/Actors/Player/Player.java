@@ -2,6 +2,8 @@ package Actors.Player;
 
 import Actors.Actor;
 import Actors.Stats.PlayerStats;
+import Animations.Animations;
+import Animations.PlayerAnimationStates;
 import Tools.GifDecoder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -19,6 +21,8 @@ public class Player extends Actor {
     // for animation, from Hallvards code
     public boolean lastMoveRight = true, idle = true;
 
+    public PlayerAnimationStates currentAnimationState;
+
 
     public Player(Body body, Texture sprite, float scale, PlayerStats stats) {
         super(body, sprite, scale);
@@ -30,7 +34,17 @@ public class Player extends Actor {
         armour = stats.armour();
         XP = stats.XP();
         level = 1;
-        //currentAnimation = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("vikingright.gif").read());
+
+        currentAnimationState = PlayerAnimationStates.IDLE_RIGHT;
+
+    }
+
+    /**
+     * Checks if player is idle - if no key is pressed
+     * @return a boolean value
+     */
+    public boolean isIdle() {
+        return idle;
     }
 
 

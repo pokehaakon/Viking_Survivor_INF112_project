@@ -1,6 +1,5 @@
 package Animations;
 
-import Actors.ActorAction.Animations;
 import Tools.GifDecoder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -12,16 +11,18 @@ public class GIFs {
     public static final String PLAYER_PNG = "vikingright.gif";
     public static final String ENEMY_1_PNG = "img.png";
     public static final String ENEMY_2_PNG = "img_3.png";
-    //public static final Animation<TextureRegion> WOLF_RIGHT = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("wolfright.gif").read());
-    //public static final Animation<TextureRegion> WOLF_LEFT = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("wolfLeft.gif").read());
-    public static final String PLAYER_RIGHT = "vikingright.gif";
-    public static final String PLAYER_LEFT = "vikingleft.gif";
-    public static final String PLAYER_IDLE_LEFT ="viking_idle_left.gif";
-    public static final String PLAYER_IDLE_RIGHT = "viking_idle_right.gif";
+
+    // player GIFS
+    public static final String PLAYER_RIGHT = "vikingright-crop.gif";
+    public static final String PLAYER_LEFT = "vikingleft-crop.gif";
+    public static final String PLAYER_IDLE_LEFT ="viking_idle_left-crop.gif";
+    public static final String PLAYER_IDLE_RIGHT = "viking_idle_right-crop.gif";
+
+    public static final float FRAME_DURATION = 0.15f;
 
     // scales
 
-    public static final float PLAYER_SCALE = 0.2f;
+    public static final float PLAYER_SCALE = 0.4f;
     public static final float ENEMY1_SCALE = 0.1f;
     public static final float ENEMY2_SCALE = 0.1f;
 

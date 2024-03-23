@@ -3,7 +3,7 @@ package Actors.ActorAction;
 import Actors.Player.Player;
 import InputProcessing.KeyStates;
 
-public class PlayerActions {
+public abstract class PlayerActions {
 
     public static ActorAction moveToInput(KeyStates keyStates) {
 

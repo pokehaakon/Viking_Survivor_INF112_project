@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RandomCoordinates extends Vector2 {
+public abstract class RandomCoordinates extends Vector2 {
 
     private static final double INNER_RADIUS = (double)0.8*Gdx.graphics.getWidth();
     private static final double OUTER_RADIUS = (double) Gdx.graphics.getWidth();

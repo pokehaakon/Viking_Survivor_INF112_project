@@ -1,4 +1,4 @@
-package Actors.ActorAction;
+package Animations;
 
 import Actors.Actor;
 

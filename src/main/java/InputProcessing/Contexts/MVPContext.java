@@ -1,6 +1,6 @@
 package InputProcessing.Contexts;
 
-import Actors.ActorAction.Animations;
+import Animations.Animations;
 import Actors.ActorAction.EnemyActions;
 import Actors.ActorAction.PlayerActions;
 import Actors.Enemy.Enemy;
@@ -100,7 +100,7 @@ public class MVPContext extends Context {
         createWorld();
 
         // spawns start enemies
-        //spawnRandomEnemies(10);
+        spawnRandomEnemies(10);
         //spawnSwarm("Enemy1", SwarmType.LINE, 10, 20);
         //spawnSwarm("Enemy2", SwarmType.SQUARE, 12,60);
 
@@ -216,7 +216,7 @@ public class MVPContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.GREEN);
 
-        //debugRenderer.render(world, camera.combined);
+        debugRenderer.render(world, camera.combined);
 
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
@@ -232,12 +232,13 @@ public class MVPContext extends Context {
         batch.begin();
 
         // draw enemies
-        for (Enemy e : enemies) {
-            e.draw(batch);
-        }
+
 
         elapsedTime += Gdx.graphics.getDeltaTime();
-
+        for (Enemy e : enemies) {
+            //e.draw(batch);
+            e.draw(batch, elapsedTime);
+        }
         //draw player
         //player.draw(batch);
         player.draw(batch,elapsedTime);
@@ -251,9 +252,12 @@ public class MVPContext extends Context {
         FrameTime.add(System.nanoTime() - renderStartTime);
         frameCount++;
 
-        player.updateAction();
-
         player.updateAnimation();
+
+        for(Enemy enemy: enemies) {
+            enemy.updateAnimation();
+        }
+
 
     }
 
@@ -317,6 +321,16 @@ public class MVPContext extends Context {
         List<Vector2> startPoints = RandomCoordinates.randomPoints(num, player.getBody().getPosition());
 
         for(Enemy enemy: enemyFactory.createRandomEnemies(num, startPoints)) {
+            if(enemy.getBody().getPosition().x - player.getBody().getPosition().x >=0) {
+                enemy.locationState = Enemy.LocationState.RIGHT_OF_CENTER;
+                enemy.setNewAnimationGIF(GIFs.getGIF(GIFs.PLAYER_LEFT));
+            }
+            else {
+                enemy.locationState = Enemy.LocationState.LEFT_OF_CENTER;
+                enemy.setNewAnimationGIF(GIFs.getGIF(GIFs.PLAYER_RIGHT));
+            }
+
+            enemy.setAnimation(Animations.enemyChaseAnimation(player));
             //sets action
             //enemy.setAction(EnemyActions.rotate());
             enemy.setAction(EnemyActions.chasePlayer(player));
@@ -347,7 +361,7 @@ public class MVPContext extends Context {
 
         // player hitbox
         PolygonShape squarePlayer = createSquareShape(
-                (playerSprite.getWidth()-100)* GIFs.PLAYER_SCALE ,
+                (playerSprite.getWidth())* GIFs.PLAYER_SCALE ,
                 (playerSprite.getHeight())* GIFs.PLAYER_SCALE
         );
 
@@ -366,9 +380,9 @@ public class MVPContext extends Context {
         );
 
         player = new Player(playerBody, playerSprite, GIFs.PLAYER_SCALE, Stats.player());
-        player.setNewAnimation(GIFs.getGIF(GIFs.PLAYER_RIGHT));
+        player.setNewAnimationGIF(GIFs.getGIF(GIFs.PLAYER_RIGHT));
         player.setAction(PlayerActions.moveToInput(keyStates));
-        player.setAnimation(Animations.playerAnimation());
+        player.setAnimation(Animations.walkingAnimation());
 
 
         squarePlayer.dispose();

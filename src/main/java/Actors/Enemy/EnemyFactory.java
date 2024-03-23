@@ -15,6 +15,7 @@ import java.util.*;
 import static Tools.BodyTool.createBodies;
 import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;
+import static Tools.ShapeTools.createCircleShape;
 import static Tools.ShapeTools.createSquareShape;
 
 
@@ -47,12 +48,13 @@ public class EnemyFactory implements IEnemyFactory {
             case "ENEMY1": {
                 scale = GIFs.ENEMY1_SCALE;
                 texture = new Texture(Gdx.files.internal(GIFs.ENEMY_1_PNG));
-                shape = createSquareShape(
-                        texture.getWidth()*scale,
-                        texture.getHeight()*scale
+                shape = createCircleShape(
+                        (float)(texture.getWidth()/2)*scale
+
                 );
 
                 enemy = new Enemy(createEnemyBody(pos, shape), texture, scale, Stats.enemy1());
+
                 shape.dispose();
                 break;
             }

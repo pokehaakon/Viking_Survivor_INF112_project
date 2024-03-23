@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SwarmCoordinates {
+public abstract class SwarmCoordinates {
 
     /**
      * Generates a list of coordinates which forms a square grid

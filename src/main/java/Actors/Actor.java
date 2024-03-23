@@ -1,7 +1,8 @@
 package Actors;
 
 import Actors.ActorAction.ActorAction;
-import Actors.ActorAction.ActorAnimation;
+import Animations.ActorAnimation;
+import Animations.GIFs;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -108,19 +109,18 @@ public abstract class Actor implements IGameObject,IActor{
 
     public void draw(SpriteBatch batch, float elapsedTime) {
         Vector2 bodyPosition = body.getPosition();
-        currentAnimation.setFrameDuration(0.2f);
+        currentAnimation.setFrameDuration(GIFs.FRAME_DURATION);
         batch.draw(
                 currentAnimation.getKeyFrame(elapsedTime),
                 bodyPosition.x,
                 bodyPosition.y,
                 sprite.getWidth()*scale,
                 sprite.getHeight()*scale
-                //sprite.getWidth()*scale,
-                //sprite.getHeight()*scale
+
         );
     }
 
-    public void setNewAnimation(Animation<TextureRegion> newAnimation) {
+    public void setNewAnimationGIF(Animation<TextureRegion> newAnimation) {
         currentAnimation = newAnimation;
     }
     public void setNewSprite(String newSprite) {
