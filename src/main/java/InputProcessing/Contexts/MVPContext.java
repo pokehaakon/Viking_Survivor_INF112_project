@@ -206,7 +206,7 @@ public class MVPContext extends Context {
 
     @Override
     public void render(float delta) {
-        player.updateAnimation();
+
         FPS.add(System.nanoTime() - previousFrameStart);
 
         previousFrameStart = System.nanoTime();
@@ -250,8 +250,7 @@ public class MVPContext extends Context {
         FrameTime.add(System.nanoTime() - renderStartTime);
         frameCount++;
 
-
-
+        player.updateAnimation();
 
     }
 
@@ -341,7 +340,7 @@ public class MVPContext extends Context {
 
     private void initializePlayer() {
         // player sprite
-        Texture playerSprite = new Texture(Gdx.files.internal(GIFs.PLAYER_PNG));
+        Texture playerSprite = new Texture(Gdx.files.internal(GIFs.PLAYER_RIGHT));
 
         // player hitbox
         PolygonShape squarePlayer = createSquareShape(
@@ -364,6 +363,7 @@ public class MVPContext extends Context {
         );
 
         player = new Player(playerBody, playerSprite, GIFs.PLAYER_SCALE, Stats.player());
+        player.setNewAnimation(GIFs.getGIF(GIFs.PLAYER_RIGHT));
         player.setAction(PlayerActions.moveToInput(keyStates));
         player.setAnimation(Animations.playerAnimation());
 
