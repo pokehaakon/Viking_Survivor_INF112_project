@@ -5,7 +5,7 @@ import Actors.ActorAction.EnemyActions;
 import Actors.ActorAction.PlayerActions;
 import Actors.Enemy.Enemy;
 import Actors.Enemy.EnemyFactory;
-import Animations.GIFs;
+import Animations.GIF;
 import Actors.Enemy.SwarmType;
 import Actors.Player.Player;
 import Actors.Stats.Stats;
@@ -216,7 +216,7 @@ public class MVPContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.GREEN);
 
-        debugRenderer.render(world, camera.combined);
+        //debugRenderer.render(world, camera.combined);
 
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
@@ -254,8 +254,11 @@ public class MVPContext extends Context {
 
         player.updateAnimation();
 
+
+
         for(Enemy enemy: enemies) {
-            enemy.updateAnimation();
+           enemy.updateAnimation();
+
         }
 
 
@@ -321,20 +324,8 @@ public class MVPContext extends Context {
         List<Vector2> startPoints = RandomCoordinates.randomPoints(num, player.getBody().getPosition());
 
         for(Enemy enemy: enemyFactory.createRandomEnemies(num, startPoints)) {
-            if(enemy.getBody().getPosition().x - player.getBody().getPosition().x >=0) {
-                enemy.locationState = Enemy.LocationState.RIGHT_OF_CENTER;
-                enemy.setNewAnimationGIF(GIFs.getGIF(GIFs.PLAYER_LEFT));
-            }
-            else {
-                enemy.locationState = Enemy.LocationState.LEFT_OF_CENTER;
-                enemy.setNewAnimationGIF(GIFs.getGIF(GIFs.PLAYER_RIGHT));
-            }
 
-            enemy.setAnimation(Animations.enemyChaseAnimation(player));
-            //sets action
-            //enemy.setAction(EnemyActions.rotate());
             enemy.setAction(EnemyActions.chasePlayer(player));
-            //enemy.setAction(EnemyActions.accelerate(player));
             enemies.add(enemy);
         }
 
@@ -357,12 +348,12 @@ public class MVPContext extends Context {
 
     private void initializePlayer() {
         // player sprite
-        Texture playerSprite = new Texture(Gdx.files.internal(GIFs.PLAYER_RIGHT));
+        Texture playerSprite = new Texture(Gdx.files.internal(GIF.PLAYER_RIGHT));
 
         // player hitbox
         PolygonShape squarePlayer = createSquareShape(
-                (playerSprite.getWidth())* GIFs.PLAYER_SCALE ,
-                (playerSprite.getHeight())* GIFs.PLAYER_SCALE
+                (playerSprite.getWidth())* GIF.PLAYER_SCALE ,
+                (playerSprite.getHeight())* GIF.PLAYER_SCALE
         );
 
         // player body
@@ -379,8 +370,7 @@ public class MVPContext extends Context {
                 0
         );
 
-        player = new Player(playerBody, playerSprite, GIFs.PLAYER_SCALE, Stats.player());
-        player.setNewAnimationGIF(GIFs.getGIF(GIFs.PLAYER_RIGHT));
+        player = new Player(playerBody, GIF.PLAYER_IDLE_RIGHT, GIF.PLAYER_SCALE, Stats.player());
         player.setAction(PlayerActions.moveToInput(keyStates));
         player.setAnimation(Animations.walkingAnimation());
 

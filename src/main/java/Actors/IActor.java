@@ -17,7 +17,7 @@ public interface IActor {
     /**
      * moves actor according to its velocity vector and speed
      */
-    void moveWithConstantSpeed();
+    void move();
 
 
     /**

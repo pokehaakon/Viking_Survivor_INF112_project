@@ -13,11 +13,11 @@ public class Enemy extends Actor{
     private EnemyStats stats;
 
 
-    public LocationState locationState;
+    //public MovementState movementState;
 
 
-    public Enemy(Body body, Texture sprite, float scale, EnemyStats stats) {
-        super(body, sprite, scale);
+    public Enemy(Body body, String spawnGIF, float scale, EnemyStats stats) {
+        super(body, spawnGIF, scale);
         this.stats = stats;
 
         // stats
@@ -34,9 +34,8 @@ public class Enemy extends Actor{
 
 
 
-    public enum LocationState {
-        RIGHT_OF_CENTER, LEFT_OF_CENTER
-    };
+
+
 
 
 

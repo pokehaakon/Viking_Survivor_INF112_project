@@ -2,12 +2,6 @@ package Actors.Player;
 
 import Actors.Actor;
 import Actors.Stats.PlayerStats;
-import Animations.Animations;
-import Animations.PlayerAnimationStates;
-import Tools.GifDecoder;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
@@ -19,13 +13,12 @@ public class Player extends Actor {
     private final PlayerStats stats;
 
     // for animation, from Hallvards code
-    public boolean lastMoveRight = true, idle = true;
-
-    public PlayerAnimationStates currentAnimationState;
+    //public boolean idle = true;
 
 
-    public Player(Body body, Texture sprite, float scale, PlayerStats stats) {
-        super(body, sprite, scale);
+
+    public Player(Body body, String spawnGIF, float scale, PlayerStats stats) {
+        super(body, spawnGIF, scale);
         this.stats = stats;
 
         HP = stats.HP();
@@ -35,17 +28,10 @@ public class Player extends Actor {
         XP = stats.XP();
         level = 1;
 
-        currentAnimationState = PlayerAnimationStates.IDLE_RIGHT;
-
+        idle = true;
     }
 
-    /**
-     * Checks if player is idle - if no key is pressed
-     * @return a boolean value
-     */
-    public boolean isIdle() {
-        return idle;
-    }
+
 
 
 }

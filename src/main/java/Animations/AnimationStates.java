@@ -1,6 +1,6 @@
 package Animations;
 
-public enum PlayerAnimationStates {
+public enum AnimationStates {
     MOVE_RIGHT,
     MOVE_LEFT,
     IDLE_RIGHT,

@@ -1,8 +1,9 @@
 package Actors;
 
 import Actors.ActorAction.ActorAction;
+import Animations.AnimationStates;
 import Animations.ActorAnimation;
-import Animations.GIFs;
+import Animations.GIF;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -19,22 +20,32 @@ public abstract class Actor implements IGameObject,IActor{
 
     protected float scale;
 
-    protected Texture sprite;
-
     private ActorAction action;
     private ActorAnimation animation;
     private boolean destroyed = false;
 
+
     // unit vector, direction of movement
     public Vector2 velocityVector;
 
-    protected Animation<TextureRegion> currentAnimation;
-    protected Texture currentSprite;
 
-    public Actor(Body body, Texture sprite, float scale) {
+    protected DirectionState directionState;
+    public boolean idle;
+
+    protected AnimationStates animationState;
+
+    public Texture currentSprite;
+
+    Animation<TextureRegion> currentGIF;
+
+    Texture sprite;
+
+
+    public Actor(Body body, String spawnGIF, float scale) {
         this.body = body;
         this.scale = scale;
-        this.sprite = sprite;
+        currentSprite = new Texture(Gdx.files.internal(spawnGIF));
+        currentGIF = GIF.getGIF(spawnGIF);
     }
 
     /**
@@ -61,6 +72,7 @@ public abstract class Actor implements IGameObject,IActor{
         action.act(this);
     }
 
+
     @Override
     public void destroy() {
         destroyed = true;
@@ -77,11 +89,11 @@ public abstract class Actor implements IGameObject,IActor{
         return destroyed;
     }
 
-    @Override
+   @Override
     public void draw(SpriteBatch batch) {
-        Vector2 p = body.getPosition();
-        batch.draw(sprite,p.x,p.y, sprite.getWidth()*scale,  sprite.getHeight()*scale);
-    }
+       Vector2 p = body.getPosition();
+       batch.draw(sprite,p.x,p.y, sprite.getWidth()*scale,  sprite.getHeight()*scale);
+   }
 
     @Override
     public void resetVelocity(){
@@ -97,9 +109,12 @@ public abstract class Actor implements IGameObject,IActor{
 
 
     @Override
-    public void moveWithConstantSpeed(){
+    public void move(){
         velocityVector.setLength(speed);
         body.setLinearVelocity(velocityVector);
+
+        updateDirectionState();
+
     }
 
     @Override
@@ -108,23 +123,60 @@ public abstract class Actor implements IGameObject,IActor{
     }
 
     public void draw(SpriteBatch batch, float elapsedTime) {
+
         Vector2 bodyPosition = body.getPosition();
-        currentAnimation.setFrameDuration(GIFs.FRAME_DURATION);
+        currentGIF.setFrameDuration(GIF.FRAME_DURATION);
         batch.draw(
-                currentAnimation.getKeyFrame(elapsedTime),
+                currentGIF.getKeyFrame(elapsedTime),
                 bodyPosition.x,
                 bodyPosition.y,
-                sprite.getWidth()*scale,
-                sprite.getHeight()*scale
+                currentSprite.getWidth()*scale,
+                currentSprite.getHeight()*scale
 
         );
     }
 
-    public void setNewAnimationGIF(Animation<TextureRegion> newAnimation) {
-        currentAnimation = newAnimation;
-    }
-    public void setNewSprite(String newSprite) {
-        currentSprite = new Texture(Gdx.files.internal(newSprite));
+    public void setNewAnimationGIF(String gifPath) {
+        currentGIF = GIF.getGIF(gifPath);
+        currentSprite = new Texture(gifPath);
     }
 
+
+    private void updateDirectionState() {
+        DirectionState newState;
+        if (velocityVector.x > 0) {
+            newState = DirectionState.RIGHT;
+        }
+        else if (velocityVector.x < 0) {
+            newState = DirectionState.LEFT;
+        }
+        else {
+            newState = directionState;
+        }
+
+        if(newState != directionState) {
+            directionState = newState;
+        }
+    }
+
+
+
+    public DirectionState getDirectionState() {
+        return directionState;
+    }
+
+    public void setAnimationState(AnimationStates newState, String gifPath) {
+        if(newState != animationState) {
+            animationState = newState;
+            setNewAnimationGIF(gifPath);
+        }
+    }
+
+    public AnimationStates getAnimationState() {
+        return animationState;
+    }
+
+    public boolean isIdle() {
+        return idle;
+    }
 }

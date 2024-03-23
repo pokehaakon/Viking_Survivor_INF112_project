@@ -21,16 +21,15 @@ public abstract class PlayerActions {
             }
             if (keyStates.getState(KeyStates.GameKey.LEFT)) {
                 player.setVelocityVector(-1,0);
-                player.lastMoveRight = false;
                 player.idle = false;
 
             }
             if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
                 player.setVelocityVector(1,0);
-                player.lastMoveRight = true;
                 player.idle = false;
             }
-            p.moveWithConstantSpeed();
+
+            p.move();
         };
     }
 

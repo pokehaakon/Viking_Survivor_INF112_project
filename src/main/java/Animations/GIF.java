@@ -5,7 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class GIFs {
+public class GIF {
 
     // sprites
     public static final String PLAYER_PNG = "vikingright.gif";
@@ -23,8 +23,8 @@ public class GIFs {
     // scales
 
     public static final float PLAYER_SCALE = 0.4f;
-    public static final float ENEMY1_SCALE = 0.1f;
-    public static final float ENEMY2_SCALE = 0.1f;
+    public static final float ENEMY1_SCALE = 0.3f;
+    public static final float ENEMY2_SCALE = 0.3f;
 
     public static Animation<TextureRegion> getGIF(String fileName) {
         return GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal(fileName).read());

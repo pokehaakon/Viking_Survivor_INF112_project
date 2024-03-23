@@ -2,7 +2,8 @@ package Actors.Enemy;
 
 
 import Actors.Stats.Stats;
-import Animations.GIFs;
+import Animations.Animations;
+import Animations.GIF;
 import Tools.FilterTool;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -15,7 +16,6 @@ import java.util.*;
 import static Tools.BodyTool.createBodies;
 import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;
-import static Tools.ShapeTools.createCircleShape;
 import static Tools.ShapeTools.createSquareShape;
 
 
@@ -42,30 +42,39 @@ public class EnemyFactory implements IEnemyFactory {
         Enemy enemy;
         float scale;
         Shape shape;
+        String spawnGIF;
         Texture texture;
 
         switch (type.toUpperCase()) {
             case "ENEMY1": {
-                scale = GIFs.ENEMY1_SCALE;
-                texture = new Texture(Gdx.files.internal(GIFs.ENEMY_1_PNG));
-                shape = createCircleShape(
-                        (float)(texture.getWidth()/2)*scale
+                scale = GIF.ENEMY1_SCALE;
+                spawnGIF = GIF.PLAYER_IDLE_RIGHT;
+                texture = new Texture(Gdx.files.internal(spawnGIF));
+                shape = createSquareShape(
+                        (float)(texture.getWidth())*scale,
+                        (float) (texture.getHeight()*scale)
 
                 );
 
-                enemy = new Enemy(createEnemyBody(pos, shape), texture, scale, Stats.enemy1());
+                enemy = new Enemy(createEnemyBody(pos, shape), GIF.PLAYER_IDLE_RIGHT, scale, Stats.enemy1());
+                // setting animations
+                enemy.setAnimation(Animations.enemyChaseAnimation());
+
 
                 shape.dispose();
                 break;
             }
             case "ENEMY2": {
-                scale = GIFs.ENEMY2_SCALE;
-                texture = new Texture(Gdx.files.internal(GIFs.ENEMY_2_PNG));
+                scale = GIF.ENEMY2_SCALE;
+                spawnGIF = GIF.PLAYER_IDLE_RIGHT;
+                texture = new Texture(Gdx.files.internal(spawnGIF));
+
                 shape = createSquareShape(
                         texture.getWidth()*scale,
                         texture.getHeight()*scale);
 
-                enemy = new Enemy(createEnemyBody(pos, shape), texture, scale, Stats.enemy2());
+                enemy = new Enemy(createEnemyBody(pos, shape), GIF.PLAYER_IDLE_RIGHT, scale, Stats.enemy2());
+                enemy.setAnimation(Animations.enemyChaseAnimation());
                 shape.dispose();
 
                 break;

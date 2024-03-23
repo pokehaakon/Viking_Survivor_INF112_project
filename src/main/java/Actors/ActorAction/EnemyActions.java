@@ -1,6 +1,7 @@
 package Actors.ActorAction;
 
 import Actors.Actor;
+import Actors.Enemy.Enemy;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class EnemyActions {
@@ -12,9 +13,10 @@ public abstract class EnemyActions {
      */
     public static ActorAction swarmStrike(Vector2 swarmDirection) {
         return (e)-> {
-            e.resetVelocity();
-            e.setVelocityVector(swarmDirection.x, swarmDirection.y);
-            e.moveWithConstantSpeed();
+            Enemy enemy = (Enemy) e;
+            enemy.resetVelocity();
+            enemy.setVelocityVector(swarmDirection.x, swarmDirection.y);
+            enemy.move();
         };
     }
 
@@ -26,10 +28,13 @@ public abstract class EnemyActions {
     public static ActorAction chasePlayer(Actor player) {
 
         return (e) ->{
-            e.velocityVector.add(player.getBody().getPosition()).sub(e.getBody().getWorldCenter());
-            e.moveWithConstantSpeed();
+            Enemy enemy = (Enemy) e;
+            enemy.velocityVector.add(player.getBody().getPosition()).sub(e.getBody().getWorldCenter());
+            enemy.move();
         };
-
     }
+
+
+
 
 }
