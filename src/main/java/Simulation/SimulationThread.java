@@ -79,7 +79,7 @@ public class SimulationThread extends Thread {
             stopSim();
         }
 
-        context.updateActors();
+        //context.updateActors();
 
         world.step(1/(float) SET_UPS, 10, 10);
 

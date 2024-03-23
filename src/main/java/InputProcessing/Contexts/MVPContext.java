@@ -111,6 +111,7 @@ public class MVPContext extends Context {
 
         simThread.start();
 
+
     }
     private void setupDebug() {
         UpdateTime = new RollingSum(60*3);
@@ -249,6 +250,8 @@ public class MVPContext extends Context {
         renderLock.unlock();
         FrameTime.add(System.nanoTime() - renderStartTime);
         frameCount++;
+
+        player.updateAction();
 
         player.updateAnimation();
 

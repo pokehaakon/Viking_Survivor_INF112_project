@@ -21,7 +21,7 @@ public class GIFs {
 
     // scales
 
-    public static final float PLAYER_SCALE = 0.5f;
+    public static final float PLAYER_SCALE = 0.2f;
     public static final float ENEMY1_SCALE = 0.1f;
     public static final float ENEMY2_SCALE = 0.1f;
 
