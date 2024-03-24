@@ -9,7 +9,7 @@ public class Sprites {
     // sprites
     public static final String PLAYER_PNG = "vikingright.gif";
     public static final String ENEMY_1_PNG = "raven.gif";
-    public static final String ENEMY_2_PNG = "orc.gif";
+    public static final String ENEMY_2_PNG = "wolf.gif";
 
 
     // scales
