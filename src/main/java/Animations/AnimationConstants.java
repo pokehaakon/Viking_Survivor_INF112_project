@@ -5,7 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class GIF {
+public class AnimationConstants {
 
     // sprites
     public static final String PLAYER_PNG = "vikingright.gif";
@@ -22,7 +22,7 @@ public class GIF {
 
     // scales
 
-    public static final float PLAYER_SCALE = 0.4f;
+    public static final float PLAYER_SCALE = 0.7f;
     public static final float ENEMY1_SCALE = 0.3f;
     public static final float ENEMY2_SCALE = 0.3f;
 

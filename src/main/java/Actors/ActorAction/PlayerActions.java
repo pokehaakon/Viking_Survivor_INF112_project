@@ -5,6 +5,12 @@ import InputProcessing.KeyStates;
 
 public abstract class PlayerActions {
 
+    /**
+     * Moves player based on user input
+     * @param keyStates
+     * @return an action
+     */
+
     public static ActorAction moveToInput(KeyStates keyStates) {
 
         return (p) ->{

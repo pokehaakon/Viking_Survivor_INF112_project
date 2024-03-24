@@ -2,8 +2,8 @@ package Actors.Enemy;
 
 
 import Actors.Stats.Stats;
-import Animations.Animations;
-import Animations.GIF;
+import Animations.ActorAnimations;
+import Animations.AnimationConstants;
 import Tools.FilterTool;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -47,8 +47,8 @@ public class EnemyFactory implements IEnemyFactory {
 
         switch (type.toUpperCase()) {
             case "ENEMY1": {
-                scale = GIF.ENEMY1_SCALE;
-                spawnGIF = GIF.PLAYER_IDLE_RIGHT;
+                scale = AnimationConstants.ENEMY1_SCALE;
+                spawnGIF = AnimationConstants.PLAYER_IDLE_RIGHT;
                 texture = new Texture(Gdx.files.internal(spawnGIF));
                 shape = createSquareShape(
                         (float)(texture.getWidth())*scale,
@@ -56,25 +56,25 @@ public class EnemyFactory implements IEnemyFactory {
 
                 );
 
-                enemy = new Enemy(createEnemyBody(pos, shape), GIF.PLAYER_IDLE_RIGHT, scale, Stats.enemy1());
+                enemy = new Enemy(createEnemyBody(pos, shape), spawnGIF, scale, Stats.enemy1());
                 // setting animations
-                enemy.setAnimation(Animations.enemyChaseAnimation());
+                enemy.setAnimation(ActorAnimations.enemyMoveAnimation());
 
 
                 shape.dispose();
                 break;
             }
             case "ENEMY2": {
-                scale = GIF.ENEMY2_SCALE;
-                spawnGIF = GIF.PLAYER_IDLE_RIGHT;
+                scale = AnimationConstants.ENEMY2_SCALE;
+                spawnGIF = AnimationConstants.PLAYER_IDLE_RIGHT;
                 texture = new Texture(Gdx.files.internal(spawnGIF));
 
                 shape = createSquareShape(
                         texture.getWidth()*scale,
                         texture.getHeight()*scale);
 
-                enemy = new Enemy(createEnemyBody(pos, shape), GIF.PLAYER_IDLE_RIGHT, scale, Stats.enemy2());
-                enemy.setAnimation(Animations.enemyChaseAnimation());
+                enemy = new Enemy(createEnemyBody(pos, shape), spawnGIF, scale, Stats.enemy2());
+                enemy.setAnimation(ActorAnimations.enemyMoveAnimation());
                 shape.dispose();
 
                 break;
@@ -116,7 +116,7 @@ public class EnemyFactory implements IEnemyFactory {
     }
 
 
-    private Body createEnemyBody(Vector2 pos, Shape shape) {
+    public  Body createEnemyBody(Vector2 pos, Shape shape) {
         Filter enemyFilter = createFilter(
                 FilterTool.Category.ENEMY,
                 new FilterTool.Category[]{

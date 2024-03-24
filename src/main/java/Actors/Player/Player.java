@@ -12,9 +12,6 @@ public class Player extends Actor {
 
     private final PlayerStats stats;
 
-    // for animation, from Hallvards code
-    //public boolean idle = true;
-
 
 
     public Player(Body body, String spawnGIF, float scale, PlayerStats stats) {
@@ -30,8 +27,5 @@ public class Player extends Actor {
 
         idle = true;
     }
-
-
-
 
 }

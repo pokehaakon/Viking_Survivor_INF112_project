@@ -12,10 +12,6 @@ public class Enemy extends Actor{
 
     private EnemyStats stats;
 
-
-    //public MovementState movementState;
-
-
     public Enemy(Body body, String spawnGIF, float scale, EnemyStats stats) {
         super(body, spawnGIF, scale);
         this.stats = stats;
@@ -30,6 +26,7 @@ public class Enemy extends Actor{
         velocityVector = new Vector2();
 
     }
+
 
 
 

@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Array;
 
 import java.io.InputStream;
 import java.util.Vector;
-
+// hallvards work!
 public class GifDecoder {
     /**
      * File read status: No errors.

@@ -3,7 +3,7 @@ package Actors;
 import Actors.ActorAction.ActorAction;
 import Animations.AnimationStates;
 import Animations.ActorAnimation;
-import Animations.GIF;
+import Animations.AnimationConstants;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
-public abstract class Actor implements IGameObject,IActor{
+public abstract class Actor implements IGameObject,IActor, IAnimation{
 
     protected float HP, speed, damage, armour;
 
@@ -38,38 +38,39 @@ public abstract class Actor implements IGameObject,IActor{
 
     Animation<TextureRegion> currentGIF;
 
-    Texture sprite;
 
 
     public Actor(Body body, String spawnGIF, float scale) {
         this.body = body;
         this.scale = scale;
         currentSprite = new Texture(Gdx.files.internal(spawnGIF));
-        currentGIF = GIF.getGIF(spawnGIF);
+        currentGIF = AnimationConstants.getGIF(spawnGIF);
     }
 
+
     /**
-     * Defines a set of actions for the actor
-     * @param action the ActorAction object which represents the action
+     * Defines an action for the actor to perform
+     * @param action
      */
     public void setAction(ActorAction action) {
         this.action = action;
     }
+    /**
+     * The actor performs its actions
+     */
+    public void doAction(){
+        action.act(this);
+    }
 
+
+    @Override
     public void setAnimation(ActorAnimation animation) {
         this.animation = animation;
     }
 
-    public void updateAnimation(){
+    @Override
+    public void doAnimation(){
         animation.animate(this);
-    }
-
-
-    /**
-     * The actor performs its actions
-     */
-    public void updateAction(){
-        action.act(this);
     }
 
 
@@ -92,7 +93,7 @@ public abstract class Actor implements IGameObject,IActor{
    @Override
     public void draw(SpriteBatch batch) {
        Vector2 p = body.getPosition();
-       batch.draw(sprite,p.x,p.y, sprite.getWidth()*scale,  sprite.getHeight()*scale);
+       batch.draw(currentSprite,p.x,p.y, currentSprite.getWidth()*scale,  currentSprite.getHeight()*scale);
    }
 
     @Override
@@ -114,7 +115,6 @@ public abstract class Actor implements IGameObject,IActor{
         body.setLinearVelocity(velocityVector);
 
         updateDirectionState();
-
     }
 
     @Override
@@ -122,26 +122,51 @@ public abstract class Actor implements IGameObject,IActor{
         speed *= speedMultiplier;
     }
 
-    public void draw(SpriteBatch batch, float elapsedTime) {
 
-        Vector2 bodyPosition = body.getPosition();
-        currentGIF.setFrameDuration(GIF.FRAME_DURATION);
+    @Override
+    public void draw(SpriteBatch batch, float elapsedTime) {
+        // for GIF
+        currentGIF.setFrameDuration(AnimationConstants.FRAME_DURATION);
         batch.draw(
                 currentGIF.getKeyFrame(elapsedTime),
-                bodyPosition.x,
-                bodyPosition.y,
+                body.getPosition().x,
+                body.getPosition().y,
                 currentSprite.getWidth()*scale,
                 currentSprite.getHeight()*scale
 
         );
     }
 
+    @Override
     public void setNewAnimationGIF(String gifPath) {
-        currentGIF = GIF.getGIF(gifPath);
+        currentGIF = AnimationConstants.getGIF(gifPath);
         currentSprite = new Texture(gifPath);
     }
 
 
+
+    @Override
+    public void setAnimationState(AnimationStates newState, String gifPath) {
+        if(newState != animationState) {
+            animationState = newState;
+            setNewAnimationGIF(gifPath);
+        }
+    }
+
+    @Override
+    public AnimationStates getAnimationState() {
+        return animationState;
+    }
+
+    public boolean isIdle() {
+        return idle;
+    }
+
+    /**
+     * Updates the direction state.
+     * When the velocity vector has positive value, the direction state is set to RIGHT
+     * and vice versa
+     */
     private void updateDirectionState() {
         DirectionState newState;
         if (velocityVector.x > 0) {
@@ -160,23 +185,11 @@ public abstract class Actor implements IGameObject,IActor{
     }
 
 
-
     public DirectionState getDirectionState() {
         return directionState;
     }
 
-    public void setAnimationState(AnimationStates newState, String gifPath) {
-        if(newState != animationState) {
-            animationState = newState;
-            setNewAnimationGIF(gifPath);
-        }
-    }
 
-    public AnimationStates getAnimationState() {
-        return animationState;
-    }
 
-    public boolean isIdle() {
-        return idle;
-    }
+
 }

@@ -1,5 +1,7 @@
 package Actors;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 public interface IActor {
     /**
      * resets velocity vector to default conditions
@@ -25,5 +27,12 @@ public interface IActor {
      * @param speedMultiplier
      */
     void setSpeed(int speedMultiplier);
+
+    /**
+     * Draws GIF
+     * @param batch
+     * @param elapsedTime for GIF handling
+     */
+    void draw(SpriteBatch batch, float elapsedTime);
 
 }
