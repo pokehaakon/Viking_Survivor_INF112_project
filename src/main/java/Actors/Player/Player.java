@@ -25,5 +25,4 @@ public class Player extends Actor {
         level = 1;
     }
 
-
 }

@@ -15,8 +15,9 @@ public abstract class Actor implements IGameObject,IActor{
     protected float scale;
 
     protected Animation<TextureRegion> sprite;
+    protected TextureRegion currentFrame;
     private float animationTime = 0;
-
+    private boolean isSpriteFlipped = false;
     private boolean destroyed = false;
 
     // unit vector, direction of movement
@@ -46,9 +47,9 @@ public abstract class Actor implements IGameObject,IActor{
     }
     @Override
     public void draw(SpriteBatch batch, float delta){
-        // Added delta as a parameter to draw() such that it is animating the sprite
+        // Added delta as a parameter to draw() to animate the sprite
         animationTime += delta;
-        TextureRegion currentFrame = sprite.getKeyFrame(animationTime);
+        currentFrame = sprite.getKeyFrame(animationTime);
         Vector2 p2 = body.getPosition();
 
         batch.draw(currentFrame,p2.x,p2.y, sprite.getKeyFrame(0).getRegionWidth()*scale,  sprite.getKeyFrame(0).getRegionHeight()*scale);
@@ -63,7 +64,9 @@ public abstract class Actor implements IGameObject,IActor{
         velocityVector.x += x;
         velocityVector.y += y;
     }
-
+    public Vector2 getVelocityVector(){
+        return velocityVector;
+    }
 
     @Override
     public void move(){
@@ -75,7 +78,5 @@ public abstract class Actor implements IGameObject,IActor{
     public void setSpeed(int speedMultiplier) {
         speed *= speedMultiplier;
     }
-
-
 
 }

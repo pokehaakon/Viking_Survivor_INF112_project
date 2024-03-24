@@ -73,7 +73,6 @@ public class MVPContext extends Context {
     private Box2DDebugRenderer debugRenderer;
 
 
-
     private Set<Body> toBoKilled;
 
 
@@ -199,6 +198,7 @@ public class MVPContext extends Context {
 
     @Override
     public void render(float delta) {
+
         FPS.add(System.nanoTime() - previousFrameStart);
         previousFrameStart = System.nanoTime();
 
@@ -228,7 +228,6 @@ public class MVPContext extends Context {
 
         //draw player
         player.draw(batch, Gdx.graphics.getDeltaTime());
-
 
         batch.end();
 
@@ -316,8 +315,7 @@ public class MVPContext extends Context {
 
     private void initializePlayer() {
         // player sprite
-        // Texture playerSprite = new Texture(Gdx.files.internal(Sprites.PLAYER_PNG));
-        Animation<TextureRegion> playerSprite = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("vikingright.gif").read());
+        Animation<TextureRegion> playerSprite = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal(Sprites.PLAYER_PNG).read());
 
         // player hitbox
         PolygonShape squarePlayer = createSquareShape(
