@@ -253,6 +253,8 @@ public class MVPContext extends Context {
 
         updateActorAnimations();
 
+        System.out.println(player.getAnimationState());
+
     }
 
     private void updateActorAnimations() {

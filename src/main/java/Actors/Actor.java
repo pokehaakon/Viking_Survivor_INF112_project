@@ -140,7 +140,7 @@ public abstract class Actor implements IGameObject,IActor, IAnimation{
     @Override
     public void setNewAnimationGIF(String gifPath) {
         currentGIF = AnimationConstants.getGIF(gifPath);
-        currentSprite = new Texture(gifPath);
+        currentSprite = new Texture(Gdx.files.internal(gifPath));
     }
 
 
