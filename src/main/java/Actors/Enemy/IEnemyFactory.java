@@ -8,35 +8,28 @@ public interface IEnemyFactory {
 
 
     /**
-     *
-     * @param type
-     * @return a enemy with a given start position
+     * Generate an Enemy of a wanted type and start position
+     * @param type type of enemy to generate
+     * @return an Enemy object
      */
-    Enemy createEnemyType(String type, Vector2 pos, float scale);
+    Enemy createEnemyType(String type, Vector2 pos);
 
     /**
-     *
-     * @param count
-     * @param type
-     * @return a desired amount of enemies
+     * Create multiple enemies of wanted type
+     * @param count number of enemies to create
+     * @param type type of enemy to generate
+     * @return List of Enemy objects
      */
-    List<Enemy> createEnemies(int count, String type);
+    List<Enemy> createEnemies(int count, String type, List<Vector2> startPoints);
 
     /**
-     *
-     * @param count
-     * @return desired number of random enemies
+     * Generates a wanted amount of enemies with random enemy type
+     * @param count number of enemies to generate
+     * @return List of Enemy objects
      */
-    List<Enemy> createRandomEnemies(int count);
+    List<Enemy> createRandomEnemies(int count, List<Vector2> startPoints);
 
-//    /**
-//     *
-//     * @param numMembers
-//     * @param enemyType
-//     * @param swarmType
-//     * @return creates a swarm of enemies
-//     */
-//    Swarm createSwarm(int numMembers, String enemyType, SwarmType swarmType);
+
 
 
 }

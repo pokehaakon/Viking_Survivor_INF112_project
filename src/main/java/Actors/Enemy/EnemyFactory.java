@@ -1,7 +1,9 @@
 package Actors.Enemy;
 
 
-import Actors.Coordinates;
+import Actors.Stats.Stats;
+import Animations.ActorAnimations;
+import Animations.AnimationConstants;
 import Tools.FilterTool;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,12 +16,16 @@ import java.util.*;
 import static Tools.BodyTool.createBodies;
 import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;
-import static Tools.ShapeTools.createCircleShape;
+import static Tools.ShapeTools.createSquareShape;
 
 
 public class EnemyFactory implements IEnemyFactory {
 
-    private final static List<String> enemyTypes = Arrays.asList("ENEMY1", "ENEMY2");
+
+    private final static List<String> enemyTypes = Arrays.asList(
+            "ENEMY1",
+            "ENEMY2"
+    );
     private final World world;
 
     public EnemyFactory(World world) {
@@ -27,28 +33,50 @@ public class EnemyFactory implements IEnemyFactory {
     }
 
     @Override
-    public Enemy createEnemyType(String type, Vector2 pos, float scale){
+    public Enemy createEnemyType(String type, Vector2 pos){
 
         if(type == null) {
             throw new NullPointerException("Type cannot be null!");
         }
+
         Enemy enemy;
+        float scale;
+        Shape shape;
+        String spawnGIF;
+        Texture texture;
+
         switch (type.toUpperCase()) {
             case "ENEMY1": {
-                Shape shape = createCircleShape(scale/2);
-                Texture texture = new Texture(Gdx.files.internal(Sprites.ENEMY_1_PNG));
-                enemy = new Enemy(createEnemyBody(pos, shape), texture, scale);
+                scale = AnimationConstants.ENEMY1_SCALE;
+                spawnGIF = AnimationConstants.PLAYER_IDLE_RIGHT;
+                texture = new Texture(Gdx.files.internal(spawnGIF));
+                shape = createSquareShape(
+                        (float)(texture.getWidth())*scale,
+                        (float) (texture.getHeight()*scale)
+
+                );
+
+                enemy = new Enemy(createEnemyBody(pos, shape), spawnGIF, scale, Stats.enemy1());
+                // setting animations
+                enemy.setAnimation(ActorAnimations.enemyMoveAnimation());
+
+
                 shape.dispose();
-                //enemy.setAction((a) -> a.getBody().setLinearVelocity(0, -30)); // <-- use this to set the actor (enemy) 'AI'
-                //texture.dispose();                                             // currently this is set in the MVPContext
                 break;
             }
             case "ENEMY2": {
-                Shape shape = createCircleShape(scale/2);
-                Texture texture = new Texture(Gdx.files.internal(Sprites.ENEMY_2_PNG));
-                enemy = new Enemy(createEnemyBody(pos, shape), texture, scale);
+                scale = AnimationConstants.ENEMY2_SCALE;
+                spawnGIF = AnimationConstants.PLAYER_IDLE_RIGHT;
+                texture = new Texture(Gdx.files.internal(spawnGIF));
+
+                shape = createSquareShape(
+                        texture.getWidth()*scale,
+                        texture.getHeight()*scale);
+
+                enemy = new Enemy(createEnemyBody(pos, shape), spawnGIF, scale, Stats.enemy2());
+                enemy.setAnimation(ActorAnimations.enemyMoveAnimation());
                 shape.dispose();
-                //texture.dispose();
+
                 break;
             }
             default:
@@ -59,12 +87,11 @@ public class EnemyFactory implements IEnemyFactory {
     }
 
     @Override
-    public List<Enemy> createEnemies(int count, String type) {
+    public List<Enemy> createEnemies(int count, String type, List<Vector2> startPos) {
 
         List<Enemy> enemies = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            Vector2 startPoint = Coordinates.randomPoint();
-            Enemy newEnemy = createEnemyType(type, startPoint, 1); //TODO add scale!
+            Enemy newEnemy = createEnemyType(type, startPos.get(i)); //TODO add scale!
             enemies.add(newEnemy);
         }
         return enemies;
@@ -79,42 +106,17 @@ public class EnemyFactory implements IEnemyFactory {
 
 
     @Override
-    public  List<Enemy> createRandomEnemies(int count) {
+    public  List<Enemy> createRandomEnemies(int count, List<Vector2> startPoints) {
         List<Enemy> enemyList = new ArrayList<>();
         for(int i = 0; i < count; i++) {
-            Vector2 startPoint = Coordinates.randomPoint();
-            Enemy enemy = createEnemyType(randomEnemyType(), startPoint, 1); //TODO add scale!
+            Enemy enemy = createEnemyType(randomEnemyType(), startPoints.get(i)); //TODO add scale!
             enemyList.add(enemy);
         }
         return enemyList;
     }
 
-//    @Override
-//    public Swarm createSwarm(int numMembers, String enemyType, SwarmType swarmType) {
-//        Swarm swarm = new Swarm();
-//        Vector2 startPoint = Coordinates.randomPoint();
-//        List<Vector2> swarmPoints;
-//
-//        if(swarmType == SwarmType.SQUARE) {
-//            swarm.setSwarmType(SwarmType.SQUARE);
-//            swarmPoints = Coordinates.squareSwarm(numMembers,startPoint, 60);
-//        }
-//        else if(swarmType == SwarmType.LINE){
-//            swarm.setSwarmType(SwarmType.LINE);
-//            swarmPoints = Coordinates.lineSwarm(numMembers,startPoint, 60);
-//        }
-//        else{
-//            throw new IllegalArgumentException("Cannot find swarm type");
-//        }
-//
-//        for(int i = 0; i < numMembers; i++) {
-//            Enemy enemy = createEnemyType(enemyType,swarmPoints.get(i).x , swarmPoints.get(i).y);
-//            swarm.add(enemy);
-//        }
-//        return swarm;
-//    }
 
-    private Body createEnemyBody(Vector2 pos, Shape shape) {
+    public  Body createEnemyBody(Vector2 pos, Shape shape) {
         Filter enemyFilter = createFilter(
                 FilterTool.Category.ENEMY,
                 new FilterTool.Category[]{
