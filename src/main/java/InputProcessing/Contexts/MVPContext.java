@@ -323,8 +323,7 @@ public class MVPContext extends Context {
     private void spawnEnemies(String enemyType, int num, ActorAction action) {
 
 
-        for(Enemy enemy: enemyPool.getEnemies(enemyType,num)) {
-            enemy.getBody().setActive(true);
+        for(Enemy enemy: enemyPool.activateEnemies(enemyType,num)) {
             enemy.setPosition(RandomCoordinates.randomPoint(player.getBody().getPosition()));
             enemy.setAction(action);
             enemies.add(enemy);
@@ -334,8 +333,7 @@ public class MVPContext extends Context {
 
     private void spawnRandomEnemies(int num, ActorAction action) {
 
-        for(Enemy enemy : enemyPool.getRandomEnemies(num)) {
-            enemy.getBody().setActive(true);
+        for(Enemy enemy : enemyPool.activateRandomEnemies(num)) {
             enemy.setPosition(RandomCoordinates.randomPoint(player.getBody().getPosition()));
             enemy.setAction(action);
             enemies.add(enemy);
@@ -348,11 +346,10 @@ public class MVPContext extends Context {
         Vector2 target = player.getBody().getPosition();
         List<Vector2> swarmCoordinates = SwarmCoordinates.getSwarmCoordinates(swarmType,size,spacing,target);
         Vector2 swarmDirection = SwarmCoordinates.swarmDirection(target, swarmType,swarmCoordinates);
-        List<Enemy> swarmMembers = enemyPool.getEnemies(enemyType,size);
+        List<Enemy> swarmMembers = enemyPool.activateEnemies(enemyType,size);
 
         for(int i = 0; i < size; i++) {
             Enemy enemy = swarmMembers.get(i);
-            enemy.getBody().setActive(true);
             enemy.setPosition(swarmCoordinates.get(i));
             enemy.setSpeed(Stats.SWARM_SPEED_MULTIPLIER);
             enemy.setAction(EnemyActions.swarmStrike(swarmDirection));

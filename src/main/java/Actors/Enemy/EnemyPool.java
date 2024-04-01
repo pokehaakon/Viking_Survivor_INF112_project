@@ -8,7 +8,7 @@ public class EnemyPool {
 
     private final Map<String, Queue<Enemy>> enemyPool;
 
-    private static final List<String> enemyTypes = Arrays.asList(
+    private static final List<String> ENEMY_TYPES = Arrays.asList(
             "ENEMY1",
             "ENEMY2"
     );
@@ -20,12 +20,13 @@ public class EnemyPool {
         enemyPool = new HashMap<>();
         random = new Random();
 
-        for(String enemyType : enemyTypes) {
+        for(String enemyType : ENEMY_TYPES) {
             createEnemyPool(enemyType, 200);
         }
     }
 
     private void createEnemyPool(String enemyType, int size) {
+
         Queue<Enemy> pool = new LinkedList<>(enemyFactory.createEnemies(size, enemyType));
 
         enemyPool.put(enemyType, pool);
@@ -35,41 +36,45 @@ public class EnemyPool {
         if (enemyPool.isEmpty()) {
             return null;
         }
-        String randomEnemyType = enemyTypes.get(random.nextInt(enemyTypes.size()));
+        String randomEnemyType = ENEMY_TYPES.get(random.nextInt(ENEMY_TYPES.size()));
         // Obtain an enemy from the corresponding pool
-        return getEnemies(randomEnemyType);
+        return getEnemy(randomEnemyType);
     }
 
-    private Enemy getEnemies(String enemyType) {
+    private Enemy getEnemy(String enemyType) {
         Queue<Enemy> pool = enemyPool.get(enemyType);
         if (!pool.isEmpty()) {
             return pool.poll();
-
         }
         else {
             return enemyFactory.createEnemyType(enemyType);
         }
     }
 
-    public List<Enemy> getRandomEnemies(int num) {
+    public List<Enemy> activateRandomEnemies(int num) {
         List<Enemy> enemies = new ArrayList<>();
         for(int i = 0; i < num; i++) {
-            enemies.add(getRandomEnemy());
+            Enemy enemy = getRandomEnemy();
+            enemy.getBody().setActive(true);
+            enemies.add(enemy);
         }
         return enemies;
     }
-    public List<Enemy> getEnemies(String enemyType, int num) {
+    public List<Enemy> activateEnemies(String enemyType, int num) {
         List<Enemy> enemies = new ArrayList<>();
         for(int i = 0; i < num; i++) {
-            enemies.add(getEnemies(enemyType));
+            Enemy enemy = getEnemy(enemyType);
+            enemy.getBody().setActive(true);
+            enemies.add(enemy);
         }
         return enemies;
     }
 
 
-    public void add(Enemy enemy, String enemyType) {
+    public void deActivateEnemy(Enemy enemy, String enemyType) {
         Queue<Enemy> pool = enemyPool.get(enemyType);
         if (pool != null) {
+            enemy.getBody().setActive(false);
             // Return the enemy to the pool
             pool.add(enemy);
         }
