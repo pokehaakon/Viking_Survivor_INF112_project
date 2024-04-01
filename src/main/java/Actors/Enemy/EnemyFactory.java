@@ -2,6 +2,7 @@ package Actors.Enemy;
 
 
 import Actors.Stats.Stats;
+import Animations.ActorAnimation;
 import Animations.ActorAnimations;
 import Animations.AnimationConstants;
 import Tools.FilterTool;
@@ -22,10 +23,6 @@ import static Tools.ShapeTools.createSquareShape;
 public class EnemyFactory implements IEnemyFactory {
 
 
-    private final static List<String> enemyTypes = Arrays.asList(
-            "ENEMY1",
-            "ENEMY2"
-    );
     private final World world;
 
     public EnemyFactory(World world) {
@@ -33,7 +30,7 @@ public class EnemyFactory implements IEnemyFactory {
     }
 
     @Override
-    public Enemy createEnemyType(String type, Vector2 pos){
+    public Enemy createEnemyType(String type){
 
         if(type == null) {
             throw new NullPointerException("Type cannot be null!");
@@ -44,6 +41,7 @@ public class EnemyFactory implements IEnemyFactory {
         Shape shape;
         String spawnGIF;
         Texture texture;
+        ActorAnimation animation;
 
         switch (type.toUpperCase()) {
             case "ENEMY1": {
@@ -55,13 +53,8 @@ public class EnemyFactory implements IEnemyFactory {
                         (float) (texture.getHeight()*scale)
 
                 );
+                animation = ActorAnimations.enemyMoveAnimation();
 
-                enemy = new Enemy(createEnemyBody(pos, shape), spawnGIF, scale, Stats.enemy1());
-                // setting animations
-                enemy.setAnimation(ActorAnimations.enemyMoveAnimation());
-
-
-                shape.dispose();
                 break;
             }
             case "ENEMY2": {
@@ -73,9 +66,7 @@ public class EnemyFactory implements IEnemyFactory {
                         texture.getWidth()*scale,
                         texture.getHeight()*scale);
 
-                enemy = new Enemy(createEnemyBody(pos, shape), spawnGIF, scale, Stats.enemy2());
-                enemy.setAnimation(ActorAnimations.enemyMoveAnimation());
-                shape.dispose();
+                animation = ActorAnimations.enemyMoveAnimation();
 
                 break;
             }
@@ -83,36 +74,23 @@ public class EnemyFactory implements IEnemyFactory {
                 throw new IllegalArgumentException("Invalid enemy type");
         }
 
+        enemy = new Enemy(createEnemyBody(new Vector2(), shape), spawnGIF, scale, Stats.enemy1());
+        // setting animations
+        enemy.setAnimation(animation);
+        enemy.getBody().setActive(false);
+
         return enemy;
     }
 
     @Override
-    public List<Enemy> createEnemies(int count, String type, List<Vector2> startPos) {
+    public List<Enemy> createEnemies(int count, String type) {
 
         List<Enemy> enemies = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            Enemy newEnemy = createEnemyType(type, startPos.get(i)); //TODO add scale!
+            Enemy newEnemy = createEnemyType(type); //TODO add scale!
             enemies.add(newEnemy);
         }
         return enemies;
-    }
-
-
-    private  String randomEnemyType() {
-        Random random = new Random();
-        int randomIndex = random.nextInt(enemyTypes.size());
-        return enemyTypes.get(randomIndex);
-    }
-
-
-    @Override
-    public  List<Enemy> createRandomEnemies(int count, List<Vector2> startPoints) {
-        List<Enemy> enemyList = new ArrayList<>();
-        for(int i = 0; i < count; i++) {
-            Enemy enemy = createEnemyType(randomEnemyType(), startPoints.get(i)); //TODO add scale!
-            enemyList.add(enemy);
-        }
-        return enemyList;
     }
 
 
@@ -128,6 +106,9 @@ public class EnemyFactory implements IEnemyFactory {
 
         return createBody(world, pos, shape, enemyFilter, 1, 0, 0);
     }
+
+
+
 
     private Array<Body> createEnemyBodies(int n, Iterable<Vector2> poss, Shape shape) {
         Filter enemyFilter = createFilter(

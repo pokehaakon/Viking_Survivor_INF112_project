@@ -8,8 +8,8 @@ import java.util.List;
 
 public abstract class RandomCoordinates extends Vector2 {
 
-    private static final double INNER_RADIUS = (double)0.8*Gdx.graphics.getWidth();
-    private static final double OUTER_RADIUS = (double) Gdx.graphics.getWidth();
+    private static final double INNER_RADIUS = (double)Gdx.graphics.getWidth();
+    private static final double OUTER_RADIUS = (double) 1.2*Gdx.graphics.getWidth();
 
     public RandomCoordinates(float x, float y) {
         super(x,y);

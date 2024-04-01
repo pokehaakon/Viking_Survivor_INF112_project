@@ -45,7 +45,9 @@ public abstract class Actor implements IGameObject,IActor, IAnimation{
         this.scale = scale;
         currentSprite = new Texture(Gdx.files.internal(spawnGIF));
         currentGIF = AnimationConstants.getGIF(spawnGIF);
+
     }
+
 
 
     /**

@@ -1,6 +1,8 @@
 package InputProcessing.Contexts;
 
+import Actors.ActorAction.ActorAction;
 import Actors.Enemy.Enemy;
+import Actors.Enemy.EnemyPool;
 import Actors.Enemy.SwarmType;
 import Animations.ActorAnimations;
 import Actors.ActorAction.EnemyActions;
@@ -28,6 +30,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -58,7 +61,7 @@ public class MVPContext extends Context {
     private RollingSum FrameTime;
     private RollingSum FPS;
 
-
+    private EnemyPool enemyPool;
 
     private RollingSum UPS;
     private long previousFrameStart = System.nanoTime();
@@ -80,6 +83,8 @@ public class MVPContext extends Context {
     float elapsedTime;
     private Set<Body> toBoKilled;
 
+    private long lastSpawnTime;
+
 
 
 
@@ -97,12 +102,11 @@ public class MVPContext extends Context {
         font.setColor(Color.RED);
         renderLock = new ReentrantLock(true);
 
+
         //create and start simulation
         createWorld();
-        // spawns start enemies
-        spawnRandomEnemies(10);
-        spawnSwarm("Enemy1", SwarmType.LINE, 10, 20);
-        //spawnSwarm("Enemy2", SwarmType.SQUARE, 12,60);
+        enemyPool = new EnemyPool(enemyFactory);
+
 
         toBoKilled = new HashSet<>();
         ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
@@ -218,6 +222,7 @@ public class MVPContext extends Context {
 
         debugRenderer.render(world, camera.combined);
 
+
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
         origin.add(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
@@ -250,10 +255,15 @@ public class MVPContext extends Context {
         frameCount++;
 
 
-
         updateActorAnimations();
+        if(TimeUtils.millis() - lastSpawnTime > 5000) {
+            //spawnRandomEnemies(5, EnemyActions.chasePlayer(player));
+            spawnSwarm("ENEMY1",SwarmType.SQUARE, 12,60);
+            System.out.println("SPAWN");
+        }
 
-        System.out.println(player.getAnimationState());
+
+
 
     }
 
@@ -310,39 +320,46 @@ public class MVPContext extends Context {
         world.step(1/60f, 10, 10);
     }
 
-    private void spawnEnemies(String enemyType, int num) {
-        // random start coordinates
-        List<Vector2> startPoints = RandomCoordinates.randomPoints(num, player.getBody().getPosition());
+    private void spawnEnemies(String enemyType, int num, ActorAction action) {
 
-        for(Enemy enemy: enemyFactory.createEnemies(num, enemyType, startPoints)) {
-            enemy.setAction(EnemyActions.chasePlayer(player));
+
+        for(Enemy enemy: enemyPool.getEnemies(enemyType,num)) {
+            enemy.getBody().setActive(true);
+            enemy.setPosition(RandomCoordinates.randomPoint(player.getBody().getPosition()));
+            enemy.setAction(action);
             enemies.add(enemy);
         }
 
     }
 
-    private void spawnRandomEnemies(int num) {
-        // random start coordinates
-        List<Vector2> startPoints = RandomCoordinates.randomPoints(num, player.getBody().getPosition());
-        List<Enemy> enemiesToSpawn = enemyFactory.createRandomEnemies(num, startPoints);
-        for(Enemy enemy: enemiesToSpawn) {
-            enemy.setAction(EnemyActions.chasePlayer(player));
+    private void spawnRandomEnemies(int num, ActorAction action) {
+
+        for(Enemy enemy : enemyPool.getRandomEnemies(num)) {
+            enemy.getBody().setActive(true);
+            enemy.setPosition(RandomCoordinates.randomPoint(player.getBody().getPosition()));
+            enemy.setAction(action);
             enemies.add(enemy);
         }
-
+        lastSpawnTime = TimeUtils.millis();
     }
+
 
     private void spawnSwarm(String enemyType, SwarmType swarmType, int size, int spacing) {
         Vector2 target = player.getBody().getPosition();
         List<Vector2> swarmCoordinates = SwarmCoordinates.getSwarmCoordinates(swarmType,size,spacing,target);
         Vector2 swarmDirection = SwarmCoordinates.swarmDirection(target, swarmType,swarmCoordinates);
+        List<Enemy> swarmMembers = enemyPool.getEnemies(enemyType,size);
 
-        for(Enemy enemy: enemyFactory.createEnemies(size,enemyType,swarmCoordinates)) {
+        for(int i = 0; i < size; i++) {
+            Enemy enemy = swarmMembers.get(i);
+            enemy.getBody().setActive(true);
+            enemy.setPosition(swarmCoordinates.get(i));
             enemy.setSpeed(Stats.SWARM_SPEED_MULTIPLIER);
-            // sets action
             enemy.setAction(EnemyActions.swarmStrike(swarmDirection));
             enemies.add(enemy);
         }
+
+        lastSpawnTime = TimeUtils.millis();
 
     }
 
