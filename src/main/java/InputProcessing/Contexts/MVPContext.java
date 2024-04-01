@@ -257,8 +257,8 @@ public class MVPContext extends Context {
 
         updateActorAnimations();
         if(TimeUtils.millis() - lastSpawnTime > 5000) {
-            //spawnRandomEnemies(5, EnemyActions.chasePlayer(player));
-            spawnSwarm("ENEMY1",SwarmType.SQUARE, 12,60);
+            spawnRandomEnemies(5, EnemyActions.chasePlayer(player));
+            //spawnSwarm("ENEMY1",SwarmType.SQUARE, 12,60);
             System.out.println("SPAWN");
         }
 

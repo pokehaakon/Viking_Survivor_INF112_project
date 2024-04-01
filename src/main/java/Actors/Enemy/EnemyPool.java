@@ -21,7 +21,7 @@ public class EnemyPool {
         random = new Random();
 
         for(String enemyType : ENEMY_TYPES) {
-            createEnemyPool(enemyType, 200);
+            createEnemyPool(enemyType, 50);
         }
     }
 
