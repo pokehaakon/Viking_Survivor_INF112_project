@@ -1,10 +1,11 @@
 package Actors.Enemy;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
+
 import java.util.*;
 
 public class EnemyPool {
-
-    private final EnemyFactory enemyFactory;
 
     private final Map<String, Queue<Enemy>> enemyPool;
 
@@ -13,57 +14,84 @@ public class EnemyPool {
             "ENEMY2"
     );
 
-    private final Random random;
 
-    public EnemyPool(EnemyFactory enemyFactory) {
-        this.enemyFactory = enemyFactory;
+    private final Random random;
+    private final World world;
+
+    /**
+     * An enemy pool is a hash map of enemy types as keys and linked list of Enemy objects as values
+     * When we start the game, we create and store a desired amount of each enemy type
+     * We use this pool to recirculate enemies, so we don't have to create new instances every time an enemy spawns
+     * @param world the current world
+     * @param poolSize number of Enemy objects for each enemy type
+     */
+    public EnemyPool(World world, int poolSize) {
+        this.world = world;
         enemyPool = new HashMap<>();
         random = new Random();
 
         for(String enemyType : ENEMY_TYPES) {
-            createEnemyPool(enemyType, 50);
+            createEnemyPool(enemyType,poolSize);
         }
     }
 
     private void createEnemyPool(String enemyType, int size) {
 
-        Queue<Enemy> pool = new LinkedList<>(enemyFactory.createEnemies(size, enemyType));
+
+        Queue<Enemy> pool = new LinkedList<>();
+        for(Enemy enemy : EnemyFactory.create(size, enemyType)) {
+
+            enemy.addToWorld(world, new Vector2());
+            enemy.getBody().setActive(false);
+            pool.add(enemy);
+        }
 
         enemyPool.put(enemyType, pool);
     }
 
-    private Enemy getRandomEnemy() {
+    private Enemy getRandomEnemies() {
         if (enemyPool.isEmpty()) {
             return null;
         }
         String randomEnemyType = ENEMY_TYPES.get(random.nextInt(ENEMY_TYPES.size()));
-        // Obtain an enemy from the corresponding pool
-        return getEnemy(randomEnemyType);
+        return getEnemies(randomEnemyType);
     }
 
-    private Enemy getEnemy(String enemyType) {
+    private Enemy getEnemies(String enemyType) {
         Queue<Enemy> pool = enemyPool.get(enemyType);
         if (!pool.isEmpty()) {
             return pool.poll();
         }
         else {
-            return enemyFactory.createEnemyType(enemyType);
+            return EnemyFactory.create(enemyType);
         }
     }
 
-    public List<Enemy> activateRandomEnemies(int num) {
+    /**
+     * Polls random enemies from the enemy pool and activate their bodies
+     * @param num number of enemies to obtain
+     * @return a list of Enemy objects
+     */
+    public List<Enemy> getRandomEnemies(int num) {
         List<Enemy> enemies = new ArrayList<>();
         for(int i = 0; i < num; i++) {
-            Enemy enemy = getRandomEnemy();
+            Enemy enemy = getRandomEnemies();
             enemy.getBody().setActive(true);
             enemies.add(enemy);
         }
         return enemies;
     }
-    public List<Enemy> activateEnemies(String enemyType, int num) {
+
+    /**
+     * Polls enemies from the enemy pool and activate their bodies
+     * @param enemyType desired enemy type
+     * @param num number of enemies to obtain
+     * @return a list of Enemy objects
+     */
+    public List<Enemy> getEnemies(String enemyType, int num) {
         List<Enemy> enemies = new ArrayList<>();
         for(int i = 0; i < num; i++) {
-            Enemy enemy = getEnemy(enemyType);
+            Enemy enemy = getEnemies(enemyType);
             enemy.getBody().setActive(true);
             enemies.add(enemy);
         }
@@ -71,13 +99,24 @@ public class EnemyPool {
     }
 
 
-    public void deActivateEnemy(Enemy enemy, String enemyType) {
-        Queue<Enemy> pool = enemyPool.get(enemyType);
+    /**
+     * Returns enemy to enemy pool, deactivates their bodies, resets its actions and its destroyed-tag.
+     * @param enemy the Enemy object
+     */
+    public void returnEnemy(Enemy enemy) {
+        Queue<Enemy> pool = enemyPool.get(enemy.getEnemyType());
         if (pool != null) {
             enemy.getBody().setActive(false);
+            enemy.revive();
+            enemy.resetActions();
             // Return the enemy to the pool
             pool.add(enemy);
         }
+    }
+
+
+    public Map<String, Queue<Enemy>> getEnemyPool() {
+        return enemyPool;
     }
 
 }

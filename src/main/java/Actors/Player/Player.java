@@ -28,4 +28,7 @@ public class Player extends Actor {
         idle = true;
     }
 
+
+
+
 }

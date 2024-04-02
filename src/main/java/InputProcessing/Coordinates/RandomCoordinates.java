@@ -8,8 +8,8 @@ import java.util.List;
 
 public abstract class RandomCoordinates extends Vector2 {
 
-    private static final double INNER_RADIUS = (double)Gdx.graphics.getWidth();
-    private static final double OUTER_RADIUS = (double) 1.2*Gdx.graphics.getWidth();
+    public static final double SPAWN_RADIUS = (double)0.7*Gdx.graphics.getWidth();
+    public static final double DESPAWN_RADIUS = (double) 1.1*Gdx.graphics.getWidth();
 
     public RandomCoordinates(float x, float y) {
         super(x,y);
@@ -25,9 +25,9 @@ public abstract class RandomCoordinates extends Vector2 {
     public static Vector2 randomPoint(Vector2 center) {
 
         double angle = Math.toRadians(Math.random() * 360);
-        double randomRadius = INNER_RADIUS + Math.random() * (OUTER_RADIUS - INNER_RADIUS);
-        double x = center.x + randomRadius * Math.cos(angle);
-        double y = center.y + randomRadius * Math.sin(angle);
+        double randomRadius = SPAWN_RADIUS + Math.random() * (DESPAWN_RADIUS - SPAWN_RADIUS);
+        double x = center.x + SPAWN_RADIUS * Math.cos(angle);
+        double y = center.y + SPAWN_RADIUS * Math.sin(angle);
 
         return new Vector2((float)x,(float)y);
     }

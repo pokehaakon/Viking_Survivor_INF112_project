@@ -11,16 +11,26 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Shape;
+import com.badlogic.gdx.physics.box2d.World;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static Tools.BodyTool.createEnemyBody;
 
 public abstract class Actor implements IGameObject,IActor, IAnimation{
 
-    protected float HP, speed, damage, armour;
+    public float HP, speed, damage, armour;
 
     protected Body body;
 
     protected float scale;
 
-    private ActorAction action;
+    public Shape shape;
+
+
+    private Set<ActorAction> actions;
     private ActorAnimation animation;
     private boolean destroyed = false;
 
@@ -46,7 +56,21 @@ public abstract class Actor implements IGameObject,IActor, IAnimation{
         currentSprite = new Texture(Gdx.files.internal(spawnGIF));
         currentGIF = AnimationConstants.getGIF(spawnGIF);
 
+        velocityVector = new Vector2();
+        actions  = new HashSet<>();
+
     }
+
+    public Actor(String spawnGIF, float scale) {
+        this.scale = scale;
+        currentSprite = new Texture(Gdx.files.internal(spawnGIF));
+        currentGIF = AnimationConstants.getGIF(spawnGIF);
+        velocityVector = new Vector2();
+        actions  = new HashSet<>();
+
+    }
+
+
 
 
 
@@ -55,15 +79,24 @@ public abstract class Actor implements IGameObject,IActor, IAnimation{
      * @param action
      */
     public void setAction(ActorAction action) {
-        this.action = action;
+        actions.add(action);
+
     }
     /**
      * The actor performs its actions
      */
     public void doAction(){
-        action.act(this);
+        for(ActorAction action : actions) {
+            action.act(this);
+        }
     }
 
+    /**
+     * Reset actions
+     */
+    public void resetActions() {
+        actions = new HashSet<>();
+    }
 
     @Override
     public void setAnimation(ActorAnimation animation) {
@@ -79,6 +112,10 @@ public abstract class Actor implements IGameObject,IActor, IAnimation{
     @Override
     public void destroy() {
         destroyed = true;
+    }
+
+    public void revive() {
+        destroyed = false;
     }
 
 
@@ -191,6 +228,10 @@ public abstract class Actor implements IGameObject,IActor, IAnimation{
         return directionState;
     }
 
+
+    public void setPosition(Vector2 pos) {
+        body.setTransform(pos, body.getAngle());
+    }
 
 
 

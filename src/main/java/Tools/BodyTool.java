@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array;
 
 import java.util.Iterator;
 
+import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createSquareShape;
 
 public abstract class BodyTool {
@@ -56,5 +57,18 @@ public abstract class BodyTool {
             bodies.add(createBody(world, posIter.next(), filter, bodyDef, fixtureDef));
         }
         return bodies;
+    }
+
+    public  static Body createEnemyBody(World world, Vector2 pos, Shape shape) {
+        Filter enemyFilter = createFilter(
+                FilterTool.Category.ENEMY,
+                new FilterTool.Category[]{
+                        FilterTool.Category.WALL,
+                        FilterTool.Category.ENEMY,
+                        FilterTool.Category.PLAYER
+                }
+        );
+
+        return createBody(world, pos, shape, enemyFilter, 1, 0, 0);
     }
 }

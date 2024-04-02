@@ -24,6 +24,7 @@ public abstract class ActorAnimations {
                 // checks the direction state
                 newState = (currentDirection == DirectionState.RIGHT) ? AnimationStates.IDLE_RIGHT : AnimationStates.IDLE_LEFT;
                 gifPath = (currentDirection == DirectionState.RIGHT) ? PLAYER_IDLE_RIGHT : PLAYER_IDLE_LEFT;
+
             }
 
             // if player is moving

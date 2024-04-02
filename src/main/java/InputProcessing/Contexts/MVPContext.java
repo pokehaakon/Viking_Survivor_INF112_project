@@ -5,7 +5,6 @@ import Actors.Enemy.Enemy;
 import Actors.Enemy.EnemyPool;
 import Actors.Enemy.SwarmType;
 import Animations.ActorAnimations;
-import Actors.ActorAction.EnemyActions;
 import Actors.ActorAction.PlayerActions;
 import Actors.Enemy.EnemyFactory;
 import Animations.AnimationConstants;
@@ -32,10 +31,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -43,6 +39,7 @@ import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createSquareShape;
 import static Tools.ShapeTools.getBottomLeftCorrection;
+import static Actors.ActorAction.EnemyActions.*;
 
 public class MVPContext extends Context {
 
@@ -54,7 +51,7 @@ public class MVPContext extends Context {
 
     private Player player;
 
-    private ArrayList<Enemy> enemies;
+    private ArrayList<Enemy> spawnedEnemies;
     private final BitmapFont font;
 
     private RollingSum UpdateTime;
@@ -105,17 +102,10 @@ public class MVPContext extends Context {
 
         //create and start simulation
         createWorld();
-        enemyPool = new EnemyPool(enemyFactory);
-
-
-        toBoKilled = new HashSet<>();
-        ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
-        world.setContactListener(contactListener);
         simThread = new SimulationThread(this);
-
         simThread.start();
 
-
+        //spawnRandomEnemies(1, EnemyActions.chasePlayer(player));
     }
     private void setupDebug() {
         UpdateTime = new RollingSum(60*3);
@@ -239,7 +229,7 @@ public class MVPContext extends Context {
         // draw enemies
 
         elapsedTime += Gdx.graphics.getDeltaTime();
-        for (Enemy enemy : enemies) {
+        for (Enemy enemy : spawnedEnemies) {
             enemy.draw(batch, elapsedTime);
         }
         //draw player
@@ -257,23 +247,31 @@ public class MVPContext extends Context {
 
         updateActorAnimations();
         if(TimeUtils.millis() - lastSpawnTime > 5000) {
-            spawnRandomEnemies(5, EnemyActions.chasePlayer(player));
+            spawnRandomEnemies(5, Arrays.asList(chasePlayer(player), destroyIfDefeated(player)));
             //spawnSwarm("ENEMY1",SwarmType.SQUARE, 12,60);
-            System.out.println("SPAWN");
         }
+        removeDestroyedEnemies();
 
+    }
 
-
-
+    private void removeDestroyedEnemies() {
+        for(Iterator<Enemy> iter = spawnedEnemies.iterator(); iter.hasNext();) {
+            Enemy enemy = iter.next();
+            if(enemy.isDestroyed()) {
+                // returns enemy to enemy pool
+                enemyPool.returnEnemy(enemy);
+                // removes from list of active enemies
+                iter.remove();
+                System.out.println("destroy!");
+            }
+        }
     }
 
     private void updateActorAnimations() {
         player.doAnimation();
-
-        for(Enemy enemy: enemies) {
+        for(Enemy enemy: spawnedEnemies) {
             enemy.doAnimation();
         }
-
     }
 
 
@@ -313,30 +311,37 @@ public class MVPContext extends Context {
         debugRenderer = new Box2DDebugRenderer();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
-        enemyFactory = new EnemyFactory(world);
         initializePlayer();
-        enemies = new ArrayList<>();
+        spawnedEnemies = new ArrayList<>();
+        enemyPool = new EnemyPool(world, 50);
+
+
+        toBoKilled = new HashSet<>();
+        ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
+        world.setContactListener(contactListener);
 
         world.step(1/60f, 10, 10);
     }
 
-    private void spawnEnemies(String enemyType, int num, ActorAction action) {
+    private void spawnEnemies(String enemyType, int num, List<ActorAction> actions) {
 
-
-        for(Enemy enemy: enemyPool.activateEnemies(enemyType,num)) {
+        for(Enemy enemy: enemyPool.getEnemies(enemyType,num)) {
             enemy.setPosition(RandomCoordinates.randomPoint(player.getBody().getPosition()));
-            enemy.setAction(action);
-            enemies.add(enemy);
+            for(ActorAction action : actions) {
+                enemy.setAction(action);
+            }
+            spawnedEnemies.add(enemy);
         }
-
     }
 
-    private void spawnRandomEnemies(int num, ActorAction action) {
+    private void spawnRandomEnemies(int num, List<ActorAction> actions) {
 
-        for(Enemy enemy : enemyPool.activateRandomEnemies(num)) {
+        for(Enemy enemy : enemyPool.getRandomEnemies(num)) {
             enemy.setPosition(RandomCoordinates.randomPoint(player.getBody().getPosition()));
-            enemy.setAction(action);
-            enemies.add(enemy);
+            for(ActorAction action : actions) {
+                enemy.setAction(action);
+            }
+            spawnedEnemies.add(enemy);
         }
         lastSpawnTime = TimeUtils.millis();
     }
@@ -346,14 +351,15 @@ public class MVPContext extends Context {
         Vector2 target = player.getBody().getPosition();
         List<Vector2> swarmCoordinates = SwarmCoordinates.getSwarmCoordinates(swarmType,size,spacing,target);
         Vector2 swarmDirection = SwarmCoordinates.swarmDirection(target, swarmType,swarmCoordinates);
-        List<Enemy> swarmMembers = enemyPool.activateEnemies(enemyType,size);
+        List<Enemy> swarmMembers = enemyPool.getEnemies(enemyType,size);
 
         for(int i = 0; i < size; i++) {
             Enemy enemy = swarmMembers.get(i);
             enemy.setPosition(swarmCoordinates.get(i));
             enemy.setSpeed(Stats.SWARM_SPEED_MULTIPLIER);
-            enemy.setAction(EnemyActions.swarmStrike(swarmDirection));
-            enemies.add(enemy);
+            enemy.setAction(swarmStrike(swarmDirection));
+            enemy.setAction(destroyIfDefeated(player));
+            spawnedEnemies.add(enemy);
         }
 
         lastSpawnTime = TimeUtils.millis();
@@ -399,7 +405,7 @@ public class MVPContext extends Context {
     }
 
     private void updateEnemyAction() {
-        for(Enemy enemy: enemies) {
+        for(Enemy enemy: spawnedEnemies) {
             enemy.doAction();
         }
 
