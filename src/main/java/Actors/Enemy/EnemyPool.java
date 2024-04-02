@@ -63,7 +63,9 @@ public class EnemyPool {
             return pool.poll();
         }
         else {
-            return EnemyFactory.create(enemyType);
+            Enemy enemy = EnemyFactory.create(enemyType);
+            enemy.addToWorld(world, new Vector2());
+            return enemy;
         }
     }
 
@@ -89,6 +91,7 @@ public class EnemyPool {
      * @return a list of Enemy objects
      */
     public List<Enemy> getEnemies(String enemyType, int num) {
+        System.out.println(enemyPool.get(enemyType).size());
         List<Enemy> enemies = new ArrayList<>();
         for(int i = 0; i < num; i++) {
             Enemy enemy = getEnemy(enemyType);
@@ -109,6 +112,7 @@ public class EnemyPool {
             enemy.getBody().setActive(false);
             enemy.revive();
             enemy.resetActions();
+
             // Return the enemy to the pool
             pool.add(enemy);
         }

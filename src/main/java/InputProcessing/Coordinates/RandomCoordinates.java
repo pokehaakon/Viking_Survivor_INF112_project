@@ -25,7 +25,6 @@ public abstract class RandomCoordinates extends Vector2 {
     public static Vector2 randomPoint(Vector2 center) {
 
         double angle = Math.toRadians(Math.random() * 360);
-        double randomRadius = SPAWN_RADIUS + Math.random() * (DESPAWN_RADIUS - SPAWN_RADIUS);
         double x = center.x + SPAWN_RADIUS * Math.cos(angle);
         double y = center.y + SPAWN_RADIUS * Math.sin(angle);
 

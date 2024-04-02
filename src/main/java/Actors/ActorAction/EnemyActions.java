@@ -21,6 +21,7 @@ public abstract class EnemyActions {
      */
     public static ActorAction swarmStrike(Vector2 swarmDirection) {
         return (e)-> {
+
             Enemy enemy = (Enemy) e;
             enemy.resetVelocity();
             enemy.setVelocityVector(swarmDirection.x, swarmDirection.y);
