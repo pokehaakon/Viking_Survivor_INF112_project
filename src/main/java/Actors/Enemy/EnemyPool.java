@@ -49,15 +49,15 @@ public class EnemyPool {
         enemyPool.put(enemyType, pool);
     }
 
-    private Enemy getRandomEnemies() {
+    private Enemy getRandomEnemy() {
         if (enemyPool.isEmpty()) {
             return null;
         }
         String randomEnemyType = ENEMY_TYPES.get(random.nextInt(ENEMY_TYPES.size()));
-        return getEnemies(randomEnemyType);
+        return getEnemy(randomEnemyType);
     }
 
-    private Enemy getEnemies(String enemyType) {
+    private Enemy getEnemy(String enemyType) {
         Queue<Enemy> pool = enemyPool.get(enemyType);
         if (!pool.isEmpty()) {
             return pool.poll();
@@ -75,7 +75,7 @@ public class EnemyPool {
     public List<Enemy> getRandomEnemies(int num) {
         List<Enemy> enemies = new ArrayList<>();
         for(int i = 0; i < num; i++) {
-            Enemy enemy = getRandomEnemies();
+            Enemy enemy = getRandomEnemy();
             enemy.getBody().setActive(true);
             enemies.add(enemy);
         }
@@ -91,7 +91,7 @@ public class EnemyPool {
     public List<Enemy> getEnemies(String enemyType, int num) {
         List<Enemy> enemies = new ArrayList<>();
         for(int i = 0; i < num; i++) {
-            Enemy enemy = getEnemies(enemyType);
+            Enemy enemy = getEnemy(enemyType);
             enemy.getBody().setActive(true);
             enemies.add(enemy);
         }
