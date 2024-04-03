@@ -6,25 +6,25 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 class EnemyFactoryTest {
-    EnemyFactory factory;
 
-    @BeforeEach
-    void initialize() {
-        factory = new EnemyFactory(null);
+
+    @Test
+    void invalidEnemyType() {
+        assertEquals(5, EnemyFactory.create(5,"Enemy1"));
+
+        assertThrows(NullPointerException.class, () -> {
+            EnemyFactory.create(null);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            EnemyFactory.create("hello");
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            EnemyFactory.create(0, "Enemy1");
+        });
     }
-
-//    @Test
-//    void invalidEnemyType() {
-//
-//        assertThrows(NullPointerException.class, () -> {
-//            factory.createEnemyType(null , new Vector2(),0);
-//        });
-//
-//        assertThrows(IllegalArgumentException.class, () -> {
-//            factory.createEnemyType("hello", new Vector2(),0);
-//        });
-//    }
 
     //to test: correct enemytype, correct position, correct number of enemies etc
 }

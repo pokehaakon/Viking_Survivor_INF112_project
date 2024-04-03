@@ -230,9 +230,11 @@ public class MVPContext extends Context {
 
         elapsedTime += Gdx.graphics.getDeltaTime();
         for (Enemy enemy : spawnedEnemies) {
+            enemy.doAnimation();
             enemy.draw(batch, elapsedTime);
         }
         //draw player
+        player.doAnimation();
         player.draw(batch,elapsedTime);
 
 
@@ -244,17 +246,17 @@ public class MVPContext extends Context {
         FrameTime.add(System.nanoTime() - renderStartTime);
         frameCount++;
 
-
-        updateActorAnimations();
         if(TimeUtils.millis() - lastSpawnTime > 5000) {
             //spawnRandomEnemies(5, Arrays.asList(chasePlayer(player), destroyIfDefeated(player)));
             spawnSwarm("ENEMY1",SwarmType.SQUARE, 12,60);
         }
-        removeDestroyedEnemies();
 
     }
 
-    private void removeDestroyedEnemies() {
+    /**
+     * Despawns destroyed enemies by returning them to enemy pool and removing them from the spawned enemy list
+     */
+    public void removeDestroyedEnemies() {
         for(Iterator<Enemy> iter = spawnedEnemies.iterator(); iter.hasNext();) {
             Enemy enemy = iter.next();
             if(enemy.isDestroyed()) {

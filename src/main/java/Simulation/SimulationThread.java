@@ -81,6 +81,7 @@ public class SimulationThread extends Thread {
         }
 
         context.updateActorActions();
+        context.removeDestroyedEnemies();
         world.step(1/(float) SET_UPS, 10, 10);
 
 

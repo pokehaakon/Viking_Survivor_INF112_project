@@ -5,6 +5,7 @@ import Actors.Stats.Stats;
 import Animations.ActorAnimation;
 import Animations.ActorAnimations;
 import Animations.AnimationConstants;
+import FileHandling.FileHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
@@ -17,6 +18,8 @@ import static Tools.ShapeTools.createSquareShape;
 
 
 public abstract class EnemyFactory{
+
+
 
     /**
      * Creates an instance of an enemy
@@ -83,6 +86,10 @@ public abstract class EnemyFactory{
      * @return a list of Enemy objects
      */
     public static List<Enemy> create(int n, String enemyType) {
+
+        if(n <= 0) {
+            throw new IllegalArgumentException("Number of enemies must be greater than zero");
+        }
 
         List<Enemy> enemies = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {

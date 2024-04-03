@@ -37,7 +37,6 @@ public class EnemyPool {
 
     private void createEnemyPool(String enemyType, int size) {
 
-
         Queue<Enemy> pool = new LinkedList<>();
         for(Enemy enemy : EnemyFactory.create(size, enemyType)) {
 
@@ -45,7 +44,6 @@ public class EnemyPool {
             enemy.getBody().setActive(false);
             pool.add(enemy);
         }
-
         enemyPool.put(enemyType, pool);
     }
 
