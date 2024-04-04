@@ -45,9 +45,9 @@ public class TerrainFactory implements IFactory<Terrain>{
 
         switch (type.toUpperCase()) {
             case "TREE": {
-                texture = fileHandler.loadTexture("img.png");
+                texture = fileHandler.loadTexture("img_2.png");
 
-                scale = AnimationConstants.ENEMY1_SCALE;
+                scale = 0.6f;
 
                 shape = createSquareShape(
                         (float)(texture.getWidth())*scale,

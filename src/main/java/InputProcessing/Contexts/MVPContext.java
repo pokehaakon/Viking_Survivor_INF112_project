@@ -93,6 +93,8 @@ public class MVPContext extends Context {
 
     private long lastSpawnTime;
 
+    private long lastSwarmSpawnTime;
+
 
 
 
@@ -263,8 +265,12 @@ public class MVPContext extends Context {
 
         if(TimeUtils.millis() - lastSpawnTime > 5000) {
             spawnRandomEnemies(5, Arrays.asList(chasePlayer(player), destroyIfDefeated(player)));
+        }
+
+        if(TimeUtils.millis() - lastSwarmSpawnTime > 9000) {
             spawnSwarm("ENEMY1",SwarmType.SQUARE, 12,60);
         }
+
         world.step(1/(float) 60, 10, 10);
 
     }
@@ -394,7 +400,7 @@ public class MVPContext extends Context {
             drawableEnemies.add(enemy);
         }
 
-        lastSpawnTime = TimeUtils.millis();
+        lastSwarmSpawnTime = TimeUtils.millis();
 
     }
 
@@ -407,7 +413,6 @@ public class MVPContext extends Context {
         for(Enemy enemy: drawableEnemies) {
             enemy.doAction();
         }
-        ;
 
     }
 
