@@ -9,7 +9,7 @@ public class EnemyPool {
 
     private final Map<String, Queue<Enemy>> enemyPool;
 
-    private static final List<String> ENEMY_TYPES = Arrays.asList(
+    public static final List<String> ENEMY_TYPES = Arrays.asList(
             "ENEMY1",
             "ENEMY2"
     );
@@ -18,6 +18,8 @@ public class EnemyPool {
     private final Random random;
     private final World world;
 
+    private EnemyFactory enemyFactory;
+
     /**
      * An enemy pool is a hash map of enemy types as keys and linked list of Enemy objects as values
      * When we start the game, we create and store a desired amount of each enemy type
@@ -25,7 +27,12 @@ public class EnemyPool {
      * @param world the current world
      * @param poolSize number of Enemy objects for each enemy type
      */
-    public EnemyPool(World world, int poolSize) {
+    public EnemyPool(World world, int poolSize, EnemyFactory enemyFactory) {
+        if(poolSize <= 0) {
+            throw new IllegalArgumentException("Pool size must be greater than zero!");
+        }
+
+        this.enemyFactory = enemyFactory;
         this.world = world;
         enemyPool = new HashMap<>();
         random = new Random();
@@ -38,8 +45,7 @@ public class EnemyPool {
     private void createEnemyPool(String enemyType, int size) {
 
         Queue<Enemy> pool = new LinkedList<>();
-        for(Enemy enemy : EnemyFactory.create(size, enemyType)) {
-
+        for(Enemy enemy : enemyFactory.create(size, enemyType)) {
             enemy.addToWorld(world, new Vector2());
             enemy.getBody().setActive(false);
             pool.add(enemy);
@@ -48,9 +54,6 @@ public class EnemyPool {
     }
 
     private Enemy getRandomEnemy() {
-        if (enemyPool.isEmpty()) {
-            return null;
-        }
         String randomEnemyType = ENEMY_TYPES.get(random.nextInt(ENEMY_TYPES.size()));
         return getEnemy(randomEnemyType);
     }
@@ -58,11 +61,14 @@ public class EnemyPool {
     private Enemy getEnemy(String enemyType) {
         Queue<Enemy> pool = enemyPool.get(enemyType);
         if (!pool.isEmpty()) {
-            return pool.poll();
+            Enemy enemy = pool.poll();
+            enemy.getBody().setActive(true);
+            return enemy;
         }
         else {
-            Enemy enemy = EnemyFactory.create(enemyType);
+            Enemy enemy = enemyFactory.create(enemyType);
             enemy.addToWorld(world, new Vector2());
+            enemy.getBody().setActive(true);
             return enemy;
         }
     }
@@ -76,7 +82,6 @@ public class EnemyPool {
         List<Enemy> enemies = new ArrayList<>();
         for(int i = 0; i < num; i++) {
             Enemy enemy = getRandomEnemy();
-            enemy.getBody().setActive(true);
             enemies.add(enemy);
         }
         return enemies;
@@ -93,7 +98,6 @@ public class EnemyPool {
         List<Enemy> enemies = new ArrayList<>();
         for(int i = 0; i < num; i++) {
             Enemy enemy = getEnemy(enemyType);
-            enemy.getBody().setActive(true);
             enemies.add(enemy);
         }
         return enemies;

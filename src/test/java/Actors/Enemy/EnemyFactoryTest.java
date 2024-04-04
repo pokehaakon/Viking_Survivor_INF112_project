@@ -1,6 +1,13 @@
 package Actors.Enemy;
 
+import Actors.MockEnemyFactory;
+import FileHandling.FileHandler;
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.backends.headless.HeadlessApplication;
+import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -8,21 +15,78 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 class EnemyFactoryTest {
+    EnemyFactory enemyFactory;
+
+    static World world;
+
+    Texture textureMock;
+
+    FileHandler mockFileHandler;
+    @BeforeEach
+     void setUpBeforeAll() {
+        HeadlessApplicationConfiguration config = new HeadlessApplicationConfiguration();
+
+        ApplicationListener listener = new ApplicationListener() {
+
+            @Override
+            public void create() {
+                world = new World(new Vector2(0,0), true);
+
+            }
+
+            @Override
+            public void resize(int width, int height) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void render() {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void pause() {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void resume() {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void dispose() {
+                // TODO Auto-generated method stub
+
+            }};
+        new HeadlessApplication(listener, config);
+
+       enemyFactory = new MockEnemyFactory().get();
+
+    }
+
+    @Test
+    void correctSize() {
+        assertEquals(5, enemyFactory.create(5,"Enemy1").size());
+    }
 
 
     @Test
-    void invalidEnemyType() {
-        assertEquals(5, EnemyFactory.create(5,"Enemy1"));
+    void errorHandling() {
 
         assertThrows(NullPointerException.class, () -> {
-            EnemyFactory.create(null);
+            enemyFactory.create(null);
         });
 
         assertThrows(IllegalArgumentException.class, () -> {
-            EnemyFactory.create("hello");
+            enemyFactory.create("hello");
         });
         assertThrows(IllegalArgumentException.class, () -> {
-            EnemyFactory.create(0, "Enemy1");
+            enemyFactory.create(0, "Enemy1");
         });
     }
 

@@ -77,6 +77,8 @@ public class MVPContext extends Context {
     private Box2DDebugRenderer debugRenderer;
 
 
+
+
     float elapsedTime;
     private Set<Body> toBoKilled;
 
@@ -247,9 +249,10 @@ public class MVPContext extends Context {
         frameCount++;
 
         if(TimeUtils.millis() - lastSpawnTime > 5000) {
-            //spawnRandomEnemies(5, Arrays.asList(chasePlayer(player), destroyIfDefeated(player)));
+            spawnRandomEnemies(5, Arrays.asList(chasePlayer(player), destroyIfDefeated(player)));
             spawnSwarm("ENEMY1",SwarmType.SQUARE, 12,60);
         }
+        world.step(1/(float) 60, 10, 10);
 
     }
 
@@ -315,7 +318,8 @@ public class MVPContext extends Context {
         world = new World(new Vector2(0, 0), true);
         initializePlayer();
         spawnedEnemies = new ArrayList<>();
-        enemyPool = new EnemyPool(world, 100);
+        enemyFactory = new EnemyFactory();
+        enemyPool = new EnemyPool(world, 100, enemyFactory);
 
 
         toBoKilled = new HashSet<>();

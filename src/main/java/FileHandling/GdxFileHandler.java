@@ -2,10 +2,11 @@ package FileHandling;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
 
 public class GdxFileHandler implements FileHandler {
     @Override
-    public FileHandle internal(String path) {
-        return Gdx.files.internal(path);
+    public Texture loadTexture(String path) {
+        return new Texture(Gdx.files.internal(path));
     }
 }

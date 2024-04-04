@@ -6,6 +6,7 @@ import Animations.ActorAnimation;
 import Animations.ActorAnimations;
 import Animations.AnimationConstants;
 import FileHandling.FileHandler;
+import FileHandling.GdxFileHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
@@ -17,16 +18,20 @@ import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createSquareShape;
 
 
-public abstract class EnemyFactory{
+public class EnemyFactory{
+
+    FileHandler fileHandler;
 
 
-
+    public EnemyFactory() {
+        fileHandler = new GdxFileHandler();
+    }
     /**
      * Creates an instance of an enemy
      * @param enemyType the desired enemy type
      * @return an enemy object
      */
-    public static Enemy create(String enemyType) {
+    public Enemy create(String enemyType) {
 
         if(enemyType == null) {
             throw new NullPointerException("Type cannot be null!");
@@ -39,11 +44,12 @@ public abstract class EnemyFactory{
         Texture texture;
         ActorAnimation animation;
 
+
         switch (enemyType.toUpperCase()) {
             case "ENEMY1": {
                 scale = AnimationConstants.ENEMY1_SCALE;
                 spawnGIF = AnimationConstants.PLAYER_IDLE_RIGHT;
-                texture = new Texture(Gdx.files.internal(spawnGIF));
+                texture = fileHandler.loadTexture(spawnGIF);
                 shape = createSquareShape(
                         (float)(texture.getWidth())*scale,
                         (float) (texture.getHeight()*scale)
@@ -55,7 +61,7 @@ public abstract class EnemyFactory{
             case "ENEMY2": {
                 scale = AnimationConstants.ENEMY2_SCALE;
                 spawnGIF = AnimationConstants.PLAYER_IDLE_RIGHT;
-                texture = new Texture(Gdx.files.internal(spawnGIF));
+                texture = fileHandler.loadTexture(spawnGIF);
 
                 shape = createSquareShape(
                         texture.getWidth()*scale,
@@ -69,6 +75,7 @@ public abstract class EnemyFactory{
         }
 
         enemy = new Enemy(spawnGIF, scale, Stats.enemy1());
+        enemy.currentSprite = texture;
         // setting animations
         enemy.setAnimation(animation);
 
@@ -85,7 +92,7 @@ public abstract class EnemyFactory{
      * @param enemyType the desired enemy type
      * @return a list of Enemy objects
      */
-    public static List<Enemy> create(int n, String enemyType) {
+    public List<Enemy> create(int n, String enemyType) {
 
         if(n <= 0) {
             throw new IllegalArgumentException("Number of enemies must be greater than zero");
@@ -98,6 +105,12 @@ public abstract class EnemyFactory{
         }
         return enemies;
     }
+
+    public void setFileHandler(FileHandler newFileHandler) {
+        fileHandler = newFileHandler;
+    }
+
+
 
 
 }

@@ -48,6 +48,10 @@ public class Enemy extends Actor{
 
     }
 
+    public Enemy() {
+
+    }
+
     public String getEnemyType() {
         return enemyType;
     }

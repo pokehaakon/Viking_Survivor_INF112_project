@@ -4,6 +4,7 @@ import Actors.ActorAction.ActorAction;
 import Animations.AnimationStates;
 import Animations.ActorAnimation;
 import Animations.AnimationConstants;
+import FileHandling.GdxFileHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -16,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.FileHandler;
 
 import static Tools.BodyTool.createEnemyBody;
 
@@ -46,7 +48,7 @@ public abstract class Actor implements IGameObject,IActor, IAnimation{
 
     public Texture currentSprite;
 
-    Animation<TextureRegion> currentGIF;
+    public Animation<TextureRegion> currentGIF;
 
 
 
@@ -63,10 +65,14 @@ public abstract class Actor implements IGameObject,IActor, IAnimation{
 
     public Actor(String spawnGIF, float scale) {
         this.scale = scale;
-        currentSprite = new Texture(Gdx.files.internal(spawnGIF));
-        currentGIF = AnimationConstants.getGIF(spawnGIF);
+        //currentSprite = new Texture(Gdx.files.internal(spawnGIF));
+        //currentGIF = AnimationConstants.getGIF(spawnGIF);
         velocityVector = new Vector2();
         actions  = new HashSet<>();
+
+    }
+
+    public Actor() {
 
     }
 
