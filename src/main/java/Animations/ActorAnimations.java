@@ -1,6 +1,6 @@
 package Animations;
 
-import Actors.DirectionState;
+import GameObjects.Actors.DirectionState;
 
 import static Animations.AnimationConstants.*;
 

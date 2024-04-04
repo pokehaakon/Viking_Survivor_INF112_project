@@ -1,9 +1,7 @@
 package Simulation;
 
-import Actors.Enemy.Enemy;
 import com.badlogic.gdx.physics.box2d.*;
 
-import java.util.List;
 import java.util.Set;
 
 public class EnemyContactListener implements ContactListener {

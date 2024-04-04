@@ -1,6 +1,6 @@
 package InputProcessing.Coordinates;
 
-import Actors.Enemy.SwarmType;
+import GameObjects.Actors.Enemy.SwarmType;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;

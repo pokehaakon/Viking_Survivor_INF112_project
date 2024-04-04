@@ -1,39 +1,48 @@
-package Actors.Enemy;
+package GameObjects.Factories;
 
 
-import Actors.Stats.Stats;
+import GameObjects.Actors.Stats.EnemyStats;
+import GameObjects.Actors.Stats.Stats;
 import Animations.ActorAnimation;
 import Animations.ActorAnimations;
 import Animations.AnimationConstants;
 import FileHandling.FileHandler;
 import FileHandling.GdxFileHandler;
-import com.badlogic.gdx.Gdx;
+import GameObjects.Actors.Enemy.Enemy;
+import GameObjects.GameObject;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.*;
 
 import static Tools.BodyTool.createBody;
+import static Tools.BodyTool.createEnemyBody;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createSquareShape;
 
 
-public class EnemyFactory{
+public class EnemyFactory implements IFactory<Enemy>{
 
     FileHandler fileHandler;
 
+    private final World world;
+    public EnemyFactory(World world) {
+        this.world = world;
 
-    public EnemyFactory() {
+        // default
         fileHandler = new GdxFileHandler();
     }
+
     /**
      * Creates an instance of an enemy
-     * @param enemyType the desired enemy type
+     * @param type the desired enemy type
      * @return an enemy object
      */
-    public Enemy create(String enemyType) {
+    @Override
+    public Enemy create(String type) {
 
-        if(enemyType == null) {
+        if(type == null) {
             throw new NullPointerException("Type cannot be null!");
         }
 
@@ -43,9 +52,9 @@ public class EnemyFactory{
         String spawnGIF;
         Texture texture;
         ActorAnimation animation;
+        EnemyStats stats;
 
-
-        switch (enemyType.toUpperCase()) {
+        switch (type.toUpperCase()) {
             case "ENEMY1": {
                 scale = AnimationConstants.ENEMY1_SCALE;
                 spawnGIF = AnimationConstants.PLAYER_IDLE_RIGHT;
@@ -56,6 +65,7 @@ public class EnemyFactory{
 
                 );
                 animation = ActorAnimations.enemyMoveAnimation();
+                stats = Stats.enemy1();
                 break;
             }
             case "ENEMY2": {
@@ -68,19 +78,20 @@ public class EnemyFactory{
                         texture.getHeight()*scale);
 
                 animation = ActorAnimations.enemyMoveAnimation();
+                stats = Stats.enemy2();
                 break;
             }
             default:
                 throw new IllegalArgumentException("Invalid enemy type");
         }
 
-        enemy = new Enemy(spawnGIF, scale, Stats.enemy1());
-        enemy.currentSprite = texture;
+        enemy = new Enemy(createEnemyBody(world, new Vector2(),shape),spawnGIF, scale, stats);
+        enemy.setNewAnimationGIF(spawnGIF);
         // setting animations
         enemy.setAnimation(animation);
 
-        enemy.setEnemyType(enemyType);
-        enemy.shape = shape;
+        enemy.setType(type);
+        //enemy.shape = shape;
 
         return enemy;
     }
@@ -89,24 +100,26 @@ public class EnemyFactory{
     /**
      * Create multiple enemies
      * @param n number of enemies to create
-     * @param enemyType the desired enemy type
+     * @param type the desired enemy type
      * @return a list of Enemy objects
      */
-    public List<Enemy> create(int n, String enemyType) {
-
-        if(n <= 0) {
+    @Override
+    public List<Enemy> create(int n, String type) {
+        if (n <= 0) {
             throw new IllegalArgumentException("Number of enemies must be greater than zero");
         }
 
         List<Enemy> enemies = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
-            Enemy newEnemy = create(enemyType);
+            Enemy newEnemy = create(type);
             enemies.add(newEnemy);
         }
         return enemies;
     }
 
+    @Override
     public void setFileHandler(FileHandler newFileHandler) {
+
         fileHandler = newFileHandler;
     }
 

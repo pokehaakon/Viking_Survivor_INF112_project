@@ -1,13 +1,8 @@
-package Actors.ActorAction;
+package GameObjects.Actors.ActorAction;
 
-import Actors.Actor;
-import Actors.Enemy.Enemy;
-import Tools.FilterTool;
+import GameObjects.Actors.Actor;
+import GameObjects.Actors.Enemy.Enemy;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Filter;
-import com.badlogic.gdx.physics.box2d.Shape;
-import com.badlogic.gdx.physics.box2d.World;
 
 import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;

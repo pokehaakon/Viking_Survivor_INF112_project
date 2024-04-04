@@ -1,10 +1,10 @@
-package Actors;
+package GameObjects.Actors;
 
-import Actors.ActorAction.ActorAction;
+import GameObjects.Actors.ActorAction.ActorAction;
 import Animations.AnimationStates;
 import Animations.ActorAnimation;
 import Animations.AnimationConstants;
-import FileHandling.GdxFileHandler;
+import GameObjects.GameObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -12,29 +12,18 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Shape;
-import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.FileHandler;
 
-import static Tools.BodyTool.createEnemyBody;
-
-public abstract class Actor implements IGameObject,IActor, IAnimation{
-
-    public float HP, speed, damage, armour;
-
-    protected Body body;
-
-    protected float scale;
-
-    public Shape shape;
+public abstract class Actor extends GameObject implements IActor, IAnimation{
 
 
+    public float speed, HP, damage, armour;
+
+    protected String type;
     private Set<ActorAction> actions;
     private ActorAnimation animation;
-    private boolean destroyed = false;
 
 
     // unit vector, direction of movement
@@ -46,38 +35,16 @@ public abstract class Actor implements IGameObject,IActor, IAnimation{
 
     protected AnimationStates animationState;
 
-    public Texture currentSprite;
 
     public Animation<TextureRegion> currentGIF;
 
 
-
-    public Actor(Body body, String spawnGIF, float scale) {
-        this.body = body;
-        this.scale = scale;
-        currentSprite = new Texture(Gdx.files.internal(spawnGIF));
-        currentGIF = AnimationConstants.getGIF(spawnGIF);
-
+    public Actor(Body body,float scale) {
+        super(body, scale);
         velocityVector = new Vector2();
         actions  = new HashSet<>();
 
     }
-
-    public Actor(String spawnGIF, float scale) {
-        this.scale = scale;
-        //currentSprite = new Texture(Gdx.files.internal(spawnGIF));
-        //currentGIF = AnimationConstants.getGIF(spawnGIF);
-        velocityVector = new Vector2();
-        actions  = new HashSet<>();
-
-    }
-
-    public Actor() {
-
-    }
-
-
-
 
 
     /**
@@ -115,31 +82,12 @@ public abstract class Actor implements IGameObject,IActor, IAnimation{
     }
 
 
-    @Override
-    public void destroy() {
-        destroyed = true;
-    }
-
-    public void revive() {
-        destroyed = false;
-    }
 
 
-    @Override
-    public Body getBody() {
-        return body;
-    }
 
-    @Override
-    public boolean isDestroyed() {
-        return destroyed;
-    }
 
-   @Override
-    public void draw(SpriteBatch batch) {
-       Vector2 p = body.getPosition();
-       batch.draw(currentSprite,p.x,p.y, currentSprite.getWidth()*scale,  currentSprite.getHeight()*scale);
-   }
+
+
 
     @Override
     public void resetVelocity(){
@@ -235,8 +183,9 @@ public abstract class Actor implements IGameObject,IActor, IAnimation{
     }
 
 
-    public void setPosition(Vector2 pos) {
-        body.setTransform(pos, body.getAngle());
+
+    public void setType(String newType) {
+        type = newType;
     }
 
 

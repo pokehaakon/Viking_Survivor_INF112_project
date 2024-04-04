@@ -1,4 +1,4 @@
-package Actors;
+package GameObjects.Actors;
 
 import Animations.AnimationStates;
 import Animations.ActorAnimation;

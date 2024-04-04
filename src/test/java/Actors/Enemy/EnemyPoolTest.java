@@ -1,6 +1,9 @@
 package Actors.Enemy;
 
 import Actors.MockEnemyFactory;
+import GameObjects.Actors.Enemy.Enemy;
+import GameObjects.Factories.EnemyFactory;
+import GameObjects.Actors.Enemy.EnemyPool;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
@@ -12,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static Actors.Enemy.EnemyPool.ENEMY_TYPES;
+import static GameObjects.Actors.Enemy.EnemyPool.ENEMY_TYPES;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 

@@ -1,6 +1,6 @@
 package Actors;
 
-import Actors.Enemy.EnemyFactory;
+import GameObjects.Factories.EnemyFactory;
 import FileHandling.FileHandler;
 import FileHandling.GdxFileHandler;
 import com.badlogic.gdx.graphics.Texture;

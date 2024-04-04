@@ -2,6 +2,7 @@ package Actors.Enemy;
 
 import Actors.MockEnemyFactory;
 import FileHandling.FileHandler;
+import GameObjects.Factories.EnemyFactory;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;

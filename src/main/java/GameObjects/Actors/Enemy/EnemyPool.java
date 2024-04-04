@@ -1,5 +1,7 @@
-package Actors.Enemy;
+package GameObjects.Actors.Enemy;
 
+import GameObjects.Factories.EnemyFactory;
+import GameObjects.GameObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -45,8 +47,8 @@ public class EnemyPool {
     private void createEnemyPool(String enemyType, int size) {
 
         Queue<Enemy> pool = new LinkedList<>();
-        for(Enemy enemy : enemyFactory.create(size, enemyType)) {
-            enemy.addToWorld(world, new Vector2());
+        for(GameObject e : enemyFactory.create(size, enemyType)) {
+            Enemy enemy = (Enemy) e;
             enemy.getBody().setActive(false);
             pool.add(enemy);
         }
@@ -66,8 +68,8 @@ public class EnemyPool {
             return enemy;
         }
         else {
-            Enemy enemy = enemyFactory.create(enemyType);
-            enemy.addToWorld(world, new Vector2());
+            GameObject e = enemyFactory.create(enemyType);
+            Enemy enemy = (Enemy) e;
             enemy.getBody().setActive(true);
             return enemy;
         }

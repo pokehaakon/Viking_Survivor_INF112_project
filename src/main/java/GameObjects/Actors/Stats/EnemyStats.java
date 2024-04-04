@@ -1,4 +1,4 @@
-package Actors.Stats;
+package GameObjects.Actors.Stats;
 
 public record EnemyStats(float HP,
                          float speed,

@@ -1,4 +1,4 @@
-package Actors;
+package GameObjects.Actors;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 

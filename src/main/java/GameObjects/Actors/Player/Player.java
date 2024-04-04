@@ -1,7 +1,7 @@
-package Actors.Player;
+package GameObjects.Actors.Player;
 
-import Actors.Actor;
-import Actors.Stats.PlayerStats;
+import GameObjects.Actors.Actor;
+import GameObjects.Actors.Stats.PlayerStats;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
@@ -14,8 +14,8 @@ public class Player extends Actor {
 
 
 
-    public Player(Body body, String spawnGIF, float scale, PlayerStats stats) {
-        super(body, spawnGIF, scale);
+    public Player(Body body,float scale, PlayerStats stats) {
+        super(body, scale);
         this.stats = stats;
 
         HP = stats.HP();

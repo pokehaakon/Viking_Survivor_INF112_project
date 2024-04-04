@@ -1,4 +1,4 @@
-package Terrain;
+package GameObjects.Terrain;
 
 import java.util.List;
 

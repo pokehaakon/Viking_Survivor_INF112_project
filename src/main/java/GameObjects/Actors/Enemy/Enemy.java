@@ -1,13 +1,10 @@
-package Actors.Enemy;
+package GameObjects.Actors.Enemy;
 
-import Actors.Actor;
-import Actors.Stats.EnemyStats;
-import com.badlogic.gdx.math.Vector2;
+import GameObjects.Actors.Actor;
+import GameObjects.Actors.Stats.EnemyStats;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.World;
 
 import static Tools.BodyTool.createBody;
-import static Tools.BodyTool.createEnemyBody;
 import static Tools.FilterTool.createFilter;
 
 import static InputProcessing.Coordinates.RandomCoordinates.*;
@@ -22,20 +19,7 @@ public class Enemy extends Actor{
 
 
     public Enemy(Body body, String spawnGIF, float scale, EnemyStats stats) {
-        super(body, spawnGIF, scale);
-        this.stats = stats;
-
-        // stats
-        HP = stats.HP();
-        speed = stats.speed();
-        damage = stats.damage();
-        armour = stats.armour();
-        knockBackResistance = stats.knockBackResistance();
-
-
-    }
-    public Enemy(String spawnGIF, float scale, EnemyStats stats) {
-        super(spawnGIF, scale);
+        super(body,scale);
         this.stats = stats;
 
         // stats
@@ -48,17 +32,6 @@ public class Enemy extends Actor{
 
     }
 
-    public Enemy() {
-
-    }
-
-    public String getEnemyType() {
-        return enemyType;
-    }
-
-    public void setEnemyType(String newEnemyType) {
-        enemyType = newEnemyType;
-    }
 
     /**
      * Check if enemy is out of bounds - if the distance between player and enemy is over a certain threshold.
@@ -72,10 +45,7 @@ public class Enemy extends Actor{
         return(dist > DESPAWN_RADIUS);
     }
 
-    public void addToWorld(World world, Vector2 pos) {
-        body = createEnemyBody(world, pos, shape);
-        shape.dispose();
-    }
+
 
 
 

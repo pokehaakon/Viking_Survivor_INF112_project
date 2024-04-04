@@ -1,29 +1,28 @@
 package InputProcessing.Contexts;
 
-import Actors.ActorAction.ActorAction;
-import Actors.Enemy.Enemy;
-import Actors.Enemy.EnemyPool;
-import Actors.Enemy.SwarmType;
-import Animations.ActorAnimations;
-import Actors.ActorAction.PlayerActions;
-import Actors.Enemy.EnemyFactory;
-import Animations.AnimationConstants;
-import Actors.Player.Player;
-import Actors.Stats.Stats;
+import GameObjects.Actors.ActorAction.ActorAction;
+import GameObjects.Actors.Enemy.Enemy;
+import GameObjects.Actors.Enemy.EnemyPool;
+import GameObjects.Actors.Enemy.SwarmType;
+import GameObjects.Actors.ActorAction.PlayerActions;
+import GameObjects.Factories.EnemyFactory;
+import GameObjects.Actors.Player.Player;
+import GameObjects.Actors.Stats.Stats;
+import GameObjects.Factories.PlayerFactory;
+import GameObjects.GameObject;
+import GameObjects.ObjectPool;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.Coordinates.RandomCoordinates;
 import InputProcessing.Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
 import Simulation.SimulationThread;
-import Tools.FilterTool;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -35,11 +34,10 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static GameObjects.Actors.ActorAction.EnemyActions.*;
 import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;
-import static Tools.ShapeTools.createSquareShape;
 import static Tools.ShapeTools.getBottomLeftCorrection;
-import static Actors.ActorAction.EnemyActions.*;
 
 public class MVPContext extends Context {
 
@@ -58,7 +56,7 @@ public class MVPContext extends Context {
     private RollingSum FrameTime;
     private RollingSum FPS;
 
-    private EnemyPool enemyPool;
+    private ObjectPool<Enemy> enemyPool;
 
     private RollingSum UPS;
     private long previousFrameStart = System.nanoTime();
@@ -70,6 +68,8 @@ public class MVPContext extends Context {
 
     private final SimulationThread simThread;
     private  EnemyFactory enemyFactory;
+
+    private PlayerFactory playerFactory;
     private float zoomLevel = 1f;
     private long frameCount = 0;
     private static boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
@@ -263,8 +263,9 @@ public class MVPContext extends Context {
         for(Iterator<Enemy> iter = spawnedEnemies.iterator(); iter.hasNext();) {
             Enemy enemy = iter.next();
             if(enemy.isDestroyed()) {
+                enemy.resetActions();
                 // returns enemy to enemy pool
-                enemyPool.returnEnemy(enemy);
+                enemyPool.returnObject(enemy);
                 // removes from list of active enemies
                 iter.remove();
                 //System.out.println("destroy!");
@@ -318,9 +319,13 @@ public class MVPContext extends Context {
         world = new World(new Vector2(0, 0), true);
         initializePlayer();
         spawnedEnemies = new ArrayList<>();
-        enemyFactory = new EnemyFactory();
-        enemyPool = new EnemyPool(world, 100, enemyFactory);
+        enemyFactory = new EnemyFactory(world);
 
+        playerFactory = new PlayerFactory(world);
+        player = playerFactory.create("PLAYER1");
+        player.setAction(PlayerActions.moveToInput(keyStates));
+
+        enemyPool = new ObjectPool<>(enemyFactory,Arrays.asList("ENEMY1", "ENEMY2"),200);
 
         toBoKilled = new HashSet<>();
         ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
@@ -331,7 +336,7 @@ public class MVPContext extends Context {
 
     private void spawnEnemies(String enemyType, int num, List<ActorAction> actions) {
 
-        for(Enemy enemy: enemyPool.getEnemies(enemyType,num)) {
+        for(Enemy enemy: enemyPool.getObjects(enemyType,num)) {
             enemy.setPosition(RandomCoordinates.randomPoint(player.getBody().getPosition()));
             for(ActorAction action : actions) {
                 enemy.setAction(action);
@@ -342,7 +347,7 @@ public class MVPContext extends Context {
 
     private void spawnRandomEnemies(int num, List<ActorAction> actions) {
 
-        for(Enemy enemy : enemyPool.getRandomEnemies(num)) {
+        for(Enemy enemy : enemyPool.getRandomObjects(num)) {
             enemy.setPosition(RandomCoordinates.randomPoint(player.getBody().getPosition()));
             for(ActorAction action : actions) {
                 enemy.setAction(action);
@@ -357,7 +362,7 @@ public class MVPContext extends Context {
         Vector2 target = player.getBody().getPosition();
         List<Vector2> swarmCoordinates = SwarmCoordinates.getSwarmCoordinates(swarmType,size,spacing,target);
         Vector2 swarmDirection = SwarmCoordinates.swarmDirection(target, swarmType,swarmCoordinates);
-        List<Enemy> swarmMembers = enemyPool.getEnemies(enemyType,size);
+        List<Enemy> swarmMembers = enemyPool.getObjects(enemyType,size);
 
         for(int i = 0; i < size; i++) {
             Enemy enemy = swarmMembers.get(i);
@@ -373,35 +378,13 @@ public class MVPContext extends Context {
     }
 
     private void initializePlayer() {
+
+       player = (Player) new PlayerFactory(world).create("PLAYER1");
+
         // player sprite
-        Texture playerSprite = new Texture(Gdx.files.internal(AnimationConstants.PLAYER_RIGHT));
 
-        // player hitbox
-        PolygonShape squarePlayer = createSquareShape(
-                (playerSprite.getWidth())* AnimationConstants.PLAYER_SCALE ,
-                (playerSprite.getHeight())* AnimationConstants.PLAYER_SCALE
-        );
-
-        // player body
-        Body playerBody = createBody(
-                world,
-                new Vector2(),
-                squarePlayer,
-                createFilter(
-                        FilterTool.Category.PLAYER,
-                        new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL}
-                ),
-                1f,
-                0,
-                0
-        );
-
-        player = new Player(playerBody, AnimationConstants.PLAYER_IDLE_RIGHT, AnimationConstants.PLAYER_SCALE, Stats.player());
         player.setAction(PlayerActions.moveToInput(keyStates));
-        player.setAnimation(ActorAnimations.playerMoveAnimation());
 
-
-        squarePlayer.dispose();
     }
 
 
