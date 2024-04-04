@@ -108,19 +108,19 @@ public class EnemyPool {
 
     /**
      * Returns enemy to enemy pool, deactivates their bodies, resets its actions and its destroyed-tag.
-     * @param enemy the Enemy object
+     //* @param enemy the Enemy object
      */
-    public void returnEnemy(Enemy enemy) {
-        Queue<Enemy> pool = enemyPool.get(enemy.getEnemyType());
-        if (pool != null) {
-            enemy.getBody().setActive(false);
-            enemy.revive();
-            enemy.resetActions();
-
-            // Return the enemy to the pool
-            pool.add(enemy);
-        }
-    }
+//    public void returnEnemy(Enemy enemy) {
+//        Queue<Enemy> pool = enemyPool.get(enemy.getEnemyType());
+//        if (pool != null) {
+//            enemy.getBody().setActive(false);
+//            enemy.revive();
+//            enemy.resetActions();
+//
+//            // Return the enemy to the pool
+//            pool.add(enemy);
+//        }
+//    }
 
 
     public Map<String, Queue<Enemy>> getEnemyPool() {

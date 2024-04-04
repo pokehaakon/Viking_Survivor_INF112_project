@@ -118,6 +118,7 @@ public abstract class Actor extends GameObject implements IActor, IAnimation{
 
     @Override
     public void draw(SpriteBatch batch, float elapsedTime) {
+
         // for GIF
         currentGIF.setFrameDuration(AnimationConstants.FRAME_DURATION);
         batch.draw(
@@ -128,6 +129,7 @@ public abstract class Actor extends GameObject implements IActor, IAnimation{
                 currentSprite.getHeight()*scale
 
         );
+
     }
 
     @Override

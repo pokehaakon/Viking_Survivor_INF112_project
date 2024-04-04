@@ -91,7 +91,7 @@ public class EnemyFactory implements IFactory<Enemy>{
         enemy.setAnimation(animation);
 
         enemy.setType(type);
-        //enemy.shape = shape;
+
 
         return enemy;
     }

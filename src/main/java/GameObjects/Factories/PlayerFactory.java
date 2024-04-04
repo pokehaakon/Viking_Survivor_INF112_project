@@ -1,6 +1,7 @@
 package GameObjects.Factories;
 
 import GameObjects.Actors.Player.Player;
+import GameObjects.Actors.Stats.PlayerStats;
 import GameObjects.Actors.Stats.Stats;
 import Animations.ActorAnimation;
 import Animations.ActorAnimations;
@@ -41,6 +42,7 @@ public class PlayerFactory implements IFactory<Player>{
         Texture texture;
         ActorAnimation animation;
         Body body;
+        PlayerStats stats;
 
         switch (type.toUpperCase()) {
             case "PLAYER1": {
@@ -65,6 +67,7 @@ public class PlayerFactory implements IFactory<Player>{
                         0,
                         0
                 );
+                stats = Stats.player();
                 break;
             }
 
@@ -73,9 +76,8 @@ public class PlayerFactory implements IFactory<Player>{
         }
 
 
-        player = new Player(body, AnimationConstants.PLAYER_SCALE, Stats.player());
+        player = new Player(body, scale, stats);
 
-        player.setSprite(texture);
         // setting animations
         player.setAnimation(animation);
 

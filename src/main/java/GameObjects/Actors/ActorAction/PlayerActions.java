@@ -35,7 +35,7 @@ public abstract class PlayerActions {
                 player.idle = false;
             }
 
-            p.move();
+            player.move();
         };
     }
 

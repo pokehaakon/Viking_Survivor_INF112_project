@@ -1,9 +1,6 @@
 package GameObjects;
 
-import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Factories.EnemyFactory;
 import GameObjects.Factories.IFactory;
-import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.*;
 
@@ -37,43 +34,44 @@ public class ObjectPool<T extends GameObject> {
         objectPool.put(type, pool);
     }
 
-    public T getRandomObject() {
+    public T getRandom() {
         String randomObjectType = objectTypes.get(random.nextInt(objectTypes.size()));
-        return getObject(randomObjectType);
+        return get(randomObjectType);
     }
 
-    public T getObject(String type) {
+    public T get(String type) {
         Queue<T> pool = objectPool.get(type);
-        if (pool != null && !pool.isEmpty()) {
-            T obj = pool.poll();
-            obj.getBody().setActive(true);
-            return obj;
-        } else {
-            T obj =  factory.create(type);
-            obj.getBody().setActive(true);
-            return obj;
+        T obj;
+        if (!pool.isEmpty()) {
+            obj = pool.poll();
         }
+        else {
+            obj = factory.create(type);
+        }
+        obj.getBody().setActive(true);
+        return obj;
+
     }
 
-    public List<T> getRandomObjects(int num) {
+    public List<T> getRandom(int num) {
         List<T> objects = new ArrayList<>();
         for (int i = 0; i < num; i++) {
-            T obj = getRandomObject();
+            T obj = getRandom();
             objects.add(obj);
         }
         return objects;
     }
 
-    public List<T> getObjects(String type, int num) {
+    public List<T> get(String type, int num) {
         List<T> objects = new ArrayList<>();
         for (int i = 0; i < num; i++) {
-            T obj = getObject(type);
+            T obj = get(type);
             objects.add(obj);
         }
         return objects;
     }
 
-    public void returnObject(T object) {
+    public void returnToPool(T object) {
         Queue<T> pool = objectPool.get(object.getType());
         if (pool != null) {
             object.getBody().setActive(false);

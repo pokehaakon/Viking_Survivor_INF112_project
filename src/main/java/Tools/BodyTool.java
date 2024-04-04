@@ -71,4 +71,30 @@ public abstract class BodyTool {
 
         return createBody(world, pos, shape, enemyFilter, 1, 0, 0);
     }
+
+    public static Body createTerrainBody(World world, Vector2 pos, Shape shape) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(pos);
+        bodyDef.fixedRotation = true;
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1;
+        fixtureDef.friction = 1;
+        fixtureDef.restitution = 0;
+        fixtureDef.isSensor = false;
+
+        Filter filter = createFilter(
+                FilterTool.Category.WALL,
+                new FilterTool.Category[]{
+                        FilterTool.Category.WALL,
+                        FilterTool.Category.ENEMY,
+                        FilterTool.Category.PLAYER
+                }
+        );
+
+        return createBody(world, pos, filter, bodyDef, fixtureDef);
+
+    }
 }

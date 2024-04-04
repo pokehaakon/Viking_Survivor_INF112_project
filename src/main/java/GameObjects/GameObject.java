@@ -1,10 +1,14 @@
 package GameObjects;
 
+import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.Actors.IGameObject;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class GameObject implements IGameObject {
 
@@ -17,17 +21,20 @@ public abstract class GameObject implements IGameObject {
     protected Texture currentSprite;
 
     protected String type;
+    private Set<ActorAction> actions;
 
     public GameObject(Body body, float scale) {
         this.body = body;
         this.scale = scale;
-
+        actions = new HashSet<>();
 
     }
     @Override
     public void destroy() {
         destroyed = true;
     }
+
+
 
     @Override
     public void draw(SpriteBatch batch) {
