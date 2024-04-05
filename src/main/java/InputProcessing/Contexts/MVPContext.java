@@ -6,13 +6,12 @@ import GameObjects.Actors.Enemy.SwarmType;
 import GameObjects.Actors.ActorAction.PlayerActions;
 import GameObjects.Factories.EnemyFactory;
 import GameObjects.Actors.Player.Player;
-import GameObjects.Actors.Stats.Stats;
 import GameObjects.Factories.PlayerFactory;
 import GameObjects.Factories.TerrainFactory;
 import GameObjects.ObjectPool;
 import GameObjects.Terrain.Terrain;
 import InputProcessing.ContextualInputProcessor;
-import InputProcessing.Coordinates.RandomCoordinates;
+import InputProcessing.Coordinates.SpawnCoordinates;
 import InputProcessing.Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
@@ -35,15 +34,18 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static GameObjects.Actors.ActorAction.EnemyActions.*;
-import static Tools.BodyTool.createBody;
+import static GameObjects.Actors.Stats.Stats.SWARM_SPEED_MULTIPLIER;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.getBottomLeftCorrection;
+import static VikingSurvivor.app.Main.SCREEN_WIDTH;
 
 public class MVPContext extends Context {
 
 
     private final SpriteBatch batch;
     private final Camera camera;
+
+    public static final double SPAWN_RADIUS = (double)0.7*SCREEN_WIDTH;
 
     private World world;
 
@@ -246,6 +248,7 @@ public class MVPContext extends Context {
         for (Enemy enemy : drawableEnemies) {
             enemy.doAnimation();
             enemy.draw(batch, elapsedTime);
+            enemy.doAction();
         }
         for(Terrain terrain : drawableTerrain) {
             terrain.draw(batch);
@@ -253,6 +256,7 @@ public class MVPContext extends Context {
 
         player.doAnimation();
         player.draw(batch,elapsedTime);
+        player.doAction();
 
 
 
@@ -264,12 +268,13 @@ public class MVPContext extends Context {
         frameCount++;
 
         if(TimeUtils.millis() - lastSpawnTime > 5000) {
-            spawnRandomEnemies(5, Arrays.asList(chasePlayer(player), destroyIfDefeated(player)));
+            spawnSwarm("ENEMY1",SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
+            spawnTerrain("TREE");
         }
 
-        if(TimeUtils.millis() - lastSwarmSpawnTime > 9000) {
-            spawnSwarm("ENEMY1",SwarmType.SQUARE, 12,60);
-        }
+
+
+        removeDestroyedEnemies();
 
         world.step(1/(float) 60, 10, 10);
 
@@ -282,19 +287,13 @@ public class MVPContext extends Context {
         for(Iterator<Enemy> iter = drawableEnemies.iterator(); iter.hasNext();) {
             Enemy enemy = iter.next();
             if(enemy.isDestroyed()) {
+                enemy.resetActions();
                 enemyPool.returnToPool(enemy);
                 iter.remove();
                 // removes from list of active enemies
             }
 
                 //System.out.println("destroy!");
-        }
-    }
-
-    private void updateActorAnimations() {
-        player.doAnimation();
-        for(Enemy enemy: spawnedEnemies) {
-            enemy.doAnimation();
         }
     }
 
@@ -336,23 +335,21 @@ public class MVPContext extends Context {
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
 
-        enemyFactory = new EnemyFactory(world);
+        enemyFactory = new EnemyFactory();
         drawableEnemies = new ArrayList<>();
 
-        terrainFactory = new TerrainFactory(world);
+        terrainFactory = new TerrainFactory();
         drawableTerrain = new ArrayList<>();
 
 
-        playerFactory = new PlayerFactory(world);
+        playerFactory = new PlayerFactory();
         player = playerFactory.create("PLAYER1");
+        player.addToWorld(world);
         player.setAction(PlayerActions.moveToInput(keyStates));
-        Terrain terrain = terrainFactory.create("TREE");
-        terrain.setPosition(RandomCoordinates.randomPoint(player.getBody().getPosition()));
-        drawableTerrain.add(terrain);
 
 
-        enemyPool = new ObjectPool<>(enemyFactory,Arrays.asList("ENEMY1", "ENEMY2"),200);
-        terrainPool = new ObjectPool<>(terrainFactory, List.of("TREE"), 50);
+        enemyPool = new ObjectPool<>(world, enemyFactory,Arrays.asList("ENEMY1", "ENEMY2"),200);
+        terrainPool = new ObjectPool<>(world, terrainFactory, List.of("TREE"), 50);
 
         toBoKilled = new HashSet<>();
         ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
@@ -364,7 +361,7 @@ public class MVPContext extends Context {
     private void spawnEnemies(String enemyType, int num, List<ActorAction> actions) {
 
         for(Enemy enemy: enemyPool.get(enemyType,num)) {
-            enemy.setPosition(RandomCoordinates.randomPoint(player.getBody().getPosition()));
+            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), SPAWN_RADIUS));
             for(ActorAction action : actions) {
                 enemy.setAction(action);
             }
@@ -375,7 +372,7 @@ public class MVPContext extends Context {
     private void spawnRandomEnemies(int num, List<ActorAction> actions) {
 
         for(Enemy enemy : enemyPool.getRandom(num)) {
-            enemy.setPosition(RandomCoordinates.randomPoint(player.getBody().getPosition()));
+            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), SPAWN_RADIUS));
             for(ActorAction action : actions) {
                 enemy.setAction(action);
             }
@@ -384,23 +381,24 @@ public class MVPContext extends Context {
         lastSpawnTime = TimeUtils.millis();
     }
 
+    private void spawnTerrain(String type) {
+        Terrain terrain = terrainPool.get(type);
+        terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), SPAWN_RADIUS));
+        drawableTerrain.add(terrain);
+        lastSwarmSpawnTime = TimeUtils.millis();
+    }
 
-    private void spawnSwarm(String enemyType, SwarmType swarmType, int size, int spacing) {
-        Vector2 target = player.getBody().getPosition();
-        List<Vector2> swarmCoordinates = SwarmCoordinates.getSwarmCoordinates(swarmType,size,spacing,target);
-        Vector2 swarmDirection = SwarmCoordinates.swarmDirection(target, swarmType,swarmCoordinates);
-        List<Enemy> swarmMembers = enemyPool.get(enemyType,size);
 
-        for(int i = 0; i < size; i++) {
-            Enemy enemy = swarmMembers.get(i);
-            enemy.setPosition(swarmCoordinates.get(i));
-            enemy.setSpeed(Stats.SWARM_SPEED_MULTIPLIER);
-            enemy.setAction(swarmStrike(swarmDirection));
+    private void spawnSwarm(String enemyType, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
+        List<Enemy> swarmMembers = enemyPool.get(enemyType, size);
+        LinkedList<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType,swarmMembers,player.getBody().getPosition(),SPAWN_RADIUS,size, spacing,speedMultiplier);
+        for(Enemy enemy : swarm) {
+            enemy.setAction(moveInStraightLine());
             enemy.setAction(destroyIfDefeated(player));
             drawableEnemies.add(enemy);
         }
 
-        lastSwarmSpawnTime = TimeUtils.millis();
+        lastSpawnTime = TimeUtils.millis();
 
     }
 

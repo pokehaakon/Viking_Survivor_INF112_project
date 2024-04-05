@@ -6,32 +6,31 @@ import GameObjects.Actors.Stats.Stats;
 import Animations.ActorAnimation;
 import Animations.ActorAnimations;
 import Animations.AnimationConstants;
-import FileHandling.FileHandler;
-import FileHandling.GdxFileHandler;
 import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.GameObject;
+import GameObjects.BodyFeatures;
+import TextureHandling.GdxTextureHandler;
+import TextureHandling.TextureHandler;
+import Tools.FilterTool;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import org.w3c.dom.Text;
 
 import java.util.*;
 
-import static Tools.BodyTool.createBody;
-import static Tools.BodyTool.createEnemyBody;
+import static Animations.AnimationConstants.PLAYER_IDLE_RIGHT;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createSquareShape;
 
 
 public class EnemyFactory implements IFactory<Enemy>{
 
-    FileHandler fileHandler;
+    TextureHandler textureHandler;
 
-    private final World world;
-    public EnemyFactory(World world) {
-        this.world = world;
+    public EnemyFactory() {
 
         // default
-        fileHandler = new GdxFileHandler();
+        textureHandler = new GdxTextureHandler();
     }
 
     /**
@@ -49,16 +48,15 @@ public class EnemyFactory implements IFactory<Enemy>{
         Enemy enemy;
         float scale;
         Shape shape;
-        String spawnGIF;
         Texture texture;
         ActorAnimation animation;
         EnemyStats stats;
 
+
         switch (type.toUpperCase()) {
             case "ENEMY1": {
                 scale = AnimationConstants.ENEMY1_SCALE;
-                spawnGIF = AnimationConstants.PLAYER_IDLE_RIGHT;
-                texture = fileHandler.loadTexture(spawnGIF);
+                texture = textureHandler.loadTexture(PLAYER_IDLE_RIGHT);
                 shape = createSquareShape(
                         (float)(texture.getWidth())*scale,
                         (float) (texture.getHeight()*scale)
@@ -70,8 +68,8 @@ public class EnemyFactory implements IFactory<Enemy>{
             }
             case "ENEMY2": {
                 scale = AnimationConstants.ENEMY2_SCALE;
-                spawnGIF = AnimationConstants.PLAYER_IDLE_RIGHT;
-                texture = fileHandler.loadTexture(spawnGIF);
+
+                texture = textureHandler.loadTexture(PLAYER_IDLE_RIGHT);
 
                 shape = createSquareShape(
                         texture.getWidth()*scale,
@@ -85,13 +83,31 @@ public class EnemyFactory implements IFactory<Enemy>{
                 throw new IllegalArgumentException("Invalid enemy type");
         }
 
-        enemy = new Enemy(createEnemyBody(world, new Vector2(),shape),spawnGIF, scale, stats);
-        enemy.setNewAnimationGIF(spawnGIF);
-        // setting animations
+        Filter filter = createFilter(
+                FilterTool.Category.ENEMY,
+                new FilterTool.Category[]{
+                        FilterTool.Category.WALL,
+                        FilterTool.Category.ENEMY,
+                        FilterTool.Category.PLAYER
+                }
+        );
+        BodyFeatures bodyFeatures = new BodyFeatures(
+                shape,
+                filter,
+                1,
+                0,
+                0,
+                false,
+                BodyDef.BodyType.DynamicBody);
+
+
+        enemy = new Enemy();
+        enemy.setBodyFeatures(bodyFeatures);
+        enemy.setScale(scale);
+        enemy.setSprite(texture);
         enemy.setAnimation(animation);
-
-        enemy.setType(type);
-
+        enemy.setType(type.toUpperCase());
+        enemy.setStats(stats);
 
         return enemy;
     }
@@ -118,9 +134,9 @@ public class EnemyFactory implements IFactory<Enemy>{
     }
 
     @Override
-    public void setFileHandler(FileHandler newFileHandler) {
+    public void setTextureHandler(TextureHandler newTextureHandler) {
 
-        fileHandler = newFileHandler;
+        textureHandler = newTextureHandler;
     }
 
 

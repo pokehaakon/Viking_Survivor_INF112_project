@@ -1,8 +1,8 @@
 package Actors.Enemy;
 
 import Actors.MockEnemyFactory;
-import FileHandling.FileHandler;
 import GameObjects.Factories.EnemyFactory;
+import TextureHandling.TextureHandler;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
@@ -22,7 +22,7 @@ class EnemyFactoryTest {
 
     Texture textureMock;
 
-    FileHandler mockFileHandler;
+    TextureHandler mockTextureHandler;
     @BeforeEach
      void setUpBeforeAll() {
         HeadlessApplicationConfiguration config = new HeadlessApplicationConfiguration();

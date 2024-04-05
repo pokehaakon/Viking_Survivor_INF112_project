@@ -3,7 +3,7 @@ package Actors.Enemy;
 import Actors.MockEnemyFactory;
 import GameObjects.Actors.Enemy.Enemy;
 import GameObjects.Factories.EnemyFactory;
-import GameObjects.Actors.Enemy.EnemyPool;
+import GameObjects.ObjectPool;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static GameObjects.Actors.Enemy.EnemyPool.ENEMY_TYPES;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
@@ -23,7 +22,9 @@ class EnemyPoolTest {
 
     private static EnemyFactory mockEnemyFactory;
 
-    private EnemyPool testPool;
+    private ObjectPool<Enemy> testPool;
+
+    List<String> objectTypes = Arrays.asList("ENEMY1", "ENEMY2");
     static World world;
     int poolSize;
 
@@ -80,19 +81,19 @@ class EnemyPoolTest {
     void setup() {
         poolSize = 10;
         mockEnemyFactory = new MockEnemyFactory().get();
-        testPool = new EnemyPool(world, poolSize,  mockEnemyFactory);
+        testPool = new ObjectPool<>(world,mockEnemyFactory, objectTypes, poolSize);
 
         enemiesInPool = new ArrayList<>();
 
-        Map<String, Queue<Enemy>> poolMap = testPool.getEnemyPool();
+        Map<String, Queue<Enemy>> poolMap = testPool.getObjectPool();
 
         for(Map.Entry<String, Queue<Enemy>> entry : poolMap.entrySet() ) {
             Queue<Enemy> enemyList = entry.getValue();
             enemiesInPool.add(enemyList);
         }
 
-        enemy1 = ENEMY_TYPES.get(0);
-        enemy2 = ENEMY_TYPES.get(1);
+        enemy1 = objectTypes.get(0);
+        enemy2 = objectTypes.get(1);
     }
 
     @Test
@@ -100,7 +101,7 @@ class EnemyPoolTest {
         for(Queue<Enemy> enemies : enemiesInPool) {
             for(int i = 0; i < enemies.size();i++) {
                 // body should not be null
-                assertNotNull(enemies.peek().getBody());
+                assertNotNull(enemies.poll().getBody());
                 // body should not be active
                 assertFalse(enemies.poll().getBody().isActive());
             }
@@ -110,8 +111,8 @@ class EnemyPoolTest {
     @Test
     void activationAndDeactivation() {
         // activation
-        List<Enemy> enemies = testPool.getEnemies(enemy1, 5);
-        List<Enemy> randomEnemies = testPool.getRandomEnemies(4);
+        List<Enemy> enemies = testPool.get(enemy1, 5);
+        List<Enemy> randomEnemies = testPool.getRandom(4);
         for(Enemy enemy : enemies) {
             // body should be active
             assertTrue(enemy.getBody().isActive());
@@ -130,7 +131,7 @@ class EnemyPoolTest {
 
         // deactivation
         for(Enemy enemy:enemies) {
-            testPool.returnEnemy(enemy);
+            testPool.returnToPool(enemy);
             // body should be inactive
             assertFalse(enemy.getBody().isActive());
             // enemy  should be revived
@@ -138,7 +139,7 @@ class EnemyPoolTest {
         }
         // deactivation
         for(Enemy enemy:randomEnemies) {
-            testPool.returnEnemy(enemy);
+            testPool.returnToPool(enemy);
             // body should be inactive
             assertFalse(enemy.getBody().isActive());
             // enemy  should be revived
@@ -149,26 +150,28 @@ class EnemyPoolTest {
     @Test
     void removingAndAdding() {
         int numberToRemove = 3;
-
+        System.out.println(testPool.getObjectPool().get(enemy1).size());
         // removing enemies
-        testPool.getEnemies(enemy1,numberToRemove);
-        assertEquals(poolSize - numberToRemove, testPool.getEnemyPool().get(enemy1).size());
+        testPool.get(enemy1,numberToRemove);
+        System.out.println(testPool.getObjectPool().get(enemy1).size());
+        assertEquals(poolSize - numberToRemove, testPool.getObjectPool().get(enemy1).size());
 
         // should remain unchanged for other enemy
-        assertEquals(poolSize, testPool.getEnemyPool().get(enemy2).size());
+        assertEquals(poolSize, testPool.getObjectPool().get(enemy2).size());
 
         //adding the same number of enemies back
         for(int i = 0; i < numberToRemove; i++) {
             Enemy enemy = mockEnemyFactory.create(enemy1);
-            enemy.addToWorld(world, new Vector2());
-            testPool.returnEnemy(enemy);
+            enemy.addToWorld(world);
+            testPool.returnToPool(enemy);
+
         }
 
-        assertEquals(poolSize, testPool.getEnemyPool().get(enemy1).size());
+        assertEquals(poolSize, testPool.getObjectPool().get(enemy1).size());
 
 
         // should remain unchanged for other enemy
-        assertEquals(poolSize, testPool.getEnemyPool().get(enemy2).size());
+        assertEquals(poolSize, testPool.getObjectPool().get(enemy2).size());
 
     }
 
@@ -181,11 +184,11 @@ class EnemyPoolTest {
 
     @Test
     void handleEmptyPool() {
-        testPool.getEnemies(enemy1, poolSize);
-        assertTrue(testPool.getEnemyPool().get(enemy1).isEmpty());
+        testPool.get(enemy1, poolSize);
+        assertTrue(testPool.getObjectPool().get(enemy1).isEmpty());
 
         // should still get active enemy bodies from empty pool
-        for(Enemy enemy:testPool.getEnemies(enemy1,5)) {
+        for(Enemy enemy:testPool.get(enemy1,5)) {
             assertNotNull(enemy.getBody());
             assertTrue(enemy.getBody().isActive());
         }

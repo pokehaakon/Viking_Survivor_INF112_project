@@ -1,14 +1,10 @@
 package GameObjects.Factories;
 
-import Animations.ActorAnimation;
-import Animations.ActorAnimations;
-import Animations.AnimationConstants;
-import FileHandling.FileHandler;
-import FileHandling.GdxFileHandler;
-import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Actors.Stats.EnemyStats;
-import GameObjects.Actors.Stats.Stats;
+import GameObjects.BodyFeatures;
 import GameObjects.Terrain.Terrain;
+import TextureHandling.GdxTextureHandler;
+import TextureHandling.TextureHandler;
+import Tools.FilterTool;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -17,18 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static Tools.BodyTool.*;
+import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createSquareShape;
 
 public class TerrainFactory implements IFactory<Terrain>{
 
-    private final World world;
-    private FileHandler fileHandler;
+    private TextureHandler textureHandler;
 
-    public TerrainFactory(World world) {
-        this.world = world;
+    public TerrainFactory() {
 
         //default
-        fileHandler = new GdxFileHandler();
+        textureHandler = new GdxTextureHandler();
     }
     @Override
     public Terrain create(String type) {
@@ -39,31 +34,46 @@ public class TerrainFactory implements IFactory<Terrain>{
         Terrain terrain;
         float scale;
         Texture texture;
-        Body body;
         Shape shape;
+        BodyFeatures bodyFeatures;
 
 
         switch (type.toUpperCase()) {
             case "TREE": {
-                texture = fileHandler.loadTexture("img_2.png");
-
+                texture = textureHandler.loadTexture("img_2.png");
                 scale = 0.6f;
-
                 shape = createSquareShape(
                         (float)(texture.getWidth())*scale,
                         (float) (texture.getHeight()*scale)
                 );
-                body = createTerrainBody(world, new Vector2(),shape);
                 break;
             }
 
             default:
                 throw new IllegalArgumentException("Invalid enemy type");
         }
+        Filter filter = createFilter(
+                FilterTool.Category.WALL,
+                new FilterTool.Category[]{
+                        FilterTool.Category.WALL,
+                        FilterTool.Category.ENEMY,
+                        FilterTool.Category.PLAYER
+                }
+        );
 
-        terrain = new Terrain(body,scale);
+        bodyFeatures = new BodyFeatures(
+                shape,
+                filter,
+                1,
+                1,
+                0,
+                false,
+                BodyDef.BodyType.StaticBody);
 
-        terrain.setType(type);
+        terrain = new Terrain();
+        terrain.setScale(scale);
+        terrain.setBodyFeatures(bodyFeatures);
+        terrain.setType(type.toUpperCase());
         terrain.setSprite(texture);
 
         return terrain;
@@ -83,8 +93,8 @@ public class TerrainFactory implements IFactory<Terrain>{
     }
 
     @Override
-    public void setFileHandler(FileHandler newFileHandler) {
-        fileHandler =  newFileHandler;
+    public void setTextureHandler(TextureHandler newTextureHandler) {
+        textureHandler =  newTextureHandler;
 
     }
 }

@@ -80,8 +80,8 @@ public class SimulationThread extends Thread {
             stopSim();
         }
 
-        context.updateActorActions();
-        context.removeDestroyedEnemies();
+        //context.updateActorActions();
+        //context.removeDestroyedEnemies();
         //world.step(1/(float) SET_UPS, 10, 10);
 
 

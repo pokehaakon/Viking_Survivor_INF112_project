@@ -2,20 +2,19 @@ package GameObjects.Actors.Player;
 
 import GameObjects.Actors.Actor;
 import GameObjects.Actors.Stats.PlayerStats;
+import GameObjects.BodyFeatures;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
 public class Player extends Actor {
-    public Vector2 velocityVector;
     public int level;
     public float XP;
 
-    private final PlayerStats stats;
+    private PlayerStats stats;
 
 
-
-    public Player(Body body,float scale, PlayerStats stats) {
-        super(body, scale);
+    public Player(String spritePath, BodyFeatures bodyFeatures,float scale, PlayerStats stats) {
+        super(spritePath,bodyFeatures, scale);
         this.stats = stats;
 
         HP = stats.HP();
@@ -26,6 +25,19 @@ public class Player extends Actor {
         level = 1;
 
         idle = true;
+    }
+
+    public Player() {
+        idle = true;
+        level = 1;
+    }
+
+    public void setStats(PlayerStats newStats) {
+        HP = newStats.HP();
+        speed = newStats.speed();
+        damage = newStats.damage();
+        armour = newStats.armour();
+        XP = newStats.XP();
     }
 
 

@@ -2,31 +2,25 @@ package GameObjects.Actors.ActorAction;
 
 import GameObjects.Actors.Actor;
 import GameObjects.Actors.Enemy.Enemy;
-import com.badlogic.gdx.math.Vector2;
 
-import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;
+import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
 
 public abstract class EnemyActions {
 
-    /**
-     * A swarm strike is a straight movement in a direction determined by the targets initial position
-     * @param swarmDirection
-     * @return
-     */
-    public static ActorAction swarmStrike(Vector2 swarmDirection) {
-        return (e)-> {
 
-            Enemy enemy = (Enemy) e;
-            enemy.resetVelocity();
-            enemy.setVelocityVector(swarmDirection.x, swarmDirection.y);
-            enemy.move();
-        };
+    public static final double DESPAWN_RADIUS = (double) 1.1*SCREEN_HEIGHT;
+    /**
+     * Moves enemy in straight line according to its velocity vector and speed
+     *
+     */
+    public static ActorAction moveInStraightLine() {
+        return Actor::move;
     }
 
     /**
      * Chases player by moving towards its current position
-     * @param player
+     * @param player object to be chased
      * @return
      */
     public static ActorAction chasePlayer(Actor player) {
@@ -48,7 +42,7 @@ public abstract class EnemyActions {
     public static ActorAction destroyIfDefeated(Actor player) {
         return (e) -> {
             Enemy enemy = (Enemy) e;
-            if(enemy.HP <= 0 || enemy.outOfBounds(player)) {
+            if(enemy.HP <= 0 || enemy.outOfBounds(player,DESPAWN_RADIUS)) {
                 enemy.destroy();
             }
         };

@@ -1,9 +1,10 @@
 package Actors;
 
 import GameObjects.Factories.EnemyFactory;
-import FileHandling.FileHandler;
-import FileHandling.GdxFileHandler;
+import TextureHandling.GdxTextureHandler;
+import TextureHandling.TextureHandler;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.physics.box2d.World;
 import org.mockito.Mockito;
 
 import static org.mockito.Mockito.mock;
@@ -14,15 +15,16 @@ import static org.mockito.Mockito.when;
  */
 public class MockEnemyFactory {
     EnemyFactory enemyFactory;
+
     public MockEnemyFactory() {
         enemyFactory = new EnemyFactory();
         Texture mockTexture = mock(Texture.class);
         when(mockTexture.getHeight()).thenReturn(10);
         when(mockTexture.getWidth()).thenReturn(10);
-        FileHandler mockFileHandler = mock(GdxFileHandler.class);
-        when(mockFileHandler.loadTexture(Mockito.anyString())).thenReturn(mockTexture);
+        TextureHandler mockTextureHandler = mock(GdxTextureHandler.class);
+        when(mockTextureHandler.loadTexture(Mockito.anyString())).thenReturn(mockTexture);
 
-        enemyFactory.setFileHandler(mockFileHandler);
+        enemyFactory.setTextureHandler(mockTextureHandler);
     }
 
     public EnemyFactory get() {

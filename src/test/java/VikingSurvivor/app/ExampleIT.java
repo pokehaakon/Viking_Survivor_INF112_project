@@ -89,14 +89,10 @@ public class ExampleIT {
 	 */
 	@Test
 	void dummy1() {
-		Enemy enemy = new Enemy();
-		Shape shapes = new PolygonShape();
-		enemy.shape = shapes;
-		Texture texture = mock(Texture.class);
-		when(texture.getHeight()).thenReturn(10);
+
 		// check that we can find a file using the LibGDX file API
 		assertNotNull(Gdx.files.internal("obligator.png"));
-		assertEquals(texture.getHeight(),10);
+
 
 	}
 }

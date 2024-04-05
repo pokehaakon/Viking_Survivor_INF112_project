@@ -4,6 +4,7 @@ import GameObjects.Actors.ActorAction.ActorAction;
 import Animations.AnimationStates;
 import Animations.ActorAnimation;
 import Animations.AnimationConstants;
+import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -21,7 +22,6 @@ public abstract class Actor extends GameObject implements IActor, IAnimation{
 
     public float speed, HP, damage, armour;
 
-    protected String type;
     private Set<ActorAction> actions;
     private ActorAnimation animation;
 
@@ -39,11 +39,15 @@ public abstract class Actor extends GameObject implements IActor, IAnimation{
     public Animation<TextureRegion> currentGIF;
 
 
-    public Actor(Body body,float scale) {
-        super(body, scale);
+    public Actor(String spritePath,BodyFeatures bodyFeatures, float scale) {
+        super(spritePath, bodyFeatures, scale);
         velocityVector = new Vector2();
         actions  = new HashSet<>();
 
+    }
+    public Actor(){
+        velocityVector = new Vector2();
+        actions  = new HashSet<>();
     }
 
 
@@ -80,11 +84,6 @@ public abstract class Actor extends GameObject implements IActor, IAnimation{
     public void doAnimation(){
         animation.animate(this);
     }
-
-
-
-
-
 
 
 
@@ -182,12 +181,6 @@ public abstract class Actor extends GameObject implements IActor, IAnimation{
 
     public DirectionState getDirectionState() {
         return directionState;
-    }
-
-
-
-    public void setType(String newType) {
-        type = newType;
     }
 
 

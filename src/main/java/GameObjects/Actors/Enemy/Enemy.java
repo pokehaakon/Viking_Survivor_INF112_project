@@ -2,12 +2,11 @@ package GameObjects.Actors.Enemy;
 
 import GameObjects.Actors.Actor;
 import GameObjects.Actors.Stats.EnemyStats;
-import com.badlogic.gdx.physics.box2d.Body;
+import GameObjects.BodyFeatures;
 
-import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;
 
-import static InputProcessing.Coordinates.RandomCoordinates.*;
+import static InputProcessing.Coordinates.SpawnCoordinates.*;
 
 public class Enemy extends Actor{
 
@@ -15,11 +14,10 @@ public class Enemy extends Actor{
 
     private EnemyStats stats;
 
-    private String enemyType;
 
 
-    public Enemy(Body body, String spawnGIF, float scale, EnemyStats stats) {
-        super(body,scale);
+    public Enemy(String spritePath, BodyFeatures bodyFeatures, float scale, EnemyStats stats) {
+        super(spritePath, bodyFeatures,scale);
         this.stats = stats;
 
         // stats
@@ -28,7 +26,8 @@ public class Enemy extends Actor{
         damage = stats.damage();
         armour = stats.armour();
         knockBackResistance = stats.knockBackResistance();
-
+    }
+    public Enemy() {
 
     }
 
@@ -38,11 +37,19 @@ public class Enemy extends Actor{
      * If it is, then its destroy tag is set to true.
      * @param player the player
      */
-    public boolean outOfBounds(Actor player) {
+    public boolean outOfBounds(Actor player, double deSpawnRadius) {
         float dx = body.getPosition().x - player.getBody().getPosition().x;
         float dy =  body.getPosition().y - player.getBody().getPosition().y;
         float dist = (float) Math.sqrt(dx*dx + dy*dy);
-        return(dist > DESPAWN_RADIUS);
+        return(dist > deSpawnRadius);
+    }
+
+    public void setStats(EnemyStats newStats) {
+        HP = newStats.HP();
+        speed = newStats.speed();
+        damage = newStats.damage();
+        armour = newStats.armour();
+        knockBackResistance = newStats.knockBackResistance();
     }
 
 
