@@ -1,6 +1,6 @@
 package Animations;
 
-import Actors.Actor;
+import GameObjects.Actors.Actor;
 
 public interface ActorAnimation {
 

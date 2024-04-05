@@ -5,7 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class AnimationConstants {
+public abstract class AnimationConstants {
 
     // sprites
     public static final String PLAYER_PNG = "vikingright.gif";

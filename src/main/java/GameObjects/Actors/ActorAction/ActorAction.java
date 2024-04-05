@@ -1,6 +1,7 @@
-package Actors.ActorAction;
+package GameObjects.Actors.ActorAction;
 
-import Actors.Actor;
+import GameObjects.Actors.Actor;
+import GameObjects.GameObject;
 
 public interface ActorAction {
 

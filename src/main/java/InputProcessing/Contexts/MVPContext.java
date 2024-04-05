@@ -1,45 +1,43 @@
 package InputProcessing.Contexts;
 
-import Actors.Enemy.Enemy;
-import Actors.Enemy.SwarmType;
-import Animations.ActorAnimations;
-import Actors.ActorAction.EnemyActions;
-import Actors.ActorAction.PlayerActions;
-import Actors.Enemy.EnemyFactory;
-import Animations.AnimationConstants;
-import Actors.Player.Player;
-import Actors.Stats.Stats;
+import GameObjects.Actors.ActorAction.ActorAction;
+import GameObjects.Actors.Enemy.Enemy;
+import GameObjects.Actors.Enemy.SwarmType;
+import GameObjects.Actors.ActorAction.PlayerActions;
+import GameObjects.Factories.EnemyFactory;
+import GameObjects.Actors.Player.Player;
+import GameObjects.Factories.PlayerFactory;
+import GameObjects.Factories.TerrainFactory;
+import GameObjects.ObjectPool;
+import GameObjects.Terrain.Terrain;
 import InputProcessing.ContextualInputProcessor;
-import InputProcessing.Coordinates.RandomCoordinates;
+import InputProcessing.Coordinates.SpawnCoordinates;
 import InputProcessing.Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
 import Simulation.SimulationThread;
-import Tools.FilterTool;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static Tools.BodyTool.createBody;
+import static GameObjects.Actors.ActorAction.EnemyActions.*;
+import static GameObjects.Actors.Stats.Stats.SWARM_SPEED_MULTIPLIER;
 import static Tools.FilterTool.createFilter;
-import static Tools.ShapeTools.createSquareShape;
 import static Tools.ShapeTools.getBottomLeftCorrection;
+import static VikingSurvivor.app.Main.SCREEN_WIDTH;
 
 public class MVPContext extends Context {
 
@@ -47,18 +45,20 @@ public class MVPContext extends Context {
     private final SpriteBatch batch;
     private final Camera camera;
 
+    public static final double SPAWN_RADIUS = (double)0.7*SCREEN_WIDTH;
+
     private World world;
 
     private Player player;
 
-    private ArrayList<Enemy> enemies;
+    private ArrayList<Enemy> spawnedEnemies;
     private final BitmapFont font;
 
     private RollingSum UpdateTime;
     private RollingSum FrameTime;
     private RollingSum FPS;
 
-
+    private ObjectPool<Enemy> enemyPool;
 
     private RollingSum UPS;
     private long previousFrameStart = System.nanoTime();
@@ -70,15 +70,32 @@ public class MVPContext extends Context {
 
     private final SimulationThread simThread;
     private  EnemyFactory enemyFactory;
+
+    private TerrainFactory terrainFactory;
+
+    private List<Terrain> spawnedTerrain;
+
+    private List<Terrain> drawableTerrain;
+    private List<Enemy> drawableEnemies;
+
+    private PlayerFactory playerFactory;
     private float zoomLevel = 1f;
     private long frameCount = 0;
     private static boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
 
     private Box2DDebugRenderer debugRenderer;
 
+    private ObjectPool<Terrain> terrainPool;
+
+
+
 
     float elapsedTime;
     private Set<Body> toBoKilled;
+
+    private long lastSpawnTime;
+
+    private long lastSwarmSpawnTime;
 
 
 
@@ -97,21 +114,13 @@ public class MVPContext extends Context {
         font.setColor(Color.RED);
         renderLock = new ReentrantLock(true);
 
+
         //create and start simulation
         createWorld();
-        // spawns start enemies
-        spawnRandomEnemies(10);
-        spawnSwarm("Enemy1", SwarmType.LINE, 10, 20);
-        //spawnSwarm("Enemy2", SwarmType.SQUARE, 12,60);
-
-        toBoKilled = new HashSet<>();
-        ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
-        world.setContactListener(contactListener);
         simThread = new SimulationThread(this);
-
         simThread.start();
 
-
+        //spawnRandomEnemies(1, EnemyActions.chasePlayer(player));
     }
     private void setupDebug() {
         UpdateTime = new RollingSum(60*3);
@@ -218,6 +227,7 @@ public class MVPContext extends Context {
 
         debugRenderer.render(world, camera.combined);
 
+
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
         origin.add(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
@@ -234,11 +244,19 @@ public class MVPContext extends Context {
         // draw enemies
 
         elapsedTime += Gdx.graphics.getDeltaTime();
-        for (Enemy enemy : enemies) {
+
+        for (Enemy enemy : drawableEnemies) {
+            enemy.doAnimation();
             enemy.draw(batch, elapsedTime);
+            enemy.doAction();
         }
-        //draw player
+        for(Terrain terrain : drawableTerrain) {
+            terrain.draw(batch);
+        }
+
+        player.doAnimation();
         player.draw(batch,elapsedTime);
+        player.doAction();
 
 
 
@@ -249,21 +267,34 @@ public class MVPContext extends Context {
         FrameTime.add(System.nanoTime() - renderStartTime);
         frameCount++;
 
+        if(TimeUtils.millis() - lastSpawnTime > 5000) {
+            spawnSwarm("ENEMY1",SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
+            spawnTerrain("TREE");
+        }
 
 
-        updateActorAnimations();
 
-        System.out.println(player.getAnimationState());
+        removeDestroyedEnemies();
+
+        world.step(1/(float) 60, 10, 10);
 
     }
 
-    private void updateActorAnimations() {
-        player.doAnimation();
+    /**
+     * Despawns destroyed enemies by returning them to enemy pool and removing them from the spawned enemy list
+     */
+    public void removeDestroyedEnemies() {
+        for(Iterator<Enemy> iter = drawableEnemies.iterator(); iter.hasNext();) {
+            Enemy enemy = iter.next();
+            if(enemy.isDestroyed()) {
+                enemy.resetActions();
+                enemyPool.returnToPool(enemy);
+                iter.remove();
+                // removes from list of active enemies
+            }
 
-        for(Enemy enemy: enemies) {
-            enemy.doAnimation();
+                //System.out.println("destroy!");
         }
-
     }
 
 
@@ -303,98 +334,83 @@ public class MVPContext extends Context {
         debugRenderer = new Box2DDebugRenderer();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
-        enemyFactory = new EnemyFactory(world);
-        initializePlayer();
-        enemies = new ArrayList<>();
+
+        enemyFactory = new EnemyFactory();
+        drawableEnemies = new ArrayList<>();
+
+        terrainFactory = new TerrainFactory();
+        drawableTerrain = new ArrayList<>();
+
+
+        playerFactory = new PlayerFactory();
+        player = playerFactory.create("PLAYER1");
+        player.addToWorld(world);
+        player.setAction(PlayerActions.moveToInput(keyStates));
+
+
+        enemyPool = new ObjectPool<>(world, enemyFactory,Arrays.asList("ENEMY1", "ENEMY2"),200);
+        terrainPool = new ObjectPool<>(world, terrainFactory, List.of("TREE"), 50);
+
+        toBoKilled = new HashSet<>();
+        ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
+        world.setContactListener(contactListener);
 
         world.step(1/60f, 10, 10);
     }
 
-    private void spawnEnemies(String enemyType, int num) {
-        // random start coordinates
-        List<Vector2> startPoints = RandomCoordinates.randomPoints(num, player.getBody().getPosition());
+    private void spawnEnemies(String enemyType, int num, List<ActorAction> actions) {
 
-        for(Enemy enemy: enemyFactory.createEnemies(num, enemyType, startPoints)) {
-            enemy.setAction(EnemyActions.chasePlayer(player));
-            enemies.add(enemy);
+        for(Enemy enemy: enemyPool.get(enemyType,num)) {
+            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), SPAWN_RADIUS));
+            for(ActorAction action : actions) {
+                enemy.setAction(action);
+            }
+            drawableEnemies.add(enemy);
+        }
+    }
+
+    private void spawnRandomEnemies(int num, List<ActorAction> actions) {
+
+        for(Enemy enemy : enemyPool.getRandom(num)) {
+            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), SPAWN_RADIUS));
+            for(ActorAction action : actions) {
+                enemy.setAction(action);
+            }
+            drawableEnemies.add(enemy);
+        }
+        lastSpawnTime = TimeUtils.millis();
+    }
+
+    private void spawnTerrain(String type) {
+        Terrain terrain = terrainPool.get(type);
+        terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), SPAWN_RADIUS));
+        drawableTerrain.add(terrain);
+        lastSwarmSpawnTime = TimeUtils.millis();
+    }
+
+
+    private void spawnSwarm(String enemyType, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
+        List<Enemy> swarmMembers = enemyPool.get(enemyType, size);
+        LinkedList<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType,swarmMembers,player.getBody().getPosition(),SPAWN_RADIUS,size, spacing,speedMultiplier);
+        for(Enemy enemy : swarm) {
+            enemy.setAction(moveInStraightLine());
+            enemy.setAction(destroyIfDefeated(player));
+            drawableEnemies.add(enemy);
         }
 
-    }
-
-    private void spawnRandomEnemies(int num) {
-        // random start coordinates
-        List<Vector2> startPoints = RandomCoordinates.randomPoints(num, player.getBody().getPosition());
-        List<Enemy> enemiesToSpawn = enemyFactory.createRandomEnemies(num, startPoints);
-        for(Enemy enemy: enemiesToSpawn) {
-            enemy.setAction(EnemyActions.chasePlayer(player));
-            enemies.add(enemy);
-        }
+        lastSpawnTime = TimeUtils.millis();
 
     }
 
-    private void spawnSwarm(String enemyType, SwarmType swarmType, int size, int spacing) {
-        Vector2 target = player.getBody().getPosition();
-        List<Vector2> swarmCoordinates = SwarmCoordinates.getSwarmCoordinates(swarmType,size,spacing,target);
-        Vector2 swarmDirection = SwarmCoordinates.swarmDirection(target, swarmType,swarmCoordinates);
-
-        for(Enemy enemy: enemyFactory.createEnemies(size,enemyType,swarmCoordinates)) {
-            enemy.setSpeed(Stats.SWARM_SPEED_MULTIPLIER);
-            // sets action
-            enemy.setAction(EnemyActions.swarmStrike(swarmDirection));
-            enemies.add(enemy);
-        }
-
-    }
-
-    private void initializePlayer() {
-        // player sprite
-        Texture playerSprite = new Texture(Gdx.files.internal(AnimationConstants.PLAYER_RIGHT));
-
-        // player hitbox
-        PolygonShape squarePlayer = createSquareShape(
-                (playerSprite.getWidth())* AnimationConstants.PLAYER_SCALE ,
-                (playerSprite.getHeight())* AnimationConstants.PLAYER_SCALE
-        );
-
-        // player body
-        Body playerBody = createBody(
-                world,
-                new Vector2(),
-                squarePlayer,
-                createFilter(
-                        FilterTool.Category.PLAYER,
-                        new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL}
-                ),
-                1f,
-                0,
-                0
-        );
-
-        player = new Player(playerBody, AnimationConstants.PLAYER_IDLE_RIGHT, AnimationConstants.PLAYER_SCALE, Stats.player());
-        player.setAction(PlayerActions.moveToInput(keyStates));
-        player.setAnimation(ActorAnimations.playerMoveAnimation());
 
 
-        squarePlayer.dispose();
-    }
 
-
-    private void updatePlayerAction() {
-        player.doAction();
-
-    }
-
-    private void updateEnemyAction() {
-        for(Enemy enemy: enemies) {
-            enemy.doAction();
-        }
-
-
-    }
 
     public void updateActorActions() {
-        updatePlayerAction();
-        updateEnemyAction();
+        player.doAction();
+        for(Enemy enemy: drawableEnemies) {
+            enemy.doAction();
+        }
 
     }
 

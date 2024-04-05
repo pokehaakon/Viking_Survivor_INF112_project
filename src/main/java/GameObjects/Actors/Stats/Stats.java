@@ -1,7 +1,7 @@
-package Actors.Stats;
+package GameObjects.Actors.Stats;
 
 
-public class Stats {
+public abstract class Stats {
 
     //player: random values
     public static final float PLAYER_START_HP = 100;

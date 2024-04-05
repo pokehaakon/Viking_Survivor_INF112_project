@@ -10,6 +10,7 @@ public class EnemyContactListener implements ContactListener {
     private final Set<Body> toBeKilled;
 
 
+
     public EnemyContactListener(World world, Body player, Set<Body> toBeKilled) {
         this.world = world;
         this.player = player;
