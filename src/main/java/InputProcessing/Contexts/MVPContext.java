@@ -18,7 +18,7 @@ import InputProcessing.Coordinates.SpawnCoordinates;
 import InputProcessing.Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
-import Simulation.SimulationThread;
+import Simulation.Simulation;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -32,13 +32,12 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import java.lang.annotation.ElementType;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static GameObjects.Actors.ActorAction.EnemyActions.*;
-import static GameObjects.Actors.Stats.Stats.SWARM_SPEED_MULTIPLIER;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.getBottomLeftCorrection;
 import static VikingSurvivor.app.Main.SCREEN_WIDTH;
@@ -72,12 +71,15 @@ public class MVPContext extends Context {
 
     private KeyStates keyStates;
 
-    private final SimulationThread simThread;
+    private final Simulation sim;
+    private final Thread simThread;
     private  EnemyFactory enemyFactory;
 
     private TerrainFactory terrainFactory;
 
     private List<Terrain> spawnedTerrain;
+
+
 
     private List<Terrain> drawableTerrain;
     private List<Enemy> drawableEnemies;
@@ -91,16 +93,12 @@ public class MVPContext extends Context {
 
     private ObjectPool<Terrain, TerrainType> terrainPool;
 
-
-
-
     float elapsedTime;
     private Set<Body> toBoKilled;
 
-    private long lastSpawnTime;
 
-    private long lastSwarmSpawnTime;
 
+    private AtomicLong synchronizer;
 
 
 
@@ -117,11 +115,12 @@ public class MVPContext extends Context {
         font = new BitmapFont();
         font.setColor(Color.RED);
         renderLock = new ReentrantLock(true);
-
+        synchronizer = new AtomicLong();
 
         //create and start simulation
         createWorld();
-        simThread = new SimulationThread(this);
+        sim = new Simulation(this);
+        simThread = new Thread(sim);
         simThread.start();
 
         //spawnRandomEnemies(1, EnemyActions.chasePlayer(player));
@@ -242,64 +241,66 @@ public class MVPContext extends Context {
         camera.position.z = 0;
         camera.update(true);
 
-
         batch.begin();
 
         // draw enemies
 
         elapsedTime += Gdx.graphics.getDeltaTime();
 
+        font.draw(batch, "fps: " + String.format("%.1f", 1_000_000_000F/FPS.avg()), 10, 80);
+        font.draw(batch, "ups: " + String.format("%.1f",1_000_000_000F/UPS.avg()), 10, 60);
+        font.draw(batch, "us/f: " + String.format("%.0f",FrameTime.avg()/1_000), 10, 40);
+        font.draw(batch, "us/u: " + String.format("%.0f",UpdateTime.avg()/1_000), 10, 20);
+
+        int i = 0;
+
         for (Enemy enemy : drawableEnemies) {
+            if(i > 100) batch.flush();
             enemy.doAnimation();
             enemy.draw(batch, elapsedTime);
-            enemy.doAction();
+            i++;
         }
         for(Terrain terrain : drawableTerrain) {
+            if(i > 100) batch.flush();
             terrain.draw(batch);
+            i++;
         }
 
         player.doAnimation();
-        player.draw(batch,elapsedTime);
-        player.doAction();
-
-
-
+        player.draw(batch, elapsedTime);
         batch.end();
 
-
-        renderLock.unlock();
-        FrameTime.add(System.nanoTime() - renderStartTime);
         frameCount++;
+        synchronizer.incrementAndGet();
+        renderLock.unlock();
 
-        if(TimeUtils.millis() - lastSpawnTime > 5000) {
-            spawnSwarm(EnemyType.ENEMY1,SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
-            spawnTerrain(TerrainType.TREE);
-        }
-
+        FrameTime.add(System.nanoTime() - renderStartTime);
 
 
-        removeDestroyedEnemies();
 
-        world.step(1/(float) 60, 10, 10);
+        //temp physics
+
+//
+//        for (Enemy enemy : drawableEnemies) {
+//            enemy.doAction();
+//        }
+//
+//        player.doAction();
+//
+//        if (TimeUtils.millis() - lastSpawnTime > 5000) {
+//            spawnSwarm(EnemyType.ENEMY1,SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
+//            spawnTerrain(TerrainType.TREE);
+//        }
+//
+//
+//
+//        removeDestroyedEnemies();
+//
+//        world.step(1/(float) 60, 10, 10);
 
     }
 
-    /**
-     * Despawns destroyed enemies by returning them to enemy pool and removing them from the spawned enemy list
-     */
-    public void removeDestroyedEnemies() {
-        for(Iterator<Enemy> iter = drawableEnemies.iterator(); iter.hasNext();) {
-            Enemy enemy = iter.next();
-            if(enemy.isDestroyed()) {
-                enemy.resetActions();
-                enemyPool.returnToPool(enemy);
-                iter.remove();
-                // removes from list of active enemies
-            }
 
-                //System.out.println("destroy!");
-        }
-    }
 
 
     @Override
@@ -310,13 +311,13 @@ public class MVPContext extends Context {
     @Override
     public void pause() {
         renderLock.lock();
-        simThread.pause();
+        sim.pause();
         renderLock.unlock();
     }
 
     @Override
     public void resume() {
-        simThread.unpause();
+        sim.unpause();
         synchronized (simThread) {
             simThread.notify();
         }
@@ -359,56 +360,8 @@ public class MVPContext extends Context {
         ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
         world.setContactListener(contactListener);
 
-        world.step(1/60f, 10, 10);
+        //world.step(1/60f, 10, 10);
     }
-
-    private void spawnEnemies(EnemyType enemyType, int num, List<ActorAction> actions) {
-
-        for(Enemy enemy: enemyPool.get(enemyType, num)) {
-            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), SPAWN_RADIUS));
-            for(ActorAction action : actions) {
-                enemy.setAction(action);
-            }
-            drawableEnemies.add(enemy);
-        }
-    }
-
-    private void spawnRandomEnemies(int num, List<ActorAction> actions) {
-
-        for(Enemy enemy : enemyPool.getRandom(num)) {
-            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), SPAWN_RADIUS));
-            for(ActorAction action : actions) {
-                enemy.setAction(action);
-            }
-            drawableEnemies.add(enemy);
-        }
-        lastSpawnTime = TimeUtils.millis();
-    }
-
-    private void spawnTerrain(TerrainType type) {
-        Terrain terrain = terrainPool.get(type);
-        terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), SPAWN_RADIUS));
-        drawableTerrain.add(terrain);
-        lastSwarmSpawnTime = TimeUtils.millis();
-    }
-
-
-    private void spawnSwarm(EnemyType enemyType, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
-        List<Enemy> swarmMembers = enemyPool.get(enemyType, size);
-        LinkedList<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType,swarmMembers,player.getBody().getPosition(),SPAWN_RADIUS,size, spacing,speedMultiplier);
-        for(Enemy enemy : swarm) {
-            enemy.setAction(moveInStraightLine());
-            enemy.setAction(destroyIfDefeated(player));
-            drawableEnemies.add(enemy);
-        }
-
-        lastSpawnTime = TimeUtils.millis();
-
-    }
-
-
-
-
 
     public void updateActorActions() {
         player.doAction();
@@ -445,16 +398,26 @@ public class MVPContext extends Context {
         return toBoKilled;
     }
 
+    public AtomicLong getSynchronizer() {
+        return synchronizer;
+    }
 
 
+    public List<Enemy> getDrawableEnemies() {
+        return drawableEnemies;
+    }
 
+    public ObjectPool<Enemy, EnemyType> getEnemyPool() {
+        return enemyPool;
+    }
 
+    public List<Terrain> getDrawableTerrain() {
+        return drawableTerrain;
+    }
 
-
-
-
-
-
+    public ObjectPool<Terrain, TerrainType> getTerrainPool() {
+        return terrainPool;
+    }
 
 
 }

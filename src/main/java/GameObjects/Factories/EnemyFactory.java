@@ -24,12 +24,22 @@ import static Tools.ShapeTools.createSquareShape;
 
 public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
 
+    private final Filter filter;
 
 
     public EnemyFactory() {
         super();
         // default
         textureHandler = new GdxTextureHandler();
+        filter  = createFilter(
+                FilterTool.Category.ENEMY,
+                new FilterTool.Category[]{
+                        FilterTool.Category.WALL,
+                        FilterTool.Category.ENEMY,
+                        FilterTool.Category.PLAYER
+                }
+        );
+
     }
 
     /**
@@ -67,9 +77,7 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
             }
             case ENEMY2: {
                 scale = AnimationConstants.ENEMY2_SCALE;
-
                 texture = textureHandler.loadTexture(PLAYER_IDLE_RIGHT);
-
                 shape = createSquareShape(
                         texture.getWidth()*scale,
                         texture.getHeight()*scale);
@@ -82,14 +90,7 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 throw new IllegalArgumentException("Invalid enemy type");
         }
 
-        Filter filter = createFilter(
-                FilterTool.Category.ENEMY,
-                new FilterTool.Category[]{
-                        FilterTool.Category.WALL,
-                        FilterTool.Category.ENEMY,
-                        FilterTool.Category.PLAYER
-                }
-        );
+
         BodyFeatures bodyFeatures = new BodyFeatures(
                 shape,
                 filter,
@@ -98,7 +99,6 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 0,
                 false,
                 BodyDef.BodyType.DynamicBody);
-
 
         enemy = new Enemy();
         enemy.setBodyFeatures(bodyFeatures);

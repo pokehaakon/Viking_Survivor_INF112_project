@@ -39,7 +39,7 @@ public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
     }
 
     private void createObjectPool(E type, int size) {
-        Queue<T> pool = new LinkedList<>();
+        Queue<T> pool = new ArrayDeque<>(size);
         for (T obj : factory.create(size, type)) {
             obj.addToWorld(world);
             obj.getBody().setActive(false);
@@ -89,11 +89,31 @@ public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
      * @return a list of GameObjects
      */
     public List<T> get(E type, int num) {
-        List<T> objects = new ArrayList<>();
-        for (int i = 0; i < num; i++) {
-            T obj = get(type);
-            objects.add(obj);
+        List<T> objects;// = new ArrayList<>();
+
+        Queue<T> pool = objectPool.get(type);
+
+        if (pool.size() < num) {
+            num = pool.size() - num;
+            objects = factory.create(-num, type);
+            for (T obj : objects) {
+                obj.addToWorld(world);
+                obj.getBody().setActive(true);
+            }
+            while (!pool.isEmpty()) {
+                T obj = pool.poll();
+                obj.getBody().setActive(true);
+                objects.add(obj);
+            }
+        } else {
+            objects = new ArrayList<>(num);
+            for (int i = 0; i < num; i++) {
+                T obj = pool.poll();
+                obj.getBody().setActive(true);
+                objects.add(obj);
+            }
         }
+
         return objects;
     }
 

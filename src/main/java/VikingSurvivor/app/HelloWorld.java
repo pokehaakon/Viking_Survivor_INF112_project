@@ -19,6 +19,7 @@ public class HelloWorld implements ApplicationListener {
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
+		//batch.maxSpritesInBatch = 256;
 
 		//camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());

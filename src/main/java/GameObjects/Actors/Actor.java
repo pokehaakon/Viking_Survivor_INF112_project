@@ -37,7 +37,7 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
     public Animation<TextureRegion> currentGIF;
 
 
-    public Actor(String spritePath,BodyFeatures bodyFeatures, float scale) {
+    public Actor(String spritePath, BodyFeatures bodyFeatures, float scale) {
         super(spritePath, bodyFeatures, scale);
         velocityVector = new Vector2();
         actions  = new HashSet<>();
@@ -97,7 +97,10 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
         velocityVector.y += y;
     }
 
-
+    @Override
+    public void setVelocityVector(Vector2 v) {
+        velocityVector.set(v);
+    }
 
     @Override
     public void move(){

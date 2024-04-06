@@ -69,7 +69,7 @@ public class PlayerFactory implements IFactory<Player, PlayerType>{
         bodyFeatures = new BodyFeatures(
                 shape,
                 filter,
-                1,
+                10,
                 0,
                 0,
                 false,
@@ -95,6 +95,5 @@ public class PlayerFactory implements IFactory<Player, PlayerType>{
     @Override
     public void setTextureHandler(TextureHandler newTextureHandler) {
         textureHandler = newTextureHandler;
-
     }
 }
