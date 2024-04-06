@@ -64,6 +64,15 @@ public class CharArrayStream implements Streamable<Character> {
 
     @Override
     public String getDebugInfo() {
-        return String.valueOf(getCurrent());
+        StringBuilder b = new StringBuilder();
+        for (int i = head - colCount; i < text.length; i++) {
+            if (text[i] == '\n') break;
+            b.append(text[i]);
+        }
+        b.append('\n');
+        for (int i = 0; i < colCount; i++)
+            b.append(' ');
+        b.append('^');
+        return b.toString();
     }
 }

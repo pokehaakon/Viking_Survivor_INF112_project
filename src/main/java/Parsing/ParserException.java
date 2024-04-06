@@ -6,7 +6,7 @@ public class ParserException extends RuntimeException {
                 msg + "\n\n" +
                         "Parse Error at: l" +
                         parser.stream.getLine() + " c" +
-                        parser.stream.getLinePos() + "\n" +
+                        parser.stream.getLinePos() + "\n\n" +
                         parser.stream.getDebugInfo()
         );
     }

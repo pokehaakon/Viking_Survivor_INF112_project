@@ -185,10 +185,10 @@ public abstract class  GenericParser<StreamType, ReturnType> {
      * @param parser the parser to apply
      * @return
      */
-    public  Optional<List<ReturnType>> many(Supplier<Optional<ReturnType>> parser) {
-        List<ReturnType> out = new ArrayList<>();
+    public <T>  Optional<List<T>> many(Supplier<Optional<T>> parser) {
+        List<T> out = new ArrayList<>();
 
-        Optional<ReturnType> parsedString;
+        Optional<T> parsedString;
         while ((parsedString = parser.get()).isPresent()){
             out.add(parsedString.get());
         }
@@ -201,14 +201,17 @@ public abstract class  GenericParser<StreamType, ReturnType> {
      * @param parser
      * @return
      */
-    public Optional<List<ReturnType>> some(Supplier<Optional<ReturnType>> parser) {
+    public <T> Optional<List<T>> some(Supplier<Optional<T>> parser) {
         return Try(() ->  {
-            List<ReturnType> out = new ArrayList<>();
-            Optional<ReturnType> parsedString = parser.get();
+            List<T> out = new ArrayList<>();
+            //first
+            Optional<T> parsedString = parser.get();
             if (parsedString.isEmpty()) {
                 return Optional.empty();
             }
             out.add(parsedString.get());
+
+            //others
             while ((parsedString = parser.get()).isPresent()){
                 out.add(parsedString.get());
             }
@@ -234,9 +237,10 @@ public abstract class  GenericParser<StreamType, ReturnType> {
         return Optional.of(wrap(b));
     }
 
-    public Optional<ReturnType> strip(Supplier<Optional<ReturnType>> parser, StreamType... cs) {
+    @SafeVarargs
+    public final <T> Optional<T> strip(Supplier<Optional<T>> parser, StreamType... cs) {
         many(() -> parseLiteral(cs));
-        Optional<ReturnType> opt = parser.get();
+        Optional<T> opt = parser.get();
         many(() -> parseLiteral(cs));
         return opt;
     }
