@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static Parsing.ParserTest.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -33,7 +31,7 @@ class MapParserTest {
                 !mapname=Springs
                 !other=
                 """);
-        assertThrowsExactly(Parser.ParserException.class, m::parseDefines);
+        assertThrowsExactly(ParserException.class, m::parseDefines);
     }
 
 

@@ -1,6 +1,6 @@
 package Parsing;
 
-public class CharArrayStream implements Streamable {
+public class CharArrayStream implements Streamable<Character> {
     private final char[] text;
     private int head = 0;
     private int lineCount = 0;
@@ -19,18 +19,18 @@ public class CharArrayStream implements Streamable {
         this.colCount = colCount;
     }
     @Override
-    public Streamable copy() {
+    public Streamable<Character> copy() {
         return new CharArrayStream(text, head, lineCount, colCount);
     }
 
     @Override
-    public char getCurrent() {
+    public Character getCurrent() {
         if (atEOF()) return 0;
         return text[head];
     }
 
     @Override
-    public char next() {
+    public Character next() {
         if (text[head] == '\n') {
             lineCount++;
             colCount = 0;

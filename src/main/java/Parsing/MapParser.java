@@ -3,21 +3,54 @@ package Parsing;
 
 import com.badlogic.gdx.Gdx;
 
-import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
-public class MapParser extends Parser {
+public class MapParser extends GenericParser<Character, String> {
     private Map<String, String> defines;
     private Map<Long, List<SpawnFrame>> timeFrames;
     public MapParser(String filename) {
-        super(filename, (s) -> new CharArrayStream(Gdx.files.internal(filename).readString()));
-        //parseMapText();
+        super(
+                filename,
+                (s) -> new CharArrayStream(Gdx.files.internal(filename).readString()),
+                (l) -> {
+                    StringBuilder b = new StringBuilder();
+                    for (Character c : l) {
+                        b.append(c);
+                    }
+                    return b.toString();
+                },
+                (s) -> {
+                    List<Character> cs = new ArrayList<>(s.length());
+                    for(int i = 0; i < s.length(); i++) {
+                        cs.add(s.charAt(i));
+                    }
+                    return cs;
+                }
+        );
+        parseMapText();
     }
 
     public MapParser(char[] text) {
-        super(new CharArrayStream(text));
-        //parseMapText();
+        super(
+            new CharArrayStream(text),
+            (l) -> {
+                StringBuilder b = new StringBuilder();
+                for (Character c : l) {
+                    b.append(c);
+                }
+                return b.toString();
+            },
+            (s) -> {
+                List<Character> cs = new ArrayList<>(s.length());
+                for(int i = 0; i < s.length(); i++) {
+                    cs.add(s.charAt(i));
+                }
+                return cs;
+            }
+        );
+        parseMapText();
     }
 
     public void doParse() {
@@ -33,7 +66,7 @@ public class MapParser extends Parser {
     public Map<String, String> parseDefines() {
         Map<String, String> defines = new HashMap<>();
         many(() -> Try(() -> {
-            parseCharLiteral('!');
+            parseLiteral('!');
             Optional<String> key = strip(this::letters, ' ', '\t');
             //String key = parseUntilLiteral('=', ' ', '\t').get();
             next();
@@ -42,7 +75,7 @@ public class MapParser extends Parser {
             next();
             if (key.isEmpty() && value.isEmpty()) return Optional.empty();
             if (key.isEmpty() || value.isEmpty())
-                throw new Parser.ParserException("Error while reading MapFile Header", this.stream);
+                throw new ParserException(this, "Error while reading MapFile Header", this.stream);
             defines.put(key.get(), value.get());
             return Optional.of(key.get() + ":" + value.get() + "\n");
         }));
@@ -58,9 +91,9 @@ public class MapParser extends Parser {
             String frameString = choose(
                 () -> {
                     String minutes = numbers().get();
-                    parseCharLiteral(':');
+                    parseLiteral(':');
                     String seconds = numbers().get();
-                    parseCharLiteral(':');
+                    parseLiteral(':');
                     frame.set(60 * (Integer.parseInt(seconds) + 60L * Integer.parseInt(minutes)));
                     return Optional.of(minutes + ':' + seconds + ':');
                 },
@@ -91,7 +124,7 @@ public class MapParser extends Parser {
         some(() -> {
 
             many(() -> choose(this::parseEmptyLine, this::parseComment));
-            choose(() -> parseCharLiteral('\t'), () -> parseStringLiteral("    ")); //support space and tap tabulation
+            choose(() -> parseLiteral('\t'), () -> parseStringLiteral("    ")); //support space and tap tabulation
             if(undo(this::letter).isEmpty()) return Optional.empty(); //next should be a letter
 
             List<String> spawnable = some(() -> {
@@ -99,8 +132,8 @@ public class MapParser extends Parser {
                 space();
                 return opt;
             }).get();
-            if(parseCharLiteral('\n').isPresent()) return Optional.empty();
-            parseCharLiteral(';');
+            if(parseLiteral('\n').isPresent()) return Optional.empty();
+            parseLiteral(';');
             space();
 
             List<String> args = some(() -> {
@@ -119,6 +152,64 @@ public class MapParser extends Parser {
         });
 
         return spawnFrames;
+    }
+
+    /**
+     * Parses a line with just spaces, tabs and ending with a newline
+     * @return
+     */
+    public Optional<String> parseEmptyLine() {
+        return Try(() -> {
+            StringBuilder b = new StringBuilder();
+            for (String s : many(() -> parseLiteral(' ', '\t')).get()) {
+                b.append(s);
+            }
+            Optional<String> opt = parseLiteral('\n');
+            if (opt.isEmpty()) return Optional.empty();
+            opt.ifPresent(b::append);
+            return Optional.of(b.toString());
+        });
+    }
+
+    /**
+     * Parses everything between a '#' and newline
+     * @return the string of the comment
+     */
+    public Optional<String> parseComment() {
+        return Try(() -> {
+            space();
+            if (parseLiteral('#').isEmpty()) return Optional.empty();
+            Optional<String> opt = parseUntilLiteral('\n');
+            Try(() -> parseLiteral('\n'));
+            return opt;
+        });
+    }
+
+    public Optional<String> letter() {
+        return parseLiteralFromFunction(Character::isLetter);
+    }
+
+    public Optional<String> letters() {
+        return parseStringFromFunction(Character::isLetter);
+    }
+
+    public Optional<String> number() {
+        return parseLiteralFromFunction(Character::isDigit);
+    }
+
+    public Optional<String> numbers() {
+        return parseStringFromFunction(Character::isDigit);
+    }
+
+    public Optional<String> space() {
+        Optional<List<String>> opt = many(() -> parseLiteral(' ', '\t'));
+        return opt.map(strings -> String.join("", strings));
+    }
+
+    public Optional<String> skipLine() {
+        String s = parseUntilLiteral('\n').orElseGet(() -> "");
+        if(parseLiteral('\n').isPresent()) return Optional.of(s + "\n");
+        return Optional.empty();
     }
 }
 

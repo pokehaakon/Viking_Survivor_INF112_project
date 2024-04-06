@@ -1,21 +1,21 @@
 package Parsing;
 
-public interface Streamable {
+public interface Streamable<T> {
     /**
      * @return copy of stream
      */
-    Streamable copy();
+    Streamable<T> copy();
 
     /**
      * @return the char at the current position
      */
-    char getCurrent();
+    T getCurrent();
 
     /**
      * returns the char at the current position, and then increments to the next element
      * @return the char at the current position
      */
-    char next();
+    T next();
 
     /**
      *
