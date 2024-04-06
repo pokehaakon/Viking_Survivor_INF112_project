@@ -1,5 +1,6 @@
 package Tools;
 
+import GameObjects.BodyFeatures;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.utils.Array;
 
 import java.util.Iterator;
 
+import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createSquareShape;
 
 public abstract class BodyTool {
@@ -31,9 +33,9 @@ public abstract class BodyTool {
      * @param isSensor decides if the body is a sensor
      * @return new body constructed using the parameters
      */
-    public static Body createBody(World world, Vector2 pos, Shape shape, Filter filter, float density, float friction, float restitution, boolean isSensor) {
+    public static Body createBody(World world, Vector2 pos, Shape shape, Filter filter, float density, float friction, float restitution, boolean isSensor, BodyDef.BodyType type) {
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.type = type;
         bodyDef.position.set(pos);
         bodyDef.fixedRotation = true;
 
@@ -47,19 +49,19 @@ public abstract class BodyTool {
         return createBody(world, pos, filter, bodyDef, fixtureDef);
     }
 
-    /**
-     * Create a new Box2d body
-     *
-     * @param world the world in which the body is created
-     * @param pos the starting position of the body
-     * @param shape the shape of the body
-     * @param filter the filter of the body
-     * @param density the density of the body
-     * @param friction the friction of the body
-     * @param restitution the restitution of the body
-     * @return new body constructed using the parameters
-     */
-    public static Body createBody(World world, Vector2 pos, Shape shape, Filter filter, float density, float friction, float restitution) {return createBody(world, pos, shape, filter, density, friction, restitution, false);}
+    ///**
+    // * Create a new Box2d body
+    // *
+    // * @param world the world in which the body is created
+    // * @param pos the starting position of the body
+    // * @param shape the shape of the body
+    // * @param filter the filter of the body
+    // * @param density the density of the body
+    // * @param friction the friction of the body
+    // * @param restitution the restitution of the body
+    // * @return new body constructed using the parameters
+    // */
+    //public static Body createBody(World world, Vector2 pos, Shape shape, Filter filter, float density, float friction, float restitution) {return createBody(world, pos, shape, filter, density, friction, restitution, false);}
 
 
     /**
@@ -97,5 +99,44 @@ public abstract class BodyTool {
             bodies.add(createBody(world, posIter.next(), filter, bodyDef, fixtureDef));
         }
         return bodies;
+    }
+
+//    public  static Body createEnemyBody(World world, Vector2 pos, Shape shape) {
+//        Filter enemyFilter = createFilter(
+//                FilterTool.Category.ENEMY,
+//                new FilterTool.Category[]{
+//                        FilterTool.Category.WALL,
+//                        FilterTool.Category.ENEMY,
+//                        FilterTool.Category.PLAYER
+//                }
+//        );
+//
+//        return createBody(world, pos, shape, enemyFilter, 1, 0, 0);
+//    }
+
+    public static Body createTerrainBody(World world, Vector2 pos, Shape shape) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(pos);
+        bodyDef.fixedRotation = true;
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1;
+        fixtureDef.friction = 1;
+        fixtureDef.restitution = 0;
+        fixtureDef.isSensor = false;
+
+        Filter filter = createFilter(
+                FilterTool.Category.WALL,
+                new FilterTool.Category[]{
+                        FilterTool.Category.WALL,
+                        FilterTool.Category.ENEMY,
+                        FilterTool.Category.PLAYER
+                }
+        );
+
+        return createBody(world, pos, filter, bodyDef, fixtureDef);
+
     }
 }
