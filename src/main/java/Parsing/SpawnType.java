@@ -1,7 +1,5 @@
 package Parsing;
 
-import Actors.Enemy.EnemyType;
-
 public enum SpawnType {
     BOSS, WAVE;
 

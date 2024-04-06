@@ -6,10 +6,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import java.util.*;
 
 
-public class ObjectPool<T extends GameObject> {
-    private final IFactory<T> factory;
-    private final Map<String, Queue<T>> objectPool;
-    private final List<String> objectTypes;
+public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
+    private final IFactory<T, E> factory;
+    private final Map<E, Queue<T>> objectPool;
+    private final List<E> objectTypes;
     private final Random random;
 
     private final World world;
@@ -22,7 +22,7 @@ public class ObjectPool<T extends GameObject> {
      * @param objectTypes  list of the different types of each object
      * @param poolSize number of objects to create of each object type
      */
-    public ObjectPool(World world, IFactory<T> factory, List<String> objectTypes, int poolSize) {
+    public ObjectPool(World world, IFactory<T, E> factory, List<E> objectTypes, int poolSize) {
         this.world = world;
         this.factory = factory;
         this.objectTypes = objectTypes;
@@ -33,12 +33,12 @@ public class ObjectPool<T extends GameObject> {
             throw new IllegalArgumentException("Pool size must be greater than zero!");
         }
 
-        for (String objectType : objectTypes) {
+        for (E objectType : objectTypes) {
             createObjectPool(objectType, poolSize);
         }
     }
 
-    private void createObjectPool(String type, int size) {
+    private void createObjectPool(E type, int size) {
         Queue<T> pool = new LinkedList<>();
         for (T obj : factory.create(size, type)) {
             obj.addToWorld(world);
@@ -49,11 +49,11 @@ public class ObjectPool<T extends GameObject> {
     }
 
     public T getRandom() {
-        String randomObjectType = objectTypes.get(random.nextInt(objectTypes.size()));
+        E randomObjectType = objectTypes.get(random.nextInt(objectTypes.size()));
         return get(randomObjectType);
     }
 
-    public T get(String type) {
+    public T get(E type) {
         Queue<T> pool = objectPool.get(type);
         T obj;
         if (!pool.isEmpty()) {
@@ -88,7 +88,7 @@ public class ObjectPool<T extends GameObject> {
      * @param num number of objects to obtain
      * @return a list of GameObjects
      */
-    public List<T> get(String type, int num) {
+    public List<T> get(E type, int num) {
         List<T> objects = new ArrayList<>();
         for (int i = 0; i < num; i++) {
             T obj = get(type);
@@ -110,7 +110,7 @@ public class ObjectPool<T extends GameObject> {
         }
     }
 
-    public Map<String, Queue<T>> getObjectPool() {
+    public Map<E, Queue<T>> getObjectPool() {
         return objectPool;
     }
 }

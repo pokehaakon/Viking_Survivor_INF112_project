@@ -17,9 +17,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class Actor extends GameObject implements IActor, IAnimation{
-
-
+public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor, IAnimation {
     public float speed, HP, damage, armour;
 
     private Set<ActorAction> actions;

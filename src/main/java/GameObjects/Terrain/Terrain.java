@@ -1,11 +1,12 @@
 package GameObjects.Terrain;
 
 import GameObjects.Actors.Actor;
+import GameObjects.Actors.ObjectTypes.TerrainType;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
 
 
-public class Terrain extends GameObject {
+public class Terrain extends GameObject<TerrainType> {
 
     public Terrain(String spritePath, BodyFeatures bodyFeatures, float scale) {
         super(spritePath, bodyFeatures,scale);

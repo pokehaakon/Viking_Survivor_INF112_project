@@ -1,12 +1,11 @@
 package Parsing;
 
 
-import Actors.Enemy.EnemyType;
+import GameObjects.Actors.ObjectTypes.EnemyType;
 import org.apache.maven.surefire.shared.lang3.tuple.ImmutablePair;
 import org.apache.maven.surefire.shared.lang3.tuple.Pair;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class MapParser extends TextParser {
     private Map<String, String> defines;

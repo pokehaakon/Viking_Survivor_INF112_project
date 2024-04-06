@@ -1,14 +1,13 @@
 package InputProcessing.Coordinates;
 
 import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Actors.Enemy.SwarmType;
+import GameObjects.Actors.ObjectTypes.SwarmType;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static GameObjects.Actors.Stats.Stats.SWARM_SPEED_MULTIPLIER;
 import static InputProcessing.Coordinates.SpawnCoordinates.randomSpawnPoint;
 
 public abstract class SwarmCoordinates {

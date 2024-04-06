@@ -1,14 +1,13 @@
 package GameObjects.Actors.Enemy;
 
+import GameObjects.Actors.ObjectTypes.EnemyType;
 import GameObjects.Actors.Actor;
 import GameObjects.Actors.Stats.EnemyStats;
 import GameObjects.BodyFeatures;
 
 import static Tools.FilterTool.createFilter;
 
-import static InputProcessing.Coordinates.SpawnCoordinates.*;
-
-public class Enemy extends Actor{
+public class Enemy extends Actor<EnemyType> {
 
     public float knockBackResistance;
 
@@ -17,7 +16,7 @@ public class Enemy extends Actor{
 
 
     public Enemy(String spritePath, BodyFeatures bodyFeatures, float scale, EnemyStats stats) {
-        super(spritePath, bodyFeatures,scale);
+        super(spritePath, bodyFeatures, scale);
         this.stats = stats;
 
         // stats

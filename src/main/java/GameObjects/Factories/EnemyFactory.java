@@ -1,6 +1,7 @@
 package GameObjects.Factories;
 
 
+import GameObjects.Actors.ObjectTypes.EnemyType;
 import GameObjects.Actors.Stats.EnemyStats;
 import GameObjects.Actors.Stats.Stats;
 import Animations.ActorAnimation;
@@ -12,9 +13,7 @@ import TextureHandling.GdxTextureHandler;
 import TextureHandling.TextureHandler;
 import Tools.FilterTool;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import org.w3c.dom.Text;
 
 import java.util.*;
 
@@ -23,12 +22,12 @@ import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createSquareShape;
 
 
-public class EnemyFactory implements IFactory<Enemy>{
+public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
 
-    TextureHandler textureHandler;
+
 
     public EnemyFactory() {
-
+        super();
         // default
         textureHandler = new GdxTextureHandler();
     }
@@ -39,7 +38,7 @@ public class EnemyFactory implements IFactory<Enemy>{
      * @return an enemy object
      */
     @Override
-    public Enemy create(String type) {
+    public Enemy create(EnemyType type) {
 
         if(type == null) {
             throw new NullPointerException("Type cannot be null!");
@@ -53,8 +52,8 @@ public class EnemyFactory implements IFactory<Enemy>{
         EnemyStats stats;
 
 
-        switch (type.toUpperCase()) {
-            case "ENEMY1": {
+        switch (type) {
+            case ENEMY1: {
                 scale = AnimationConstants.ENEMY1_SCALE;
                 texture = textureHandler.loadTexture(PLAYER_IDLE_RIGHT);
                 shape = createSquareShape(
@@ -66,7 +65,7 @@ public class EnemyFactory implements IFactory<Enemy>{
                 stats = Stats.enemy1();
                 break;
             }
-            case "ENEMY2": {
+            case ENEMY2: {
                 scale = AnimationConstants.ENEMY2_SCALE;
 
                 texture = textureHandler.loadTexture(PLAYER_IDLE_RIGHT);
@@ -106,41 +105,11 @@ public class EnemyFactory implements IFactory<Enemy>{
         enemy.setScale(scale);
         enemy.setSprite(texture);
         enemy.setAnimation(animation);
-        enemy.setType(type.toUpperCase());
+        enemy.setType(type);
         enemy.setStats(stats);
 
         return enemy;
     }
-
-
-    /**
-     * Create multiple enemies
-     * @param n number of enemies to create
-     * @param type the desired enemy type
-     * @return a list of Enemy objects
-     */
-    @Override
-    public List<Enemy> create(int n, String type) {
-        if (n <= 0) {
-            throw new IllegalArgumentException("Number of enemies must be greater than zero");
-        }
-
-        List<Enemy> enemies = new ArrayList<>(n);
-        for (int i = 0; i < n; i++) {
-            Enemy newEnemy = create(type);
-            enemies.add(newEnemy);
-        }
-        return enemies;
-    }
-
-    @Override
-    public void setTextureHandler(TextureHandler newTextureHandler) {
-
-        textureHandler = newTextureHandler;
-    }
-
-
-
 
 }
 

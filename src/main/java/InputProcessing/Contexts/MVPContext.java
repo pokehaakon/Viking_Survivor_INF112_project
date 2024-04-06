@@ -2,8 +2,11 @@ package InputProcessing.Contexts;
 
 import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Actors.Enemy.SwarmType;
+import GameObjects.Actors.ObjectTypes.EnemyType;
+import GameObjects.Actors.ObjectTypes.PlayerType;
+import GameObjects.Actors.ObjectTypes.SwarmType;
 import GameObjects.Actors.ActorAction.PlayerActions;
+import GameObjects.Actors.ObjectTypes.TerrainType;
 import GameObjects.Factories.EnemyFactory;
 import GameObjects.Actors.Player.Player;
 import GameObjects.Factories.PlayerFactory;
@@ -29,6 +32,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.lang.annotation.ElementType;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -58,7 +62,7 @@ public class MVPContext extends Context {
     private RollingSum FrameTime;
     private RollingSum FPS;
 
-    private ObjectPool<Enemy> enemyPool;
+    private ObjectPool<Enemy, EnemyType> enemyPool;
 
     private RollingSum UPS;
     private long previousFrameStart = System.nanoTime();
@@ -85,7 +89,7 @@ public class MVPContext extends Context {
 
     private Box2DDebugRenderer debugRenderer;
 
-    private ObjectPool<Terrain> terrainPool;
+    private ObjectPool<Terrain, TerrainType> terrainPool;
 
 
 
@@ -268,8 +272,8 @@ public class MVPContext extends Context {
         frameCount++;
 
         if(TimeUtils.millis() - lastSpawnTime > 5000) {
-            spawnSwarm("ENEMY1",SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
-            spawnTerrain("TREE");
+            spawnSwarm(EnemyType.ENEMY1,SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
+            spawnTerrain(TerrainType.TREE);
         }
 
 
@@ -343,13 +347,13 @@ public class MVPContext extends Context {
 
 
         playerFactory = new PlayerFactory();
-        player = playerFactory.create("PLAYER1");
+        player = playerFactory.create(PlayerType.PLAYER1);
         player.addToWorld(world);
         player.setAction(PlayerActions.moveToInput(keyStates));
 
 
-        enemyPool = new ObjectPool<>(world, enemyFactory,Arrays.asList("ENEMY1", "ENEMY2"),200);
-        terrainPool = new ObjectPool<>(world, terrainFactory, List.of("TREE"), 50);
+        enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);
+        terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.TREE), 50);
 
         toBoKilled = new HashSet<>();
         ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
@@ -358,9 +362,9 @@ public class MVPContext extends Context {
         world.step(1/60f, 10, 10);
     }
 
-    private void spawnEnemies(String enemyType, int num, List<ActorAction> actions) {
+    private void spawnEnemies(EnemyType enemyType, int num, List<ActorAction> actions) {
 
-        for(Enemy enemy: enemyPool.get(enemyType,num)) {
+        for(Enemy enemy: enemyPool.get(enemyType, num)) {
             enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), SPAWN_RADIUS));
             for(ActorAction action : actions) {
                 enemy.setAction(action);
@@ -381,7 +385,7 @@ public class MVPContext extends Context {
         lastSpawnTime = TimeUtils.millis();
     }
 
-    private void spawnTerrain(String type) {
+    private void spawnTerrain(TerrainType type) {
         Terrain terrain = terrainPool.get(type);
         terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), SPAWN_RADIUS));
         drawableTerrain.add(terrain);
@@ -389,7 +393,7 @@ public class MVPContext extends Context {
     }
 
 
-    private void spawnSwarm(String enemyType, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
+    private void spawnSwarm(EnemyType enemyType, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
         List<Enemy> swarmMembers = enemyPool.get(enemyType, size);
         LinkedList<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType,swarmMembers,player.getBody().getPosition(),SPAWN_RADIUS,size, spacing,speedMultiplier);
         for(Enemy enemy : swarm) {

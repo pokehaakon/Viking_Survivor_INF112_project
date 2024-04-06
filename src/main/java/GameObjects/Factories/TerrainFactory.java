@@ -1,5 +1,6 @@
 package GameObjects.Factories;
 
+import GameObjects.Actors.ObjectTypes.TerrainType;
 import GameObjects.BodyFeatures;
 import GameObjects.Terrain.Terrain;
 import TextureHandling.GdxTextureHandler;
@@ -16,7 +17,7 @@ import static Tools.BodyTool.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createSquareShape;
 
-public class TerrainFactory implements IFactory<Terrain>{
+public class TerrainFactory implements IFactory<Terrain, TerrainType>{
 
     private TextureHandler textureHandler;
 
@@ -26,7 +27,7 @@ public class TerrainFactory implements IFactory<Terrain>{
         textureHandler = new GdxTextureHandler();
     }
     @Override
-    public Terrain create(String type) {
+    public Terrain create(TerrainType type) {
         if(type == null) {
             throw new NullPointerException("Type cannot be null!");
         }
@@ -38,8 +39,8 @@ public class TerrainFactory implements IFactory<Terrain>{
         BodyFeatures bodyFeatures;
 
 
-        switch (type.toUpperCase()) {
-            case "TREE": {
+        switch (type) {
+            case TREE: {
                 texture = textureHandler.loadTexture("img_2.png");
                 scale = 0.6f;
                 shape = createSquareShape(
@@ -55,7 +56,7 @@ public class TerrainFactory implements IFactory<Terrain>{
         Filter filter = createFilter(
                 FilterTool.Category.WALL,
                 new FilterTool.Category[]{
-                        FilterTool.Category.WALL,
+                        //FilterTool.Category.WALL,
                         FilterTool.Category.ENEMY,
                         FilterTool.Category.PLAYER
                 }
@@ -73,14 +74,14 @@ public class TerrainFactory implements IFactory<Terrain>{
         terrain = new Terrain();
         terrain.setScale(scale);
         terrain.setBodyFeatures(bodyFeatures);
-        terrain.setType(type.toUpperCase());
+        terrain.setType(type);
         terrain.setSprite(texture);
 
         return terrain;
     }
 
     @Override
-    public List<Terrain> create(int n, String type) {
+    public List<Terrain> create(int n, TerrainType type) {
         if (n <= 0) {
             throw new IllegalArgumentException("Number of enemies must be greater than zero");
         }

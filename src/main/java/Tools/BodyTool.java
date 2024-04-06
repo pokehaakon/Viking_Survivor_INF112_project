@@ -130,7 +130,7 @@ public abstract class BodyTool {
         Filter filter = createFilter(
                 FilterTool.Category.WALL,
                 new FilterTool.Category[]{
-                        FilterTool.Category.WALL,
+                        //FilterTool.Category.WALL,
                         FilterTool.Category.ENEMY,
                         FilterTool.Category.PLAYER
                 }

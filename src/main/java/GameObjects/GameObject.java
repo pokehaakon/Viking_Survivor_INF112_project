@@ -14,7 +14,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class GameObject implements IGameObject {
+public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     protected Body body;
 
@@ -24,7 +24,7 @@ public abstract class GameObject implements IGameObject {
 
     protected Texture currentSprite;
 
-    protected String type;
+    protected E type;
 
     protected BodyFeatures bodyFeatures;
 
@@ -76,12 +76,12 @@ public abstract class GameObject implements IGameObject {
     }
 
     @Override
-    public void setType(String newType) {
+    public void setType(E newType) {
         type = newType;
     }
 
     @Override
-    public String getType() {
+    public E getType() {
         return type;
     }
 

@@ -1,5 +1,6 @@
 package GameObjects.Factories;
 
+import GameObjects.Actors.ObjectTypes.PlayerType;
 import GameObjects.Actors.Player.Player;
 import GameObjects.Actors.Stats.PlayerStats;
 import GameObjects.Actors.Stats.Stats;
@@ -20,13 +21,13 @@ import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createSquareShape;
 
-public class PlayerFactory implements IFactory<Player>{
+public class PlayerFactory implements IFactory<Player, PlayerType>{
     private TextureHandler textureHandler;
     public PlayerFactory() {
         textureHandler = new GdxTextureHandler();
     }
     @Override
-    public Player create(String type) {
+    public Player create(PlayerType type) {
         if(type == null) {
             throw new NullPointerException("Type cannot be null!");
         }
@@ -40,8 +41,8 @@ public class PlayerFactory implements IFactory<Player>{
         PlayerStats stats;
         BodyFeatures bodyFeatures;
 
-        switch (type.toUpperCase()) {
-            case "PLAYER1": {
+        switch (type) {
+            case PLAYER1: {
                 scale = AnimationConstants.PLAYER_SCALE;
                 spawnGIF = AnimationConstants.PLAYER_IDLE_RIGHT;
                 texture = textureHandler.loadTexture(spawnGIF);
@@ -81,13 +82,13 @@ public class PlayerFactory implements IFactory<Player>{
         player.setBodyFeatures(bodyFeatures);
         player.setSprite(texture);
         player.setAnimation(animation);
-        player.setType(type.toUpperCase());
+        player.setType(type);
 
         return player;
     }
 
     @Override
-    public List<Player> create(int n, String type) {
+    public List<Player> create(int n, PlayerType type) {
         return null;
     }
 
