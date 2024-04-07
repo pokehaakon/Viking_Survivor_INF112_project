@@ -3,6 +3,7 @@ package GameObjects.Actors.Player;
 import GameObjects.Actors.Actor;
 import GameObjects.Actors.Stats.PlayerStats;
 import GameObjects.BodyFeatures;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
@@ -13,8 +14,8 @@ public class Player extends Actor {
     private PlayerStats stats;
 
 
-    public Player(String spritePath, BodyFeatures bodyFeatures,float scale, PlayerStats stats) {
-        super(spritePath,bodyFeatures, scale);
+    public Player(String type,Texture texture, BodyFeatures bodyFeatures, float scale, PlayerStats stats) {
+        super(type,texture,bodyFeatures, scale);
         this.stats = stats;
 
         HP = stats.HP();

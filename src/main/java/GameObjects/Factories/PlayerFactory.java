@@ -18,6 +18,7 @@ import java.util.List;
 
 import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;
+import static Tools.ShapeTools.createCircleShape;
 import static Tools.ShapeTools.createSquareShape;
 
 public class PlayerFactory implements IFactory<Player>{
@@ -45,11 +46,7 @@ public class PlayerFactory implements IFactory<Player>{
                 scale = AnimationConstants.PLAYER_SCALE;
                 spawnGIF = AnimationConstants.PLAYER_IDLE_RIGHT;
                 texture = textureHandler.loadTexture(spawnGIF);
-                shape = createSquareShape(
-                        (float)(texture.getWidth())*scale,
-                        (float) (texture.getHeight()*scale)
-
-                );
+                shape = createCircleShape(scale*texture.getWidth()/2);
                 animation = ActorAnimations.playerMoveAnimation();
 
                 stats = Stats.player();
@@ -75,14 +72,8 @@ public class PlayerFactory implements IFactory<Player>{
                 BodyDef.BodyType.DynamicBody);
 
 
-        player = new Player();
-        player.setStats(stats);
-        player.setScale(scale);
-        player.setBodyFeatures(bodyFeatures);
-        player.setSprite(texture);
+        player = new Player(type,texture,bodyFeatures,scale,stats);
         player.setAnimation(animation);
-        player.setType(type.toUpperCase());
-
         return player;
     }
 

@@ -3,12 +3,13 @@ package GameObjects.Terrain;
 import GameObjects.Actors.Actor;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
+import com.badlogic.gdx.graphics.Texture;
 
 
 public class Terrain extends GameObject {
 
-    public Terrain(String spritePath, BodyFeatures bodyFeatures, float scale) {
-        super(spritePath, bodyFeatures,scale);
+    public Terrain(String type,Texture sprite, BodyFeatures bodyFeatures, float scale) {
+        super(type,sprite, bodyFeatures,scale);
     }
 
     public Terrain() {

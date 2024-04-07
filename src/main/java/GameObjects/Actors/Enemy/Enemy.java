@@ -3,6 +3,7 @@ package GameObjects.Actors.Enemy;
 import GameObjects.Actors.Actor;
 import GameObjects.Actors.Stats.EnemyStats;
 import GameObjects.BodyFeatures;
+import com.badlogic.gdx.graphics.Texture;
 
 import static Tools.FilterTool.createFilter;
 
@@ -16,8 +17,8 @@ public class Enemy extends Actor{
 
 
 
-    public Enemy(String spritePath, BodyFeatures bodyFeatures, float scale, EnemyStats stats) {
-        super(spritePath, bodyFeatures,scale);
+    public Enemy(String type,Texture texture, BodyFeatures bodyFeatures, float scale, EnemyStats stats) {
+        super(type,texture,bodyFeatures,scale);
         this.stats = stats;
 
         // stats

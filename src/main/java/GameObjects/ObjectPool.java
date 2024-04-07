@@ -83,7 +83,7 @@ public class ObjectPool<T extends GameObject> {
     }
 
     /**
-     * Polls GameObjects from the enemy pool and activate their bodies
+     * Polls GameObjects from the object pool and activate their bodies
      * @param type desired object type
      * @param num number of objects to obtain
      * @return a list of GameObjects

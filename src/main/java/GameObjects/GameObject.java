@@ -14,7 +14,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class GameObject implements IGameObject {
+public class GameObject implements IGameObject {
 
     protected Body body;
 
@@ -31,14 +31,17 @@ public abstract class GameObject implements IGameObject {
 
 
 
-    public GameObject(String spritePath, BodyFeatures bodyFeatures, float scale) {
-        currentSprite = new Texture(Gdx.files.internal(spritePath));
+    public GameObject(String type,Texture sprite, BodyFeatures bodyFeatures, float scale) {
+        currentSprite = sprite;
         this.bodyFeatures = bodyFeatures;
         this.scale = scale;
+        this.type = type;
     }
 
     public GameObject() {
     }
+
+
 
     @Override
     public void destroy() {
@@ -103,6 +106,7 @@ public abstract class GameObject implements IGameObject {
                 bodyFeatures.restitution(),
                 bodyFeatures.isSensor(),
                 bodyFeatures.type());
+        body.setUserData(this);
     }
 
    @Override

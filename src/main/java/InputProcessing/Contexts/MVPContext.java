@@ -268,8 +268,9 @@ public class MVPContext extends Context {
         frameCount++;
 
         if(TimeUtils.millis() - lastSpawnTime > 5000) {
-            spawnSwarm("ENEMY1",SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
+            //spawnSwarm("ENEMY1",SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
             spawnTerrain("TREE");
+            spawnRandomEnemies(5,Arrays.asList(chasePlayer(player),destroyIfDefeated(player)));
         }
 
 
@@ -352,7 +353,7 @@ public class MVPContext extends Context {
         terrainPool = new ObjectPool<>(world, terrainFactory, List.of("TREE"), 50);
 
         toBoKilled = new HashSet<>();
-        ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
+        ContactListener contactListener = new EnemyContactListener();
         world.setContactListener(contactListener);
 
         world.step(1/60f, 10, 10);

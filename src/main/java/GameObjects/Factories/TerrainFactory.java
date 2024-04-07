@@ -70,11 +70,7 @@ public class TerrainFactory implements IFactory<Terrain>{
                 false,
                 BodyDef.BodyType.StaticBody);
 
-        terrain = new Terrain();
-        terrain.setScale(scale);
-        terrain.setBodyFeatures(bodyFeatures);
-        terrain.setType(type.toUpperCase());
-        terrain.setSprite(texture);
+        terrain = new Terrain(type, texture, bodyFeatures,scale);
 
         return terrain;
     }

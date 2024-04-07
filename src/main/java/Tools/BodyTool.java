@@ -1,6 +1,7 @@
 package Tools;
 
 import GameObjects.BodyFeatures;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -19,7 +20,7 @@ public abstract class BodyTool {
         fixture.setFilterData(filter);
         return body;
     }
-    public static Body createBody(World world, Vector2 pos, Shape shape, Filter filter, float density, float friction, float restitution, boolean isSensor, BodyDef.BodyType type) {
+    public static Body createBody( World world, Vector2 pos, Shape shape, Filter filter, float density, float friction, float restitution, boolean isSensor, BodyDef.BodyType type) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = type;
         bodyDef.position.set(pos);
@@ -31,6 +32,7 @@ public abstract class BodyTool {
         fixtureDef.friction = friction;
         fixtureDef.restitution = restitution;
         fixtureDef.isSensor = isSensor;
+
 
         return createBody(world, pos, filter, bodyDef, fixtureDef);
     }

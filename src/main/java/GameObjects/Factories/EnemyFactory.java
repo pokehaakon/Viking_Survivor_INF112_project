@@ -20,6 +20,7 @@ import java.util.*;
 
 import static Animations.AnimationConstants.PLAYER_IDLE_RIGHT;
 import static Tools.FilterTool.createFilter;
+import static Tools.ShapeTools.createCircleShape;
 import static Tools.ShapeTools.createSquareShape;
 
 
@@ -57,11 +58,7 @@ public class EnemyFactory implements IFactory<Enemy>{
             case "ENEMY1": {
                 scale = AnimationConstants.ENEMY1_SCALE;
                 texture = textureHandler.loadTexture(PLAYER_IDLE_RIGHT);
-                shape = createSquareShape(
-                        (float)(texture.getWidth())*scale,
-                        (float) (texture.getHeight()*scale)
-
-                );
+                shape = createCircleShape(scale*texture.getWidth()/2);
                 animation = ActorAnimations.enemyMoveAnimation();
                 stats = Stats.enemy1();
                 break;
@@ -71,9 +68,7 @@ public class EnemyFactory implements IFactory<Enemy>{
 
                 texture = textureHandler.loadTexture(PLAYER_IDLE_RIGHT);
 
-                shape = createSquareShape(
-                        texture.getWidth()*scale,
-                        texture.getHeight()*scale);
+                shape = createCircleShape(scale*texture.getWidth()/2);
 
                 animation = ActorAnimations.enemyMoveAnimation();
                 stats = Stats.enemy2();
@@ -101,14 +96,8 @@ public class EnemyFactory implements IFactory<Enemy>{
                 BodyDef.BodyType.DynamicBody);
 
 
-        enemy = new Enemy();
-        enemy.setBodyFeatures(bodyFeatures);
-        enemy.setScale(scale);
-        enemy.setSprite(texture);
+        enemy = new Enemy(type,texture,bodyFeatures,scale,stats);
         enemy.setAnimation(animation);
-        enemy.setType(type.toUpperCase());
-        enemy.setStats(stats);
-
         return enemy;
     }
 

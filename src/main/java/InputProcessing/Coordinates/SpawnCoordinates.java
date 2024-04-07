@@ -10,9 +10,6 @@ public abstract class SpawnCoordinates extends Vector2 {
 
 
 
-    public SpawnCoordinates(float x, float y) {
-        super(x,y);
-    }
 
 
     /**
