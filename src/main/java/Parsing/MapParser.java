@@ -7,6 +7,9 @@ import org.apache.maven.surefire.shared.lang3.tuple.Pair;
 
 import java.util.*;
 
+import static Tools.EnumTools.enumToStrings;
+
+
 public class MapParser extends TextParser {
     private Map<String, String> defines;
     private Map<Long, List<SpawnFrame>> timeFrames;
@@ -68,7 +71,7 @@ public class MapParser extends TextParser {
 
             List<SpawnFrame> body = parseFrameBody();
             return Optional.of(
-                    (Pair<Long, List<SpawnFrame>>) new ImmutablePair<Long, List<SpawnFrame>>((long)frame, body)
+                    (Pair<Long, List<SpawnFrame>>) new ImmutablePair<>((long)frame, body)
             );
         })).get();
         Map<Long, List<SpawnFrame>> map = new HashMap<>();
@@ -87,7 +90,7 @@ public class MapParser extends TextParser {
 
             List<EnemyType> spawnable = some(() -> {
                 if (undo(() -> parseLiteral(';')).isPresent()) return Optional.empty();
-                Optional<String> opt = parseStringLiteral(EnemyType.stringValues());
+                Optional<String> opt = parseStringLiteral(enumToStrings(EnemyType.class));
                 if(opt.isEmpty())
                     throw new ParserException(this, "Could not find the EnemyType", this.stream);
                 space();
@@ -97,7 +100,7 @@ public class MapParser extends TextParser {
             parseLiteral(';');
 
             space();
-            SpawnType spawnType = parseStringLiteral(SpawnType.stringValues())
+            SpawnType spawnType = parseStringLiteral(enumToStrings(SpawnType.class))
                     .map(SpawnType::valueOf)
                     .orElseThrow(() -> new ParserException(this, "Could not find the SpawnType", this.stream));
             space();
