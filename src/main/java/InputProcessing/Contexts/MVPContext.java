@@ -1,41 +1,43 @@
 package InputProcessing.Contexts;
 
-import Actors.GifDecoder;
-import InputProcessing.Coordinates.Coordinates;
-import Actors.Enemy.*;
-import Actors.Player.Player;
-
-import Actors.Stats.Stats;
+import GameObjects.Actors.ActorAction.ActorAction;
+import GameObjects.Actors.Enemy.Enemy;
+import GameObjects.Actors.Enemy.SwarmType;
+import GameObjects.Actors.ActorAction.PlayerActions;
+import GameObjects.Factories.EnemyFactory;
+import GameObjects.Actors.Player.Player;
+import GameObjects.Factories.PlayerFactory;
+import GameObjects.Factories.TerrainFactory;
+import GameObjects.ObjectPool;
+import GameObjects.Terrain.Terrain;
 import InputProcessing.ContextualInputProcessor;
+import InputProcessing.Coordinates.SpawnCoordinates;
+import InputProcessing.Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
 import Simulation.EnemyContactListener;
 import Simulation.SimulationThread;
-import Tools.FilterTool;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static Tools.BodyTool.createBody;
+import static GameObjects.Actors.ActorAction.EnemyActions.*;
+import static GameObjects.Actors.Stats.Stats.SWARM_SPEED_MULTIPLIER;
 import static Tools.FilterTool.createFilter;
-import static Tools.ShapeTools.*;
+import static Tools.ShapeTools.getBottomLeftCorrection;
+import static VikingSurvivor.app.Main.SCREEN_WIDTH;
 
 public class MVPContext extends Context {
 
@@ -43,18 +45,20 @@ public class MVPContext extends Context {
     private final SpriteBatch batch;
     private final Camera camera;
 
+    public static final double SPAWN_RADIUS = (double)0.7*SCREEN_WIDTH;
+
     private World world;
 
     private Player player;
 
-    private ArrayList<Enemy> enemies;
+    private ArrayList<Enemy> spawnedEnemies;
     private final BitmapFont font;
 
     private RollingSum UpdateTime;
     private RollingSum FrameTime;
     private RollingSum FPS;
 
-
+    private ObjectPool<Enemy> enemyPool;
 
     private RollingSum UPS;
     private long previousFrameStart = System.nanoTime();
@@ -66,14 +70,36 @@ public class MVPContext extends Context {
 
     private final SimulationThread simThread;
     private  EnemyFactory enemyFactory;
+
+    private TerrainFactory terrainFactory;
+
+    private List<Terrain> spawnedTerrain;
+
+    private List<Terrain> drawableTerrain;
+    private List<Enemy> drawableEnemies;
+
+    private PlayerFactory playerFactory;
     private float zoomLevel = 1f;
     private long frameCount = 0;
     private static boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
 
     private Box2DDebugRenderer debugRenderer;
 
+    private ObjectPool<Terrain> terrainPool;
 
+
+
+
+    float elapsedTime;
     private Set<Body> toBoKilled;
+
+    private long lastSpawnTime;
+
+    private long lastSwarmSpawnTime;
+
+
+
+
 
 
     public MVPContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
@@ -88,21 +114,13 @@ public class MVPContext extends Context {
         font.setColor(Color.RED);
         renderLock = new ReentrantLock(true);
 
+
         //create and start simulation
         createWorld();
-
-        // spawns start enemies
-        spawnRandomEnemies(10);
-        spawnSwarm("Enemy1", SwarmType.LINE, 10, 60);
-        spawnSwarm("Enemy2", SwarmType.SQUARE, 10,60);
-
-        toBoKilled = new HashSet<>();
-        ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
-        world.setContactListener(contactListener);
         simThread = new SimulationThread(this);
-
         simThread.start();
 
+        //spawnRandomEnemies(1, EnemyActions.chasePlayer(player));
     }
     private void setupDebug() {
         UpdateTime = new RollingSum(60*3);
@@ -118,7 +136,6 @@ public class MVPContext extends Context {
         return new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
-
                 return switch (keycode) {
                     case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.setInputKey(keycode);
                     case Input.Keys.ESCAPE -> {keyStates.setInputKey(keycode); System.exit(0); yield true;}
@@ -129,6 +146,7 @@ public class MVPContext extends Context {
 
             @Override
             public boolean keyUp(int keycode) {
+
                 return switch (keycode) {
                     case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.unsetInputKey(keycode);
                     default -> false;
@@ -200,13 +218,15 @@ public class MVPContext extends Context {
     public void render(float delta) {
 
         FPS.add(System.nanoTime() - previousFrameStart);
+
         previousFrameStart = System.nanoTime();
 
         renderLock.lock();
         long renderStartTime = System.nanoTime();
-        ScreenUtils.clear(Color.WHITE);
+        ScreenUtils.clear(Color.GREEN);
 
         debugRenderer.render(world, camera.combined);
+
 
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
@@ -222,12 +242,23 @@ public class MVPContext extends Context {
         batch.begin();
 
         // draw enemies
-        for (Enemy e : enemies) {
-            e.draw(batch, Gdx.graphics.getDeltaTime());
+
+        elapsedTime += Gdx.graphics.getDeltaTime();
+
+        for (Enemy enemy : drawableEnemies) {
+            enemy.doAnimation();
+            enemy.draw(batch, elapsedTime);
+            enemy.doAction();
+        }
+        for(Terrain terrain : drawableTerrain) {
+            terrain.draw(batch);
         }
 
-        //draw player
-        player.draw(batch, Gdx.graphics.getDeltaTime());
+        player.doAnimation();
+        player.draw(batch,elapsedTime);
+        player.doAction();
+
+
 
         batch.end();
 
@@ -235,6 +266,36 @@ public class MVPContext extends Context {
         renderLock.unlock();
         FrameTime.add(System.nanoTime() - renderStartTime);
         frameCount++;
+
+        if(TimeUtils.millis() - lastSpawnTime > 5000) {
+            //spawnSwarm("ENEMY1",SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
+            spawnTerrain("TREE");
+            spawnRandomEnemies(5,Arrays.asList(chasePlayer(player),destroyIfDefeated(player)));
+        }
+
+
+
+        removeDestroyedEnemies();
+
+        world.step(1/(float) 60, 10, 10);
+
+    }
+
+    /**
+     * Despawns destroyed enemies by returning them to enemy pool and removing them from the spawned enemy list
+     */
+    public void removeDestroyedEnemies() {
+        for(Iterator<Enemy> iter = drawableEnemies.iterator(); iter.hasNext();) {
+            Enemy enemy = iter.next();
+            if(enemy.isDestroyed()) {
+                enemy.resetActions();
+                enemyPool.returnToPool(enemy);
+                iter.remove();
+                // removes from list of active enemies
+            }
+
+                //System.out.println("destroy!");
+        }
     }
 
 
@@ -274,127 +335,90 @@ public class MVPContext extends Context {
         debugRenderer = new Box2DDebugRenderer();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
-        enemyFactory = new EnemyFactory(world);
-        initializePlayer();
-        enemies = new ArrayList<>();
+
+        enemyFactory = new EnemyFactory();
+        drawableEnemies = new ArrayList<>();
+
+        terrainFactory = new TerrainFactory();
+        drawableTerrain = new ArrayList<>();
+
+
+        playerFactory = new PlayerFactory();
+        player = playerFactory.create("PLAYER1");
+        player.addToWorld(world);
+        player.setAction(PlayerActions.moveToInput(keyStates));
+
+
+        enemyPool = new ObjectPool<>(world, enemyFactory,Arrays.asList("ENEMY1", "ENEMY2"),200);
+        terrainPool = new ObjectPool<>(world, terrainFactory, List.of("TREE"), 50);
+
+        toBoKilled = new HashSet<>();
+        ContactListener contactListener = new EnemyContactListener();
+        world.setContactListener(contactListener);
 
         world.step(1/60f, 10, 10);
     }
 
-    private void spawnEnemies(String enemyType, int num) {
-        // random start coordinates
-        List<Vector2> startPoints = Coordinates.randomPoints(num, player.getBody().getPosition());
+    private void spawnEnemies(String enemyType, int num, List<ActorAction> actions) {
 
-        enemies.addAll(enemyFactory.createEnemies(num, enemyType, startPoints));
-    }
-
-    private void spawnRandomEnemies(int num) {
-        // random start coordinates
-        List<Vector2> startPoints = Coordinates.randomPoints(num, player.getBody().getPosition());
-
-        enemies.addAll(enemyFactory.createRandomEnemies(num, startPoints));
-    }
-
-    private void spawnSwarm(String enemyType, SwarmType swarmType, int size, int spacing) {
-        List<Vector2> startPoints;
-        Vector2 randomCenter = Coordinates.randomPoint(player.getBody().getPosition());
-
-        // swarm velocity vector is the player's initial position
-        Vector2 target = player.getBody().getPosition();
-
-        if(swarmType == SwarmType.LINE) {
-            startPoints = Coordinates.lineSwarm(size, spacing,randomCenter,target);
-        }
-        else {
-            startPoints = Coordinates.squareSwarm(size, randomCenter,spacing);
-        }
-
-        enemies.addAll(enemyFactory.createSwarm(size, enemyType, swarmType, startPoints));
-
-    }
-
-    private void initializePlayer() {
-        // player sprite
-        Animation<TextureRegion> playerSprite = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal(Sprites.PLAYER_PNG).read());
-
-        // player hitbox
-        PolygonShape squarePlayer = createSquareShape(
-                playerSprite.getKeyFrame(0).getRegionWidth()*Sprites.PLAYER_SCALE,
-                playerSprite.getKeyFrame(0).getRegionHeight()*Sprites.PLAYER_SCALE
-        );
-
-        // player body
-        Body playerBody = createBody(
-                world,
-                new Vector2(),
-                squarePlayer,
-                createFilter(
-                        FilterTool.Category.PLAYER,
-                        new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL}
-                ),
-                1f,
-                0,
-                0
-        );
-
-        player = new Player(playerBody, playerSprite, Sprites.PLAYER_SCALE, Stats.player());
-
-
-        squarePlayer.dispose();
-    }
-
-
-    private void movePlayer() {
-        // moves player according to input
-        player.resetVelocity();
-        if (keyStates.getState(KeyStates.GameKey.UP)) {
-            player.setVelocityVector(0,1);
-        }
-        if (keyStates.getState(KeyStates.GameKey.DOWN)) {
-            player.setVelocityVector(0,-1);
-        }
-        if (keyStates.getState(KeyStates.GameKey.LEFT)) {
-            player.setVelocityVector(-1,0);
-        }
-        if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
-            player.setVelocityVector(1,0);
-        }
-        player.move();
-    }
-    private void updatePlayer() {
-        movePlayer();
-    }
-
-    private void updateEnemies() {
-        for(Enemy enemy:enemies) {
-            if(enemy.getEnemyState() ==  EnemyState.SOLO) {
-                enemy.chase(player);
+        for(Enemy enemy: enemyPool.get(enemyType,num)) {
+            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), SPAWN_RADIUS));
+            for(ActorAction action : actions) {
+                enemy.setAction(action);
             }
-            // if swarm
-            else {
-                enemy.swarmStrike(player);
-            }
+            drawableEnemies.add(enemy);
+        }
+    }
 
+    private void spawnRandomEnemies(int num, List<ActorAction> actions) {
+
+        for(Enemy enemy : enemyPool.getRandom(num)) {
+            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), SPAWN_RADIUS));
+            for(ActorAction action : actions) {
+                enemy.setAction(action);
+            }
+            drawableEnemies.add(enemy);
+        }
+        lastSpawnTime = TimeUtils.millis();
+    }
+
+    private void spawnTerrain(String type) {
+        Terrain terrain = terrainPool.get(type);
+        terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), SPAWN_RADIUS));
+        drawableTerrain.add(terrain);
+        lastSwarmSpawnTime = TimeUtils.millis();
+    }
+
+
+    private void spawnSwarm(String enemyType, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
+        List<Enemy> swarmMembers = enemyPool.get(enemyType, size);
+        LinkedList<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType,swarmMembers,player.getBody().getPosition(),SPAWN_RADIUS,size, spacing,speedMultiplier);
+        for(Enemy enemy : swarm) {
+            enemy.setAction(moveInStraightLine());
+            enemy.setAction(destroyIfDefeated(player));
+            drawableEnemies.add(enemy);
+        }
+
+        lastSpawnTime = TimeUtils.millis();
+
+    }
+
+
+
+
+
+    public void updateActorActions() {
+        player.doAction();
+        for(Enemy enemy: drawableEnemies) {
+            enemy.doAction();
         }
 
     }
-
-    /**
-     * updates the in-game actors. this could be attack, movement etc
-     */
-    public void updateActors() {
-        updatePlayer();
-        updateEnemies();
-
-    }
-
 
     public Lock getRenderLock() {
         return renderLock;
     }
-    public ArrayList<Enemy> getEnemies() {
-        return enemies;
-    }
+
 
     public Player getPlayer() {
         return player;
@@ -417,6 +441,16 @@ public class MVPContext extends Context {
     public Set<Body> getToBoKilled() {
         return toBoKilled;
     }
+
+
+
+
+
+
+
+
+
+
 
 
 

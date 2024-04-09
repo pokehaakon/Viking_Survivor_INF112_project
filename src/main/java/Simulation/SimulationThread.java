@@ -22,6 +22,7 @@ public class SimulationThread extends Thread {
     public final int SET_UPS = 60;
 
     private final MVPContext context;
+    long lastSpawnTime;
 
     public SimulationThread(MVPContext context) {
         this.context = context;
@@ -79,9 +80,10 @@ public class SimulationThread extends Thread {
             stopSim();
         }
 
-        context.updateActors();
+        //context.updateActorActions();
+        //context.removeDestroyedEnemies();
+        //world.step(1/(float) SET_UPS, 10, 10);
 
-        world.step(1/(float) SET_UPS, 10, 10);
 
         for (Body b : toBeKilled) {
             world.destroyBody(b);
@@ -105,6 +107,9 @@ public class SimulationThread extends Thread {
     public long getFrameNumber() {
         return frame;
     }
+
+
+
 }
 
 

@@ -72,6 +72,14 @@
 			<artifactId>gdx-backend-lwjgl3</artifactId>
 			<version>${libgdx.version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>5.11.0</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>com.badlogicgames.gdx</groupId>
 			<artifactId>gdx-backend-headless</artifactId>
@@ -99,6 +107,7 @@
             <artifactId>guava</artifactId>
             <version>16.0.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.maven.surefire</groupId>
             <artifactId>surefire-shared-utils</artifactId>
