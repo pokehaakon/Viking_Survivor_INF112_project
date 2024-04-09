@@ -357,8 +357,8 @@ public class MVPContext extends Context {
         terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.TREE), 50);
 
         toBoKilled = new HashSet<>();
-        ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
-        world.setContactListener(contactListener);
+        //ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
+        //world.setContactListener(contactListener);
 
         //world.step(1/60f, 10, 10);
     }

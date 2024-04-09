@@ -1,10 +1,21 @@
 package GameObjects.Weapon;
 
-import GameObjects.BodyFeatures;
-import GameObjects.GameObject;
-import com.badlogic.gdx.Game;
+import GameObjects.Actors.ObjectTypes.WeaponType;
+import GameObjects.Actors.Player.Player;
 
-public abstract class Weapon extends GameObject {
+import java.util.Arrays;
+import java.util.List;
 
-    public Weapon(BodyFeatures bodyFeatures, float scale, )
+public abstract class Weapon implements IWeapon {
+    Player player;
+    List<WeaponBody> projectiles;
+    public Weapon(Player player, List<WeaponBody> projectiles) {
+        this.player = player;
+        this.projectiles = projectiles;
+    }
+
+    protected void addToProjectileList(WeaponBody... bodies) {
+        projectiles.addAll(Arrays.stream(bodies).toList());
+    }
+
 }
