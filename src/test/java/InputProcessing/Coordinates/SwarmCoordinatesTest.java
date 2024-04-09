@@ -1,4 +1,4 @@
-package Actors;
+package InputProcessing.Coordinates;
 
 import com.badlogic.gdx.math.Vector2;
 import org.junit.jupiter.api.Test;
@@ -11,22 +11,33 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CoordinatesTest {
-
-
-
+class SwarmCoordinatesTest {
 
     @Test
-    void random() {
+    void squareSwarm() {
     }
 
+    @Test
+    void lineSwarm() {
+    }
+
+    @Test
+    void swarmDirection() {
+    }
+
+    @Test
+    void getSwarmCoordinates() {
+    }
 
     @Test
     void squareSwarmSize() {
         for(int i = 0; i < 10;i++) {
-            int randomNumMembers = new Random(123).nextInt(30);
-            int sideLength = (int) (Math.ceil(Math.sqrt(randomNumMembers)));
-            assertEquals(Math.pow(sideLength, 2), Coordinates.squareSwarm(randomNumMembers, new Vector2(0,0),1).size());
+            int randomSize = new Random(123).nextInt(30);
+            int sideLength = (int) (Math.ceil(Math.sqrt(randomSize)));
+            List<Vector2> swarm = SwarmCoordinates.squareSwarm(randomSize, new Vector2(0,0),1);
+
+
+            assertEquals(Math.pow(sideLength, 2), swarm.size());
         }
     }
 
@@ -34,7 +45,7 @@ public class CoordinatesTest {
     @MethodSource("squareSwarmData")
     void squareSwarm(int size, List<Vector2> expected) {
         //when the root of squareMembers is rational
-        List<Vector2> swarm = Coordinates.squareSwarm(size, new Vector2(0, 0),1);
+        List<Vector2> swarm = SwarmCoordinates.squareSwarm(size, new Vector2(0, 0),1);
 
         for (int i = 0; i < swarm.size(); i++) {
             assertEquals(expected.get(i), swarm.get(i));
@@ -44,7 +55,7 @@ public class CoordinatesTest {
     @MethodSource("notSquareSwarmData")
     void notSquareSwarm(int size, List<Vector2> expected, int spacing) {
         //when the root of swarm members is irrational
-        List<Vector2> swarm = Coordinates.squareSwarm(size, new Vector2(0, 0),1);
+        List<Vector2> swarm = SwarmCoordinates.squareSwarm(size, new Vector2(0, 0),1);
 
         for (int i = 0; i < swarm.size(); i++) {
             assertEquals(expected.get(i), swarm.get(i));
@@ -54,17 +65,13 @@ public class CoordinatesTest {
     @ParameterizedTest
     @MethodSource("differSpacing")
     void differSpacing(int size, List<Vector2> expected, int spacing) {
-        List<Vector2> swarm = Coordinates.squareSwarm(size, new Vector2(0, 0),spacing);
+        List<Vector2> swarm = SwarmCoordinates.squareSwarm(size, new Vector2(0, 0),spacing);
         for (int i = 0; i < swarm.size(); i++) {
             assertEquals(expected.get(i), swarm.get(i));
         }
     }
 
-    @Test
-    void lineSwarm() {
-        //TODO
 
-    }
 
 
     private static List<Object[]> squareSwarmData() {
@@ -136,16 +143,13 @@ public class CoordinatesTest {
 
                 ), 3},
                 //spacing 5
-            new Object[]{3, Arrays.asList(
-                    new Vector2(0, 0),
-                    new Vector2(5, 0),
-                    new Vector2(0, 5),
-                    new Vector2(5, 5)
+                new Object[]{3, Arrays.asList(
+                        new Vector2(0, 0),
+                        new Vector2(5, 0),
+                        new Vector2(0, 5),
+                        new Vector2(5, 5)
 
-            ), 5}
+                ), 5}
         );
     }
-
-
-
 }

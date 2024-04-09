@@ -55,6 +55,8 @@ public class KeyStates {
         for (GameKey gk : GameKey.values()) {
             stateOfKey.put(gk, false);
         }
+
+
     }
 
     /**
@@ -99,6 +101,17 @@ public class KeyStates {
         return updateInputKey(keyCode, false);
     }
 
+    public boolean noKeyIsPressed() {
+        boolean noKeyIsPressed = true;
+        for(GameKey gk:KeyStates.GameKey.values()) {
+            if(stateOfKey.get(gk)) {
+                noKeyIsPressed = false;
+                break;
+            }
+
+        }
+        return noKeyIsPressed;
+    }
 
     public enum GameKey {
         UP,RIGHT,DOWN,LEFT,QUIT
