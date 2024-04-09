@@ -276,6 +276,7 @@ public class MVPContext extends Context {
 
 
         removeDestroyedEnemies();
+        System.out.println(player.getDirectionState());
 
         world.step(1/(float) 60, 10, 10);
 

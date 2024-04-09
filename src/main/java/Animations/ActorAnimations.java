@@ -23,14 +23,14 @@ public abstract class ActorAnimations {
             if (player.isIdle()) {
                 // checks the direction state
                 newState = (currentDirection == DirectionState.RIGHT) ? AnimationStates.IDLE_RIGHT : AnimationStates.IDLE_LEFT;
-                gifPath = (currentDirection == DirectionState.RIGHT) ? PLAYER_IDLE_RIGHT : PLAYER_IDLE_LEFT;
+                gifPath = (currentDirection == DirectionState.RIGHT) ? PLAYER_IDLE_RIGHT : PLAYER_IDLE_RIGHT;
 
             }
 
             // if player is moving
             else {
                 newState = (currentDirection == DirectionState.RIGHT) ? AnimationStates.MOVE_RIGHT : AnimationStates.MOVE_LEFT;
-                gifPath = (currentDirection == DirectionState.RIGHT) ? PLAYER_RIGHT : PLAYER_LEFT;
+                gifPath = (currentDirection == DirectionState.RIGHT) ? PLAYER_RIGHT : PLAYER_RIGHT;
             }
 
             player.setAnimationState(newState,gifPath);
@@ -49,7 +49,7 @@ public abstract class ActorAnimations {
 
             DirectionState currentDirection = enemy.getDirectionState();
             AnimationStates newState = (currentDirection == DirectionState.RIGHT) ? AnimationStates.MOVE_RIGHT : AnimationStates.MOVE_LEFT;
-            String gifPath = (currentDirection == DirectionState.RIGHT) ? PLAYER_RIGHT : PLAYER_LEFT;
+            String gifPath = (currentDirection == DirectionState.RIGHT) ? PLAYER_RIGHT : PLAYER_RIGHT;
 
             enemy.setAnimationState(newState, gifPath);
 
