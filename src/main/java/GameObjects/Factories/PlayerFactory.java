@@ -1,5 +1,6 @@
 package GameObjects.Factories;
 
+import GameObjects.Actors.ObjectTypes.PlayerType;
 import GameObjects.Actors.Player.Player;
 import GameObjects.Actors.Stats.PlayerStats;
 import GameObjects.Actors.Stats.Stats;
@@ -18,16 +19,15 @@ import java.util.List;
 
 import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;
-import static Tools.ShapeTools.createCircleShape;
 import static Tools.ShapeTools.createSquareShape;
 
-public class PlayerFactory implements IFactory<Player>{
+public class PlayerFactory implements IFactory<Player, PlayerType>{
     private TextureHandler textureHandler;
     public PlayerFactory() {
         textureHandler = new GdxTextureHandler();
     }
     @Override
-    public Player create(String type) {
+    public Player create(PlayerType type) {
         if(type == null) {
             throw new NullPointerException("Type cannot be null!");
         }
@@ -41,12 +41,16 @@ public class PlayerFactory implements IFactory<Player>{
         PlayerStats stats;
         BodyFeatures bodyFeatures;
 
-        switch (type.toUpperCase()) {
-            case "PLAYER1": {
+        switch (type) {
+            case PLAYER1: {
                 scale = AnimationConstants.PLAYER_SCALE;
                 spawnGIF = AnimationConstants.PLAYER_IDLE_RIGHT;
                 texture = textureHandler.loadTexture(spawnGIF);
-                shape = createCircleShape(scale*texture.getWidth()/2);
+                shape = createSquareShape(
+                        (float)(texture.getWidth())*scale,
+                        (float) (texture.getHeight()*scale)
+
+                );
                 animation = ActorAnimations.playerMoveAnimation();
 
                 stats = Stats.player();
@@ -65,26 +69,31 @@ public class PlayerFactory implements IFactory<Player>{
         bodyFeatures = new BodyFeatures(
                 shape,
                 filter,
-                1,
+                10,
                 0,
                 0,
                 false,
                 BodyDef.BodyType.DynamicBody);
 
 
-        player = new Player(type,texture,bodyFeatures,scale,stats);
+        player = new Player();
+        player.setStats(stats);
+        player.setScale(scale);
+        player.setBodyFeatures(bodyFeatures);
+        player.setSprite(texture);
         player.setAnimation(animation);
+        player.setType(type);
+
         return player;
     }
 
     @Override
-    public List<Player> create(int n, String type) {
+    public List<Player> create(int n, PlayerType type) {
         return null;
     }
 
     @Override
     public void setTextureHandler(TextureHandler newTextureHandler) {
         textureHandler = newTextureHandler;
-
     }
 }

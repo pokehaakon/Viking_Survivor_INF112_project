@@ -5,6 +5,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.physics.box2d.Filter;
 
 public abstract class FilterTool {
+
+    /**
+     * The collision categories that a Box2d body can have
+     * use '.getMask()' to get the mask that Box2d uses.
+     */
     public enum Category {
         //do not make more than 16
         PLAYER,
@@ -14,11 +19,20 @@ public abstract class FilterTool {
 
         Category() {if (this.ordinal() > 15) {throw new RuntimeException("TOO MANY CATEGORIES, MAX 16!");}}
 
+        /**
+         *
+         * @return the mask of the category
+         */
         public short getMask() {
             return (short) (1 << this.ordinal());
         }
     }
 
+    /**
+     * Combines the masks of the categories
+     * @param filters array of categories
+     * @return the combined masks of the categories
+     */
     public static short combineMaskEnums(Category[] filters) {
         short mask = 0;
         for(Category m : filters) {
@@ -28,6 +42,12 @@ public abstract class FilterTool {
         return mask;
     }
 
+    /**
+     * Creates a Box2d collision filter for a body with in the category 'thisIs', colliding with the categories in 'collidesWith'
+     * @param thisIs the category of the filter
+     * @param collidesWith the categories to collide with
+     * @return a filter with the wanted properties
+     */
     public static Filter createFilter(Category thisIs, Category[] collidesWith) {
         return createFilter(
                 thisIs.getMask(),
@@ -36,6 +56,12 @@ public abstract class FilterTool {
         );
     }
 
+    /**
+     * Creates a Box2d collision filter for a body with in the categories in 'thisIs', colliding with the categories in 'collidesWith'
+     * @param thisIs the categories of the filter
+     * @param collidesWith the categories to collide with
+     * @return a filter with the wanted properties
+     */
     public static Filter createFilter(Category[] thisIs, Category[] collidesWith) {
         return createFilter(
                 combineMaskEnums(thisIs),
@@ -44,10 +70,17 @@ public abstract class FilterTool {
         );
     }
 
+    /**
+     * Creates a Box2d collision filter for a body
+     * @param category the category bits
+     * @param maskBits the mask bits
+     * @param groupIndex the group index
+     * @return a filter with the wanted properties
+     */
     public static Filter createFilter(short category, short maskBits, short groupIndex) {
         Filter filter = new Filter();
-        filter.maskBits = maskBits;
         filter.categoryBits = category;
+        filter.maskBits = maskBits;
         filter.groupIndex = groupIndex;
 
         return filter;
