@@ -1,21 +1,23 @@
 package Tools;
 
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.Array;
-
 import java.io.InputStream;
 import java.util.Vector;
-// hallvards work!
+
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Array;
+
+//Hallvards work
 public class GifDecoder {
     /**
      * File read status: No errors.
      */
     public static final int STATUS_OK = 0;
     /**
-     * File read status: Error decoding file (may be partially decoded)
+     * File read status: Error decoding file (maybe partially decoded)
      */
     public static final int STATUS_FORMAT_ERROR = 1;
     /**
@@ -681,7 +683,7 @@ public class GifDecoder {
         } while ((blockSize > 0) && !err());
     }
 
-    public Animation<TextureRegion> getAnimation(Animation.PlayMode playMode) {
+    public Animation<TextureRegion> getAnimation(PlayMode playMode) {
         int nrFrames = getFrameCount();
         Pixmap frame = getFrame(0);
         int width = frame.getWidth();
@@ -730,4 +732,3 @@ public class GifDecoder {
         return gdec.getAnimation(playMode);
     }
 }
-
