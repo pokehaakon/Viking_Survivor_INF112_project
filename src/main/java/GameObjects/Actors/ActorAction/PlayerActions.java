@@ -11,31 +11,30 @@ public abstract class PlayerActions {
      * @return an action
      */
 
-    public static ActorAction moveToInput(KeyStates keyStates) {
+    public static ActorAction<Player> moveToInput(KeyStates keyStates) {
 
         return (p) ->{
-            Player player = (Player) p;
-            player.idle = true;
-            player.resetVelocity();
+            p.idle = true;
+            p.resetVelocity();
             if (keyStates.getState(KeyStates.GameKey.UP)) {
-                player.setVelocityVector(0,1);
-                player.idle = false;
+                p.setVelocityVector(0,1);
+                p.idle = false;
             }
             if (keyStates.getState(KeyStates.GameKey.DOWN)) {
-                player.setVelocityVector(0,-1);
-                player.idle = false;
+                p.setVelocityVector(0,-1);
+                p.idle = false;
             }
             if (keyStates.getState(KeyStates.GameKey.LEFT)) {
-                player.setVelocityVector(-1,0);
-                player.idle = false;
+                p.setVelocityVector(-1,0);
+                p.idle = false;
 
             }
             if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
-                player.setVelocityVector(1,0);
-                player.idle = false;
+                p.setVelocityVector(1,0);
+                p.idle = false;
             }
 
-            player.move();
+            p.move();
         };
     }
 

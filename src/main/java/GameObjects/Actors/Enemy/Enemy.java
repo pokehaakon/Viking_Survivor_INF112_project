@@ -1,15 +1,13 @@
 package GameObjects.Actors.Enemy;
 
+import GameObjects.Actors.ObjectTypes.EnemyType;
 import GameObjects.Actors.Actor;
 import GameObjects.Actors.Stats.EnemyStats;
 import GameObjects.BodyFeatures;
-import com.badlogic.gdx.graphics.Texture;
 
 import static Tools.FilterTool.createFilter;
 
-import static InputProcessing.Coordinates.SpawnCoordinates.*;
-
-public class Enemy extends Actor{
+public class Enemy extends Actor<EnemyType> {
 
     public float knockBackResistance;
 
@@ -17,8 +15,8 @@ public class Enemy extends Actor{
 
 
 
-    public Enemy(String type,Texture texture, BodyFeatures bodyFeatures, float scale, EnemyStats stats) {
-        super(type,texture,bodyFeatures,scale);
+    public Enemy(String spritePath, BodyFeatures bodyFeatures, float scale, EnemyStats stats) {
+        super(spritePath, bodyFeatures, scale);
         this.stats = stats;
 
         // stats

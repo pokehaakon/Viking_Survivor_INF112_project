@@ -2,6 +2,7 @@ package Actors.Enemy;
 
 import Actors.MockEnemyFactory;
 import GameObjects.Actors.Enemy.Enemy;
+import GameObjects.Actors.ObjectTypes.EnemyType;
 import GameObjects.Factories.EnemyFactory;
 import GameObjects.ObjectPool;
 import com.badlogic.gdx.ApplicationListener;
@@ -22,14 +23,14 @@ class EnemyPoolTest {
 
     private static EnemyFactory mockEnemyFactory;
 
-    private ObjectPool<Enemy> testPool;
+    private ObjectPool<Enemy, EnemyType> testPool;
 
-    List<String> objectTypes = Arrays.asList("ENEMY1", "ENEMY2");
+    List<EnemyType> objectTypes = List.of(EnemyType.values());
     static World world;
     int poolSize;
 
-    String enemy1;
-    String enemy2;
+    EnemyType enemy1;
+    EnemyType enemy2;
 
     List<Queue<Enemy>> enemiesInPool;
     @BeforeAll
@@ -81,13 +82,13 @@ class EnemyPoolTest {
     void setup() {
         poolSize = 10;
         mockEnemyFactory = new MockEnemyFactory().get();
-        testPool = new ObjectPool<>(world,mockEnemyFactory, objectTypes, poolSize);
+        testPool = new ObjectPool<>(world, mockEnemyFactory, objectTypes, poolSize);
 
         enemiesInPool = new ArrayList<>();
 
-        Map<String, Queue<Enemy>> poolMap = testPool.getObjectPool();
+        Map<EnemyType, Queue<Enemy>> poolMap = testPool.getObjectPool();
 
-        for(Map.Entry<String, Queue<Enemy>> entry : poolMap.entrySet() ) {
+        for(Map.Entry<EnemyType, Queue<Enemy>> entry : poolMap.entrySet() ) {
             Queue<Enemy> enemyList = entry.getValue();
             enemiesInPool.add(enemyList);
         }
