@@ -22,9 +22,16 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -38,6 +45,7 @@ import static GameObjects.Actors.Stats.Stats.SWARM_SPEED_MULTIPLIER;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.getBottomLeftCorrection;
 import static VikingSurvivor.app.Main.SCREEN_WIDTH;
+import static InputProcessing.Contexts.PixelsPerMeter.PPM;
 
 public class MVPContext extends Context {
 
@@ -97,7 +105,8 @@ public class MVPContext extends Context {
 
     private long lastSwarmSpawnTime;
 
-
+    private TiledMap map;
+    private OrthogonalTiledMapRenderer tiledMapRenderer;
 
 
 
@@ -214,8 +223,18 @@ public class MVPContext extends Context {
 
     }
 
+    private void cameraUpdate(Vector2 target) {
+        Vector3 position = camera.position;
+        position.x = target.x * PPM;
+        position.y = target.y * PPM;
+        camera.position.set(position);
+        camera.update();
+    }
+
+
     @Override
     public void render(float delta) {
+
 
         FPS.add(System.nanoTime() - previousFrameStart);
 
@@ -225,18 +244,21 @@ public class MVPContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.GREEN);
 
+        tiledMapRenderer.setView((OrthographicCamera) camera);
+        tiledMapRenderer.render();
+
         debugRenderer.render(world, camera.combined);
 
-
-        Vector2 origin;
-        origin = player.getBody().getPosition().cpy();
-        origin.add(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
-
-        //center camera at player
-        camera.position.x = origin.x;
-        camera.position.y = origin.y;
-        camera.position.z = 0;
-        camera.update(true);
+        cameraUpdate(player.getBody().getPosition());
+//        Vector2 origin;
+//        origin = player.getBody().getPosition().cpy();
+//        origin.add(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
+//
+//        //center camera at player
+//        camera.position.x = origin.x;
+//        camera.position.y = origin.y;
+//        camera.position.z = 0;
+//        camera.update(true);
 
 
         batch.begin();
@@ -329,12 +351,26 @@ public class MVPContext extends Context {
 
     }
 
+    private Vector2 getMiddleOfMapPosition(TiledMap map) {
+        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
+        int tileWidth = layer.getTileWidth(); // width of a tile in pixels
+        int tileHeight = layer.getTileHeight(); // height of a tile in pixels
+        int mapWidth = layer.getWidth(); // width of the tilemap in tiles
+        int mapHeight = layer.getHeight(); // height of the tilemap in tiles
+
+        return new Vector2(mapWidth * tileWidth / 2f, mapHeight * tileHeight / 2f);
+    }
+
+
     private void createWorld() {
         // sets up world
 
         debugRenderer = new Box2DDebugRenderer();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
+
+        this.map = new TmxMapLoader().load("assets/chessMap128px.tmx");
+        this.tiledMapRenderer = new OrthogonalTiledMapRenderer(map, 1f);
 
         enemyFactory = new EnemyFactory();
         drawableEnemies = new ArrayList<>();
@@ -346,6 +382,7 @@ public class MVPContext extends Context {
         playerFactory = new PlayerFactory();
         player = playerFactory.create("PLAYER1");
         player.addToWorld(world);
+        player.setPosition(getMiddleOfMapPosition(map));
         player.setAction(PlayerActions.moveToInput(keyStates));
 
 
