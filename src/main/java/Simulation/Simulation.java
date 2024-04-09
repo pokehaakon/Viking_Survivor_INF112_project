@@ -1,6 +1,7 @@
 package Simulation;
 
 import GameObjects.Actors.ActorAction.ActorAction;
+import GameObjects.Actors.ActorAction.EnemyActions;
 import GameObjects.Actors.Enemy.Enemy;
 import GameObjects.Actors.ObjectTypes.EnemyType;
 import GameObjects.Actors.ObjectTypes.SwarmType;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
@@ -88,8 +90,9 @@ public class Simulation implements Runnable {
 
             context.getPlayer().doAction();
 
-            if (TimeUtils.millis() - lastSpawnTime > 1000) {
-                spawnSwarm(EnemyType.ENEMY1, SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
+            if (TimeUtils.millis() - lastSpawnTime > 5000) {
+                spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player)));
+//                spawnSwarm(EnemyType.RAVEN, SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
                 spawnTerrain(TerrainType.TREE);
             }
 

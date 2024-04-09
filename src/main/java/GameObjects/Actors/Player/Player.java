@@ -15,8 +15,8 @@ public class Player extends Actor<PlayerType> {
     private PlayerStats stats;
 
 
-    public Player(String type,Texture texture, BodyFeatures bodyFeatures, float scale, PlayerStats stats) {
-        super(type,texture,bodyFeatures, scale);
+    public Player(String spritePath, BodyFeatures bodyFeatures, float scale, PlayerStats stats) {
+        super(spritePath,bodyFeatures, scale);
         this.stats = stats;
 
         HP = stats.HP();

@@ -35,7 +35,7 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
 
 
     public Animation<TextureRegion> currentGIF;
-
+    public String currentSpritePath;
 
     public Actor(String spritePath, BodyFeatures bodyFeatures, float scale) {
         super(spritePath, bodyFeatures, scale);
@@ -46,6 +46,10 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
     public Actor(){
         velocityVector = new Vector2();
         actions  = new HashSet<>();
+    }
+
+    public String getSpritePath() {
+        return currentSpritePath;
     }
 
 
@@ -119,10 +123,22 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
     @Override
     public void draw(SpriteBatch batch, float elapsedTime) {
 
+        TextureRegion region = currentGIF.getKeyFrame(elapsedTime);
+
+        if(directionState == DirectionState.LEFT) {
+            if(!region.isFlipX())
+                region.flip(true, false);
+        }
+
+        if(directionState == DirectionState.RIGHT) {
+            if(!region.isFlipX())
+                region.flip(false, false);
+        }
+
         // for GIF
         currentGIF.setFrameDuration(AnimationConstants.FRAME_DURATION);
         batch.draw(
-                currentGIF.getKeyFrame(elapsedTime),
+                region,
                 body.getPosition().x,
                 body.getPosition().y,
                 currentSprite.getWidth()*scale,
@@ -136,6 +152,7 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
     public void setNewAnimationGIF(String gifPath) {
         currentGIF = AnimationConstants.getGIF(gifPath);
         currentSprite = new Texture(Gdx.files.internal(gifPath));
+        currentSpritePath = gifPath;
     }
 
 

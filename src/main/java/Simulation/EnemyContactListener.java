@@ -71,7 +71,7 @@ public class EnemyContactListener implements ContactListener {
     private void collisionAttack(Enemy enemy, Player player) {
 
         System.out.println("Contact nr: " + contactNumber + ", " + enemy.getType() + ", damage: " + enemy.damage);
-        enemy.attack(player);
+        //enemy.attack(player);
         System.out.println("Player HP: " + player.HP);
 
         lastHit = TimeUtils.millis();

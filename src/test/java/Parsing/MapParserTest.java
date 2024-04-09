@@ -49,8 +49,8 @@ class MapParserTest {
         assertEquals(2, frames.size());
         frame = frames.get(0);
         assertEquals(2, frame.spawnable().size());
-        assertEquals(EnemyType.ENEMY1, frame.spawnable().get(0));
-        assertEquals(EnemyType.ENEMY2, frame.spawnable().get(1));
+        assertEquals(EnemyType.RAVEN, frame.spawnable().get(0));
+        assertEquals(EnemyType.ORC, frame.spawnable().get(1));
         assertEquals(SpawnType.BOSS, frame.spawnType());
         assertEquals(2, frame.args().size());
         assertEquals("100", frame.args().get(0));
@@ -58,7 +58,7 @@ class MapParserTest {
 
         frame = frames.get(1);
         assertEquals(1, frame.spawnable().size());
-        assertEquals(EnemyType.ENEMY1, frame.spawnable().get(0));
+        assertEquals(EnemyType.RAVEN, frame.spawnable().get(0));
         assertEquals(SpawnType.WAVE, frame.spawnType());
         assertEquals(2, frame.args().size());
         assertEquals("10", frame.args().get(0));
@@ -98,7 +98,7 @@ class MapParserTest {
         assertEquals(1, spawnFrames.get(60L).size());
         frame = spawnFrames.get(60L).get(0);
         assertEquals(1, frame.spawnable().size());
-        assertEquals(EnemyType.ENEMY1, frame.spawnable().get(0));
+        assertEquals(EnemyType.RAVEN, frame.spawnable().get(0));
         assertEquals(SpawnType.WAVE, frame.spawnType());
         assertEquals(2, frame.args().size());
         assertEquals("10", frame.args().get(0));
@@ -108,8 +108,8 @@ class MapParserTest {
         assertEquals(1, spawnFrames.get(300L).size());
         frame = spawnFrames.get(300L).get(0);
         assertEquals(2, frame.spawnable().size());
-        assertEquals(EnemyType.ENEMY1, frame.spawnable().get(0));
-        assertEquals(EnemyType.ENEMY2, frame.spawnable().get(1));
+        assertEquals(EnemyType.RAVEN, frame.spawnable().get(0));
+        assertEquals(EnemyType.ORC, frame.spawnable().get(1));
         assertEquals(SpawnType.BOSS, frame.spawnType());
         assertEquals(2, frame.args().size());
         assertEquals("100", frame.args().get(0));

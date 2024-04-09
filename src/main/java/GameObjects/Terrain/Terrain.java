@@ -9,8 +9,8 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class Terrain extends GameObject<TerrainType> {
 
-    public Terrain(String type,Texture sprite, BodyFeatures bodyFeatures, float scale) {
-        super(type,sprite, bodyFeatures,scale);
+    public Terrain(String spritePath, BodyFeatures bodyFeatures, float scale) {
+        super(spritePath, bodyFeatures,scale);
     }
 
     public Terrain() {

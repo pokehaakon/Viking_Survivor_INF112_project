@@ -10,12 +10,9 @@ import Animations.AnimationConstants;
 import GameObjects.Actors.Enemy.Enemy;
 import GameObjects.BodyFeatures;
 import TextureHandling.GdxTextureHandler;
-import TextureHandling.TextureHandler;
 import Tools.FilterTool;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
-
-import java.util.*;
 
 import static Animations.AnimationConstants.PLAYER_IDLE_RIGHT;
 import static Tools.FilterTool.createFilter;
@@ -63,9 +60,9 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
 
 
         switch (type) {
-            case ENEMY1: {
+            case RAVEN: {
                 scale = AnimationConstants.ENEMY1_SCALE;
-                texture = textureHandler.loadTexture(PLAYER_IDLE_RIGHT);
+                texture = textureHandler.loadTexture("raven.gif");
                 shape = createSquareShape(
                         (float)(texture.getWidth())*scale,
                         (float) (texture.getHeight()*scale)
@@ -75,9 +72,9 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 stats = Stats.enemy1();
                 break;
             }
-            case ENEMY2: {
+            case ORC: {
                 scale = AnimationConstants.ENEMY2_SCALE;
-                texture = textureHandler.loadTexture(PLAYER_IDLE_RIGHT);
+                texture = textureHandler.loadTexture("orc.gif");
                 shape = createSquareShape(
                         texture.getWidth()*scale,
                         texture.getHeight()*scale);

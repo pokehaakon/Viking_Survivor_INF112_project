@@ -73,7 +73,7 @@ class EnemyFactoryTest {
 
     @Test
     void correctSize() {
-        assertEquals(5, enemyFactory.create(5, EnemyType.ENEMY1).size());
+        assertEquals(5, enemyFactory.create(5, EnemyType.RAVEN).size());
     }
 
 
@@ -85,7 +85,7 @@ class EnemyFactoryTest {
         });
 
         assertThrows(IllegalArgumentException.class, () -> {
-            enemyFactory.create(0, EnemyType.ENEMY1);
+            enemyFactory.create(0, EnemyType.RAVEN);
         });
     }
 
