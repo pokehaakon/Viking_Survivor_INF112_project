@@ -1,7 +1,7 @@
 package GameObjects.Actors.ObjectTypes;
 
 public enum EnemyType {
-    ENEMY1, ENEMY2;
+    RAVEN, ORC;
 
     public static String[] stringValues() {
         int len = EnemyType.values().length;
