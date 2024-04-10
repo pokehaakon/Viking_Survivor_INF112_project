@@ -21,7 +21,7 @@ import static Animations.AnimationConstants.getGIF;
 public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor, IAnimation {
     public float speed, HP, damage, armour;
 
-    private Set<ActorAction<E>> actions;
+    private Set<ActorAction> actions;
     private ActorMovement movement;
 
 
@@ -71,8 +71,8 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
      * The actor performs its actions
      */
     public void doAction(){
-        for(ActorAction<E> action : actions) {
-            action.act();
+        for(ActorAction action : actions) {
+            action.act(this);
         }
     }
 
