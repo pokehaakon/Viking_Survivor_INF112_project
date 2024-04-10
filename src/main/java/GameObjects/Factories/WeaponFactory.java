@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import static Animations.AnimationConstants.getGIF;
+import static Tools.FilterTool.Category.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 import static Tools.ShapeTools.createSquareShape;
@@ -63,14 +64,13 @@ public class WeaponFactory implements IFactory<Weapon, WeaponType>{
         }
 
         Filter filter = createFilter(
-                FilterTool.Category.BULLET,
-                new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL}
+                BULLET,
+                new FilterTool.Category[]{ FilterTool.Category.WALL, ENEMY}
         );
-
         bodyFeatures = new BodyFeatures(
                 shape,
                 filter,
-                0,
+                1,
                 0,
                 0,
                 true,
