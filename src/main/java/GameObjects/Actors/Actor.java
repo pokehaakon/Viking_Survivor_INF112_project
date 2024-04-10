@@ -63,7 +63,7 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
      * Defines an action for the actor to perform
      * @param action
      */
-    public void setAction(ActorAction<E> action) {
+    public void setAction(ActorAction action) {
         actions.add(action);
 
     }
