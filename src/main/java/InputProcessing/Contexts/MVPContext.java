@@ -107,6 +107,7 @@ public class MVPContext extends Context {
 
     private TiledMap map;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
+    private float tileMapScale = 4f;
 
 
 
@@ -351,14 +352,14 @@ public class MVPContext extends Context {
 
     }
 
-    private Vector2 getMiddleOfMapPosition(TiledMap map) {
+    private Vector2 getMiddleOfMapPosition(TiledMap map, float scale) {
         TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
         int tileWidth = layer.getTileWidth(); // width of a tile in pixels
         int tileHeight = layer.getTileHeight(); // height of a tile in pixels
         int mapWidth = layer.getWidth(); // width of the tilemap in tiles
         int mapHeight = layer.getHeight(); // height of the tilemap in tiles
 
-        return new Vector2(mapWidth * tileWidth / 2f, mapHeight * tileHeight / 2f);
+        return new Vector2(mapWidth * tileWidth * scale / 2f, mapHeight * tileHeight * scale / 2f);
     }
 
 
@@ -369,8 +370,8 @@ public class MVPContext extends Context {
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
 
-        this.map = new TmxMapLoader().load("assets/chessMap128px.tmx");
-        this.tiledMapRenderer = new OrthogonalTiledMapRenderer(map, 1f);
+        this.map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
+        this.tiledMapRenderer = new OrthogonalTiledMapRenderer(map, tileMapScale);
 
         enemyFactory = new EnemyFactory();
         drawableEnemies = new ArrayList<>();
@@ -382,7 +383,7 @@ public class MVPContext extends Context {
         playerFactory = new PlayerFactory();
         player = playerFactory.create("PLAYER1");
         player.addToWorld(world);
-        player.setPosition(getMiddleOfMapPosition(map));
+        player.setPosition(getMiddleOfMapPosition(map, tileMapScale));
         player.setAction(PlayerActions.moveToInput(keyStates));
 
 
