@@ -22,6 +22,7 @@ import java.util.Map;
 
 import static Rendering.GIFS.PLAYER_IDLE_GIF;
 import static Rendering.GIFS.PLAYER_MOVING_GIF;
+import static Tools.FilterTool.Category.BULLET;
 import static Tools.FilterTool.Category.PLAYER;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;

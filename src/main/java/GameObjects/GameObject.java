@@ -99,6 +99,7 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
                 bodyFeatures.restitution(),
                 bodyFeatures.isSensor(),
                 bodyFeatures.type());
+        body.setUserData(this);
     }
 
    @Override
@@ -126,7 +127,9 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
 
 
-
+    public BodyFeatures getBodyFeatures() {
+        return bodyFeatures;
+    }
 
 
 }

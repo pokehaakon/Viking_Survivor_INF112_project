@@ -28,8 +28,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.ScreenUtils;
+import Simulation.MyContactListener;
+
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -52,6 +53,7 @@ public class MVPContext extends Context {
 
     private Player player;
 
+    private Weapon orbitWeapon;
     private ArrayList<Enemy> spawnedEnemies;
     private final BitmapFont font;
 
@@ -79,7 +81,6 @@ public class MVPContext extends Context {
 
     private WeaponFactory weaponFactory;
 
-    List<Weapon> drawableWeapons;
 
     private List<Terrain> drawableTerrain;
     private List<Enemy> drawableEnemies;
@@ -101,6 +102,10 @@ public class MVPContext extends Context {
     private AtomicLong synchronizer;
 
     float angle = 0;
+
+    float totalRotation = 0;
+
+    long lastOrbit;
 
 
 
@@ -262,22 +267,18 @@ public class MVPContext extends Context {
             enemy.draw(batch, elapsedTime);
             i++;
         }
+
         for(Terrain terrain : drawableTerrain) {
             if(i > 100) batch.flush();
             terrain.draw(batch, elapsedTime);
             i++;
         }
+        //batch.setColor(Color.WHITE);
 
-        for(Weapon weapon : drawableWeapons) {
-            float x = (float) (Math.cos(angle) * 200);
-            float y = (float) (Math.sin(angle) * 200);
-            weapon.getBody().setTransform(new Vector2(x, y).add(player.getBody().getPosition()), weapon.getBody().getAngle());;
-            angle += 5 * 0.016f;
-            weapon.draw(batch,elapsedTime);
-
+        if(orbitWeapon.getBody().isActive()) {
+            orbitWeapon.draw(batch,elapsedTime);
         }
 
-        player.updateMovement();
         player.draw(batch, elapsedTime);
         batch.end();
 
@@ -287,7 +288,7 @@ public class MVPContext extends Context {
 
         FrameTime.add(System.nanoTime() - renderStartTime);
 
-        System.out.println(player.getDirectionState());
+
 
 
 
@@ -341,20 +342,16 @@ public class MVPContext extends Context {
         drawableTerrain = new ArrayList<>();
 
         weaponFactory = new WeaponFactory();
-        drawableWeapons = new ArrayList<>();
         playerFactory = new PlayerFactory();
         player = playerFactory.create(PlayerType.PLAYER1);
         player.addToWorld(world);
         player.setAction(PlayerActions.moveToInput(keyStates));
-        player.addToInventory(weaponFactory.create(WeaponType.PROJECTILE));
 
-        for(Weapon weapon:player.getInventory()) {
-            weapon.addToWorld(world);
+        orbitWeapon = weaponFactory.create(WeaponType.PROJECTILE);
+        orbitWeapon.addToWorld(world);
+        orbitWeapon.setAction(WeaponActions.orbit(player,0.5f,150));
+        player.addToInventory(orbitWeapon);
 
-            //weapon.setPosition(new Vector2(200,200));
-            //weapon.setAction(WeaponActions.orbit(player));
-            drawableWeapons.add(weapon);
-        }
 
 
         enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);
@@ -362,7 +359,7 @@ public class MVPContext extends Context {
 
         toBoKilled = new HashSet<>();
 
-        world.setContactListener(new Simulation.MyContactListener());
+        world.setContactListener(new MyContactListener());
 
         //world.step(1/60f, 10, 10);
     }
@@ -423,8 +420,8 @@ public class MVPContext extends Context {
         return terrainPool;
     }
 
-    public List<Weapon> getDrawableWeapons() {
-        return drawableWeapons;
+    public Weapon getOrbitWeapon() {
+        return orbitWeapon;
     }
 
 }

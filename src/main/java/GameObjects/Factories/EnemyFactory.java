@@ -38,7 +38,8 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 new FilterTool.Category[]{
                         FilterTool.Category.WALL,
                         FilterTool.Category.ENEMY,
-                        FilterTool.Category.PLAYER
+                        FilterTool.Category.PLAYER,
+                        FilterTool.Category.BULLET
                 }
         );
 

@@ -9,6 +9,7 @@ import Rendering.SpriteRender;
 import TextureHandling.GdxTextureHandler;
 import TextureHandling.TextureHandler;
 import Tools.FilterTool;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
@@ -56,7 +57,8 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
                         (float)(texture.getWidth())*scale,
                         (float) (texture.getHeight()*scale)
                 );
-                animations.put(AnimationState.STATIC,new Sprite(texture));
+                Sprite sprite = new Sprite(texture);
+                animations.put(AnimationState.STATIC,sprite);
                 render = new SpriteRender(animations);
                 break;
             }
@@ -69,7 +71,8 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
                 new FilterTool.Category[]{
                         //FilterTool.Category.WALL,
                         FilterTool.Category.ENEMY,
-                        FilterTool.Category.PLAYER
+                        FilterTool.Category.PLAYER,
+                        FilterTool.Category.BULLET
                 }
         );
 
@@ -82,7 +85,7 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
                 false,
                 BodyDef.BodyType.StaticBody);
 
-        terrain = new Terrain(type,new SpriteRender(animations),bodyFeatures,scale);
+        terrain = new Terrain(type,render,bodyFeatures,scale);
         terrain.setAnimationState(AnimationState.STATIC);
 
         return terrain;

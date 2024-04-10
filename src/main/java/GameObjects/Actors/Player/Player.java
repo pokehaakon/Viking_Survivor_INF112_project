@@ -48,6 +48,7 @@ public class Player extends Actor<PlayerType> {
     }
 
     public void addToInventory(Weapon weapon) {
+        weapon.damage = this.damage;
         weaponInventory.add(weapon);
     }
 

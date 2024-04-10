@@ -45,7 +45,13 @@ public class Simulation implements Runnable {
     private List<Enemy> enemies;
     private AtomicLong synchronizer;
 
+    private Weapon mainWeapon;
+
     private long lastSwarmSpawnTime;
+
+    private long lastOrbit;
+
+    private float ORBIT_INTERVAL = 1000;
 
     public Simulation(MVPContext context) {
         this.context = context;
@@ -59,6 +65,8 @@ public class Simulation implements Runnable {
         player = context.getPlayer();
         enemyPool = context.getEnemyPool();
         enemies = context.getDrawableEnemies();
+
+        mainWeapon = context.getOrbitWeapon();
     }
 
     @Override
@@ -98,6 +106,9 @@ public class Simulation implements Runnable {
 //                spawnSwarm(EnemyType.RAVEN, SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
                 spawnTerrain(TerrainType.TREE);
             }
+
+            //orbitWeapon();
+
 
             doSpinSleep(lastFrameStart, dt);
             UPS.add(System.nanoTime() - lastFrameStart);
@@ -197,6 +208,20 @@ public class Simulation implements Runnable {
     }
     public long getFrameNumber() {
         return frame;
+    }
+
+    public void orbitWeapon() {
+
+        if(TimeUtils.millis() - lastOrbit > ORBIT_INTERVAL) {
+            mainWeapon.doAction();
+        }
+        if (mainWeapon.getAngleToPlayer() >= 2 * Math.PI) {
+            mainWeapon.getBody().setActive(false);
+            mainWeapon.setAngleToPlayer(0);
+            lastOrbit = TimeUtils.millis();
+
+        }
+
     }
 
 }
