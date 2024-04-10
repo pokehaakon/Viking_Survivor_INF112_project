@@ -1,6 +1,7 @@
 package GameObjects.Factories;
 
 
+import GameObjects.Actors.ObjectTypes.EnemyType;
 import GameObjects.Actors.Stats.EnemyStats;
 import GameObjects.Actors.Stats.Stats;
 import Animations.ActorAnimation;
@@ -9,29 +10,33 @@ import Animations.AnimationConstants;
 import GameObjects.Actors.Enemy.Enemy;
 import GameObjects.BodyFeatures;
 import TextureHandling.GdxTextureHandler;
-import TextureHandling.TextureHandler;
 import Tools.FilterTool;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import org.w3c.dom.Text;
-
-import java.util.*;
 
 import static Animations.AnimationConstants.PLAYER_IDLE_RIGHT;
 import static Tools.FilterTool.createFilter;
-import static Tools.ShapeTools.createCircleShape;
 import static Tools.ShapeTools.createSquareShape;
 
 
-public class EnemyFactory implements IFactory<Enemy>{
+public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
 
-    TextureHandler textureHandler;
+    private final Filter filter;
+
 
     public EnemyFactory() {
-
+        super();
         // default
         textureHandler = new GdxTextureHandler();
+        filter  = createFilter(
+                FilterTool.Category.ENEMY,
+                new FilterTool.Category[]{
+                        FilterTool.Category.WALL,
+                        FilterTool.Category.ENEMY,
+                        FilterTool.Category.PLAYER
+                }
+        );
+
     }
 
     /**
@@ -40,7 +45,7 @@ public class EnemyFactory implements IFactory<Enemy>{
      * @return an enemy object
      */
     @Override
-    public Enemy create(String type) {
+    public Enemy create(EnemyType type) {
 
         if(type == null) {
             throw new NullPointerException("Type cannot be null!");
@@ -54,21 +59,25 @@ public class EnemyFactory implements IFactory<Enemy>{
         EnemyStats stats;
 
 
-        switch (type.toUpperCase()) {
-            case "ENEMY1": {
+        switch (type) {
+            case RAVEN: {
                 scale = AnimationConstants.ENEMY1_SCALE;
-                texture = textureHandler.loadTexture(PLAYER_IDLE_RIGHT);
-                shape = createCircleShape(scale*texture.getWidth()/2);
+                texture = textureHandler.loadTexture("raven.gif");
+                shape = createSquareShape(
+                        (float)(texture.getWidth())*scale,
+                        (float) (texture.getHeight()*scale)
+
+                );
                 animation = ActorAnimations.enemyMoveAnimation();
                 stats = Stats.enemy1();
                 break;
             }
-            case "ENEMY2": {
+            case ORC: {
                 scale = AnimationConstants.ENEMY2_SCALE;
-
-                texture = textureHandler.loadTexture(PLAYER_IDLE_RIGHT);
-
-                shape = createCircleShape(scale*texture.getWidth()/2);
+                texture = textureHandler.loadTexture("orc.gif");
+                shape = createSquareShape(
+                        texture.getWidth()*scale,
+                        texture.getHeight()*scale);
 
                 animation = ActorAnimations.enemyMoveAnimation();
                 stats = Stats.enemy2();
@@ -78,14 +87,7 @@ public class EnemyFactory implements IFactory<Enemy>{
                 throw new IllegalArgumentException("Invalid enemy type");
         }
 
-        Filter filter = createFilter(
-                FilterTool.Category.ENEMY,
-                new FilterTool.Category[]{
-                        FilterTool.Category.WALL,
-                        FilterTool.Category.ENEMY,
-                        FilterTool.Category.PLAYER
-                }
-        );
+
         BodyFeatures bodyFeatures = new BodyFeatures(
                 shape,
                 filter,
@@ -95,41 +97,16 @@ public class EnemyFactory implements IFactory<Enemy>{
                 false,
                 BodyDef.BodyType.DynamicBody);
 
-
-        enemy = new Enemy(type,texture,bodyFeatures,scale,stats);
+        enemy = new Enemy();
+        enemy.setBodyFeatures(bodyFeatures);
+        enemy.setScale(scale);
+        enemy.setSprite(texture);
         enemy.setAnimation(animation);
+        enemy.setType(type);
+        enemy.setStats(stats);
+
         return enemy;
     }
-
-
-    /**
-     * Create multiple enemies
-     * @param n number of enemies to create
-     * @param type the desired enemy type
-     * @return a list of Enemy objects
-     */
-    @Override
-    public List<Enemy> create(int n, String type) {
-        if (n <= 0) {
-            throw new IllegalArgumentException("Number of enemies must be greater than zero");
-        }
-
-        List<Enemy> enemies = new ArrayList<>(n);
-        for (int i = 0; i < n; i++) {
-            Enemy newEnemy = create(type);
-            enemies.add(newEnemy);
-        }
-        return enemies;
-    }
-
-    @Override
-    public void setTextureHandler(TextureHandler newTextureHandler) {
-
-        textureHandler = newTextureHandler;
-    }
-
-
-
 
 }
 

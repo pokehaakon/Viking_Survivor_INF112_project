@@ -1,6 +1,7 @@
 package GameObjects.Actors;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 
 public interface IActor {
     /**
@@ -15,6 +16,12 @@ public interface IActor {
      * @param y
      */
     void setVelocityVector(float x, float y);
+
+    /**
+     * changes velocity direction
+     * @param v
+     */
+    void setVelocityVector(Vector2 v);
 
     /**
      * moves actor according to its velocity vector and speed

@@ -17,9 +17,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class Actor extends GameObject implements IActor, IAnimation{
-
-
+public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor, IAnimation {
     public float speed, HP, damage, armour;
 
     private Set<ActorAction> actions;
@@ -37,10 +35,10 @@ public abstract class Actor extends GameObject implements IActor, IAnimation{
 
 
     public Animation<TextureRegion> currentGIF;
+    public String currentSpritePath;
 
-
-    public Actor(String type,Texture texture,BodyFeatures bodyFeatures, float scale) {
-        super(type,texture, bodyFeatures, scale);
+    public Actor(String spritePath, BodyFeatures bodyFeatures, float scale) {
+        super(spritePath, bodyFeatures, scale);
         velocityVector = new Vector2();
         actions  = new HashSet<>();
 
@@ -48,6 +46,10 @@ public abstract class Actor extends GameObject implements IActor, IAnimation{
     public Actor(){
         velocityVector = new Vector2();
         actions  = new HashSet<>();
+    }
+
+    public String getSpritePath() {
+        return currentSpritePath;
     }
 
 
@@ -99,7 +101,10 @@ public abstract class Actor extends GameObject implements IActor, IAnimation{
         velocityVector.y += y;
     }
 
-
+    @Override
+    public void setVelocityVector(Vector2 v) {
+        velocityVector.set(v);
+    }
 
     @Override
     public void move(){
@@ -118,12 +123,24 @@ public abstract class Actor extends GameObject implements IActor, IAnimation{
     @Override
     public void draw(SpriteBatch batch, float elapsedTime) {
 
+        TextureRegion region = currentGIF.getKeyFrame(elapsedTime);
+
+        if(directionState == DirectionState.LEFT) {
+            if(!region.isFlipX())
+                region.flip(true, false);
+        }
+
+        if(directionState == DirectionState.RIGHT) {
+            if(!region.isFlipX())
+                region.flip(false, false);
+        }
+
         // for GIF
         currentGIF.setFrameDuration(AnimationConstants.FRAME_DURATION);
         batch.draw(
-                currentGIF.getKeyFrame(elapsedTime),
-                body.getPosition().x - scale*currentSprite.getWidth()/2,
-                body.getPosition().y - scale*currentSprite.getHeight()/2,
+                region,
+                body.getPosition().x,
+                body.getPosition().y,
                 currentSprite.getWidth()*scale,
                 currentSprite.getHeight()*scale
 
@@ -135,6 +152,7 @@ public abstract class Actor extends GameObject implements IActor, IAnimation{
     public void setNewAnimationGIF(String gifPath) {
         currentGIF = AnimationConstants.getGIF(gifPath);
         currentSprite = new Texture(Gdx.files.internal(gifPath));
+        currentSpritePath = gifPath;
     }
 
 
@@ -184,8 +202,5 @@ public abstract class Actor extends GameObject implements IActor, IAnimation{
     }
 
 
-    public void attack(Actor actor) {
-        actor.HP -= damage;
-    }
 
 }
