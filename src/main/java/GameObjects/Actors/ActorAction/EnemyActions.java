@@ -16,7 +16,10 @@ public abstract class EnemyActions {
      *
      */
     public static ActorAction<Enemy> moveInStraightLine() {
-        return Actor::move;
+        return (e) ->{
+            e.updateDirectionState();
+            e.move();
+        };
     }
 
     /**
@@ -28,6 +31,7 @@ public abstract class EnemyActions {
         return (e) -> {
             e.velocityVector.add(player.getBody().getPosition()).sub(e.getBody().getWorldCenter());
             e.move();
+            e.updateDirectionState();
         };
 
     }

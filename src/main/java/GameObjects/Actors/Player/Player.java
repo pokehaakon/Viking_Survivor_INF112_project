@@ -1,12 +1,16 @@
 package GameObjects.Actors.Player;
 
+import Animations.AnimationState;
 import GameObjects.Actors.Actor;
+import GameObjects.Actors.DirectionState;
 import GameObjects.Actors.ObjectTypes.PlayerType;
 import GameObjects.Actors.Stats.PlayerStats;
 import GameObjects.BodyFeatures;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
+import GameObjects.Weapon.Weapon;
+import Rendering.AnimationRender;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Player extends Actor<PlayerType> {
     public int level;
@@ -14,9 +18,11 @@ public class Player extends Actor<PlayerType> {
 
     private PlayerStats stats;
 
+    List<Weapon> weaponInventory;
 
-    public Player(String spritePath, BodyFeatures bodyFeatures, float scale, PlayerStats stats) {
-        super(spritePath,bodyFeatures, scale);
+
+    public Player(PlayerType type,AnimationRender render, BodyFeatures bodyFeatures, float scale, PlayerStats stats) {
+        super(type,render,bodyFeatures, scale);
         this.stats = stats;
 
         HP = stats.HP();
@@ -25,14 +31,13 @@ public class Player extends Actor<PlayerType> {
         armour = stats.armour();
         XP = stats.XP();
         level = 1;
+        directionState = DirectionState.RIGHT;
 
-        idle = true;
+        weaponInventory = new ArrayList<>();
+
     }
 
-    public Player() {
-        idle = true;
-        level = 1;
-    }
+
 
     public void setStats(PlayerStats newStats) {
         HP = newStats.HP();
@@ -41,6 +46,15 @@ public class Player extends Actor<PlayerType> {
         armour = newStats.armour();
         XP = newStats.XP();
     }
+
+    public void addToInventory(Weapon weapon) {
+        weaponInventory.add(weapon);
+    }
+
+    public List<Weapon> getInventory() {
+        return weaponInventory;
+    }
+
 
 
 

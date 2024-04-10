@@ -1,17 +1,23 @@
 package GameObjects.Factories;
 
+import Animations.AnimationState;
 import GameObjects.Actors.ObjectTypes.TerrainType;
 import GameObjects.BodyFeatures;
 import GameObjects.Terrain.Terrain;
+import Rendering.AnimationRender;
+import Rendering.SpriteRender;
 import TextureHandling.GdxTextureHandler;
 import TextureHandling.TextureHandler;
 import Tools.FilterTool;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static Tools.BodyTool.*;
 import static Tools.FilterTool.createFilter;
@@ -38,6 +44,9 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
         Shape shape;
         BodyFeatures bodyFeatures;
 
+        Map<AnimationState, Sprite> animations = new HashMap<>();
+
+        AnimationRender render;
 
         switch (type) {
             case TREE: {
@@ -47,6 +56,8 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
                         (float)(texture.getWidth())*scale,
                         (float) (texture.getHeight()*scale)
                 );
+                animations.put(AnimationState.STATIC,new Sprite(texture));
+                render = new SpriteRender(animations);
                 break;
             }
 
@@ -71,11 +82,8 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
                 false,
                 BodyDef.BodyType.StaticBody);
 
-        terrain = new Terrain();
-        terrain.setScale(scale);
-        terrain.setBodyFeatures(bodyFeatures);
-        terrain.setType(type);
-        terrain.setSprite(texture);
+        terrain = new Terrain(type,new SpriteRender(animations),bodyFeatures,scale);
+        terrain.setAnimationState(AnimationState.STATIC);
 
         return terrain;
     }

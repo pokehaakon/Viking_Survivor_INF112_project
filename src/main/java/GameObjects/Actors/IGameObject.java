@@ -23,7 +23,7 @@ public interface IGameObject<E> {
      * Handles the sprite drawing
      * @param batch the current sprite batch
      */
-    void draw(SpriteBatch batch);
+//    void draw(SpriteBatch batch);
 
     /**
      *
@@ -41,7 +41,7 @@ public interface IGameObject<E> {
      * Changes the sprite to draw
      * @param texture the new sprite
      */
-    void setSprite(Texture texture);
+    //void setSprite(Texture texture);
 
     /**
      * Sets the destroyed-tag to false

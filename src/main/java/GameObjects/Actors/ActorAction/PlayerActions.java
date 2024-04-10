@@ -33,7 +33,8 @@ public abstract class PlayerActions {
                 p.setVelocityVector(1,0);
                 p.idle = false;
             }
-
+            p.updateDirectionState();
+            p.updateMovement();
             p.move();
         };
     }

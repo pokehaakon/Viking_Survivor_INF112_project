@@ -1,16 +1,20 @@
 package InputProcessing.Contexts;
 
+import GameObjects.Actors.ActorAction.WeaponActions;
 import GameObjects.Actors.Enemy.Enemy;
 import GameObjects.Actors.ObjectTypes.EnemyType;
 import GameObjects.Actors.ObjectTypes.PlayerType;
 import GameObjects.Actors.ActorAction.PlayerActions;
 import GameObjects.Actors.ObjectTypes.TerrainType;
+import GameObjects.Actors.ObjectTypes.WeaponType;
 import GameObjects.Factories.EnemyFactory;
 import GameObjects.Actors.Player.Player;
 import GameObjects.Factories.PlayerFactory;
 import GameObjects.Factories.TerrainFactory;
+import GameObjects.Factories.WeaponFactory;
 import GameObjects.ObjectPool;
 import GameObjects.Terrain.Terrain;
+import GameObjects.Weapon.Weapon;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.Simulation;
@@ -24,6 +28,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.*;
@@ -72,7 +77,9 @@ public class MVPContext extends Context {
 
     private List<Terrain> spawnedTerrain;
 
+    private WeaponFactory weaponFactory;
 
+    List<Weapon> drawableWeapons;
 
     private List<Terrain> drawableTerrain;
     private List<Enemy> drawableEnemies;
@@ -92,6 +99,8 @@ public class MVPContext extends Context {
 
 
     private AtomicLong synchronizer;
+
+    float angle = 0;
 
 
 
@@ -249,17 +258,26 @@ public class MVPContext extends Context {
 
         for (Enemy enemy : drawableEnemies) {
             if(i > 100) batch.flush();
-            enemy.doAnimation();
+            //enemy.doAnimation();
             enemy.draw(batch, elapsedTime);
             i++;
         }
         for(Terrain terrain : drawableTerrain) {
             if(i > 100) batch.flush();
-            terrain.draw(batch);
+            terrain.draw(batch, elapsedTime);
             i++;
         }
 
-        player.doAnimation();
+        for(Weapon weapon : drawableWeapons) {
+            float x = (float) (Math.cos(angle) * 200);
+            float y = (float) (Math.sin(angle) * 200);
+            weapon.getBody().setTransform(new Vector2(x, y).add(player.getBody().getPosition()), weapon.getBody().getAngle());;
+            angle += 5 * 0.016f;
+            weapon.draw(batch,elapsedTime);
+
+        }
+
+        player.updateMovement();
         player.draw(batch, elapsedTime);
         batch.end();
 
@@ -269,27 +287,10 @@ public class MVPContext extends Context {
 
         FrameTime.add(System.nanoTime() - renderStartTime);
 
+        System.out.println(player.getDirectionState());
 
 
-        //temp physics
 
-//
-//        for (Enemy enemy : drawableEnemies) {
-//            enemy.doAction();
-//        }
-//
-//        player.doAction();
-//
-//        if (TimeUtils.millis() - lastSpawnTime > 5000) {
-//            spawnSwarm(EnemyType.ENEMY1,SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
-//            spawnTerrain(TerrainType.TREE);
-//        }
-//
-//
-//
-//        removeDestroyedEnemies();
-//
-//        world.step(1/(float) 60, 10, 10);
 
     }
 
@@ -339,19 +340,29 @@ public class MVPContext extends Context {
         terrainFactory = new TerrainFactory();
         drawableTerrain = new ArrayList<>();
 
-
+        weaponFactory = new WeaponFactory();
+        drawableWeapons = new ArrayList<>();
         playerFactory = new PlayerFactory();
         player = playerFactory.create(PlayerType.PLAYER1);
         player.addToWorld(world);
         player.setAction(PlayerActions.moveToInput(keyStates));
+        player.addToInventory(weaponFactory.create(WeaponType.PROJECTILE));
+
+        for(Weapon weapon:player.getInventory()) {
+            weapon.addToWorld(world);
+
+            //weapon.setPosition(new Vector2(200,200));
+            //weapon.setAction(WeaponActions.orbit(player));
+            drawableWeapons.add(weapon);
+        }
 
 
         enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);
         terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.TREE), 50);
 
         toBoKilled = new HashSet<>();
-        //ContactListener contactListener =
-        //world.setContactListener(contactListener);
+
+        world.setContactListener(new Simulation.MyContactListener());
 
         //world.step(1/60f, 10, 10);
     }
@@ -412,5 +423,8 @@ public class MVPContext extends Context {
         return terrainPool;
     }
 
+    public List<Weapon> getDrawableWeapons() {
+        return drawableWeapons;
+    }
 
 }

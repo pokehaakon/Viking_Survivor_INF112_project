@@ -1,9 +1,11 @@
 package GameObjects.Actors.Enemy;
 
+import Animations.AnimationState;
 import GameObjects.Actors.ObjectTypes.EnemyType;
 import GameObjects.Actors.Actor;
 import GameObjects.Actors.Stats.EnemyStats;
 import GameObjects.BodyFeatures;
+import Rendering.AnimationRender;
 
 import static Tools.FilterTool.createFilter;
 
@@ -15,8 +17,8 @@ public class Enemy extends Actor<EnemyType> {
 
 
 
-    public Enemy(String spritePath, BodyFeatures bodyFeatures, float scale, EnemyStats stats) {
-        super(spritePath, bodyFeatures, scale);
+    public Enemy(EnemyType type,AnimationRender render, BodyFeatures bodyFeatures, float scale, EnemyStats stats) {
+        super(type,render, bodyFeatures, scale);
         this.stats = stats;
 
         // stats
@@ -25,8 +27,6 @@ public class Enemy extends Actor<EnemyType> {
         damage = stats.damage();
         armour = stats.armour();
         knockBackResistance = stats.knockBackResistance();
-    }
-    public Enemy() {
 
     }
 

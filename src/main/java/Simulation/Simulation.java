@@ -9,6 +9,7 @@ import GameObjects.Actors.ObjectTypes.TerrainType;
 import GameObjects.Actors.Player.Player;
 import GameObjects.ObjectPool;
 import GameObjects.Terrain.Terrain;
+import GameObjects.Weapon.Weapon;
 import InputProcessing.Contexts.MVPContext;
 import InputProcessing.Coordinates.SpawnCoordinates;
 import InputProcessing.Coordinates.SwarmCoordinates;
@@ -86,6 +87,9 @@ public class Simulation implements Runnable {
             for (Enemy enemy : context.getDrawableEnemies()) {
                 enemy.doAction();
             }
+//            for(Weapon weapon : context.getDrawableWeapons()) {
+//                weapon.doAction();
+//            }
 
             context.getPlayer().doAction();
 

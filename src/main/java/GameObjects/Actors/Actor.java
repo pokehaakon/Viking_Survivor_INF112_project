@@ -1,62 +1,37 @@
 package GameObjects.Actors;
 
+import Animations.AnimationState;
 import GameObjects.Actors.ActorAction.ActorAction;
-import Animations.MovementState;
-import Animations.ActorMovement;
-import Animations.AnimationConstants;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import Rendering.AnimationRender;
 import com.badlogic.gdx.math.Vector2;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-import static Animations.AnimationConstants.getGIF;
-
-public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor, IAnimation {
+public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor {
     public float speed, HP, damage, armour;
 
     private Set<ActorAction> actions;
-    private ActorMovement movement;
 
 
-    protected Map<MovementState, String> animations;
     // unit vector, direction of movement
     public Vector2 velocityVector;
 
-
-    protected DirectionState directionState;
     public boolean idle;
 
-    protected MovementState movementState;
 
 
-    public Animation<TextureRegion> currentGIF;
-    public String currentSpritePath;
 
-    public Actor(String spritePath, BodyFeatures bodyFeatures, float scale) {
-        super(spritePath, bodyFeatures, scale);
+    public Actor(E type,AnimationRender render, BodyFeatures bodyFeatures, float scale) {
+        super(type,render,bodyFeatures,scale);
         velocityVector = new Vector2();
-        actions  = new HashSet<>();
-        animations = new HashMap<>();
-        directionState = DirectionState.RIGHT;
 
-    }
-    public Actor(){
-        velocityVector = new Vector2();
         actions  = new HashSet<>();
         directionState = DirectionState.RIGHT;
-
     }
 
-    public void setAnimations(Map<MovementState, String> animations) {
-        this.animations = animations;
-    }
 
 
     /**
@@ -83,18 +58,6 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
         actions = new HashSet<>();
     }
 
-    @Override
-    public void setAnimation(ActorMovement animation) {
-        this.movement = animation;
-    }
-
-    @Override
-    public void doAnimation(){
-        movement.animate(this);
-    }
-
-
-
 
     @Override
     public void resetVelocity(){
@@ -116,8 +79,6 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
     public void move(){
         velocityVector.setLength(speed);
         body.setLinearVelocity(velocityVector);
-
-        updateDirectionState();
     }
 
     @Override
@@ -125,64 +86,6 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
         speed *= speedMultiplier;
     }
 
-
-    @Override
-    public void draw(SpriteBatch batch, float elapsedTime) {
-
-        TextureRegion region = currentGIF.getKeyFrame(elapsedTime);
-
-        DirectionState newState;
-        if (velocityVector.x > 0) {
-            newState = DirectionState.RIGHT;
-        }
-        else if (velocityVector.x < 0) {
-            newState = DirectionState.LEFT;
-        }
-        else {
-            newState = directionState;
-        }
-
-        if(newState != directionState) {
-            directionState = newState;
-            region.flip(true, false);
-        }
-
-
-        // for GIF
-        currentGIF.setFrameDuration(AnimationConstants.FRAME_DURATION);
-        batch.draw(
-                region,
-                body.getPosition().x,
-                body.getPosition().y,
-                currentSprite.getWidth()*scale,
-                currentSprite.getHeight()*scale
-
-        );
-
-    }
-
-    @Override
-    public void setNewAnimationGIF(String gifPath) {
-        //currentGIF = getGIF(gifPath);
-        //currentSprite = new Texture(Gdx.files.internal(gifPath));
-        //currentSpritePath = gifPath;
-    }
-
-
-
-    @Override
-    public void setAnimationState(MovementState newState) {
-        if(newState != movementState) {
-            movementState = newState;
-            currentGIF = getGIF(animations.get(movementState));
-
-        }
-    }
-
-    @Override
-    public MovementState getAnimationState() {
-        return movementState;
-    }
 
     public boolean isIdle() {
         return idle;
@@ -193,7 +96,7 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
      * When the velocity vector has positive value, the direction state is set to RIGHT
      * and vice versa
      */
-    private void updateDirectionState() {
+    public void updateDirectionState() {
         DirectionState newState;
         if (velocityVector.x > 0) {
             newState = DirectionState.RIGHT;
@@ -210,10 +113,17 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
         }
     }
 
-
-    public DirectionState getDirectionState() {
-        return directionState;
+    public void updateMovement() {
+        AnimationState newState;
+        if(idle) {
+            newState = AnimationState.IDLE;
+        }
+        else {
+            newState = AnimationState.MOVING;
+        }
+        setAnimationState(newState);
     }
+
 
 
 

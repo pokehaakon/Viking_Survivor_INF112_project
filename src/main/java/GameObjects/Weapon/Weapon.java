@@ -1,21 +1,13 @@
 package GameObjects.Weapon;
 
+import GameObjects.Actors.Actor;
 import GameObjects.Actors.ObjectTypes.WeaponType;
-import GameObjects.Actors.Player.Player;
+import GameObjects.BodyFeatures;
+import Rendering.AnimationRender;
 
-import java.util.Arrays;
-import java.util.List;
+public class Weapon extends Actor<WeaponType>  {
 
-public abstract class Weapon implements IWeapon {
-    Player player;
-    List<WeaponBody> projectiles;
-    public Weapon(Player player, List<WeaponBody> projectiles) {
-        this.player = player;
-        this.projectiles = projectiles;
+    public Weapon(WeaponType type, AnimationRender render, BodyFeatures bodyFeatures, float scale) {
+        super(type,render,bodyFeatures,scale);
     }
-
-    protected void addToProjectileList(WeaponBody... bodies) {
-        projectiles.addAll(Arrays.stream(bodies).toList());
-    }
-
 }
