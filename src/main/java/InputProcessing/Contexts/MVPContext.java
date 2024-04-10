@@ -1,10 +1,8 @@
 package InputProcessing.Contexts;
 
-import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.Actors.Enemy.Enemy;
 import GameObjects.Actors.ObjectTypes.EnemyType;
 import GameObjects.Actors.ObjectTypes.PlayerType;
-import GameObjects.Actors.ObjectTypes.SwarmType;
 import GameObjects.Actors.ActorAction.PlayerActions;
 import GameObjects.Actors.ObjectTypes.TerrainType;
 import GameObjects.Factories.EnemyFactory;
@@ -14,10 +12,7 @@ import GameObjects.Factories.TerrainFactory;
 import GameObjects.ObjectPool;
 import GameObjects.Terrain.Terrain;
 import InputProcessing.ContextualInputProcessor;
-import InputProcessing.Coordinates.SpawnCoordinates;
-import InputProcessing.Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
-import Simulation.EnemyContactListener;
 import Simulation.Simulation;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
@@ -30,14 +25,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static GameObjects.Actors.ActorAction.EnemyActions.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.getBottomLeftCorrection;
 import static VikingSurvivor.app.Main.SCREEN_WIDTH;

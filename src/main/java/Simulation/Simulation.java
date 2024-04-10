@@ -26,7 +26,6 @@ import java.util.concurrent.locks.Lock;
 
 import static GameObjects.Actors.ActorAction.EnemyActions.destroyIfDefeated;
 import static GameObjects.Actors.ActorAction.EnemyActions.moveInStraightLine;
-import static GameObjects.Actors.Stats.Stats.SWARM_SPEED_MULTIPLIER;
 
 public class Simulation implements Runnable {
     private Lock renderLock;

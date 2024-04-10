@@ -1,10 +1,11 @@
 package GameObjects.Factories;
 
 
+import Animations.MovementState;
 import GameObjects.Actors.ObjectTypes.EnemyType;
 import GameObjects.Actors.Stats.EnemyStats;
 import GameObjects.Actors.Stats.Stats;
-import Animations.ActorAnimation;
+import Animations.ActorMovement;
 import Animations.ActorAnimations;
 import Animations.AnimationConstants;
 import GameObjects.Actors.Enemy.Enemy;
@@ -14,7 +15,9 @@ import Tools.FilterTool;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
 
-import static Animations.AnimationConstants.PLAYER_IDLE_RIGHT;
+import java.util.HashMap;
+import java.util.Map;
+
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createSquareShape;
 
@@ -55,9 +58,9 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
         float scale;
         Shape shape;
         Texture texture;
-        ActorAnimation animation;
         EnemyStats stats;
 
+        Map<MovementState,String> gifs = new HashMap<>();
 
         switch (type) {
             case RAVEN: {
@@ -68,8 +71,8 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                         (float) (texture.getHeight()*scale)
 
                 );
-                animation = ActorAnimations.enemyMoveAnimation();
                 stats = Stats.enemy1();
+                gifs.put(MovementState.WALKING,"raven.gif");
                 break;
             }
             case ORC: {
@@ -79,8 +82,8 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                         texture.getWidth()*scale,
                         texture.getHeight()*scale);
 
-                animation = ActorAnimations.enemyMoveAnimation();
                 stats = Stats.enemy2();
+                gifs.put(MovementState.WALKING, "orc.gif");
                 break;
             }
             default:
@@ -101,9 +104,10 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
         enemy.setBodyFeatures(bodyFeatures);
         enemy.setScale(scale);
         enemy.setSprite(texture);
-        enemy.setAnimation(animation);
         enemy.setType(type);
+        enemy.setAnimationState(MovementState.WALKING);
         enemy.setStats(stats);
+        enemy.setAnimations(gifs);
 
         return enemy;
     }

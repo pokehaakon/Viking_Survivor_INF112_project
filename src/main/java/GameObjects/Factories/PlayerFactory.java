@@ -1,10 +1,11 @@
 package GameObjects.Factories;
 
+import Animations.MovementState;
 import GameObjects.Actors.ObjectTypes.PlayerType;
 import GameObjects.Actors.Player.Player;
 import GameObjects.Actors.Stats.PlayerStats;
 import GameObjects.Actors.Stats.Stats;
-import Animations.ActorAnimation;
+import Animations.ActorMovement;
 import Animations.ActorAnimations;
 import Animations.AnimationConstants;
 import GameObjects.BodyFeatures;
@@ -12,12 +13,12 @@ import TextureHandling.GdxTextureHandler;
 import TextureHandling.TextureHandler;
 import Tools.FilterTool;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static Tools.BodyTool.createBody;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createSquareShape;
 
@@ -37,9 +38,10 @@ public class PlayerFactory implements IFactory<Player, PlayerType>{
         Shape shape;
         String spawnGIF;
         Texture texture;
-        ActorAnimation animation;
+        ActorMovement animation;
         PlayerStats stats;
         BodyFeatures bodyFeatures;
+        Map<MovementState,String> gifs = new HashMap<>();
 
         switch (type) {
             case PLAYER1: {
@@ -51,9 +53,12 @@ public class PlayerFactory implements IFactory<Player, PlayerType>{
                         (float) (texture.getHeight()*scale)
 
                 );
-                animation = ActorAnimations.playerMoveAnimation();
+                animation = ActorAnimations.playerMovement();
 
                 stats = Stats.player();
+                gifs.put(MovementState.WALKING, AnimationConstants.PLAYER_RIGHT);
+                gifs.put(MovementState.IDLE, AnimationConstants.PLAYER_IDLE_RIGHT);
+
                 break;
             }
 
@@ -83,6 +88,7 @@ public class PlayerFactory implements IFactory<Player, PlayerType>{
         player.setSprite(texture);
         player.setAnimation(animation);
         player.setType(type);
+        player.setAnimations(gifs);
 
         return player;
     }

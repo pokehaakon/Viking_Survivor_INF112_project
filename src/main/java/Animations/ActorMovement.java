@@ -2,7 +2,7 @@ package Animations;
 
 import GameObjects.Actors.Actor;
 
-public interface ActorAnimation {
+public interface ActorMovement {
 
     // this interface acts as an animation object
 

@@ -1,29 +1,31 @@
 package GameObjects.Actors;
 
 import GameObjects.Actors.ActorAction.ActorAction;
-import Animations.AnimationStates;
-import Animations.ActorAnimation;
+import Animations.MovementState;
+import Animations.ActorMovement;
 import Animations.AnimationConstants;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+
+import static Animations.AnimationConstants.getGIF;
 
 public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor, IAnimation {
     public float speed, HP, damage, armour;
 
-    private Set<ActorAction> actions;
-    private ActorAnimation animation;
+    private Set<ActorAction<E>> actions;
+    private ActorMovement movement;
 
 
+    protected Map<MovementState, String> animations;
     // unit vector, direction of movement
     public Vector2 velocityVector;
 
@@ -31,7 +33,7 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
     protected DirectionState directionState;
     public boolean idle;
 
-    protected AnimationStates animationState;
+    protected MovementState movementState;
 
 
     public Animation<TextureRegion> currentGIF;
@@ -41,15 +43,19 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
         super(spritePath, bodyFeatures, scale);
         velocityVector = new Vector2();
         actions  = new HashSet<>();
+        animations = new HashMap<>();
+        directionState = DirectionState.RIGHT;
 
     }
     public Actor(){
         velocityVector = new Vector2();
         actions  = new HashSet<>();
+        directionState = DirectionState.RIGHT;
+
     }
 
-    public String getSpritePath() {
-        return currentSpritePath;
+    public void setAnimations(Map<MovementState, String> animations) {
+        this.animations = animations;
     }
 
 
@@ -57,7 +63,7 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
      * Defines an action for the actor to perform
      * @param action
      */
-    public void setAction(ActorAction action) {
+    public void setAction(ActorAction<E> action) {
         actions.add(action);
 
     }
@@ -65,8 +71,8 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
      * The actor performs its actions
      */
     public void doAction(){
-        for(ActorAction action : actions) {
-            action.act(this);
+        for(ActorAction<E> action : actions) {
+            action.act();
         }
     }
 
@@ -78,13 +84,13 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
     }
 
     @Override
-    public void setAnimation(ActorAnimation animation) {
-        this.animation = animation;
+    public void setAnimation(ActorMovement animation) {
+        this.movement = animation;
     }
 
     @Override
     public void doAnimation(){
-        animation.animate(this);
+        movement.animate(this);
     }
 
 
@@ -125,15 +131,22 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
 
         TextureRegion region = currentGIF.getKeyFrame(elapsedTime);
 
-        if(directionState == DirectionState.LEFT) {
-            if(!region.isFlipX())
-                region.flip(true, false);
+        DirectionState newState;
+        if (velocityVector.x > 0) {
+            newState = DirectionState.RIGHT;
+        }
+        else if (velocityVector.x < 0) {
+            newState = DirectionState.LEFT;
+        }
+        else {
+            newState = directionState;
         }
 
-        if(directionState == DirectionState.RIGHT) {
-            if(!region.isFlipX())
-                region.flip(false, false);
+        if(newState != directionState) {
+            directionState = newState;
+            region.flip(true, false);
         }
+
 
         // for GIF
         currentGIF.setFrameDuration(AnimationConstants.FRAME_DURATION);
@@ -150,24 +163,25 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
 
     @Override
     public void setNewAnimationGIF(String gifPath) {
-        currentGIF = AnimationConstants.getGIF(gifPath);
-        currentSprite = new Texture(Gdx.files.internal(gifPath));
-        currentSpritePath = gifPath;
+        //currentGIF = getGIF(gifPath);
+        //currentSprite = new Texture(Gdx.files.internal(gifPath));
+        //currentSpritePath = gifPath;
     }
 
 
 
     @Override
-    public void setAnimationState(AnimationStates newState, String gifPath) {
-        if(newState != animationState) {
-            animationState = newState;
-            setNewAnimationGIF(gifPath);
+    public void setAnimationState(MovementState newState) {
+        if(newState != movementState) {
+            movementState = newState;
+            currentGIF = getGIF(animations.get(movementState));
+
         }
     }
 
     @Override
-    public AnimationStates getAnimationState() {
-        return animationState;
+    public MovementState getAnimationState() {
+        return movementState;
     }
 
     public boolean isIdle() {
