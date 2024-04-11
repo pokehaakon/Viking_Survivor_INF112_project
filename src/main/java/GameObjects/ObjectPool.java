@@ -4,11 +4,12 @@ import GameObjects.Factories.IFactory;
 import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 
 public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
     private final IFactory<T, E> factory;
-    private final Map<E, Queue<T>> objectPool;
+    private final Map<E, SmallPool<T>> objectPool;
     private final List<E> objectTypes;
     private final Random random;
 
@@ -39,13 +40,7 @@ public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
     }
 
     private void createObjectPool(E type, int size) {
-        Queue<T> pool = new ArrayDeque<>(size);
-        for (T obj : factory.create(size, type)) {
-            obj.addToWorld(world);
-            obj.getBody().setActive(false);
-            pool.add(obj);
-        }
-        objectPool.put(type, pool);
+        objectPool.put(type, new SmallPool<>(world, () -> factory.create(type), size));
     }
 
     public T getRandom() {
@@ -54,18 +49,7 @@ public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
     }
 
     public T get(E type) {
-        Queue<T> pool = objectPool.get(type);
-        T obj;
-        if (!pool.isEmpty()) {
-            obj = pool.poll();
-        }
-        else {
-            obj = factory.create(type);
-            obj.addToWorld(world);
-        }
-        obj.getBody().setActive(true);
-        return obj;
-
+        return objectPool.get(type).get();
     }
 
     /**
@@ -89,32 +73,7 @@ public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
      * @return a list of GameObjects
      */
     public List<T> get(E type, int num) {
-        List<T> objects;// = new ArrayList<>();
-
-        Queue<T> pool = objectPool.get(type);
-
-        if (pool.size() < num) {
-            num = pool.size() - num;
-            objects = factory.create(-num, type);
-            for (T obj : objects) {
-                obj.addToWorld(world);
-                obj.getBody().setActive(true);
-            }
-            while (!pool.isEmpty()) {
-                T obj = pool.poll();
-                obj.getBody().setActive(true);
-                objects.add(obj);
-            }
-        } else {
-            objects = new ArrayList<>(num);
-            for (int i = 0; i < num; i++) {
-                T obj = pool.poll();
-                obj.getBody().setActive(true);
-                objects.add(obj);
-            }
-        }
-
-        return objects;
+        return objectPool.get(type).get(num);
     }
 
     /**
@@ -122,15 +81,10 @@ public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
      * @param object the object to return
      */
     public void returnToPool(T object) {
-        Queue<T> pool = objectPool.get(object.getType());
-        if (pool != null) {
-            object.getBody().setActive(false);
-            object.revive();
-            pool.add(object);
-        }
+        objectPool.get(object.getType()).returnToPool(object);
     }
 
-    public Map<E, Queue<T>> getObjectPool() {
+    public Map<E, SmallPool<T>> getObjectPool() {
         return objectPool;
     }
 }

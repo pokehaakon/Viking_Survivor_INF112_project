@@ -51,7 +51,7 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
     public void draw(SpriteBatch batch) {
 
         Vector2 pos = body.getPosition();
-        batch.draw(currentSprite,pos.x,pos.y, currentSprite.getWidth()*scale,  currentSprite.getHeight()*scale);
+        batch.draw(currentSprite, pos.x, pos.y, currentSprite.getWidth()*scale,  currentSprite.getHeight()*scale);
 
     }
 
@@ -92,7 +92,6 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     @Override
     public void addToWorld(World world) {
-
         body = BodyTool.createBody(
                 world,
                 new Vector2(),
@@ -103,6 +102,8 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
                 bodyFeatures.restitution(),
                 bodyFeatures.isSensor(),
                 bodyFeatures.type());
+        body.setUserData(this);
+
     }
 
    @Override

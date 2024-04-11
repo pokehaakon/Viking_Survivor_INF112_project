@@ -5,6 +5,7 @@ import GameObjects.Actors.Enemy.Enemy;
 import GameObjects.Actors.ObjectTypes.EnemyType;
 import GameObjects.Factories.EnemyFactory;
 import GameObjects.ObjectPool;
+import GameObjects.SmallPool;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
@@ -86,11 +87,11 @@ class EnemyPoolTest {
 
         enemiesInPool = new ArrayList<>();
 
-        Map<EnemyType, Queue<Enemy>> poolMap = testPool.getObjectPool();
+        Map<EnemyType, SmallPool<Enemy>> poolMap = testPool.getObjectPool();
 
-        for(Map.Entry<EnemyType, Queue<Enemy>> entry : poolMap.entrySet() ) {
-            Queue<Enemy> enemyList = entry.getValue();
-            enemiesInPool.add(enemyList);
+        for(Map.Entry<EnemyType, SmallPool<Enemy>> entry : poolMap.entrySet() ) {
+            SmallPool<Enemy> enemyList = entry.getValue();
+            enemiesInPool.add(enemyList.getPool());
         }
 
         enemy1 = objectTypes.get(0);
@@ -102,9 +103,9 @@ class EnemyPoolTest {
         for(Queue<Enemy> enemies : enemiesInPool) {
             for(int i = 0; i < enemies.size();i++) {
                 // body should not be null
-                assertNotNull(enemies.poll().getBody());
+                assertNotNull(enemies.peek().getBody());
                 // body should not be active
-                assertFalse(enemies.poll().getBody().isActive());
+                assertFalse(enemies.peek().getBody().isActive());
             }
         }
     }
@@ -151,10 +152,10 @@ class EnemyPoolTest {
     @Test
     void removingAndAdding() {
         int numberToRemove = 3;
-        System.out.println(testPool.getObjectPool().get(enemy1).size());
+        //System.out.println(testPool.getObjectPool().get(enemy1).size());
         // removing enemies
         testPool.get(enemy1,numberToRemove);
-        System.out.println(testPool.getObjectPool().get(enemy1).size());
+        //System.out.println(testPool.getObjectPool().get(enemy1).size());
         assertEquals(poolSize - numberToRemove, testPool.getObjectPool().get(enemy1).size());
 
         // should remain unchanged for other enemy

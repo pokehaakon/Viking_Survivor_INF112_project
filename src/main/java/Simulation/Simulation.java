@@ -92,13 +92,14 @@ public class Simulation implements Runnable {
             if (TimeUtils.millis() - lastSpawnTime > 5000) {
                 spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player)));
 //                spawnSwarm(EnemyType.RAVEN, SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
-                spawnTerrain(TerrainType.TREE);
+                //spawnTerrain(TerrainType.TREE);
             }
 
             doSpinSleep(lastFrameStart, dt);
             UPS.add(System.nanoTime() - lastFrameStart);
             while (frame > synchronizer.get()){continue;}
             renderLock.lock();
+            player.cleenUp();
             world.step(1/(float) 60, 10, 10);
 
             removeDestroyedEnemies();
