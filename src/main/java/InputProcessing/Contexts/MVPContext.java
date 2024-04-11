@@ -411,7 +411,8 @@ public class MVPContext extends Context {
         grass.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);
-        terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.TREE), 50);
+        terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.TREE, TerrainType.PICKUPORB), 50);
+
 
         toBoKilled = new HashSet<>();
 

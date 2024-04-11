@@ -13,7 +13,7 @@ public class GIFS {
     public static final GifPair WOLF_GIF = new GifPair(getGIF("wolf.gif"),flippedGIF(getGIF("wolf.gif")));
     public static final GifPair PLAYER_MOVING_GIF = new GifPair(getGIF("vikingleft-crop.gif"),flippedGIF(getGIF("vikingleft-crop.gif")));
     public static final GifPair PLAYER_IDLE_GIF = new GifPair(getGIF("viking_idle_left-crop.gif"),flippedGIF(getGIF("viking_idle_left-crop.gif")));
-
+    public static final GifPair PICKUPORB_GIF = new GifPair(getGIF("pickupOrb.gif"),flippedGIF(getGIF("pickupOrb.gif")));
 
     public static Animation<TextureRegion> flippedGIF(Animation<TextureRegion> originalGIF) {
         Object[] keyFrames = originalGIF.getKeyFrames();

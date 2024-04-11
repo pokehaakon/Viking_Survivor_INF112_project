@@ -102,6 +102,7 @@ public class Simulation implements Runnable {
                 spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
 //              spawnSwarm(EnemyType.RAVEN, SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
                 spawnTerrain(TerrainType.TREE);
+                spawnTerrain(TerrainType.PICKUPORB);
             }
 
             for(Weapon weapon : player.getInventory()) {

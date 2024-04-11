@@ -2,6 +2,8 @@ package GameObjects.Factories;
 
 import Animations.AnimationState;
 import GameObjects.Actors.ObjectTypes.TerrainType;
+import GameObjects.AnimationRendering.GIFRender;
+import GameObjects.AnimationRendering.GifPair;
 import GameObjects.BodyFeatures;
 import GameObjects.Terrain.Terrain;
 import GameObjects.AnimationRendering.AnimationRender;
@@ -18,7 +20,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static GameObjects.Actors.ObjectTypes.TerrainType.PICKUPORB;
+import static GameObjects.AnimationRendering.GIFS.PICKUPORB_GIF;
 import static Tools.FilterTool.createFilter;
+import static Tools.ShapeTools.createCircleShape;
 import static Tools.ShapeTools.createSquareShape;
 
 public class TerrainFactory implements IFactory<Terrain, TerrainType>{
@@ -43,6 +48,7 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
         BodyFeatures bodyFeatures;
 
         Map<AnimationState, Sprite> animations = new HashMap<>();
+        Map<AnimationState, GifPair> gifAnimations = new HashMap<>();
 
         AnimationRender render;
 
@@ -59,7 +65,16 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
                 render = new SpriteRender(animations);
                 break;
             }
+            case PICKUPORB:
+                texture = textureHandler.loadTexture("pickupOrb.gif");
+                scale = 0.5f;
+                shape = createCircleShape(
+                        (float)(texture.getWidth())*scale/6
 
+                );
+                gifAnimations.put(AnimationState.STATIC, PICKUPORB_GIF);
+                render = new GIFRender<>(gifAnimations);
+                break;
             default:
                 throw new IllegalArgumentException("Invalid enemy type");
         }
