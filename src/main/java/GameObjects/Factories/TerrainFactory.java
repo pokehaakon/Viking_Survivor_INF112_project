@@ -48,8 +48,8 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
 
         switch (type) {
             case TREE: {
-                texture = textureHandler.loadTexture("img_2.png");
-                scale = 0.6f;
+                texture = textureHandler.loadTexture("tree.png");
+                scale = 0.1f;
                 shape = createSquareShape(
                         (float)(texture.getWidth())*scale,
                         (float) (texture.getHeight()*scale)

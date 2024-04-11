@@ -20,6 +20,7 @@ import java.util.Map;
 
 import static GameObjects.AnimationRendering.GIFS.ORC_GIF;
 import static GameObjects.AnimationRendering.GIFS.RAVEN_GIF;
+import static GameObjects.AnimationRendering.GIFS.WOLF_GIF;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
@@ -74,6 +75,12 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 scale = AnimationConstants.ENEMY2_SCALE;
                 stats = Stats.enemy2();
                 gifs.put(AnimationState.MOVING, ORC_GIF);
+                break;
+            }
+            case WOLF: {
+                scale = AnimationConstants.ENEMY2_SCALE;
+                stats = Stats.enemy2();
+                gifs.put(AnimationState.MOVING, WOLF_GIF);
                 break;
             }
             default:

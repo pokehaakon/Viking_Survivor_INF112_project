@@ -10,9 +10,8 @@ public class GIFS {
 
     public static final GifPair RAVEN_GIF = new GifPair(getGIF("raven.gif"),flippedGIF(getGIF("raven.gif")));
     public static final GifPair ORC_GIF = new GifPair(getGIF("orc.gif"),flippedGIF(getGIF("orc.gif")));
-
+    public static final GifPair WOLF_GIF = new GifPair(getGIF("wolf.gif"),flippedGIF(getGIF("wolf.gif")));
     public static final GifPair PLAYER_MOVING_GIF = new GifPair(getGIF("vikingleft-crop.gif"),flippedGIF(getGIF("vikingleft-crop.gif")));
-
     public static final GifPair PLAYER_IDLE_GIF = new GifPair(getGIF("viking_idle_left-crop.gif"),flippedGIF(getGIF("viking_idle_left-crop.gif")));
 
 
