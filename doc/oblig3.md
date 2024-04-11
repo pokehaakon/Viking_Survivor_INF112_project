@@ -1,5 +1,82 @@
 # Rapport – innlevering 3
-**Team:** VirtuellVikings – Hallvard, Ingmar, Eilif, Andreas, Håkon
+**Team:** VirtuellVikings – Hallvard, Ingmar, Eilif, Andreas, Haakon
+
+# Møtereferat
+
+### Torsdag 14.03
+Tilstede: Haakon, Andreas, Ingmar, Eilif
+
+Under møtet:
+Diskuterte fremtidige gjøremål
+
+til neste gang:
+Ingmar: box2d Compatible enemies
+Andreas: fullføre meny med funksjon
+Hallvard / Eilif: oppdatere Player klassen, lage Weapon klasse
+
+### Torsdag 21.03
+Tilstede: Andreas, Eilif, Ingmar, Haakon, Hallvard
+
+under møtet:
+oppsummering av forrige ukes gjøremål, diskuterte map layout, og ønsker til map/player funksjonalitet.
+
+til neste gang:
+Andreas: player info UI
+Ingmar: map sprites
+Eilif: weapon klasse
+Hallvard: enemy/weapon sprites
+Haakon: parsing av tekst filer
+
+### Tirsdag 9.04
+Tilstede: Eilif, Haakon, Ingmar, Hallvard
+
+under møtet:
+la plan for å komme i mål med oblig3
+merging av branches, og se hvordan early prototype candidate project ser ut
+
+til neste gang:
+fullføre prototypen til oblig3
+
+### Torsdag 11.04
+Tilstede: Hallvard, Ingmar, Eilif, Haakon
+
+under møtet:
+merge inn det som mangler for å gjøre koden klar til oblig3
+fordele skriveoppgaver til oblig3
+
+# Prosjektrapport
+
+Hvordan fungerer rollene i teamet?/Trenger dere andre roller?
+* ingen endring i rollefordeling.
+
+Er det noen erfaringer enten team-messig eller mtp prosjektmetodikk som er verdt å nevne? Synes teamet at de valgene dere har tatt er gode? Hvis ikke, hva kan dere gjøre annerledes for å forbedre måten teamet fungerer på?
+* dårlig kommunikasjon fører til overlapping i arbeid
+* oppgavefordelingene som blir holdt hvert møte funker bra som en plan, men teamet har tendens til å svaie litt fra oppgavene som ble distribuert
+
+Hvordan er gruppedynamikken? Er det uenigheter som bør løses?
+* gruppedynamikken er grei, men litt ubalansert.
+* uenigheter skjer fra tid til annen oftest anngående programmerings logikk, som blir løst via diskurs.
+
+Hvordan fungerer kommunikasjon for dere?
+* kommunikasjon på møtene er veldig bra, problemene er med kommunikasjon via discord, hvor ikke alle oppdaterer hva de jobber med, hvor langt de er kommet og om det er oppstått problemer.
+
+### Retrospekt
+
+Hva har vi klart?
+* ukentlige fysiske oppmøter
+* bra dialog og veiledgning under møtene
+
+Ting som må forbedres?
+* kommunikasjon er noe manglende forutenom de fysiske møtene
+* ikke alle er like flinke til å skrive meningsfulle commits
+* teammedlemmene har noe problemer med å bryte ut av rollefordelingen
+
+### Forbedringspunkt
+Kommunikasjon:
+* teammedlemmer *må* bli bedre til å bruke discord-kanalen for å melde fra om arbeid og oppmøte
+  Prosjektfordeling:
+* teamet må bli bedre til å bidra jevnt, og ikke bli fastlåst i rollefordelingene
+
 
 # Krav og spesifikasjon:
 Hva har vi prioritert?
@@ -38,4 +115,5 @@ Dette fikk vi fikset opp i ved å endre på hvordan enemies spawner og ved
 å fjerne en del unødvendig kode. Igjen for å unngå bugs i fremtiden er vi klar 
 over at det er viktig med gode tester og oversiktlig kode slik at det er 
 lettere å debugge.
+
 
