@@ -2,15 +2,13 @@ package InputProcessing.Contexts;
 
 import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Actors.ObjectTypes.EnemyType;
-import GameObjects.Actors.ObjectTypes.PlayerType;
-import GameObjects.Actors.ObjectTypes.SwarmType;
+import GameObjects.Actors.ObjectTypes.*;
 import GameObjects.Actors.ActorAction.PlayerActions;
-import GameObjects.Actors.ObjectTypes.TerrainType;
 import GameObjects.Factories.EnemyFactory;
 import GameObjects.Actors.Player.Player;
 import GameObjects.Factories.PlayerFactory;
 import GameObjects.Factories.TerrainFactory;
+import GameObjects.Factories.WeaponItemFactory;
 import GameObjects.ObjectPool;
 import GameObjects.Terrain.Terrain;
 import InputProcessing.ContextualInputProcessor;
@@ -111,7 +109,6 @@ public class MVPContext extends Context {
     private TiledMap map;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
     private float tileMapScale = 4f;
-
 
 
 
@@ -252,7 +249,7 @@ public class MVPContext extends Context {
         tiledMapRenderer.setView((OrthographicCamera) camera);
         tiledMapRenderer.render();
 
-        debugRenderer.render(world, camera.combined);
+        //debugRenderer.render(world, camera.combined);
 
         cameraUpdate(player.getBody().getPosition());
 //        Vector2 origin;
@@ -391,6 +388,7 @@ public class MVPContext extends Context {
         player.setPosition(getMiddleOfMapPosition(map, tileMapScale));
         player.setAction(PlayerActions.moveToInput(keyStates));
 
+        player.addWeapon(WeaponType.KNIFE);
 
         enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);
         terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.TREE), 50);

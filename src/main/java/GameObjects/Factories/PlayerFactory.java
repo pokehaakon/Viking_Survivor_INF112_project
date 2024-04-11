@@ -76,7 +76,7 @@ public class PlayerFactory implements IFactory<Player, PlayerType>{
                 BodyDef.BodyType.DynamicBody);
 
 
-        player = new Player();
+        player = new Player(textureHandler);
         player.setStats(stats);
         player.setScale(scale);
         player.setBodyFeatures(bodyFeatures);

@@ -5,17 +5,20 @@ import GameObjects.Actors.Player.Player;
 import GameObjects.Weapon.Knife;
 import GameObjects.Weapon.Weapon;
 import GameObjects.Weapon.WeaponBody;
+import TextureHandling.TextureHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class WeaponItemFactory {
-    Player player;
-    List<WeaponBody> projectiles;
+    private Player player;
+    private List<WeaponBody> projectiles;
     //WeaponFactory factory;
+    private TextureHandler textureHandler;
 
-    public WeaponItemFactory(Player player) {
+    public WeaponItemFactory(Player player, TextureHandler textureHandler) {
         this.player = player;
+        this.textureHandler = textureHandler;
         projectiles = new ArrayList<>();
         //factory = new WeaponFactory();
     }
@@ -26,7 +29,7 @@ public class WeaponItemFactory {
     public Weapon create(WeaponType type) {
         return switch (type) {
             case PROJECTILE -> null;
-            case KNIFE -> new Knife(player, projectiles);
+            case KNIFE -> new Knife(player, projectiles, textureHandler);
         };
     }
 }

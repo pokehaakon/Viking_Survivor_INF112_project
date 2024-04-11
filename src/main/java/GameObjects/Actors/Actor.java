@@ -14,13 +14,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor, IAnimation {
+public abstract class Actor <E extends Enum<E>> extends GameObject<E> implements IActor, IAnimation {
     public float speed, HP, damage, armour;
 
-    private Set<ActorAction> actions;
+    private List<ActorAction> actions;
     private ActorAnimation animation;
 
 
@@ -40,12 +39,12 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
     public Actor(String spritePath, BodyFeatures bodyFeatures, float scale) {
         super(spritePath, bodyFeatures, scale);
         velocityVector = new Vector2();
-        actions  = new HashSet<>();
+        actions = new ArrayList<>();
 
     }
     public Actor(){
         velocityVector = new Vector2();
-        actions  = new HashSet<>();
+        actions = new ArrayList<>();
     }
 
     public String getSpritePath() {
@@ -74,7 +73,7 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
      * Reset actions
      */
     public void resetActions() {
-        actions = new HashSet<>();
+        actions.clear();
     }
 
     @Override
