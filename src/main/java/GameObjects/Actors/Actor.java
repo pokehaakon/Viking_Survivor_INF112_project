@@ -6,6 +6,7 @@ import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
 import Rendering.AnimationRender;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,8 +22,12 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
 
     public boolean idle;
 
+    public boolean isHit = false;
+
+    public boolean coolDown = false;
 
 
+    private long lastHit;
 
     public Actor(E type,AnimationRender render, BodyFeatures bodyFeatures, float scale) {
         super(type,render,bodyFeatures,scale);
@@ -122,6 +127,37 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
             newState = AnimationState.MOVING;
         }
         setAnimationState(newState);
+    }
+
+
+    public void attack(Actor actor,float damage) {
+
+        actor.HP -= damage;
+        actor.setHit(true);
+        actor.setLastHit(TimeUtils.millis());
+    }
+
+    public void endCoolDown() {
+        isHit = false;
+    }
+    public boolean isHit() {
+        return isHit;
+    }
+
+    public long getLastHit() {
+        return lastHit;
+    }
+
+    public void setLastHit(long newAttack) {
+        lastHit = newAttack;
+    }
+
+    public void setHit(boolean bool) {
+        isHit  = bool;
+    }
+
+    public void setCoolDown(boolean bool) {
+        coolDown = bool;
     }
 
 

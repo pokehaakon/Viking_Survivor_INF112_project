@@ -263,8 +263,11 @@ public class MVPContext extends Context {
 
         for (Enemy enemy : drawableEnemies) {
             if(i > 100) batch.flush();
-            //enemy.doAnimation();
+            if(enemy.isHit()) {
+                batch.setColor(Color.RED);
+            }
             enemy.draw(batch, elapsedTime);
+            batch.setColor(Color.WHITE);
             i++;
         }
 
@@ -347,11 +350,10 @@ public class MVPContext extends Context {
         player.addToWorld(world);
         player.setAction(PlayerActions.moveToInput(keyStates));
 
-        orbitWeapon = weaponFactory.create(WeaponType.PROJECTILE);
+        orbitWeapon = weaponFactory.create(WeaponType.KNIFE);
         orbitWeapon.addToWorld(world);
-        orbitWeapon.setAction(WeaponActions.orbit(player,0.5f,150));
-        player.addToInventory(orbitWeapon);
-
+        orbitWeapon.setAction(WeaponActions.orbitPlayer(150,0.2f,  player, 1000));
+        orbitWeapon.setOwner(player);
 
 
         enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);

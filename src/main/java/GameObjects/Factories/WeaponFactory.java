@@ -51,7 +51,7 @@ public class WeaponFactory implements IFactory<Weapon, WeaponType>{
         BodyFeatures bodyFeatures;
         Map<AnimationState, GifPair> animation =  new HashMap<>();
         switch (type) {
-            case PROJECTILE: {
+            case KNIFE: {
                 scale = 0.7f;
                 texture = textureHandler.loadTexture("wolf.png");
                 shape = createCircleShape(texture.getWidth()*scale/2);

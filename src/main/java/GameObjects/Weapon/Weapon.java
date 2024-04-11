@@ -12,28 +12,16 @@ public class Weapon extends Actor<WeaponType>  {
     private final long ORBIT_INTERVAL = 1000;
     public float damage;
     private long lastOrbit;
-    private float angleToPlayer;
+    private float angleToPlayer = 0;
+
+    private long lastAttack;
+
+    private Player owner;
     public Weapon(WeaponType type, AnimationRender render, BodyFeatures bodyFeatures, float scale) {
         super(type,render,bodyFeatures,scale);
     }
 
 
-    public void orbit(long lastOrbit, Player player, float orbitSpeed, float orbitRadius) {
-        if(TimeUtils.millis() - lastOrbit > ORBIT_INTERVAL) {
-            body.setActive(true);
-
-            float x = (float) (Math.cos(angleToPlayer) * orbitRadius);
-            float y = (float) (Math.sin(angleToPlayer) * orbitRadius);
-            body.setTransform(new Vector2(x, y).add(player.getBody().getPosition()), body.getAngle());
-            angleToPlayer += orbitSpeed;
-            if (angleToPlayer >= 2 * Math.PI) {
-                body.setActive(false);
-                lastOrbit = TimeUtils.millis();
-                //System.out.println(w.getBody().isActive());
-            }
-        }
-
-    }
 
     public float getAngleToPlayer() {
         return angleToPlayer;
@@ -41,5 +29,23 @@ public class Weapon extends Actor<WeaponType>  {
 
     public void setAngleToPlayer(float newAngle) {
         angleToPlayer = newAngle;
+    }
+
+
+    public void setOwner(Player player) {
+        owner = player;
+        player.addToInventory(this);
+    }
+
+    public long getLastAttack() {
+        return lastAttack;
+    }
+
+    public void setLastAttack(long newAttack) {
+        lastAttack = newAttack;
+    }
+
+    public Player getOwner() {
+        return owner;
     }
 }

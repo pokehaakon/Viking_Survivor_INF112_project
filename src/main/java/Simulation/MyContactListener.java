@@ -46,7 +46,7 @@ public class MyContactListener implements ContactListener {
         if (weaponEnemyCollision(b1, b2)) {
             Weapon weapon = b1.getUserData() instanceof Weapon ? (Weapon) b1.getUserData():(Weapon) b2.getUserData();
             Enemy enemy = b1.getUserData() instanceof Enemy ? (Enemy) b1.getUserData():(Enemy) b2.getUserData();
-            enemy.HP -= weapon.damage;
+            weapon.attack(enemy, weapon.getOwner().damage);
             System.out.println("WEAPON COLLISION");
         } else if (playerEnemyCollision(b1, b2)) {
             Player player = b1.getUserData() instanceof Player ? (Player) b1.getUserData():(Player) b2.getUserData();

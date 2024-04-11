@@ -25,8 +25,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 
-import static GameObjects.Actors.ActorAction.EnemyActions.destroyIfDefeated;
-import static GameObjects.Actors.ActorAction.EnemyActions.moveInStraightLine;
+import static GameObjects.Actors.ActorAction.EnemyActions.*;
 
 public class Simulation implements Runnable {
     private Lock renderLock;
@@ -102,12 +101,15 @@ public class Simulation implements Runnable {
             context.getPlayer().doAction();
 
             if (TimeUtils.millis() - lastSpawnTime > 5000) {
-                spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player)));
+                spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
 //                spawnSwarm(EnemyType.RAVEN, SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
                 spawnTerrain(TerrainType.TREE);
             }
 
-            //orbitWeapon();
+            for(Weapon weapon : player.getInventory()) {
+                weapon.doAction();
+            }
+
 
 
             doSpinSleep(lastFrameStart, dt);

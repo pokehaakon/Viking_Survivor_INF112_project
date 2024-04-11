@@ -1,8 +1,8 @@
 package GameObjects.Actors.ActorAction;
 
-import GameObjects.Actors.Actor;
 import GameObjects.Actors.Enemy.Enemy;
 import GameObjects.Actors.Player.Player;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import static Tools.FilterTool.createFilter;
 import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
@@ -49,6 +49,17 @@ public abstract class EnemyActions {
             }
         };
     }
+
+    public static ActorAction<Enemy> coolDown(long coolDownDuration) {
+        return (e) -> {
+            if(e.isHit()) {
+                if(TimeUtils.millis() - e.getLastHit() > coolDownDuration) {
+                    e.setHit(false);
+                }
+            }
+        };
+    }
+
 
 
 
