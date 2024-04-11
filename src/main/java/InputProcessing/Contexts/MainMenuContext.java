@@ -43,7 +43,7 @@ public class MainMenuContext extends Context{
         // Stage is created im constructor since render is called before stage initialization
         this.stage = new Stage();
         // Load the texture
-        mmTexture = new Texture(Gdx.files.internal("assets/MainMenuTemp.jpg"));
+        mmTexture = new Texture(Gdx.files.internal("assets/MainMenu1.jpg"));
         backgroundImage = new Image(mmTexture);
 
         // Creating a transparent drawable. Might be needed for buttons to be clickable.
@@ -106,7 +106,7 @@ public class MainMenuContext extends Context{
 
         InputMultiplexer multiplexer = new InputMultiplexer();
 		multiplexer.addProcessor(stage);
-        multiplexer.addProcessor(createInputProcessor());
+        //multiplexer.addProcessor(createInputProcessor());
         //Gdx.input.setInputProcessor(stage);
         this.setInputProcessor(multiplexer);
     }

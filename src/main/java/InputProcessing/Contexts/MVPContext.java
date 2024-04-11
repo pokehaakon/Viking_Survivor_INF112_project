@@ -22,20 +22,23 @@ import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import Simulation.MyContactListener;
 
 
@@ -75,6 +78,10 @@ public class MVPContext extends Context {
 
     private final Lock renderLock;
 
+    private ProgressBar xpBar;
+    private int xpAmount;
+    private int level;
+    private Label levelLabel;
 
     private KeyStates keyStates;
 
@@ -130,6 +137,9 @@ public class MVPContext extends Context {
         this.batch = batch;
         this.camera = camera;
 
+        level = 0;
+        xpAmount = 0;
+
         this.setInputProcessor(createInputProcessor());
         setupDebug();
         font = new BitmapFont();
@@ -162,7 +172,7 @@ public class MVPContext extends Context {
                 return switch (keycode) {
                     case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.setInputKey(keycode);
                     case Input.Keys.ESCAPE -> {keyStates.setInputKey(keycode); System.exit(0); yield true;}
-                    case Input.Keys.P -> {me.getContextualInputProcessor().setContext("EXAMPLE"); yield true;}
+                    case Input.Keys.P -> {me.getContextualInputProcessor().setContext("PAUSEMENU"); yield true;}
                     default -> false;
                 };
             }
@@ -260,9 +270,13 @@ public class MVPContext extends Context {
         origin = player.getBody().getPosition().cpy();
         origin.sub(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
 
+        // Save player position for further use
+        float playerPosX = origin.x;
+        float playerPosY = origin.y;
+
         //center camera at player
-        camera.position.x = origin.x;
-        camera.position.y = origin.y;
+        camera.position.x = playerPosX;
+        camera.position.y = playerPosY;
         camera.position.z = 0;
         camera.update(true);
 
@@ -273,10 +287,15 @@ public class MVPContext extends Context {
 
         elapsedTime += Gdx.graphics.getDeltaTime();
         if(!gameOver) {
-            font.draw(batch, "fps: " + String.format("%.1f", 1_000_000_000F/FPS.avg()), 10, 80);
-            font.draw(batch, "ups: " + String.format("%.1f",1_000_000_000F/UPS.avg()), 10, 60);
-            font.draw(batch, "us/f: " + String.format("%.0f",FrameTime.avg()/1_000), 10, 40);
-            font.draw(batch, "us/u: " + String.format("%.0f",UpdateTime.avg()/1_000), 10, 20);
+            font.draw(batch, "FPS: " + String.format("%.1f", 1_000_000_000F/FPS.avg()), playerPosX -500, playerPosY -420);
+            font.draw(batch, "UPS: " + String.format("%.1f",1_000_000_000F/UPS.avg()), playerPosX -500, playerPosY -440);
+            font.draw(batch, "US/F: " + String.format("%.0f",FrameTime.avg()/1_000), playerPosX -500, playerPosY -460);
+            font.draw(batch, "US/U: " + String.format("%.0f",UpdateTime.avg()/1_000), playerPosX -500, playerPosY -480);
+
+            xpBar.draw(batch, 1);
+            levelLabel.draw(batch, 1);
+            xpBar.setPosition(playerPosX -512, playerPosY +495);
+            levelLabel.setPosition(playerPosX -512, playerPosY +495);
         }
 
 
@@ -306,20 +325,19 @@ public class MVPContext extends Context {
         if(player.isUnderAttack()) {
             batch.setColor(Color.RED);
         }
+
         if(!gameOver) {
             player.draw(batch, elapsedTime);
         }
 
         batch.setColor(Color.WHITE);
         if(!gameOver) {
-            font.draw(batch, "Player HP: " + String.valueOf(player.HP), player.getBody().getPosition().x -300,player.getBody().getPosition().y +400);
+            font.draw(batch, "Player HP: " + String.valueOf(player.HP), playerPosX -500,playerPosY +470);
         }
 
         if(gameOver) {
             font.getData().setScale(5,5);
-            font.draw(batch, "GAME OVER", player.getBody().getPosition().x -200,player.getBody().getPosition().y);
-
-
+            font.draw(batch, "GAME OVER", playerPosX -200, playerPosY);
         }
         batch.end();
 
@@ -329,14 +347,7 @@ public class MVPContext extends Context {
 
         FrameTime.add(System.nanoTime() - renderStartTime);
 
-
-
-
-
-
     }
-
-
 
 
     @Override
@@ -409,6 +420,43 @@ public class MVPContext extends Context {
 
         grass = new Sprite(new Texture(Gdx.files.internal("grass.png")));
         grass.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        //      Create top XP bar:
+        // XP bar style
+        ProgressBar.ProgressBarStyle xpBarStyle = new ProgressBar.ProgressBarStyle();
+
+        // Set XP bar background
+        Pixmap xbBarPixMap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        xbBarPixMap.setColor(Color.BLACK);
+        xbBarPixMap.fill();
+        TextureRegionDrawable barBackgroundDrawable = new TextureRegionDrawable(new TextureRegion(new Texture(xbBarPixMap)));
+        xpBarStyle.background = barBackgroundDrawable;
+        xpBarStyle.background.setMinHeight(20);
+
+        // Set XP bar "knob" (XP amount visualiser)
+        xbBarPixMap.setColor(Color.CYAN);
+        xbBarPixMap.fill();
+        TextureRegionDrawable barKnobDrawable = new TextureRegionDrawable(new TextureRegion(new Texture(xbBarPixMap)));
+        xbBarPixMap.dispose();
+        xpBarStyle.knob = barKnobDrawable;
+        xpBarStyle.knob.setMinHeight(20);
+
+        xpBar = new ProgressBar(0, 100, 1, false, xpBarStyle);
+        xpBar.setValue(0);
+        xpBar.setPosition(0, Gdx.graphics.getHeight() - xpBar.getHeight());
+        xpBar.setWidth(Gdx.graphics.getWidth());
+
+        //      Create level counter
+        Skin lvlSkin = new Skin();
+        BitmapFont lvlFont = new BitmapFont();
+        font.setColor(Color.WHITE);
+        lvlSkin.add("default", font, BitmapFont.class);
+
+        Label.LabelStyle lvlLabelStyle = new Label.LabelStyle();
+        lvlLabelStyle.font = lvlSkin.getFont("default");
+        lvlSkin.add("default", lvlLabelStyle, Label.LabelStyle.class);
+
+        levelLabel = new Label("Level: "+ level, lvlSkin);
 
         enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);
         terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.TREE, TerrainType.PICKUPORB), 50);
