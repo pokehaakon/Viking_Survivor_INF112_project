@@ -1,11 +1,10 @@
 package GameObjects.Actors.Enemy;
 
-import Animations.AnimationState;
 import GameObjects.Actors.ObjectTypes.EnemyType;
 import GameObjects.Actors.Actor;
 import GameObjects.Actors.Stats.EnemyStats;
 import GameObjects.BodyFeatures;
-import Rendering.AnimationRender;
+import GameObjects.AnimationRendering.AnimationRender;
 
 import static Tools.FilterTool.createFilter;
 

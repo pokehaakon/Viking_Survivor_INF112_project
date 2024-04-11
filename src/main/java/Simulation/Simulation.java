@@ -94,15 +94,13 @@ public class Simulation implements Runnable {
             for (Enemy enemy : context.getDrawableEnemies()) {
                 enemy.doAction();
             }
-//            for(Weapon weapon : context.getDrawableWeapons()) {
-//                weapon.doAction();
-//            }
+
 
             context.getPlayer().doAction();
 
             if (TimeUtils.millis() - lastSpawnTime > 5000) {
                 spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
-//                spawnSwarm(EnemyType.RAVEN, SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
+//              spawnSwarm(EnemyType.RAVEN, SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
                 spawnTerrain(TerrainType.TREE);
             }
 
@@ -112,11 +110,14 @@ public class Simulation implements Runnable {
 
 
 
+
             doSpinSleep(lastFrameStart, dt);
             UPS.add(System.nanoTime() - lastFrameStart);
             while (frame > synchronizer.get()){continue;}
             renderLock.lock();
+
             world.step(1/(float) 60, 10, 10);
+
 
             removeDestroyedEnemies();
             //context.updateActorActions();
@@ -132,9 +133,18 @@ public class Simulation implements Runnable {
             renderLock.unlock();
             long simTimeToUpdate = System.nanoTime() - t0;
 
+
             updateTime.add(simTimeToUpdate);
+
             frame++;
-        }
+
+            if(player.HP <= 0) {
+                context.gameOver();
+                stopSim();
+            }
+
+            }
+
     }
 
     private void doSpinSleep(long lastFrameStart, long dt) {

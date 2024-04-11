@@ -1,13 +1,12 @@
 package GameObjects.Actors.Player;
 
-import Animations.AnimationState;
 import GameObjects.Actors.Actor;
 import GameObjects.Actors.DirectionState;
 import GameObjects.Actors.ObjectTypes.PlayerType;
 import GameObjects.Actors.Stats.PlayerStats;
 import GameObjects.BodyFeatures;
 import GameObjects.Weapon.Weapon;
-import Rendering.AnimationRender;
+import GameObjects.AnimationRendering.AnimationRender;
 
 import java.util.ArrayList;
 import java.util.List;

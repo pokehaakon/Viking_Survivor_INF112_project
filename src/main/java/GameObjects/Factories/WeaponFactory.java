@@ -1,23 +1,17 @@
 package GameObjects.Factories;
 
 
-import Animations.AnimationConstants;
 import Animations.AnimationState;
 import GameObjects.Actors.ObjectTypes.WeaponType;
-import GameObjects.Actors.Player.Player;
-import GameObjects.Actors.Stats.PlayerStats;
-import GameObjects.Actors.Stats.Stats;
 import GameObjects.BodyFeatures;
 import GameObjects.Weapon.Weapon;
 
-import Rendering.GIFRender;
-import Rendering.GifPair;
-import Rendering.SpriteRender;
+import GameObjects.AnimationRendering.GIFRender;
+import GameObjects.AnimationRendering.GifPair;
 import TextureHandling.GdxTextureHandler;
 import TextureHandling.TextureHandler;
 import Tools.FilterTool;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Shape;
@@ -30,7 +24,6 @@ import static Animations.AnimationConstants.getGIF;
 import static Tools.FilterTool.Category.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
-import static Tools.ShapeTools.createSquareShape;
 
 public class WeaponFactory implements IFactory<Weapon, WeaponType>{
     private TextureHandler textureHandler;

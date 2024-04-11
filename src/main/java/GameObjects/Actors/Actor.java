@@ -4,7 +4,7 @@ import Animations.AnimationState;
 import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
-import Rendering.AnimationRender;
+import GameObjects.AnimationRendering.AnimationRender;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -22,12 +22,10 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
 
     public boolean idle;
 
-    public boolean isHit = false;
-
-    public boolean coolDown = false;
+    public boolean underAttack = false;
 
 
-    private long lastHit;
+    private long lastAttackedTime;
 
     public Actor(E type,AnimationRender render, BodyFeatures bodyFeatures, float scale) {
         super(type,render,bodyFeatures,scale);
@@ -96,11 +94,8 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
         return idle;
     }
 
-    /**
-     * Updates the direction state.
-     * When the velocity vector has positive value, the direction state is set to RIGHT
-     * and vice versa
-     */
+
+    @Override
     public void updateDirectionState() {
         DirectionState newState;
         if (velocityVector.x > 0) {
@@ -118,7 +113,8 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
         }
     }
 
-    public void updateMovement() {
+    @Override
+    public void updateAnimationState() {
         AnimationState newState;
         if(idle) {
             newState = AnimationState.IDLE;
@@ -130,35 +126,35 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
     }
 
 
+
+    @Override
     public void attack(Actor actor,float damage) {
 
         actor.HP -= damage;
-        actor.setHit(true);
-        actor.setLastHit(TimeUtils.millis());
+        actor.setUnderAttack(true);
+        actor.setLastAttackedTime(TimeUtils.millis());
     }
 
-    public void endCoolDown() {
-        isHit = false;
-    }
-    public boolean isHit() {
-        return isHit;
+    @Override
+    public boolean isUnderAttack() {
+        return underAttack;
     }
 
-    public long getLastHit() {
-        return lastHit;
+    @Override
+    public long getLastAttackedTime() {
+        return lastAttackedTime;
     }
 
-    public void setLastHit(long newAttack) {
-        lastHit = newAttack;
+    @Override
+    public void setLastAttackedTime(long newAttack) {
+        lastAttackedTime = newAttack;
     }
 
-    public void setHit(boolean bool) {
-        isHit  = bool;
+    @Override
+    public void setUnderAttack(boolean bool) {
+        underAttack = bool;
     }
 
-    public void setCoolDown(boolean bool) {
-        coolDown = bool;
-    }
 
 
 

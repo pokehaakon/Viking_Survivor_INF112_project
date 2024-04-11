@@ -8,18 +8,18 @@ import GameObjects.Actors.Stats.Stats;
 import Animations.AnimationConstants;
 import GameObjects.Actors.Enemy.Enemy;
 import GameObjects.BodyFeatures;
-import Rendering.GIFRender;
-import Rendering.GifPair;
+import GameObjects.AnimationRendering.AnimationRender;
+import GameObjects.AnimationRendering.GIFRender;
+import GameObjects.AnimationRendering.GifPair;
 import TextureHandling.GdxTextureHandler;
 import Tools.FilterTool;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static Rendering.GIFS.ORC_GIF;
-import static Rendering.GIFS.RAVEN_GIF;
+import static GameObjects.AnimationRendering.GIFS.ORC_GIF;
+import static GameObjects.AnimationRendering.GIFS.RAVEN_GIF;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
@@ -59,16 +59,12 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
 
         Enemy enemy;
         float scale;
-        Shape shape;
-        Texture texture;
         EnemyStats stats;
         Map<AnimationState,GifPair> gifs = new HashMap<>();
 
         switch (type) {
             case RAVEN: {
                 scale = AnimationConstants.ENEMY1_SCALE;
-                texture = textureHandler.loadTexture("raven.gif");
-                shape = createCircleShape(scale*texture.getWidth()/2);
                 stats = Stats.enemy1();
                 gifs.put(AnimationState.MOVING, RAVEN_GIF);
 
@@ -76,9 +72,6 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
             }
             case ORC: {
                 scale = AnimationConstants.ENEMY2_SCALE;
-                texture = textureHandler.loadTexture("orc.gif");
-                shape = createCircleShape(scale*texture.getWidth()/2);
-
                 stats = Stats.enemy2();
                 gifs.put(AnimationState.MOVING, ORC_GIF);
                 break;
@@ -87,7 +80,8 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 throw new IllegalArgumentException("Invalid enemy type");
         }
 
-
+        AnimationRender render = new GIFRender<>(gifs);
+        Shape shape = createCircleShape(scale*render.getWidth(AnimationState.MOVING)/2);
         BodyFeatures bodyFeatures = new BodyFeatures(
                 shape,
                 filter,
@@ -96,6 +90,8 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 0,
                 false,
                 BodyDef.BodyType.DynamicBody);
+
+
 
         enemy = new Enemy(type,new GIFRender<>(gifs),bodyFeatures,scale,stats);
         enemy.setAnimationState(AnimationState.MOVING);

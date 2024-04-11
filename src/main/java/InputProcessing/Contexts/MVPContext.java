@@ -24,7 +24,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -81,7 +83,7 @@ public class MVPContext extends Context {
 
     private WeaponFactory weaponFactory;
 
-
+    private Sprite grass;
     private List<Terrain> drawableTerrain;
     private List<Enemy> drawableEnemies;
 
@@ -106,6 +108,8 @@ public class MVPContext extends Context {
     float totalRotation = 0;
 
     long lastOrbit;
+
+    boolean gameOver = false;
 
 
 
@@ -250,20 +254,23 @@ public class MVPContext extends Context {
 
         batch.begin();
 
+
         // draw enemies
 
         elapsedTime += Gdx.graphics.getDeltaTime();
+        if(!gameOver) {
+            font.draw(batch, "fps: " + String.format("%.1f", 1_000_000_000F/FPS.avg()), 10, 80);
+            font.draw(batch, "ups: " + String.format("%.1f",1_000_000_000F/UPS.avg()), 10, 60);
+            font.draw(batch, "us/f: " + String.format("%.0f",FrameTime.avg()/1_000), 10, 40);
+            font.draw(batch, "us/u: " + String.format("%.0f",UpdateTime.avg()/1_000), 10, 20);
+        }
 
-        font.draw(batch, "fps: " + String.format("%.1f", 1_000_000_000F/FPS.avg()), 10, 80);
-        font.draw(batch, "ups: " + String.format("%.1f",1_000_000_000F/UPS.avg()), 10, 60);
-        font.draw(batch, "us/f: " + String.format("%.0f",FrameTime.avg()/1_000), 10, 40);
-        font.draw(batch, "us/u: " + String.format("%.0f",UpdateTime.avg()/1_000), 10, 20);
 
         int i = 0;
 
         for (Enemy enemy : drawableEnemies) {
             if(i > 100) batch.flush();
-            if(enemy.isHit()) {
+            if(enemy.isUnderAttack()) {
                 batch.setColor(Color.RED);
             }
             enemy.draw(batch, elapsedTime);
@@ -282,7 +289,24 @@ public class MVPContext extends Context {
             orbitWeapon.draw(batch,elapsedTime);
         }
 
-        player.draw(batch, elapsedTime);
+        if(player.isUnderAttack()) {
+            batch.setColor(Color.RED);
+        }
+        if(!gameOver) {
+            player.draw(batch, elapsedTime);
+        }
+
+        batch.setColor(Color.WHITE);
+        if(!gameOver) {
+            font.draw(batch, "Player HP: " + String.valueOf(player.HP), player.getBody().getPosition().x -300,player.getBody().getPosition().y +400);
+        }
+
+        if(gameOver) {
+            font.getData().setScale(5,5);
+            font.draw(batch, "GAME OVER", player.getBody().getPosition().x -200,player.getBody().getPosition().y);
+
+
+        }
         batch.end();
 
         frameCount++;
@@ -349,12 +373,15 @@ public class MVPContext extends Context {
         player = playerFactory.create(PlayerType.PLAYER1);
         player.addToWorld(world);
         player.setAction(PlayerActions.moveToInput(keyStates));
+        player.setAction(PlayerActions.coolDown(500));
 
         orbitWeapon = weaponFactory.create(WeaponType.KNIFE);
         orbitWeapon.addToWorld(world);
         orbitWeapon.setAction(WeaponActions.orbitPlayer(150,0.2f,  player, 1000));
         orbitWeapon.setOwner(player);
 
+        grass = new Sprite(new Texture(Gdx.files.internal("grass.png")));
+        grass.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);
         terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.TREE), 50);
@@ -426,4 +453,7 @@ public class MVPContext extends Context {
         return orbitWeapon;
     }
 
+    public void gameOver() {
+        gameOver = true;
+    }
 }

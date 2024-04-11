@@ -51,12 +51,9 @@ public class MyContactListener implements ContactListener {
         } else if (playerEnemyCollision(b1, b2)) {
             Player player = b1.getUserData() instanceof Player ? (Player) b1.getUserData():(Player) b2.getUserData();
             Enemy enemy = b1.getUserData() instanceof Enemy ? (Enemy) b1.getUserData():(Enemy) b2.getUserData();
-            if(coolDown()) {
-                return;
+            if(!player.isUnderAttack()) {
+                enemy.attack(player, enemy.damage);
             }
-            player.HP -= enemy.damage;
-            lastHit = TimeUtils.millis();
-            System.out.println("ENEMY COLLISION");
         }
 
 

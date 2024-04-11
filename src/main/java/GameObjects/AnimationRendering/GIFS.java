@@ -1,5 +1,6 @@
-package Rendering;
+package GameObjects.AnimationRendering;
 
+import GameObjects.AnimationRendering.GifPair;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 

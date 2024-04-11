@@ -1,7 +1,9 @@
-package Rendering;
+package GameObjects.AnimationRendering;
 
 import Animations.AnimationState;
 import GameObjects.Actors.DirectionState;
+import GameObjects.AnimationRendering.AnimationRender;
+import GameObjects.AnimationRendering.GifPair;
 import GameObjects.GameObject;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -10,15 +12,15 @@ import java.util.Map;
 
 import static Animations.AnimationConstants.FRAME_DURATION;
 
-public class GIFRender<E extends Enum<E>> implements AnimationRender{
+
+public class GIFRender<E extends Enum<E>> implements AnimationRender {
 
     private final Map<AnimationState, GifPair> animationMovement;
 
-    private boolean flip = false;
 
-    private int flipMultiplier = 1;
 
     private GifPair currentGIF;
+
 
     public GIFRender(Map<AnimationState, GifPair> animationMovement) {
         this.animationMovement = animationMovement;
@@ -52,6 +54,21 @@ public class GIFRender<E extends Enum<E>> implements AnimationRender{
 
 
     }
+
+    @Override
+    public float getWidth(AnimationState state) {
+        // gets width of first frame. assume that all frames have equal dimensions
+        TextureRegion region  = animationMovement.get(state).right().getKeyFrame(0);
+        return region.getRegionWidth();
+    }
+
+    @Override
+    public float getHeight(AnimationState state) {
+        // gets height of first frame. assume that all frames have equal dimensions
+        TextureRegion region  = animationMovement.get(state).right().getKeyFrame(0);
+        return region.getRegionHeight();
+    }
+
 
 
 }

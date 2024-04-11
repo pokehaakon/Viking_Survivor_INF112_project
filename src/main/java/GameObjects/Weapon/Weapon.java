@@ -4,9 +4,7 @@ import GameObjects.Actors.Actor;
 import GameObjects.Actors.ObjectTypes.WeaponType;
 import GameObjects.Actors.Player.Player;
 import GameObjects.BodyFeatures;
-import Rendering.AnimationRender;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.TimeUtils;
+import GameObjects.AnimationRendering.AnimationRender;
 
 public class Weapon extends Actor<WeaponType>  {
     private final long ORBIT_INTERVAL = 1000;

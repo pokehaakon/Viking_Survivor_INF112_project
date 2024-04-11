@@ -2,6 +2,7 @@ package GameObjects.Actors;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public interface IActor {
     /**
@@ -36,10 +37,54 @@ public interface IActor {
     void setSpeed(int speedMultiplier);
 
     /**
-     * Draws GIF
-     * @param batch
-     * @param elapsedTime for GIF handling
+     * Updates the animation states
      */
-    void draw(SpriteBatch batch, float elapsedTime);
+    void updateAnimationState();
+
+    /**
+     * Updates the direction state.
+     * When the velocity vector has positive value, the direction state is set to RIGHT
+     * and vice versa
+     */
+    void updateDirectionState();
+
+    /**
+     * Attacks an actor
+     * @param actor the actor which is attacked
+     * @param damage the damage inflicted on the actor
+     */
+   void attack(Actor actor,float damage);
+
+
+    /**
+     *
+     * @return true if actor is under attack.
+     */
+   boolean isUnderAttack();
+
+    /**
+     *
+     * @return the last time the actor was  attacked
+     */
+    long getLastAttackedTime();
+
+    /**
+     * Updates the last attacked long
+     * @param newAttack new long
+     */
+    void setLastAttackedTime(long newAttack);
+
+    /**
+     *
+     * @param bool
+     */
+
+    /**
+     * Changes the underAttack boolean
+     * @param bool the new booleanw
+     */
+    void setUnderAttack(boolean bool);
+
+
 
 }

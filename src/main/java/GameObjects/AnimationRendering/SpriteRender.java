@@ -1,6 +1,7 @@
-package Rendering;
+package GameObjects.AnimationRendering;
 
 import Animations.AnimationState;
+import GameObjects.AnimationRendering.AnimationRender;
 import GameObjects.GameObject;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -37,6 +38,16 @@ public class SpriteRender implements AnimationRender {
     @Override
     public void setAnimation(AnimationState state) {
         sprite = stateAnimations.get(state);
+    }
+
+    @Override
+    public float getWidth(AnimationState state) {
+        return stateAnimations.get(state).getWidth();
+    }
+
+    @Override
+    public float getHeight(AnimationState state) {
+        return stateAnimations.get(state).getHeight();
     }
 
 

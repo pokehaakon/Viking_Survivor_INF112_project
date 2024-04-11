@@ -1,12 +1,10 @@
 package GameObjects.Terrain;
 
-import Animations.AnimationState;
 import GameObjects.Actors.ObjectTypes.TerrainType;
 import GameObjects.Actors.Player.Player;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
-import Rendering.AnimationRender;
-import com.badlogic.gdx.graphics.Texture;
+import GameObjects.AnimationRendering.AnimationRender;
 
 
 public class Terrain extends GameObject<TerrainType> {

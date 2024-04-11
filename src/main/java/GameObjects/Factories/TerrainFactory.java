@@ -4,15 +4,13 @@ import Animations.AnimationState;
 import GameObjects.Actors.ObjectTypes.TerrainType;
 import GameObjects.BodyFeatures;
 import GameObjects.Terrain.Terrain;
-import Rendering.AnimationRender;
-import Rendering.SpriteRender;
+import GameObjects.AnimationRendering.AnimationRender;
+import GameObjects.AnimationRendering.SpriteRender;
 import TextureHandling.GdxTextureHandler;
 import TextureHandling.TextureHandler;
 import Tools.FilterTool;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.ArrayList;
@@ -20,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static Tools.BodyTool.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createSquareShape;
 

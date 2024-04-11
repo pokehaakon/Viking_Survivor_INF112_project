@@ -8,6 +8,14 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 public abstract class WeaponActions {
 
+    /**
+     * Weapon orbits player
+     * @param orbitRadius
+     * @param orbitSpeed
+     * @param player the player to orbit
+     * @param orbitInterval millis second between each orbit
+     * @return a weapon action
+     */
     public static ActorAction<Weapon> orbitPlayer(float orbitRadius, float orbitSpeed, Player player, long orbitInterval) {
 
         return (w) -> {

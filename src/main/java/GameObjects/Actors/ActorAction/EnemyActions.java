@@ -52,9 +52,9 @@ public abstract class EnemyActions {
 
     public static ActorAction<Enemy> coolDown(long coolDownDuration) {
         return (e) -> {
-            if(e.isHit()) {
-                if(TimeUtils.millis() - e.getLastHit() > coolDownDuration) {
-                    e.setHit(false);
+            if(e.isUnderAttack()) {
+                if(TimeUtils.millis() - e.getLastAttackedTime() > coolDownDuration) {
+                    e.setUnderAttack(false);
                 }
             }
         };
