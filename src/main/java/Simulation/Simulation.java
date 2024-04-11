@@ -9,6 +9,7 @@ import GameObjects.Actors.ObjectTypes.TerrainType;
 import GameObjects.Actors.Player.Player;
 import GameObjects.ObjectPool;
 import GameObjects.Terrain.Terrain;
+import GameObjects.Weapon.Weapon;
 import InputProcessing.Contexts.MVPContext;
 import InputProcessing.Coordinates.SpawnCoordinates;
 import InputProcessing.Coordinates.SwarmCoordinates;
@@ -24,8 +25,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 
-import static GameObjects.Actors.ActorAction.EnemyActions.destroyIfDefeated;
-import static GameObjects.Actors.ActorAction.EnemyActions.moveInStraightLine;
+import static GameObjects.Actors.ActorAction.EnemyActions.*;
 
 public class Simulation implements Runnable {
     private Lock renderLock;
@@ -44,7 +44,13 @@ public class Simulation implements Runnable {
     private List<Enemy> enemies;
     private AtomicLong synchronizer;
 
+    private Weapon mainWeapon;
+
     private long lastSwarmSpawnTime;
+
+    private long lastOrbit;
+
+    private float ORBIT_INTERVAL = 1000;
 
     public Simulation(MVPContext context) {
         this.context = context;
@@ -58,6 +64,8 @@ public class Simulation implements Runnable {
         player = context.getPlayer();
         enemyPool = context.getEnemyPool();
         enemies = context.getDrawableEnemies();
+
+        mainWeapon = context.getOrbitWeapon();
     }
 
     @Override
@@ -87,20 +95,29 @@ public class Simulation implements Runnable {
                 enemy.doAction();
             }
 
+
             context.getPlayer().doAction();
 
             if (TimeUtils.millis() - lastSpawnTime > 5000) {
-                spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player)));
-//                spawnSwarm(EnemyType.RAVEN, SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
-                //spawnTerrain(TerrainType.TREE);
+                spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
+//              spawnSwarm(EnemyType.RAVEN, SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
+                spawnTerrain(TerrainType.TREE);
             }
+
+            for(Weapon weapon : player.getInventory()) {
+                weapon.doAction();
+            }
+
+
+
 
             doSpinSleep(lastFrameStart, dt);
             UPS.add(System.nanoTime() - lastFrameStart);
             while (frame > synchronizer.get()){continue;}
             renderLock.lock();
-            player.cleenUp();
+
             world.step(1/(float) 60, 10, 10);
+
 
             removeDestroyedEnemies();
             //context.updateActorActions();
@@ -116,9 +133,18 @@ public class Simulation implements Runnable {
             renderLock.unlock();
             long simTimeToUpdate = System.nanoTime() - t0;
 
+
             updateTime.add(simTimeToUpdate);
+
             frame++;
-        }
+
+            if(player.HP <= 0) {
+                context.gameOver();
+                stopSim();
+            }
+
+            }
+
     }
 
     private void doSpinSleep(long lastFrameStart, long dt) {
@@ -194,6 +220,20 @@ public class Simulation implements Runnable {
     }
     public long getFrameNumber() {
         return frame;
+    }
+
+    public void orbitWeapon() {
+
+        if(TimeUtils.millis() - lastOrbit > ORBIT_INTERVAL) {
+            mainWeapon.doAction();
+        }
+        if (mainWeapon.getAngleToPlayer() >= 2 * Math.PI) {
+            mainWeapon.getBody().setActive(false);
+            mainWeapon.setAngleToPlayer(0);
+            lastOrbit = TimeUtils.millis();
+
+        }
+
     }
 
 }

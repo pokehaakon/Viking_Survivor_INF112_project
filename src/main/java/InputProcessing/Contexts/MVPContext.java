@@ -1,21 +1,22 @@
 package InputProcessing.Contexts;
 
-import GameObjects.Actors.ActorAction.ActorAction;
+import GameObjects.Actors.ActorAction.WeaponActions;
 import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Actors.ObjectTypes.*;
+import GameObjects.Actors.ObjectTypes.EnemyType;
+import GameObjects.Actors.ObjectTypes.PlayerType;
 import GameObjects.Actors.ActorAction.PlayerActions;
+import GameObjects.Actors.ObjectTypes.TerrainType;
+import GameObjects.Actors.ObjectTypes.WeaponType;
 import GameObjects.Factories.EnemyFactory;
 import GameObjects.Actors.Player.Player;
 import GameObjects.Factories.PlayerFactory;
 import GameObjects.Factories.TerrainFactory;
-import GameObjects.Factories.WeaponItemFactory;
+import GameObjects.Factories.WeaponFactory;
 import GameObjects.ObjectPool;
 import GameObjects.Terrain.Terrain;
+import GameObjects.Weapon.Weapon;
 import InputProcessing.ContextualInputProcessor;
-import InputProcessing.Coordinates.SpawnCoordinates;
-import InputProcessing.Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
-import Simulation.EnemyContactListener;
 import Simulation.Simulation;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
@@ -23,30 +24,24 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.TimeUtils;
+import Simulation.MyContactListener;
+
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static GameObjects.Actors.ActorAction.EnemyActions.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.getBottomLeftCorrection;
 import static VikingSurvivor.app.Main.SCREEN_WIDTH;
-import static InputProcessing.Contexts.PixelsPerMeter.PPM;
 
 public class MVPContext extends Context {
 
@@ -60,6 +55,7 @@ public class MVPContext extends Context {
 
     private Player player;
 
+    private Weapon orbitWeapon;
     private ArrayList<Enemy> spawnedEnemies;
     private final BitmapFont font;
 
@@ -85,8 +81,9 @@ public class MVPContext extends Context {
 
     private List<Terrain> spawnedTerrain;
 
+    private WeaponFactory weaponFactory;
 
-
+    private Sprite grass;
     private List<Terrain> drawableTerrain;
     private List<Enemy> drawableEnemies;
 
@@ -106,9 +103,15 @@ public class MVPContext extends Context {
 
     private AtomicLong synchronizer;
 
-    private TiledMap map;
-    private OrthogonalTiledMapRenderer tiledMapRenderer;
-    private float tileMapScale = 4f;
+    float angle = 0;
+
+    float totalRotation = 0;
+
+    long lastOrbit;
+
+    boolean gameOver = false;
+
+
 
 
 
@@ -225,18 +228,8 @@ public class MVPContext extends Context {
 
     }
 
-    private void cameraUpdate(Vector2 target) {
-        Vector3 position = camera.position;
-        position.x = target.x * PPM;
-        position.y = target.y * PPM;
-        camera.position.set(position);
-        camera.update();
-    }
-
-
     @Override
     public void render(float delta) {
-
 
         FPS.add(System.nanoTime() - previousFrameStart);
 
@@ -246,49 +239,74 @@ public class MVPContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.GREEN);
 
-        tiledMapRenderer.setView((OrthographicCamera) camera);
-        tiledMapRenderer.render();
+        debugRenderer.render(world, camera.combined);
 
-        //debugRenderer.render(world, camera.combined);
 
-        cameraUpdate(player.getBody().getPosition());
-//        Vector2 origin;
-//        origin = player.getBody().getPosition().cpy();
-//        origin.add(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
-//
-//        //center camera at player
-//        camera.position.x = origin.x;
-//        camera.position.y = origin.y;
-//        camera.position.z = 0;
-//        camera.update(true);
+        Vector2 origin;
+        origin = player.getBody().getPosition().cpy();
+        origin.sub(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
+
+        //center camera at player
+        camera.position.x = origin.x;
+        camera.position.y = origin.y;
+        camera.position.z = 0;
+        camera.update(true);
 
         batch.begin();
+
 
         // draw enemies
 
         elapsedTime += Gdx.graphics.getDeltaTime();
+        if(!gameOver) {
+            font.draw(batch, "fps: " + String.format("%.1f", 1_000_000_000F/FPS.avg()), 10, 80);
+            font.draw(batch, "ups: " + String.format("%.1f",1_000_000_000F/UPS.avg()), 10, 60);
+            font.draw(batch, "us/f: " + String.format("%.0f",FrameTime.avg()/1_000), 10, 40);
+            font.draw(batch, "us/u: " + String.format("%.0f",UpdateTime.avg()/1_000), 10, 20);
+        }
 
-        font.draw(batch, "fps: " + String.format("%.1f", 1_000_000_000F/FPS.avg()), 10, 80);
-        font.draw(batch, "ups: " + String.format("%.1f",1_000_000_000F/UPS.avg()), 10, 60);
-        font.draw(batch, "us/f: " + String.format("%.0f",FrameTime.avg()/1_000), 10, 40);
-        font.draw(batch, "us/u: " + String.format("%.0f",UpdateTime.avg()/1_000), 10, 20);
 
         int i = 0;
 
         for (Enemy enemy : drawableEnemies) {
             if(i > 100) batch.flush();
-            enemy.doAnimation();
+            if(enemy.isUnderAttack()) {
+                batch.setColor(Color.RED);
+            }
             enemy.draw(batch, elapsedTime);
-            i++;
-        }
-        for(Terrain terrain : drawableTerrain) {
-            if(i > 100) batch.flush();
-            terrain.draw(batch);
+            batch.setColor(Color.WHITE);
             i++;
         }
 
-        player.doAnimation();
-        player.draw(batch, elapsedTime);
+        for(Terrain terrain : drawableTerrain) {
+            if(i > 100) batch.flush();
+            terrain.draw(batch, elapsedTime);
+            i++;
+        }
+        //batch.setColor(Color.WHITE);
+
+        if(orbitWeapon.getBody().isActive()) {
+            orbitWeapon.draw(batch,elapsedTime);
+        }
+
+        if(player.isUnderAttack()) {
+            batch.setColor(Color.RED);
+        }
+        if(!gameOver) {
+            player.draw(batch, elapsedTime);
+        }
+
+        batch.setColor(Color.WHITE);
+        if(!gameOver) {
+            font.draw(batch, "Player HP: " + String.valueOf(player.HP), player.getBody().getPosition().x -300,player.getBody().getPosition().y +400);
+        }
+
+        if(gameOver) {
+            font.getData().setScale(5,5);
+            font.draw(batch, "GAME OVER", player.getBody().getPosition().x -200,player.getBody().getPosition().y);
+
+
+        }
         batch.end();
 
         frameCount++;
@@ -299,25 +317,8 @@ public class MVPContext extends Context {
 
 
 
-        //temp physics
 
-//
-//        for (Enemy enemy : drawableEnemies) {
-//            enemy.doAction();
-//        }
-//
-//        player.doAction();
-//
-//        if (TimeUtils.millis() - lastSpawnTime > 5000) {
-//            spawnSwarm(EnemyType.ENEMY1,SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
-//            spawnTerrain(TerrainType.TREE);
-//        }
-//
-//
-//
-//        removeDestroyedEnemies();
-//
-//        world.step(1/(float) 60, 10, 10);
+
 
     }
 
@@ -354,17 +355,6 @@ public class MVPContext extends Context {
 
     }
 
-    private Vector2 getMiddleOfMapPosition(TiledMap map, float scale) {
-        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
-        int tileWidth = layer.getTileWidth(); // width of a tile in pixels
-        int tileHeight = layer.getTileHeight(); // height of a tile in pixels
-        int mapWidth = layer.getWidth(); // width of the tilemap in tiles
-        int mapHeight = layer.getHeight(); // height of the tilemap in tiles
-
-        return new Vector2(mapWidth * tileWidth * scale / 2f, mapHeight * tileHeight * scale / 2f);
-    }
-
-
     private void createWorld() {
         // sets up world
 
@@ -372,30 +362,33 @@ public class MVPContext extends Context {
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
 
-        this.map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
-        this.tiledMapRenderer = new OrthogonalTiledMapRenderer(map, tileMapScale);
-
         enemyFactory = new EnemyFactory();
         drawableEnemies = new ArrayList<>();
 
         terrainFactory = new TerrainFactory();
         drawableTerrain = new ArrayList<>();
 
-
+        weaponFactory = new WeaponFactory();
         playerFactory = new PlayerFactory();
         player = playerFactory.create(PlayerType.PLAYER1);
         player.addToWorld(world);
-        player.setPosition(getMiddleOfMapPosition(map, tileMapScale));
         player.setAction(PlayerActions.moveToInput(keyStates));
+        player.setAction(PlayerActions.coolDown(500));
 
-        player.addWeapon(WeaponType.KNIFE);
+        orbitWeapon = weaponFactory.create(WeaponType.KNIFE);
+        orbitWeapon.addToWorld(world);
+        orbitWeapon.setAction(WeaponActions.orbitPlayer(150,0.2f,  player, 1000));
+        orbitWeapon.setOwner(player);
+
+        grass = new Sprite(new Texture(Gdx.files.internal("grass.png")));
+        grass.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);
         terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.TREE), 50);
 
         toBoKilled = new HashSet<>();
-        //ContactListener contactListener = new EnemyContactListener(world, player.getBody(), toBoKilled);
-        //world.setContactListener(contactListener);
+
+        world.setContactListener(new MyContactListener());
 
         //world.step(1/60f, 10, 10);
     }
@@ -456,5 +449,11 @@ public class MVPContext extends Context {
         return terrainPool;
     }
 
+    public Weapon getOrbitWeapon() {
+        return orbitWeapon;
+    }
 
+    public void gameOver() {
+        gameOver = true;
+    }
 }

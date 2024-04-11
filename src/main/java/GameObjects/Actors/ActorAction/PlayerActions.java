@@ -1,7 +1,9 @@
 package GameObjects.Actors.ActorAction;
 
+import GameObjects.Actors.Enemy.Enemy;
 import GameObjects.Actors.Player.Player;
 import InputProcessing.KeyStates;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public abstract class PlayerActions {
 
@@ -33,8 +35,19 @@ public abstract class PlayerActions {
                 p.setVelocityVector(1,0);
                 p.idle = false;
             }
-
+            p.updateDirectionState();
+            p.updateAnimationState();
             p.move();
+        };
+    }
+
+    public static ActorAction<Player> coolDown(long coolDownDuration) {
+        return (p) -> {
+            if(p.isUnderAttack()) {
+                if(TimeUtils.millis() - p.getLastAttackedTime() > coolDownDuration) {
+                    p.setUnderAttack(false);
+                }
+            }
         };
     }
 

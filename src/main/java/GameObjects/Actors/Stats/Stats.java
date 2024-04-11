@@ -6,7 +6,7 @@ public abstract class Stats {
     //player: random values
     public static final float PLAYER_START_HP = 100;
     public static final float PLAYER_SPEED = 120 ;
-    public static final float PLAYER_START_DAMAGE = 100;
+    public static final float PLAYER_START_DAMAGE = 40;
     public static final float PLAYER_START_ARMOUR = 100;
     public static final float PLAYER_START_LEVEL = 1;
     public static final float PLAYER_START_XP = 0;

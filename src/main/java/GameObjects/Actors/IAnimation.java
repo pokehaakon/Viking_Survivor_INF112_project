@@ -1,6 +1,6 @@
 package GameObjects.Actors;
 
-import Animations.MovementState;
+import Animations.AnimationState;
 import Animations.ActorMovement;
 
 public interface IAnimation {
@@ -26,7 +26,7 @@ public interface IAnimation {
      * The animation state of the actor
      * @return an AnimationState enum
      */
-    MovementState getAnimationState();
+    AnimationState getAnimationState();
 
     /**
      * Set the new animation state and the corresponding GIF
@@ -34,5 +34,5 @@ public interface IAnimation {
      * @param newState
      * @param gifPath
      */
-    void setAnimationState(MovementState newState);
+    void setAnimationState(AnimationState newState);
 }

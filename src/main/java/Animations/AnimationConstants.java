@@ -29,14 +29,14 @@ public abstract class AnimationConstants {
     public static final float ENEMY1_SCALE = 0.3f;
     public static final float ENEMY2_SCALE = 0.3f;
 
-    public static Map<MovementState, String> ravenAnimations(){
-        Map<MovementState, String> map = new HashMap<>();
-        map.put(MovementState.WALKING, "raven.gif");
+    public static Map<AnimationState, String> ravenAnimations(){
+        Map<AnimationState, String> map = new HashMap<>();
+        map.put(AnimationState.MOVING, "raven.gif");
         return map;
     }
-    public static Map<MovementState, String> orcAnimation(){
-        Map<MovementState, String> map = new HashMap<>();
-        map.put(MovementState.WALKING, "orc.gif");
+    public static Map<AnimationState, String> orcAnimation(){
+        Map<AnimationState, String> map = new HashMap<>();
+        map.put(AnimationState.MOVING, "orc.gif");
         return map;
     }
 

@@ -1,18 +1,13 @@
 package GameObjects;
 
-import GameObjects.Actors.ActorAction.ActorAction;
+import Animations.AnimationState;
+import GameObjects.Actors.DirectionState;
 import GameObjects.Actors.IGameObject;
-import TextureHandling.GdxTextureHandler;
-import TextureHandling.TextureHandler;
+import GameObjects.AnimationRendering.AnimationRender;
 import Tools.BodyTool;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
@@ -22,37 +17,42 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     protected boolean destroyed = false;
 
-    protected Texture currentSprite;
-
     protected E type;
 
     protected BodyFeatures bodyFeatures;
 
+    protected AnimationState animationState;
+
+    protected DirectionState directionState;
 
 
 
-    public GameObject(String spritePath, BodyFeatures bodyFeatures, float scale) {
-        currentSprite = new Texture(Gdx.files.internal(spritePath));
+    protected AnimationRender render;
+    // for sprite
+    public GameObject(E type,AnimationRender render, BodyFeatures bodyFeatures, float scale) {
+        this.render = render;
         this.bodyFeatures = bodyFeatures;
         this.scale = scale;
+        this.type = type;
     }
 
-    public GameObject() {
-    }
 
     @Override
     public void destroy() {
         destroyed = true;
     }
 
+    public void draw(SpriteBatch batch, float elapsedTime) {
+        render.draw(batch, elapsedTime, this);
+    }
 
 
-    @Override
-    public void draw(SpriteBatch batch) {
 
-        Vector2 pos = body.getPosition();
-        batch.draw(currentSprite, pos.x, pos.y, currentSprite.getWidth()*scale,  currentSprite.getHeight()*scale);
-
+    public void setAnimationState(AnimationState state){
+        if(animationState != state) {
+            animationState = state;
+            render.setAnimation(animationState);
+        }
     }
 
     @Override
@@ -65,10 +65,6 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
         return destroyed;
     }
 
-    @Override
-    public void setSprite(Texture texture) {
-        currentSprite = texture;
-    }
 
     @Override
     public void revive() {
@@ -92,6 +88,7 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     @Override
     public void addToWorld(World world) {
+
         body = BodyTool.createBody(
                 world,
                 new Vector2(),
@@ -103,7 +100,6 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
                 bodyFeatures.isSensor(),
                 bodyFeatures.type());
         body.setUserData(this);
-
     }
 
    @Override
@@ -115,6 +111,24 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
     @Override
     public void setScale(float newScale) {
         scale = newScale;
+    }
+
+    public float getScale() {
+        return scale;
+    }
+
+    public AnimationState getAnimationState() {
+        return animationState;
+    }
+
+    public DirectionState getDirectionState() {
+        return directionState;
+    }
+
+
+
+    public BodyFeatures getBodyFeatures() {
+        return bodyFeatures;
     }
 
 

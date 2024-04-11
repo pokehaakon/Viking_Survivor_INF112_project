@@ -1,47 +1,49 @@
 package GameObjects.Weapon;
 
-import GameObjects.Actors.ActorAction.ActorAction;
+import GameObjects.Actors.Actor;
 import GameObjects.Actors.ObjectTypes.WeaponType;
 import GameObjects.Actors.Player.Player;
-import GameObjects.SmallPool;
+import GameObjects.BodyFeatures;
+import GameObjects.AnimationRendering.AnimationRender;
 
-import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+public class Weapon extends Actor<WeaponType>  {
+    private final long ORBIT_INTERVAL = 1000;
+    public float damage;
+    private long lastOrbit;
+    private float angleToPlayer = 0;
 
-public abstract class Weapon implements IWeapon {
-    protected final Player player;
-    protected final List<WeaponBody> projectiles;
-    protected final SmallPool<WeaponBody> pool;
-    protected final WeaponType type;
-    protected int activeProjectiles = 0;
-    Consumer<WeaponBody> wakeFunction;
-    public Weapon(Player player, List<WeaponBody> projectiles, SmallPool<WeaponBody> pool, WeaponType type, Consumer<WeaponBody> wakeFunction) {
-        this.player = player;
-        this.projectiles = projectiles;
-        this.pool = pool;
-        this.type = type;
-        this.wakeFunction = wakeFunction;
+    private long lastAttack;
+
+    private Player owner;
+    public Weapon(WeaponType type, AnimationRender render, BodyFeatures bodyFeatures, float scale) {
+        super(type,render,bodyFeatures,scale);
     }
 
-    protected final void addToProjectileList(WeaponBody... bodies) {
-        activeProjectiles += bodies.length;
-        for (WeaponBody b : bodies) {
-            wakeFunction.accept(b);
-            projectiles.add(b);
-        }
+
+
+    public float getAngleToPlayer() {
+        return angleToPlayer;
     }
 
-    @Override
-    public void cleenUp() {
-        if (activeProjectiles == 0) return;
-        for (int i = 0; i<projectiles.size(); i++) {
-            WeaponBody body = projectiles.get(i);
-            if (body.getType() != type) continue;
-            if (!body.isDestroyed()) continue;
-            projectiles.set(i, null);
-            pool.returnToPool(body);
-            activeProjectiles--;
-        }
+    public void setAngleToPlayer(float newAngle) {
+        angleToPlayer = newAngle;
+    }
+
+
+    public void setOwner(Player player) {
+        owner = player;
+        player.addToInventory(this);
+    }
+
+    public long getLastAttack() {
+        return lastAttack;
+    }
+
+    public void setLastAttack(long newAttack) {
+        lastAttack = newAttack;
+    }
+
+    public Player getOwner() {
+        return owner;
     }
 }

@@ -1,25 +1,23 @@
 package GameObjects.Terrain;
 
-import GameObjects.Actors.Actor;
 import GameObjects.Actors.ObjectTypes.TerrainType;
+import GameObjects.Actors.Player.Player;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
-import com.badlogic.gdx.graphics.Texture;
+import GameObjects.AnimationRendering.AnimationRender;
 
 
 public class Terrain extends GameObject<TerrainType> {
 
-    public Terrain(String spritePath, BodyFeatures bodyFeatures, float scale) {
-        super(spritePath, bodyFeatures,scale);
+    public Terrain(TerrainType type,AnimationRender render, BodyFeatures bodyFeatures, float scale) {
+        super(type,render, bodyFeatures, scale);
     }
 
-    public Terrain() {
-
-    }
-    public boolean outOfBounds(Actor player, double deSpawnRadius) {
+    public boolean outOfBounds(Player player, double deSpawnRadius) {
         float dx = body.getPosition().x - player.getBody().getPosition().x;
-        float dy =  body.getPosition().y - player.getBody().getPosition().y;
-        float dist = (float) Math.sqrt(dx*dx + dy*dy);
-        return(dist > deSpawnRadius);
+        float dy = body.getPosition().y - player.getBody().getPosition().y;
+        float dist = (float) Math.sqrt(dx * dx + dy * dy);
+        return (dist > deSpawnRadius);
     }
 }
+

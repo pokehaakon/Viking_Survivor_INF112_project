@@ -2,18 +2,22 @@ package Simulation;
 
 import GameObjects.Actors.Enemy.Enemy;
 import GameObjects.Actors.Player.Player;
+import GameObjects.Weapon.Weapon;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class EnemyContactListener implements ContactListener {
+public class MyContactListener implements ContactListener {
 
     int contactNumber;
 
     private static final long COOL_DOWN_DURATION = 200; // cool down in millis
     private long lastHit;
 
-    public EnemyContactListener() {
+    public MyContactListener() {
         contactNumber = 0;
     }
 
@@ -28,6 +32,10 @@ public class EnemyContactListener implements ContactListener {
                 || (b1.getUserData() instanceof Enemy && b2.getUserData() instanceof Player);
     }
 
+    private boolean weaponEnemyCollision(Body b1, Body b2) {
+        return (b1.getUserData() instanceof Weapon && b2.getUserData() instanceof Enemy)
+                || (b1.getUserData() instanceof Enemy && b2.getUserData() instanceof Weapon);
+    }
 
 
     @Override
@@ -35,19 +43,20 @@ public class EnemyContactListener implements ContactListener {
         Body b1 = contact.getFixtureA().getBody();
         Body b2 = contact.getFixtureB().getBody();
 
-        if (!playerEnemyCollision(b1, b2)) return;
-        Player player = (Player) (b1.getUserData() instanceof Player ? b1.getUserData() : b2.getUserData());
-        Enemy enemy = (Enemy) (b1.getUserData() instanceof Enemy ? b1.getUserData() : b2.getUserData());
-
-        if(coolDown()) {
-            System.out.println("COOL DOWN!");
-            return;
+        if (weaponEnemyCollision(b1, b2)) {
+            Weapon weapon = b1.getUserData() instanceof Weapon ? (Weapon) b1.getUserData():(Weapon) b2.getUserData();
+            Enemy enemy = b1.getUserData() instanceof Enemy ? (Enemy) b1.getUserData():(Enemy) b2.getUserData();
+            weapon.attack(enemy, weapon.getOwner().damage);
+            System.out.println("WEAPON COLLISION");
+        } else if (playerEnemyCollision(b1, b2)) {
+            Player player = b1.getUserData() instanceof Player ? (Player) b1.getUserData():(Player) b2.getUserData();
+            Enemy enemy = b1.getUserData() instanceof Enemy ? (Enemy) b1.getUserData():(Enemy) b2.getUserData();
+            if(!player.isUnderAttack()) {
+                enemy.attack(player, enemy.damage);
+            }
         }
 
-        contactNumber ++;
 
-
-        collisionAttack(enemy, player);
     }
 
     @Override

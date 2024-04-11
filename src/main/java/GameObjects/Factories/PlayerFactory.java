@@ -1,26 +1,30 @@
 package GameObjects.Factories;
 
-import Animations.MovementState;
+import Animations.AnimationState;
 import GameObjects.Actors.ObjectTypes.PlayerType;
 import GameObjects.Actors.Player.Player;
 import GameObjects.Actors.Stats.PlayerStats;
 import GameObjects.Actors.Stats.Stats;
-import Animations.ActorMovement;
-import Animations.ActorAnimations;
+//import Animations.ActorAnimations;
 import Animations.AnimationConstants;
 import GameObjects.BodyFeatures;
+import GameObjects.AnimationRendering.AnimationRender;
+import GameObjects.AnimationRendering.GIFRender;
+import GameObjects.AnimationRendering.GifPair;
 import TextureHandling.GdxTextureHandler;
 import TextureHandling.TextureHandler;
 import Tools.FilterTool;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static GameObjects.AnimationRendering.GIFS.PLAYER_IDLE_GIF;
+import static GameObjects.AnimationRendering.GIFS.PLAYER_MOVING_GIF;
+import static Tools.FilterTool.Category.PLAYER;
 import static Tools.FilterTool.createFilter;
-import static Tools.ShapeTools.createSquareShape;
+import static Tools.ShapeTools.createCircleShape;
 
 public class PlayerFactory implements IFactory<Player, PlayerType>{
     private TextureHandler textureHandler;
@@ -35,30 +39,17 @@ public class PlayerFactory implements IFactory<Player, PlayerType>{
 
         Player player;
         float scale;
-        Shape shape;
-        String spawnGIF;
-        Texture texture;
-        ActorMovement animation;
+        //ActorMovement animation;
         PlayerStats stats;
         BodyFeatures bodyFeatures;
-        Map<MovementState,String> gifs = new HashMap<>();
+        Map<AnimationState, GifPair> gifs = new HashMap<>();
 
         switch (type) {
             case PLAYER1: {
                 scale = AnimationConstants.PLAYER_SCALE;
-                spawnGIF = AnimationConstants.PLAYER_IDLE_RIGHT;
-                texture = textureHandler.loadTexture(spawnGIF);
-                shape = createSquareShape(
-                        (float)(texture.getWidth())*scale,
-                        (float) (texture.getHeight()*scale)
-
-                );
-                animation = ActorAnimations.playerMovement();
-
                 stats = Stats.player();
-                gifs.put(MovementState.WALKING, AnimationConstants.PLAYER_RIGHT);
-                gifs.put(MovementState.IDLE, AnimationConstants.PLAYER_IDLE_RIGHT);
-
+                gifs.put(AnimationState.MOVING, PLAYER_MOVING_GIF);
+                gifs.put(AnimationState.IDLE, PLAYER_IDLE_GIF);
                 break;
             }
 
@@ -67,9 +58,12 @@ public class PlayerFactory implements IFactory<Player, PlayerType>{
         }
 
         Filter filter = createFilter(
-                FilterTool.Category.PLAYER,
+                PLAYER,
                 new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL}
         );
+
+        AnimationRender render = new GIFRender<>(gifs);
+        Shape shape = createCircleShape(scale*render.getWidth(AnimationState.IDLE)/2);
 
         bodyFeatures = new BodyFeatures(
                 shape,
@@ -81,14 +75,8 @@ public class PlayerFactory implements IFactory<Player, PlayerType>{
                 BodyDef.BodyType.DynamicBody);
 
 
-        player = new Player(textureHandler);
-        player.setStats(stats);
-        player.setScale(scale);
-        player.setBodyFeatures(bodyFeatures);
-        player.setSprite(texture);
-        player.setAnimation(animation);
-        player.setType(type);
-        player.setAnimations(gifs);
+        player = new Player(type,new GIFRender<>(gifs),bodyFeatures,scale,stats);
+        player.setAnimationState(AnimationState.IDLE);
 
         return player;
     }
