@@ -24,10 +24,15 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -110,6 +115,10 @@ public class MVPContext extends Context {
     long lastOrbit;
 
     boolean gameOver = false;
+
+    private TiledMap map;
+    private OrthogonalTiledMapRenderer tiledMapRenderer;
+    private float tiledMapScale = 4f;
 
 
 
@@ -239,6 +248,11 @@ public class MVPContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.GREEN);
 
+        this.tiledMapRenderer = new OrthogonalTiledMapRenderer(map, tiledMapScale);
+        tiledMapRenderer.setView((OrthographicCamera) camera);
+        tiledMapRenderer.render();
+
+
         debugRenderer.render(world, camera.combined);
 
 
@@ -355,12 +369,24 @@ public class MVPContext extends Context {
 
     }
 
+    private Vector2 getMiddleOfMapPosition(TiledMap map, float scale) {
+        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
+        int tileWidth = layer.getTileWidth(); // width of a tile in pixels
+        int tileHeight = layer.getTileHeight(); // height of a tile in pixels
+        int mapWidth = layer.getWidth(); // width of the tilemap in tiles
+        int mapHeight = layer.getHeight(); // height of the tilemap in tiles
+
+        return new Vector2(mapWidth * tileWidth * scale / 2f, mapHeight * tileHeight * scale / 2f);
+    }
+
     private void createWorld() {
         // sets up world
 
         debugRenderer = new Box2DDebugRenderer();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
+
+        map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
 
         enemyFactory = new EnemyFactory();
         drawableEnemies = new ArrayList<>();
@@ -372,6 +398,7 @@ public class MVPContext extends Context {
         playerFactory = new PlayerFactory();
         player = playerFactory.create(PlayerType.PLAYER1);
         player.addToWorld(world);
+        player.setPosition(getMiddleOfMapPosition(map, tiledMapScale));
         player.setAction(PlayerActions.moveToInput(keyStates));
         player.setAction(PlayerActions.coolDown(500));
 
