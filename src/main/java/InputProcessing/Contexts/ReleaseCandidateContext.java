@@ -34,9 +34,13 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import Simulation.ObjectContactListener;
@@ -82,6 +86,9 @@ public class ReleaseCandidateContext extends Context {
     private int xpAmount;
     private int level;
     private Label levelLabel;
+    private Label timerLabel;
+    private long startTime;
+    private Table weaponTable;
 
     private KeyStates keyStates;
 
@@ -286,18 +293,6 @@ public class ReleaseCandidateContext extends Context {
         // draw enemies
 
         elapsedTime += Gdx.graphics.getDeltaTime();
-        if(!gameOver) {
-            font.draw(batch, "FPS: " + String.format("%.1f", 1_000_000_000F/FPS.avg()), playerPosX -500, playerPosY -420);
-            font.draw(batch, "UPS: " + String.format("%.1f",1_000_000_000F/UPS.avg()), playerPosX -500, playerPosY -440);
-            font.draw(batch, "US/F: " + String.format("%.0f",FrameTime.avg()/1_000), playerPosX -500, playerPosY -460);
-            font.draw(batch, "US/U: " + String.format("%.0f",UpdateTime.avg()/1_000), playerPosX -500, playerPosY -480);
-
-            xpBar.draw(batch, 1);
-            levelLabel.draw(batch, 1);
-            xpBar.setPosition(playerPosX -512, playerPosY +495);
-            levelLabel.setPosition(playerPosX -512, playerPosY +495);
-        }
-
 
         int i = 0;
 
@@ -316,6 +311,35 @@ public class ReleaseCandidateContext extends Context {
             terrain.draw(batch, elapsedTime);
             i++;
         }
+
+        if(!gameOver) {
+            // Performance statistics
+            font.draw(batch, "FPS: " + String.format("%.1f", 1_000_000_000F/FPS.avg()), playerPosX -500, playerPosY -420);
+            font.draw(batch, "UPS: " + String.format("%.1f",1_000_000_000F/UPS.avg()), playerPosX -500, playerPosY -440);
+            font.draw(batch, "US/F: " + String.format("%.0f",FrameTime.avg()/1_000), playerPosX -500, playerPosY -460);
+            font.draw(batch, "US/U: " + String.format("%.0f",UpdateTime.avg()/1_000), playerPosX -500, playerPosY -480);
+
+            // XP bar and level
+            xpBar.draw(batch, 1);
+            levelLabel.draw(batch, 1);
+            xpBar.setPosition(playerPosX -512, playerPosY +495);
+            levelLabel.setPosition(playerPosX -512, playerPosY +495);
+
+            // Clock
+            long elapsedMillis = TimeUtils.timeSinceMillis(startTime);
+            int elapsedSeconds = (int)(elapsedMillis / 1000);
+
+            int minutes = elapsedSeconds / 60;
+            int seconds = elapsedSeconds % 60;
+            timerLabel.setText(String.format("%02d:%02d", minutes, seconds));
+
+            timerLabel.draw(batch, 1);
+            timerLabel.setPosition(playerPosX -55, playerPosY +430);
+
+            // Weapon table
+            weaponTable.setPosition(playerPosX -295,playerPosY +455);
+            weaponTable.draw(batch, 1);
+        }
         //batch.setColor(Color.WHITE);
 
         if(orbitWeapon.getBody().isActive()) {
@@ -332,8 +356,9 @@ public class ReleaseCandidateContext extends Context {
 
         batch.setColor(Color.WHITE);
         if(!gameOver) {
-            font.draw(batch, "Player HP: " + String.valueOf(player.HP), playerPosX -500,playerPosY +470);
+            font.draw(batch, "Player HP: " + String.valueOf(player.HP), playerPosX +400,playerPosY +470);
         }
+
 
         if(gameOver) {
             font.getData().setScale(5,5);
@@ -457,6 +482,37 @@ public class ReleaseCandidateContext extends Context {
         lvlSkin.add("default", lvlLabelStyle, Label.LabelStyle.class);
 
         levelLabel = new Label("Level: "+ level, lvlSkin);
+
+        // Clock
+        Skin tmSkin = new Skin();
+        BitmapFont tmFont = new BitmapFont();
+        tmFont.setColor(Color.WHITE);
+        tmFont.getData().setScale(3);
+        tmSkin.add("default", tmFont, BitmapFont.class);
+
+        Label.LabelStyle tmLabelStyle = new Label.LabelStyle();
+        tmLabelStyle.font = tmSkin.getFont("default");
+        tmSkin.add("default", tmLabelStyle, Label.LabelStyle.class);
+
+        timerLabel = new Label("00:00", tmSkin);
+
+        startTime = TimeUtils.millis();
+
+        // Weapon table
+        weaponTable = new Table();
+        weaponTable.setFillParent(true);
+
+        Pixmap wptPixmap = new Pixmap(64, 64, Pixmap.Format.RGBA8888);
+        wptPixmap.setColor(Color.GRAY);
+        wptPixmap.fill();
+        Drawable emptySlot = new TextureRegionDrawable(new TextureRegion(new Texture(wptPixmap)));
+        wptPixmap.dispose();
+
+        for (int i= 0; i < 7; i++) {
+            Image weaponSlot = new Image(emptySlot);
+            weaponTable.add(weaponSlot).size(40).pad(10);
+        }
+
 
         enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);
         terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.TREE, TerrainType.PICKUPORB), 50);
