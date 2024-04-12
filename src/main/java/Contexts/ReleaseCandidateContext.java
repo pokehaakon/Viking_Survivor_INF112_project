@@ -2,7 +2,7 @@ package Contexts;
 
 import GameObjects.Actors.ActorAction.WeaponActions;
 import GameObjects.Actors.Enemy;
-import GameObjects.Animations.AnimationRendering.AnimationLoader;
+import GameObjects.Animations.AnimationRendering.AnimationLibrary;
 import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.ObjectTypes.PlayerType;
 import GameObjects.Actors.ActorAction.PlayerActions;
@@ -99,7 +99,7 @@ public class ReleaseCandidateContext extends Context {
     private List<Terrain> drawableTerrain;
     private List<Enemy> drawableEnemies;
 
-    private AnimationLoader animationLoader;
+    private AnimationLibrary animationLibrary;
 
     private PlayerFactory playerFactory;
     private float zoomLevel = 1f;
@@ -349,6 +349,8 @@ public class ReleaseCandidateContext extends Context {
 
         FrameTime.add(System.nanoTime() - renderStartTime);
 
+
+
     }
 
 
@@ -394,34 +396,36 @@ public class ReleaseCandidateContext extends Context {
 
     private void createWorld() {
         // sets up world
-        animationLoader  = new AnimationLoader();
+        animationLibrary = new AnimationLibrary();
         debugRenderer = new Box2DDebugRenderer();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
 
         map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
 
-        enemyFactory = new EnemyFactory(animationLoader);
+        enemyFactory = new EnemyFactory();
         drawableEnemies = new ArrayList<>();
 
-        terrainFactory = new TerrainFactory(animationLoader);
+        terrainFactory = new TerrainFactory();
         drawableTerrain = new ArrayList<>();
 
-        weaponFactory = new WeaponFactory(animationLoader);
-        playerFactory = new PlayerFactory(animationLoader);
+        weaponFactory = new WeaponFactory();
+        playerFactory = new PlayerFactory();
+
         player = playerFactory.create(PlayerType.PLAYER1);
         player.addToWorld(world);
         player.setPosition(getMiddleOfMapPosition(map, tiledMapScale));
         player.setAction(PlayerActions.moveToInput(keyStates));
         player.setAction(PlayerActions.coolDown(500));
 
+        player.renderAnimations(animationLibrary);
+
         orbitWeapon = weaponFactory.create(WeaponType.KNIFE);
         orbitWeapon.addToWorld(world);
         orbitWeapon.setAction(WeaponActions.orbitPlayer(150,0.2f,  player, 1000));
         orbitWeapon.setOwner(player);
+        orbitWeapon.renderAnimations(animationLibrary);
 
-        grass = new Sprite(new Texture(Gdx.files.internal("grass.png")));
-        grass.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         //      Create top XP bar:
         // XP bar style
@@ -464,6 +468,7 @@ public class ReleaseCandidateContext extends Context {
         terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.values()), 200);
 
 
+
         toBoKilled = new HashSet<>();
 
         world.setContactListener(new ObjectContactListener());
@@ -471,13 +476,7 @@ public class ReleaseCandidateContext extends Context {
         //world.step(1/60f, 10, 10);
     }
 
-    public void updateActorActions() {
-        player.doAction();
-        for(Enemy enemy: drawableEnemies) {
-            enemy.doAction();
-        }
 
-    }
 
     public Lock getRenderLock() {
         return renderLock;
@@ -533,5 +532,9 @@ public class ReleaseCandidateContext extends Context {
 
     public void gameOver() {
         gameOver = true;
+    }
+
+    public AnimationLibrary getAnimationLibrary() {
+        return animationLibrary;
     }
 }

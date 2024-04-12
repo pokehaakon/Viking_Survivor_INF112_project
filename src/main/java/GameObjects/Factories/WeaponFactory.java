@@ -20,15 +20,15 @@ import java.util.List;
 import java.util.Map;
 
 import static GameObjects.Animations.AnimationRendering.GIFS.KNIFE_FILE_PATH;
+import static GameObjects.Animations.AnimationRendering.GIFS.KNIFE_WIDT;
 import static Tools.FilterTool.Category.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
 public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
 
-    public WeaponFactory(AnimationLoader  animationLoader) {
-        spriteRender = new SpriteRender(animationLoader);
-        gifRender = new GIFRender<>(animationLoader);
+    public WeaponFactory() {
+
     }
     @Override
     public Weapon create(WeaponType type) {
@@ -38,29 +38,28 @@ public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
 
         Weapon weapon;
         float scale;
+        boolean isGif;
 
-
-        AnimationRender render;
         BodyFeatures bodyFeatures;
         Map<AnimationState, String> animation =  new HashMap<>();
         switch (type) {
             case KNIFE: {
-                render = gifRender;
                 scale = 0.7f;
                 animation.put(AnimationState.MOVING,KNIFE_FILE_PATH);
+                isGif = true;
                 break;
             }
 
             default:
-                throw new IllegalArgumentException("Invalid enemy type");
+                throw new IllegalArgumentException("Invalid weapon type");
         }
 
         Filter filter = createFilter(
                 BULLET,
                 new FilterTool.Category[]{ FilterTool.Category.WALL, ENEMY}
         );
-        render.setAnimations(animation);
-        Shape shape = createCircleShape(0.2f*scale*render.getWidth(AnimationState.MOVING)/2);
+        //render.setAnimations(animation);
+        Shape shape = createCircleShape(0.2f*scale*KNIFE_WIDT/2);
         bodyFeatures = new BodyFeatures(
                 shape,
                 filter,
@@ -70,8 +69,9 @@ public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
                 true,
                 BodyDef.BodyType.DynamicBody);
 
-        weapon = new Weapon(type, render,bodyFeatures,scale);
+        weapon = new Weapon(type, animation,bodyFeatures,scale);
         weapon.setAnimationState(AnimationState.MOVING);
+        weapon.isGif = isGif;
 
         return weapon;
     }

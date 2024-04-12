@@ -2,15 +2,12 @@ package GameObjects.Animations.AnimationRendering;
 
 import GameObjects.Animations.AnimationState;
 import GameObjects.GameObject;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static GameObjects.Animations.AnimationRendering.GIFS.gifMap;
 
 public class SpriteRender implements AnimationRender {
 
@@ -20,16 +17,16 @@ public class SpriteRender implements AnimationRender {
 
     private int flipMultiplier = 1;
 
-    private AnimationLoader animationLoader;
+    private AnimationLibrary animationLibrary;
     Map<AnimationState, Sprite> stateAnimations = new HashMap<>();
 
-    public SpriteRender(AnimationLoader animationLoader,Map<AnimationState, String> stateAnimations) {
-        this.animationLoader = animationLoader;
+    public SpriteRender(AnimationLibrary animationLibrary, Map<AnimationState, String> stateAnimations) {
+        this.animationLibrary = animationLibrary;
         getSprites(stateAnimations);
     }
 
-    public SpriteRender(AnimationLoader animationLoader) {
-        this.animationLoader = animationLoader;
+    public SpriteRender(AnimationLibrary animationLibrary) {
+        this.animationLibrary = animationLibrary;
 
     }
 
@@ -69,7 +66,7 @@ public class SpriteRender implements AnimationRender {
         for(Map.Entry<AnimationState, String> entry : map.entrySet()) {
             AnimationState state = entry.getKey();
             String filePath = entry.getValue();
-            stateAnimations.put(state, animationLoader.getSprite(filePath));
+            stateAnimations.put(state, animationLibrary.getSprite(filePath));
         }
     }
 

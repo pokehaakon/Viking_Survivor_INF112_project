@@ -18,7 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 
-import static GameObjects.Animations.AnimationRendering.GIFS.PICK_UP_ORB_FILE_PATH;
+import static GameObjects.Animations.AnimationRendering.GIFS.*;
+import static GameObjects.Animations.AnimationRendering.Sprites.TREE_WIDTH;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 import static Tools.ShapeTools.createSquareShape;
@@ -27,11 +28,9 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
 
 
 
-    public TerrainFactory(AnimationLoader animationLoader) {
+    public TerrainFactory() {
         super();
-        gifRender = new GIFRender<>(animationLoader);
-        spriteRender = new SpriteRender(animationLoader);
-        //default
+
 
     }
     @Override
@@ -44,28 +43,30 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
         float scale;
         BodyFeatures bodyFeatures;
 
-        Map<AnimationState, String> spriteAnimations = new HashMap<>();
+        Map<AnimationState, String> animations = new HashMap<>();
         Map<AnimationState, String> gifAnimations = new HashMap<>();
 
         AnimationRender render;
+        Shape shape;
+
+        boolean isGif;
 
         switch (type) {
             case TREE: {
-                //texture = textureHandler.loadTexture("tree.png");
                 scale = 0.1f;
-                spriteAnimations.put(AnimationState.STATIC,"tree.png");
-                render = spriteRender;
-                render.setAnimations(spriteAnimations);
+                animations.put(AnimationState.STATIC,"tree.png");
+                shape = createCircleShape(scale*TREE_WIDTH/2);
+                isGif = false;
                 break;
             }
             case PICKUPORB:
                 scale = 0.5f;
-                gifAnimations.put(AnimationState.STATIC, PICK_UP_ORB_FILE_PATH);
-                render = gifRender;
-                gifRender.setAnimations(gifAnimations);
+                animations.put(AnimationState.STATIC, PICK_UP_ORB_FILE_PATH);
+                shape = createCircleShape(0.2f*scale*PICKUP_ORB_WIDTH/2);
+                isGif = true;
                 break;
             default:
-                throw new IllegalArgumentException("Invalid enemy type");
+                throw new IllegalArgumentException("Invalid terrain type");
         }
         Filter filter = createFilter(
                 FilterTool.Category.WALL,
@@ -76,7 +77,7 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
                         FilterTool.Category.BULLET
                 }
         );
-        Shape shape = createCircleShape(scale*render.getWidth(AnimationState.STATIC)/2);
+
 
         bodyFeatures = new BodyFeatures(
                 shape,
@@ -87,8 +88,9 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
                 false,
                 BodyDef.BodyType.StaticBody);
 
-        terrain = new Terrain(type,render,bodyFeatures,scale);
+        terrain = new Terrain(type,animations,bodyFeatures,scale);
         terrain.setAnimationState(AnimationState.STATIC);
+        terrain.isGif = isGif;
 
         return terrain;
     }

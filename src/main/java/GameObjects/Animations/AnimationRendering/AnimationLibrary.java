@@ -7,12 +7,12 @@ import java.util.Map;
 import static GameObjects.Animations.AnimationRendering.GIFS.gifMap;
 import static GameObjects.Animations.AnimationRendering.Sprites.spriteMap;
 
-public class AnimationLoader {
+public class AnimationLibrary {
 
     Map<String, GifPair> gifs;
 
     Map<String, Sprite> sprites;
-    public AnimationLoader() {
+    public AnimationLibrary() {
         gifs = gifMap();
         sprites = spriteMap();
     }

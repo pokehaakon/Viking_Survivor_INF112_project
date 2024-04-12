@@ -1,5 +1,6 @@
 package GameObjects.Actors;
 
+import GameObjects.Animations.AnimationState;
 import GameObjects.ObjectTypes.PlayerType;
 import GameObjects.Actors.Stats.PlayerStats;
 import GameObjects.BodyFeatures;
@@ -7,6 +8,7 @@ import GameObjects.Animations.AnimationRendering.AnimationRender;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Player extends Actor<PlayerType> {
     public int level;
@@ -17,8 +19,8 @@ public class Player extends Actor<PlayerType> {
     List<Weapon> weaponInventory;
 
 
-    public Player(PlayerType type,AnimationRender render, BodyFeatures bodyFeatures, float scale, PlayerStats stats) {
-        super(type,render,bodyFeatures, scale);
+    public Player(PlayerType type, Map<AnimationState,String> animations, BodyFeatures bodyFeatures, float scale, PlayerStats stats) {
+        super(type,animations,bodyFeatures, scale);
         this.stats = stats;
 
         HP = stats.HP();

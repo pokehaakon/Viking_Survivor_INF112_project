@@ -1,6 +1,6 @@
 package Actors.Enemy;
 
-import Actors.MockEnemyFactory;
+
 import GameObjects.Actors.Enemy;
 import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.Factories.EnemyFactory;
@@ -81,8 +81,9 @@ class EnemyPoolTest {
 
     @BeforeEach
     void setup() {
+        world = new World(new Vector2(0,0), true);
         poolSize = 10;
-        mockEnemyFactory = new MockEnemyFactory().get();
+        mockEnemyFactory = new EnemyFactory();
         testPool = new ObjectPool<>(world, mockEnemyFactory, objectTypes, poolSize);
 
         enemiesInPool = new ArrayList<>();

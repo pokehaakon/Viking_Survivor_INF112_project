@@ -1,6 +1,5 @@
 package GameObjects.Factories;
 
-import GameObjects.Animations.AnimationRendering.AnimationLoader;
 import GameObjects.Animations.AnimationState;
 import GameObjects.ObjectTypes.PlayerType;
 import GameObjects.Actors.Player;
@@ -8,11 +7,6 @@ import GameObjects.Actors.Stats.PlayerStats;
 import GameObjects.Actors.Stats.Stats;
 //import Animations.ActorAnimations;
 import GameObjects.BodyFeatures;
-import GameObjects.Animations.AnimationRendering.AnimationRender;
-import GameObjects.Animations.AnimationRendering.GIFRender;
-import GameObjects.Animations.AnimationRendering.GifPair;
-import TextureHandling.GdxTextureHandler;
-import TextureHandling.TextureHandler;
 import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -27,8 +21,7 @@ import static Tools.ShapeTools.createCircleShape;
 
 public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
 
-    public PlayerFactory(AnimationLoader animationLoader) {
-        gifRender = new GIFRender<>(animationLoader);
+    public PlayerFactory() {
     }
     @Override
     public Player create(PlayerType type) {
@@ -38,22 +31,21 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
 
         Player player;
         float scale;
-        //ActorMovement animation;
         PlayerStats stats;
         BodyFeatures bodyFeatures;
-        Map<AnimationState, String> gifs = new HashMap<>();
+        Map<AnimationState, String> animations = new HashMap<>();
 
         switch (type) {
             case PLAYER1: {
                 scale = PLAYER_SCALE;
                 stats = Stats.player();
-                gifs.put(AnimationState.MOVING, PlAYER_MOVING_FILE_PATH);
-                gifs.put(AnimationState.IDLE, PlAYER_IDLE_FILE_PATH);
+                animations.put(AnimationState.MOVING, PlAYER_MOVING_FILE_PATH);
+                animations.put(AnimationState.IDLE, PlAYER_IDLE_FILE_PATH);
                 break;
             }
 
             default:
-                throw new IllegalArgumentException("Invalid enemy type");
+                throw new IllegalArgumentException("Invalid player type");
         }
 
         Filter filter = createFilter(
@@ -61,8 +53,7 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
                 new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL}
         );
 
-        gifRender.setAnimations(gifs);
-        Shape shape = createCircleShape(scale*gifRender.getWidth(AnimationState.IDLE)/2);
+        Shape shape = createCircleShape(0.3f*scale*PLAYER_WIDTH/2);
 
         bodyFeatures = new BodyFeatures(
                 shape,
@@ -74,7 +65,7 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
                 BodyDef.BodyType.DynamicBody);
 
 
-        player = new Player(type,gifRender,bodyFeatures,scale,stats);
+        player = new Player(type,animations,bodyFeatures,scale,stats);
         player.setAnimationState(AnimationState.IDLE);
 
         return player;

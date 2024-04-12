@@ -10,6 +10,9 @@ import java.util.Map;
 public abstract class Sprites {
 
     public static final String TREE_FILE_PATH = "tree.png";
+    public static final float TREE_WIDTH = 1920;
+
+
     public static Map<String, Sprite> spriteMap() {
         Map<String, Sprite> map = new HashMap<>();
         map.put(TREE_FILE_PATH, new Sprite(new Texture(Gdx.files.internal(TREE_FILE_PATH))));

@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import java.util.HashMap;
 import java.util.Map;
 import static GameObjects.Animations.AnimationRendering.GIFS.FRAME_DURATION;
-import static GameObjects.Animations.AnimationRendering.GIFS.gifMap;
 
 
 public class GIFRender<E extends Enum<E>> implements AnimationRender {
@@ -20,21 +19,17 @@ public class GIFRender<E extends Enum<E>> implements AnimationRender {
 
     private GifPair currentGIF;
 
-    private AnimationLoader animationLoader;
+    private AnimationLibrary animationLibrary;
 
 
 
-    public GIFRender(AnimationLoader animationLoader,Map<AnimationState, String> animationMovement) {
-        this.animationLoader = animationLoader;
+    public GIFRender(AnimationLibrary animationLibrary, Map<AnimationState, String> animationMovement) {
+        this.animationLibrary = animationLibrary;
         getGifPairs(animationMovement);
 
 
     }
 
-    public GIFRender(AnimationLoader animationLoader){
-        this.animationLoader = animationLoader;
-
-    }
 
     @Override
     public void draw(SpriteBatch batch, float elapsedTime, GameObject object) {
@@ -89,7 +84,7 @@ public class GIFRender<E extends Enum<E>> implements AnimationRender {
         for(Map.Entry<AnimationState, String> entry : map.entrySet()) {
             AnimationState state = entry.getKey();
             String filePath = entry.getValue();
-            animationMovement.put(state, animationLoader.getGif(filePath));
+            animationMovement.put(state, animationLibrary.getGif(filePath));
         }
     }
 

@@ -1,6 +1,6 @@
 package Actors.Enemy;
 
-import Actors.MockEnemyFactory;
+
 import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.Factories.EnemyFactory;
 import TextureHandling.TextureHandler;
@@ -67,7 +67,7 @@ class EnemyFactoryTest {
             }};
         new HeadlessApplication(listener, config);
 
-       enemyFactory = new MockEnemyFactory().get();
+       enemyFactory = new EnemyFactory();
 
     }
 

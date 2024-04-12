@@ -6,7 +6,7 @@ abstract class GameObject implements IGameObject{
 -BodyFeatures bodyFeatures
 -AnimationState animationState
 -DirectionState directionState
--AnimationRender animationRender
+-Map<AnimationState,String> animations
 
 +Body getBody()
 +void addToWorld()
@@ -15,6 +15,8 @@ abstract class GameObject implements IGameObject{
 +boolean isDestroyed()
 +draw()
 +void setAnimationState()
++ void setAnimation()
++ void renderAnimations()
 }
 
 

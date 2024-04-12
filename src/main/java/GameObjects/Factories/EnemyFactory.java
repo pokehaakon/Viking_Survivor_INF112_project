@@ -24,12 +24,9 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
 
     private final Filter filter;
 
-
-
-    public EnemyFactory(AnimationLoader animationLoader) {
+    public EnemyFactory() {
         super();
-        gifRender = new GIFRender(animationLoader);
-        // default
+
 
         filter  = createFilter(
                 FilterTool.Category.ENEMY,
@@ -58,34 +55,43 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
         Enemy enemy;
         float scale;
         EnemyStats stats;
-        Map<AnimationState,String> gifs = new HashMap<>();
+        Map<AnimationState,String> animations = new HashMap<>();
+
+
+        boolean isGif;
+        Shape shape;
 
         switch (type) {
             case RAVEN: {
                 scale = RAVEN_SCALE;
                 stats = Stats.enemy1();
-                gifs.put(AnimationState.MOVING, RAVEN_FILE_PATH);
-
+                animations.put(AnimationState.MOVING, RAVEN_FILE_PATH);
+                shape = createCircleShape(0.5f*scale*RAVEN_WIDTH/2);
+                isGif = true;
                 break;
             }
             case ORC: {
                 scale = ORC_SCALE;
                 stats = Stats.enemy2();
-                gifs.put(AnimationState.MOVING, ORC_FILE_PATH);
+                animations.put(AnimationState.MOVING, ORC_FILE_PATH);
+                shape = createCircleShape(0.3f*scale*ORC_WIDTH/2);
+                isGif = true;
                 break;
             }
             case WOLF: {
                 scale = ORC_SCALE;
                 stats = Stats.enemy2();
-                gifs.put(AnimationState.MOVING, WOLF_FILE_PATH);
+
+                animations.put(AnimationState.MOVING, WOLF_FILE_PATH);
+                shape = createCircleShape(0.5f*scale*WOLF_WIDTH/2);
+                isGif = true;
                 break;
             }
             default:
                 throw new IllegalArgumentException("Invalid enemy type");
         }
 
-        gifRender.setAnimations(gifs);
-        Shape shape = createCircleShape(scale*gifRender.getWidth(AnimationState.MOVING)/2);
+
         BodyFeatures bodyFeatures = new BodyFeatures(
                 shape,
                 filter,
@@ -95,9 +101,9 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 false,
                 BodyDef.BodyType.DynamicBody);
 
-        enemy = new Enemy(type,gifRender,bodyFeatures,scale,stats);
+        enemy = new Enemy(type,animations,bodyFeatures,scale,stats);
         enemy.setAnimationState(AnimationState.MOVING);
-        System.out.println(enemy.getType());
+        enemy.isGif = true;
         return enemy;
     }
 

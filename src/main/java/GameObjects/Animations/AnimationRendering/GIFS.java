@@ -18,7 +18,7 @@ public abstract class GIFS {
     public static final String ORC_FILE_PATH = "orc.gif";
 
     public static final String WOLF_FILE_PATH = "wolf.gif";
-
+    public static final float PLAYER_WIDTH = 600,RAVEN_WIDTH = 600, WOLF_WIDTH = 600, ORC_WIDTH = 600, PICKUP_ORB_WIDTH = 600, KNIFE_WIDT = 600;
     public static final String PlAYER_MOVING_FILE_PATH = "vikingleft-crop.gif";
 
     public static final String PlAYER_IDLE_FILE_PATH = "viking_idle_left-crop.gif";

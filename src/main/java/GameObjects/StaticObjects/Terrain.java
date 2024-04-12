@@ -1,16 +1,19 @@
 package GameObjects.StaticObjects;
 
+import GameObjects.Animations.AnimationState;
 import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.Actors.Player;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
 import GameObjects.Animations.AnimationRendering.AnimationRender;
 
+import java.util.Map;
+
 
 public class Terrain extends GameObject<TerrainType> {
 
-    public Terrain(TerrainType type,AnimationRender render, BodyFeatures bodyFeatures, float scale) {
-        super(type,render, bodyFeatures, scale);
+    public Terrain(TerrainType type, Map<AnimationState,String> animations, BodyFeatures bodyFeatures, float scale) {
+        super(type,animations, bodyFeatures, scale);
     }
 
     public boolean outOfBounds(Player player, double deSpawnRadius) {

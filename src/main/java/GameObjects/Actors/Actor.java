@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor {
@@ -27,8 +28,8 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
 
     private long lastAttackedTime;
 
-    public Actor(E type,AnimationRender render, BodyFeatures bodyFeatures, float scale) {
-        super(type,render,bodyFeatures,scale);
+    public Actor(E type, Map<AnimationState,String> animations, BodyFeatures bodyFeatures, float scale) {
+        super(type,animations,bodyFeatures,scale);
         velocityVector = new Vector2();
 
         actions  = new HashSet<>();
@@ -122,7 +123,12 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
         else {
             newState = AnimationState.MOVING;
         }
-        setAnimationState(newState);
+        if(animationState != newState) {
+            setAnimationState(newState);
+            setAnimation(newState);
+        }
+
+
     }
 
 
