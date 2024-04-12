@@ -2,11 +2,8 @@ package VikingSurvivor.app;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import GameObjects.Actors.Enemy.Enemy;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import org.junit.jupiter.api.*;
@@ -15,8 +12,6 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
-
-import static org.mockito.Mockito.*;
 
 /**
  * Integration tests (example).

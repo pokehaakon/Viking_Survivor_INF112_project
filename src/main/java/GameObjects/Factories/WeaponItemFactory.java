@@ -1,9 +1,9 @@
 //package GameObjects.Factories;
 //
 //import GameObjects.Actors.ObjectTypes.WeaponType;
-//import GameObjects.Actors.Player.Player;
+//import GameObjects.Actors.Player;
 //import GameObjects.Weapon.Knife;
-//import GameObjects.Weapon.Weapon;
+//import GameObjects.Actors.Weapon;
 //import GameObjects.Weapon.WeaponBody;
 //
 //import java.util.ArrayList;

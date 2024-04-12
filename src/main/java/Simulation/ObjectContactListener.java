@@ -1,10 +1,9 @@
 package Simulation;
 
-import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Actors.Player.Player;
-import GameObjects.Weapon.Weapon;
+import GameObjects.Actors.Enemy;
+import GameObjects.Actors.Player;
+import GameObjects.Actors.Weapon;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.TimeUtils;
 
 public class ObjectContactListener implements ContactListener {
 

@@ -1,6 +1,6 @@
 package Parsing;
 
-import GameObjects.Actors.ObjectTypes.EnemyType;
+import GameObjects.ObjectTypes.EnemyType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -39,8 +39,8 @@ class MapParserTest {
     @Test
     void parseFrameBody() {
         MapParser m = mapParserFromString("""
-                    ENEMY1 ENEMY2; BOSS 100 HARD
-                    ENEMY1; WAVE 10 20 #this should be ignored
+                    RAVEN ORC; BOSS 100 HARD
+                    RAVEN; WAVE 10 20 #this should be ignored
                 """);
 
         List<SpawnFrame> frames = m.parseFrameBody();
@@ -85,9 +85,9 @@ class MapParserTest {
     void parseTimeFrames() {
         MapParser m = mapParserFromString("""
                 00:01:
-                    ENEMY1; WAVE 10 20
+                    RAVEN; WAVE 10 20
                 300f:
-                    ENEMY1 ENEMY2; BOSS 100 HARD
+                    RAVEN ORC; BOSS 100 HARD
                 """);
 
         Map<Long, List<SpawnFrame>> spawnFrames;

@@ -2,17 +2,17 @@ package Simulation;
 
 import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.Actors.ActorAction.EnemyActions;
-import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Actors.ObjectTypes.EnemyType;
-import GameObjects.Actors.ObjectTypes.SwarmType;
-import GameObjects.Actors.ObjectTypes.TerrainType;
-import GameObjects.Actors.Player.Player;
-import GameObjects.Factories.ObjectPool;
-import GameObjects.Terrain.Terrain;
-import GameObjects.Weapon.Weapon;
-import InputProcessing.Contexts.ReleaseCandidateContext;
-import InputProcessing.Coordinates.SpawnCoordinates;
-import InputProcessing.Coordinates.SwarmCoordinates;
+import GameObjects.Actors.Enemy;
+import GameObjects.ObjectTypes.EnemyType;
+import GameObjects.ObjectTypes.SwarmType;
+import GameObjects.ObjectTypes.TerrainType;
+import GameObjects.Actors.Player;
+import GameObjects.Pool.ObjectPool;
+import GameObjects.StaticObjects.Terrain;
+import GameObjects.Actors.Weapon;
+import Contexts.ReleaseCandidateContext;
+import Coordinates.SpawnCoordinates;
+import Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
 import Tools.RollingSum;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -98,18 +98,21 @@ public class Simulation implements Runnable {
 
             context.getPlayer().doAction();
 
+            // random spawning for now
             if (TimeUtils.millis() - lastSpawnTime > 5000) {
-                spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
-//              spawnSwarm(EnemyType.RAVEN, SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
+                spawnRandomEnemies(5,Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
+
                 spawnTerrain(TerrainType.TREE);
                 spawnTerrain(TerrainType.PICKUPORB);
+
+            }
+            if(TimeUtils.millis() - lastSwarmSpawnTime > 15000) {
+                spawnSwarm(EnemyType.RAVEN,SwarmType.LINE,10,60,5);
             }
 
             for(Weapon weapon : player.getInventory()) {
                 weapon.doAction();
             }
-
-
 
 
             doSpinSleep(lastFrameStart, dt);
@@ -121,15 +124,7 @@ public class Simulation implements Runnable {
 
 
             removeDestroyedEnemies();
-            //context.updateActorActions();
-            //context.removeDestroyedEnemies();
 
-
-//        for (Body b : toBeKilled) {
-//            world.destroyBody(b);
-//        }
-//
-//        toBeKilled.clear();
 
             renderLock.unlock();
             long simTimeToUpdate = System.nanoTime() - t0;
@@ -173,8 +168,11 @@ public class Simulation implements Runnable {
             for(ActorAction action : actions) {
                 enemy.setAction(action);
             }
+
+            enemy.renderAnimations(context.getAnimationLibrary());
             enemies.add(enemy);
         }
+        lastSpawnTime = TimeUtils.millis();
     }
 
     private void spawnRandomEnemies(int num, List<ActorAction> actions) {
@@ -183,6 +181,7 @@ public class Simulation implements Runnable {
             for(ActorAction action : actions) {
                 enemy.setAction(action);
             }
+            enemy.renderAnimations(context.getAnimationLibrary());
             enemies.add(enemy);
         }
         lastSpawnTime = TimeUtils.millis();
@@ -190,9 +189,10 @@ public class Simulation implements Runnable {
 
     private void spawnTerrain(TerrainType type) {
         Terrain terrain = context.getTerrainPool().get(type);
+        terrain.renderAnimations(context.getAnimationLibrary());
         terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
         context.getDrawableTerrain().add(terrain);
-        lastSwarmSpawnTime = TimeUtils.millis();
+        lastSpawnTime = TimeUtils.millis();
     }
 
 
@@ -202,10 +202,11 @@ public class Simulation implements Runnable {
         for(Enemy enemy : swarm) {
             enemy.setAction(moveInStraightLine());
             enemy.setAction(destroyIfDefeated(player));
+            enemy.renderAnimations(context.getAnimationLibrary());
             enemies.add(enemy);
         }
 
-        lastSpawnTime = TimeUtils.millis();
+        lastSwarmSpawnTime = TimeUtils.millis();
     }
 
     public void stopSim() {

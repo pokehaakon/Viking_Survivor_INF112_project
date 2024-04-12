@@ -1,13 +1,10 @@
 package GameObjects.Factories;
 
-import Animations.AnimationState;
-import GameObjects.Actors.ObjectTypes.TerrainType;
-import GameObjects.AnimationRendering.GIFRender;
-import GameObjects.AnimationRendering.GifPair;
+import GameObjects.Animations.AnimationRendering.*;
+import GameObjects.Animations.AnimationState;
+import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.BodyFeatures;
-import GameObjects.Terrain.Terrain;
-import GameObjects.AnimationRendering.AnimationRender;
-import GameObjects.AnimationRendering.SpriteRender;
+import GameObjects.StaticObjects.Terrain;
 import TextureHandling.GdxTextureHandler;
 import TextureHandling.TextureHandler;
 import Tools.FilterTool;
@@ -20,20 +17,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static GameObjects.Actors.ObjectTypes.TerrainType.PICKUPORB;
-import static GameObjects.AnimationRendering.GIFS.PICKUPORB_GIF;
+
+import static GameObjects.Animations.AnimationRendering.GIFS.*;
+import static GameObjects.Animations.AnimationRendering.Sprites.TREE_WIDTH;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 import static Tools.ShapeTools.createSquareShape;
 
-public class TerrainFactory implements IFactory<Terrain, TerrainType>{
+public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
 
-    private TextureHandler textureHandler;
+
 
     public TerrainFactory() {
+        super();
 
-        //default
-        textureHandler = new GdxTextureHandler();
+
     }
     @Override
     public Terrain create(TerrainType type) {
@@ -43,40 +41,32 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
 
         Terrain terrain;
         float scale;
-        Texture texture;
-        Shape shape;
         BodyFeatures bodyFeatures;
 
-        Map<AnimationState, Sprite> animations = new HashMap<>();
-        Map<AnimationState, GifPair> gifAnimations = new HashMap<>();
+        Map<AnimationState, String> animations = new HashMap<>();
+        Map<AnimationState, String> gifAnimations = new HashMap<>();
 
         AnimationRender render;
+        Shape shape;
+
+        boolean isGif;
 
         switch (type) {
             case TREE: {
-                texture = textureHandler.loadTexture("tree.png");
                 scale = 0.1f;
-                shape = createSquareShape(
-                        (float)(texture.getWidth())*scale,
-                        (float) (texture.getHeight()*scale)
-                );
-                Sprite sprite = new Sprite(texture);
-                animations.put(AnimationState.STATIC,sprite);
-                render = new SpriteRender(animations);
+                animations.put(AnimationState.STATIC,"tree.png");
+                shape = createCircleShape(scale*TREE_WIDTH/2);
+                isGif = false;
                 break;
             }
             case PICKUPORB:
-                texture = textureHandler.loadTexture("pickupOrb.gif");
                 scale = 0.5f;
-                shape = createCircleShape(
-                        (float)(texture.getWidth())*scale/6
-
-                );
-                gifAnimations.put(AnimationState.STATIC, PICKUPORB_GIF);
-                render = new GIFRender<>(gifAnimations);
+                animations.put(AnimationState.STATIC, PICK_UP_ORB_FILE_PATH);
+                shape = createCircleShape(0.2f*scale*PICKUP_ORB_WIDTH/2);
+                isGif = true;
                 break;
             default:
-                throw new IllegalArgumentException("Invalid enemy type");
+                throw new IllegalArgumentException("Invalid terrain type");
         }
         Filter filter = createFilter(
                 FilterTool.Category.WALL,
@@ -88,6 +78,7 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
                 }
         );
 
+
         bodyFeatures = new BodyFeatures(
                 shape,
                 filter,
@@ -97,8 +88,9 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
                 false,
                 BodyDef.BodyType.StaticBody);
 
-        terrain = new Terrain(type,render,bodyFeatures,scale);
+        terrain = new Terrain(type,animations,bodyFeatures,scale);
         terrain.setAnimationState(AnimationState.STATIC);
+        terrain.isGif = isGif;
 
         return terrain;
     }
@@ -116,9 +108,4 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
         return terrain;
     }
 
-    @Override
-    public void setTextureHandler(TextureHandler newTextureHandler) {
-        textureHandler =  newTextureHandler;
-
-    }
 }

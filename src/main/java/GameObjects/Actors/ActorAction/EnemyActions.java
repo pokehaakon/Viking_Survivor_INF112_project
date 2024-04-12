@@ -1,7 +1,7 @@
 package GameObjects.Actors.ActorAction;
 
-import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Actors.Player.Player;
+import GameObjects.Actors.Enemy;
+import GameObjects.Actors.Player;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import static Tools.FilterTool.createFilter;
@@ -18,6 +18,7 @@ public abstract class EnemyActions {
     public static ActorAction<Enemy> moveInStraightLine() {
         return (e) ->{
             e.updateDirectionState();
+            e.updateAnimationState();
             e.move();
         };
     }
@@ -32,6 +33,7 @@ public abstract class EnemyActions {
             e.velocityVector.add(player.getBody().getPosition()).sub(e.getBody().getWorldCenter());
             e.move();
             e.updateDirectionState();
+            e.updateAnimationState();
         };
 
     }

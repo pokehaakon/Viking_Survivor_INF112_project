@@ -1,6 +1,6 @@
 package InputProcessing.Coordinates;
 
-import com.badlogic.gdx.math.Vector;
+import Coordinates.SpawnCoordinates;
 import com.badlogic.gdx.math.Vector2;
 import org.junit.jupiter.api.Test;
 

@@ -1,5 +1,6 @@
 package GameObjects.Factories;
 
+import GameObjects.Animations.AnimationRendering.AnimationRender;
 import GameObjects.GameObject;
 import TextureHandling.TextureHandler;
 
@@ -28,6 +29,8 @@ public interface IFactory<T extends GameObject<E>, E extends Enum<E>> {
      * Changes the FileHandler. For testing purposes.
      * @param textureHandler the new texture handler
      */
-    void setTextureHandler(TextureHandler textureHandler);
+    void setSpriteRender(AnimationRender spriteRender);
+
+    void setGifRender(AnimationRender gifRender);
 
 }

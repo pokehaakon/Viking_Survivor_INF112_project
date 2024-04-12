@@ -6,7 +6,7 @@ abstract class GameObject implements IGameObject{
 -BodyFeatures bodyFeatures
 -AnimationState animationState
 -DirectionState directionState
--AnimationRender animationRender
+-Map<AnimationState,String> animations
 
 +Body getBody()
 +void addToWorld()
@@ -15,6 +15,8 @@ abstract class GameObject implements IGameObject{
 +boolean isDestroyed()
 +draw()
 +void setAnimationState()
++ void setAnimation()
++ void renderAnimations()
 }
 
 
@@ -89,14 +91,14 @@ package AnimationRender{
 interface AnimationRender{
 }
 class GIFRender implements AnimationRender{
--Map<AnimationState,GifPair> animations
+-Map<AnimationState,String> animations
 +draw()
 +float getWidth()
 +float getHeight()
 
 }
 class SpriteRender implements AnimationRender{
--Map<AnimationState,Sprite> animations
+-Map<AnimationState,String> animations
 +void draw()
 +float getWidth()
 +float getHeight()

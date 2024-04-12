@@ -1,13 +1,12 @@
 package GameObjects.Factories;
 
 
-import Animations.AnimationState;
-import GameObjects.Actors.ObjectTypes.WeaponType;
+import GameObjects.Animations.AnimationRendering.*;
+import GameObjects.Animations.AnimationState;
+import GameObjects.ObjectTypes.WeaponType;
 import GameObjects.BodyFeatures;
-import GameObjects.Weapon.Weapon;
+import GameObjects.Actors.Weapon;
 
-import GameObjects.AnimationRendering.GIFRender;
-import GameObjects.AnimationRendering.GifPair;
 import TextureHandling.GdxTextureHandler;
 import TextureHandling.TextureHandler;
 import Tools.FilterTool;
@@ -20,15 +19,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static Animations.AnimationConstants.getGIF;
+import static GameObjects.Animations.AnimationRendering.GIFS.KNIFE_FILE_PATH;
+import static GameObjects.Animations.AnimationRendering.GIFS.KNIFE_WIDT;
 import static Tools.FilterTool.Category.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
-public class WeaponFactory implements IFactory<Weapon, WeaponType>{
-    private TextureHandler textureHandler;
+public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
+
     public WeaponFactory() {
-        textureHandler = new GdxTextureHandler();
+
     }
     @Override
     public Weapon create(WeaponType type) {
@@ -38,28 +38,28 @@ public class WeaponFactory implements IFactory<Weapon, WeaponType>{
 
         Weapon weapon;
         float scale;
-        Shape shape;
-        Texture texture;
+        boolean isGif;
 
         BodyFeatures bodyFeatures;
-        Map<AnimationState, GifPair> animation =  new HashMap<>();
+        Map<AnimationState, String> animation =  new HashMap<>();
         switch (type) {
             case KNIFE: {
                 scale = 0.7f;
-                texture = textureHandler.loadTexture("wolf.png");
-                shape = createCircleShape(texture.getWidth()*scale/2);
-                animation.put(AnimationState.MOVING,new GifPair(getGIF("knife.gif"),getGIF("knife.gif")));
+                animation.put(AnimationState.MOVING,KNIFE_FILE_PATH);
+                isGif = true;
                 break;
             }
 
             default:
-                throw new IllegalArgumentException("Invalid enemy type");
+                throw new IllegalArgumentException("Invalid weapon type");
         }
 
         Filter filter = createFilter(
                 BULLET,
                 new FilterTool.Category[]{ FilterTool.Category.WALL, ENEMY}
         );
+        //render.setAnimations(animation);
+        Shape shape = createCircleShape(0.2f*scale*KNIFE_WIDT/2);
         bodyFeatures = new BodyFeatures(
                 shape,
                 filter,
@@ -69,8 +69,9 @@ public class WeaponFactory implements IFactory<Weapon, WeaponType>{
                 true,
                 BodyDef.BodyType.DynamicBody);
 
-        weapon = new Weapon(type, new GIFRender<>(animation),bodyFeatures,scale);
+        weapon = new Weapon(type, animation,bodyFeatures,scale);
         weapon.setAnimationState(AnimationState.MOVING);
+        weapon.isGif = isGif;
 
         return weapon;
     }
@@ -80,8 +81,4 @@ public class WeaponFactory implements IFactory<Weapon, WeaponType>{
         return null;
     }
 
-    @Override
-    public void setTextureHandler(TextureHandler newTextureHandler) {
-        textureHandler = newTextureHandler;
-    }
 }

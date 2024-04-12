@@ -1,16 +1,13 @@
 package GameObjects.Factories;
 
 
-import Animations.AnimationState;
-import GameObjects.Actors.ObjectTypes.EnemyType;
+import GameObjects.Animations.AnimationRendering.*;
+import GameObjects.Animations.AnimationState;
+import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.Actors.Stats.EnemyStats;
 import GameObjects.Actors.Stats.Stats;
-import Animations.AnimationConstants;
-import GameObjects.Actors.Enemy.Enemy;
+import GameObjects.Actors.Enemy;
 import GameObjects.BodyFeatures;
-import GameObjects.AnimationRendering.AnimationRender;
-import GameObjects.AnimationRendering.GIFRender;
-import GameObjects.AnimationRendering.GifPair;
 import TextureHandling.GdxTextureHandler;
 import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.*;
@@ -18,9 +15,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static GameObjects.AnimationRendering.GIFS.ORC_GIF;
-import static GameObjects.AnimationRendering.GIFS.RAVEN_GIF;
-import static GameObjects.AnimationRendering.GIFS.WOLF_GIF;
+import static GameObjects.Animations.AnimationRendering.GIFS.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
@@ -29,11 +24,10 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
 
     private final Filter filter;
 
-
     public EnemyFactory() {
         super();
-        // default
-        textureHandler = new GdxTextureHandler();
+
+
         filter  = createFilter(
                 FilterTool.Category.ENEMY,
                 new FilterTool.Category[]{
@@ -61,34 +55,43 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
         Enemy enemy;
         float scale;
         EnemyStats stats;
-        Map<AnimationState,GifPair> gifs = new HashMap<>();
+        Map<AnimationState,String> animations = new HashMap<>();
+
+
+        boolean isGif;
+        Shape shape;
 
         switch (type) {
             case RAVEN: {
-                scale = AnimationConstants.ENEMY1_SCALE;
+                scale = RAVEN_SCALE;
                 stats = Stats.enemy1();
-                gifs.put(AnimationState.MOVING, RAVEN_GIF);
-
+                animations.put(AnimationState.MOVING, RAVEN_FILE_PATH);
+                shape = createCircleShape(0.5f*scale*RAVEN_WIDTH/2);
+                isGif = true;
                 break;
             }
             case ORC: {
-                scale = AnimationConstants.ENEMY2_SCALE;
+                scale = ORC_SCALE;
                 stats = Stats.enemy2();
-                gifs.put(AnimationState.MOVING, ORC_GIF);
+                animations.put(AnimationState.MOVING, ORC_FILE_PATH);
+                shape = createCircleShape(0.3f*scale*ORC_WIDTH/2);
+                isGif = true;
                 break;
             }
             case WOLF: {
-                scale = AnimationConstants.ENEMY2_SCALE;
+                scale = ORC_SCALE;
                 stats = Stats.enemy2();
-                gifs.put(AnimationState.MOVING, WOLF_GIF);
+
+                animations.put(AnimationState.MOVING, WOLF_FILE_PATH);
+                shape = createCircleShape(0.5f*scale*WOLF_WIDTH/2);
+                isGif = true;
                 break;
             }
             default:
                 throw new IllegalArgumentException("Invalid enemy type");
         }
 
-        AnimationRender render = new GIFRender<>(gifs);
-        Shape shape = createCircleShape(scale*render.getWidth(AnimationState.MOVING)/2);
+
         BodyFeatures bodyFeatures = new BodyFeatures(
                 shape,
                 filter,
@@ -98,10 +101,9 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 false,
                 BodyDef.BodyType.DynamicBody);
 
-
-
-        enemy = new Enemy(type,new GIFRender<>(gifs),bodyFeatures,scale,stats);
+        enemy = new Enemy(type,animations,bodyFeatures,scale,stats);
         enemy.setAnimationState(AnimationState.MOVING);
+        enemy.isGif = true;
         return enemy;
     }
 

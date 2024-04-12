@@ -1,7 +1,7 @@
 package Actors.Enemy;
 
-import Actors.MockEnemyFactory;
-import GameObjects.Actors.ObjectTypes.EnemyType;
+
+import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.Factories.EnemyFactory;
 import TextureHandling.TextureHandler;
 import com.badlogic.gdx.ApplicationListener;
@@ -67,7 +67,7 @@ class EnemyFactoryTest {
             }};
         new HeadlessApplication(listener, config);
 
-       enemyFactory = new MockEnemyFactory().get();
+       enemyFactory = new EnemyFactory();
 
     }
 

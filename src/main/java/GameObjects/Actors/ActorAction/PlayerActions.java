@@ -1,7 +1,6 @@
 package GameObjects.Actors.ActorAction;
 
-import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Actors.Player.Player;
+import GameObjects.Actors.Player;
 import InputProcessing.KeyStates;
 import com.badlogic.gdx.utils.TimeUtils;
 
