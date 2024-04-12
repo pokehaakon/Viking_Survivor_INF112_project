@@ -3,23 +3,14 @@ package Simulation;
 import GameObjects.Actors.Enemy.Enemy;
 import GameObjects.Actors.Player.Player;
 import GameObjects.Weapon.Weapon;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class MyContactListener implements ContactListener {
+public class ObjectContactListener implements ContactListener {
 
-    int contactNumber;
 
-    private static final long COOL_DOWN_DURATION = 200; // cool down in millis
-    private long lastHit;
 
-    public MyContactListener() {
-        contactNumber = 0;
-    }
+
 
     /**
      *
@@ -72,26 +63,5 @@ public class MyContactListener implements ContactListener {
     public void postSolve(Contact contact, ContactImpulse impulse) {
     }
 
-    /**
-     * Enemy attacks player when colliding
-     * @param enemy
-     * @param player
-     */
-    private void collisionAttack(Enemy enemy, Player player) {
 
-        System.out.println("Contact nr: " + contactNumber + ", " + enemy.getType() + ", damage: " + enemy.damage);
-        //enemy.attack(player);
-        System.out.println("Player HP: " + player.HP);
-
-        lastHit = TimeUtils.millis();
-
-    }
-
-    /**
-     *
-     * @return true if Plauer is in cool down mode
-     */
-    private boolean coolDown() {
-        return TimeUtils.millis() - lastHit < COOL_DOWN_DURATION;
-    }
 }

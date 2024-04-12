@@ -1,0 +1,177 @@
+@startuml
+package GameObjects{
+abstract class GameObject implements IGameObject{
+-Body getBody
+-Enum type
+-BodyFeatures bodyFeatures
+-AnimationState animationState
+-DirectionState directionState
+-AnimationRender animationRender
+
++Body getBody()
++void addToWorld()
++void setBodyFeatures()
++void destroy()
++boolean isDestroyed()
++draw()
++void setAnimationState()
+}
+
+
+class Actor extends GameObject implements IActor{
+-Set<ActorAction> actions
+-Vector2 velocityVector
+-boolean underAttack
+ +void setVelocityVector()
+ +void move()
+ +void attack()
+ +void setAction()
+ +void doAction()
+ +void setDirectionState()
+}
+interface ActorAction{
+ }
+ class Player extends Actor{
+
+  + List<Weapon> getWeaponInventory()
+  }
+  class Weapon extends Actor{
+  + void setOwner()
+  }
+  class Enemy extends Actor{
+  +boolean outOfBounds()
+  }
+
+  class Terrain extends GameObject{
+  + boolean outOfBounds()
+ }
+
+
+  package Factories{
+  class WeaponFactory implements IFactory{
+  +Weapon create()
+  }
+  class PlayerFactory implements IFactory{
+  +Player create()
+  }
+  class TerrainFactory implements IFactory{
+  +Terrain create()
+  }
+  class EnemyFactory implements IFactory{
+  +Enemy create()
+  }
+
+  class ObjectPool{
+  -IFactory factory
+  -World world
+  +GameObject get()
+  +void returnToPool()
+  }
+}
+}
+
+
+
+
+
+
+package AnimationRender{
+interface AnimationRender{
+}
+class GIFRender implements AnimationRender{
+-Map<AnimationState,GifPair> animations
++draw()
++float getWidth()
++float getHeight()
+
+}
+class SpriteRender implements AnimationRender{
+-Map<AnimationState,Sprite> animations
++void draw()
++float getWidth()
++float getHeight()
+}
+}
+package Contexts{
+interface Screen{
+}
+class Context implements Screen{
+-InputProcessor inputProcessor
+-ContextualInputProcessor iProc
+
++ void setInputProcessor()
++ InputProcessor getInputProcessor()
+}
+class ContextFactory{
+-Map<String, Context> createdContexts
+-ContextualInputProcessor iProc
+
++ Context getContext()
++ Context spawnContext()
+}
+class MainMenuContext extends Context{
+ -InputProcessor createInputProcessor()
+
+ }
+ class ReleaseCandidateContext extends Context{
+ - ObjectPool objectPool;
+ - IFactory objectFactory
+ -Simulation simulation
+ -Thread simThread
+ -List<GameObject> drawableGameObjects
+ - ContactListener objectContactListener
+ - boolean gameOver
+ + void render()
+ + void createWorld()
+ + void startSimulation()
+ - InputProcessor createInputProcessor()
+ }
+}
+package InputProcessing{
+interface InputProcessor{
+}
+
+class ContextualInputProcessor implements InputProcessor{
+-Context currentContext;
+    -InputProcessor currentInputProcessor;
+    -private final ContextFactory contextFactory;
+    + void setContext(=
+    + Context getCurrentContext()
+
+}
+}
+package Simulation{
+class ObjectContactListener implements ContactListener{
+- boolean enemyWeaponCollision()
+- boolean playerEnemyCollision()
++ void beginContact()
+}
+
+class Simulation implements Runnable{
+-List<GameObjects> drawableGameObjects
+-World world
++void run()
+- removeDestroyedEnemies()
+- void spawnEnemies()
+- void spawnTerrain()
+- void doActorActions()
+
+- void pause()
+- void stopSim()
+}
+}
+
+package App{
+class HelloWorld implements ApplicationListener {
+-Context currentContext;
+-ContextualInputProcessor inProc;
++ void create()
++ void render()
+}
+
+class Main{
+Lwjgl3Application(new HelloWorld)
+
+}
+}
+@enduml

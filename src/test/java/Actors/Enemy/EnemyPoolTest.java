@@ -4,7 +4,7 @@ import Actors.MockEnemyFactory;
 import GameObjects.Actors.Enemy.Enemy;
 import GameObjects.Actors.ObjectTypes.EnemyType;
 import GameObjects.Factories.EnemyFactory;
-import GameObjects.ObjectPool;
+import GameObjects.Factories.ObjectPool;
 import GameObjects.SmallPool;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;

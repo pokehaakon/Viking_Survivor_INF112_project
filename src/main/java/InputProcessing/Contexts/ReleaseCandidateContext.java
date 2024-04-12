@@ -12,7 +12,7 @@ import GameObjects.Actors.Player.Player;
 import GameObjects.Factories.PlayerFactory;
 import GameObjects.Factories.TerrainFactory;
 import GameObjects.Factories.WeaponFactory;
-import GameObjects.ObjectPool;
+import GameObjects.Factories.ObjectPool;
 import GameObjects.Terrain.Terrain;
 import GameObjects.Weapon.Weapon;
 import InputProcessing.ContextualInputProcessor;
@@ -39,7 +39,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import Simulation.MyContactListener;
+import Simulation.ObjectContactListener;
 
 
 import java.util.*;
@@ -51,7 +51,7 @@ import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.getBottomLeftCorrection;
 import static VikingSurvivor.app.Main.SCREEN_WIDTH;
 
-public class MVPContext extends Context {
+public class ReleaseCandidateContext extends Context {
 
 
     private final SpriteBatch batch;
@@ -131,7 +131,7 @@ public class MVPContext extends Context {
 
 
 
-    public MVPContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
+    public ReleaseCandidateContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
         super(name, iProc);
 
         this.batch = batch;
@@ -464,7 +464,7 @@ public class MVPContext extends Context {
 
         toBoKilled = new HashSet<>();
 
-        world.setContactListener(new MyContactListener());
+        world.setContactListener(new ObjectContactListener());
 
         //world.step(1/60f, 10, 10);
     }

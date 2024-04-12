@@ -1,6 +1,8 @@
-package GameObjects;
+package GameObjects.Factories;
 
 import GameObjects.Factories.IFactory;
+import GameObjects.GameObject;
+import GameObjects.SmallPool;
 import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.*;

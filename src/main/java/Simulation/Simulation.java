@@ -7,10 +7,10 @@ import GameObjects.Actors.ObjectTypes.EnemyType;
 import GameObjects.Actors.ObjectTypes.SwarmType;
 import GameObjects.Actors.ObjectTypes.TerrainType;
 import GameObjects.Actors.Player.Player;
-import GameObjects.ObjectPool;
+import GameObjects.Factories.ObjectPool;
 import GameObjects.Terrain.Terrain;
 import GameObjects.Weapon.Weapon;
-import InputProcessing.Contexts.MVPContext;
+import InputProcessing.Contexts.ReleaseCandidateContext;
 import InputProcessing.Coordinates.SpawnCoordinates;
 import InputProcessing.Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
@@ -37,7 +37,7 @@ public class Simulation implements Runnable {
     private boolean paused = false;
     private long frame = 0;
     public final int SET_UPS = 60;
-    private final MVPContext context;
+    private final ReleaseCandidateContext context;
     long lastSpawnTime;
     private Player player;
     private ObjectPool<Enemy, EnemyType> enemyPool;
@@ -52,7 +52,7 @@ public class Simulation implements Runnable {
 
     private float ORBIT_INTERVAL = 1000;
 
-    public Simulation(MVPContext context) {
+    public Simulation(ReleaseCandidateContext context) {
         this.context = context;
         renderLock = context.getRenderLock();
         keyStates = context.getKeyStates();
@@ -169,7 +169,7 @@ public class Simulation implements Runnable {
 
     private void spawnEnemies(EnemyType enemyType, int num, List<ActorAction> actions) {
         for(Enemy enemy: enemyPool.get(enemyType, num)) {
-            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), MVPContext.SPAWN_RADIUS));
+            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
             for(ActorAction action : actions) {
                 enemy.setAction(action);
             }
@@ -179,7 +179,7 @@ public class Simulation implements Runnable {
 
     private void spawnRandomEnemies(int num, List<ActorAction> actions) {
         for(Enemy enemy : enemyPool.getRandom(num)) {
-            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), MVPContext.SPAWN_RADIUS));
+            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
             for(ActorAction action : actions) {
                 enemy.setAction(action);
             }
@@ -190,7 +190,7 @@ public class Simulation implements Runnable {
 
     private void spawnTerrain(TerrainType type) {
         Terrain terrain = context.getTerrainPool().get(type);
-        terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), MVPContext.SPAWN_RADIUS));
+        terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
         context.getDrawableTerrain().add(terrain);
         lastSwarmSpawnTime = TimeUtils.millis();
     }
@@ -198,7 +198,7 @@ public class Simulation implements Runnable {
 
     private void spawnSwarm(EnemyType enemyType, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
         List<Enemy> swarmMembers = enemyPool.get(enemyType, size);
-        List<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType, swarmMembers, player.getBody().getPosition(), MVPContext.SPAWN_RADIUS, size, spacing, speedMultiplier);
+        List<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType, swarmMembers, player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS, size, spacing, speedMultiplier);
         for(Enemy enemy : swarm) {
             enemy.setAction(moveInStraightLine());
             enemy.setAction(destroyIfDefeated(player));
