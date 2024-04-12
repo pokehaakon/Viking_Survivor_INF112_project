@@ -2,17 +2,17 @@ package Simulation;
 
 import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.Actors.ActorAction.EnemyActions;
-import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Actors.ObjectTypes.EnemyType;
-import GameObjects.Actors.ObjectTypes.SwarmType;
-import GameObjects.Actors.ObjectTypes.TerrainType;
-import GameObjects.Actors.Player.Player;
-import GameObjects.Factories.ObjectPool;
-import GameObjects.Terrain.Terrain;
-import GameObjects.Weapon.Weapon;
-import InputProcessing.Contexts.ReleaseCandidateContext;
-import InputProcessing.Coordinates.SpawnCoordinates;
-import InputProcessing.Coordinates.SwarmCoordinates;
+import GameObjects.Actors.Enemy;
+import GameObjects.ObjectTypes.EnemyType;
+import GameObjects.ObjectTypes.SwarmType;
+import GameObjects.ObjectTypes.TerrainType;
+import GameObjects.Actors.Player;
+import GameObjects.Pool.ObjectPool;
+import GameObjects.StaticObjects.Terrain;
+import GameObjects.Actors.Weapon;
+import Contexts.ReleaseCandidateContext;
+import Coordinates.SpawnCoordinates;
+import Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
 import Tools.RollingSum;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -99,8 +99,10 @@ public class Simulation implements Runnable {
             context.getPlayer().doAction();
 
             if (TimeUtils.millis() - lastSpawnTime > 5000) {
-                spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
+                spawnEnemies(EnemyType.ORC,5,Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
+                //spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
 //              spawnSwarm(EnemyType.RAVEN, SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
+
                 spawnTerrain(TerrainType.TREE);
                 spawnTerrain(TerrainType.PICKUPORB);
             }
@@ -173,8 +175,10 @@ public class Simulation implements Runnable {
             for(ActorAction action : actions) {
                 enemy.setAction(action);
             }
+            System.out.println(enemyType);
             enemies.add(enemy);
         }
+        lastSpawnTime = TimeUtils.millis();
     }
 
     private void spawnRandomEnemies(int num, List<ActorAction> actions) {

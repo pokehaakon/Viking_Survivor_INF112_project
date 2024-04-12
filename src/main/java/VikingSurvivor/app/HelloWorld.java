@@ -1,7 +1,7 @@
 package VikingSurvivor.app;
 
 import InputProcessing.*;
-import InputProcessing.Contexts.Context;
+import Contexts.Context;
 //import InputProcessing.Contexts.TrainingContext;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;

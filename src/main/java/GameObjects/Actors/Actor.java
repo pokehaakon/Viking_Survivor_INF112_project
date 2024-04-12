@@ -1,10 +1,10 @@
 package GameObjects.Actors;
 
-import Animations.AnimationState;
+import GameObjects.Animations.AnimationState;
 import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
-import GameObjects.AnimationRendering.AnimationRender;
+import GameObjects.Animations.AnimationRendering.AnimationRender;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 

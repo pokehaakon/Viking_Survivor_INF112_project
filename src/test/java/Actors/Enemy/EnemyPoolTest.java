@@ -1,11 +1,11 @@
 package Actors.Enemy;
 
 import Actors.MockEnemyFactory;
-import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Actors.ObjectTypes.EnemyType;
+import GameObjects.Actors.Enemy;
+import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.Factories.EnemyFactory;
-import GameObjects.Factories.ObjectPool;
-import GameObjects.SmallPool;
+import GameObjects.Pool.ObjectPool;
+import GameObjects.Pool.SmallPool;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;

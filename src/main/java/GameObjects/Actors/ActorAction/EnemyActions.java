@@ -1,7 +1,7 @@
 package GameObjects.Actors.ActorAction;
 
-import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Actors.Player.Player;
+import GameObjects.Actors.Enemy;
+import GameObjects.Actors.Player;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import static Tools.FilterTool.createFilter;

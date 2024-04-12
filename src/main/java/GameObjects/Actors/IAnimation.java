@@ -1,7 +1,7 @@
 package GameObjects.Actors;
 
-import Animations.AnimationState;
-import Animations.ActorMovement;
+import GameObjects.Animations.AnimationState;
+import GameObjects.Animations.ActorMovement;
 
 public interface IAnimation {
 

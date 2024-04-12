@@ -1,9 +1,8 @@
 package GameObjects;
 
-import Animations.AnimationState;
+import GameObjects.Animations.AnimationState;
 import GameObjects.Actors.DirectionState;
-import GameObjects.Actors.IGameObject;
-import GameObjects.AnimationRendering.AnimationRender;
+import GameObjects.Animations.AnimationRendering.AnimationRender;
 import Tools.BodyTool;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
