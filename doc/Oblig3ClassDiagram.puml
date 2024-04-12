@@ -29,9 +29,18 @@ class Actor extends GameObject implements IActor{
  +void doAction()
  +void setDirectionState()
 }
+package ActorActions{
 interface ActorAction{
  }
+ abstract class PlayerActions{
+ }
+ abstract class WeaponActions{
+ }
+ abstract class EnemyActions{
+ }
+ }
  class Player extends Actor{
+ -PlayerStats playerStats
 
   + List<Weapon> getWeaponInventory()
   }
@@ -39,6 +48,7 @@ interface ActorAction{
   + void setOwner()
   }
   class Enemy extends Actor{
+  -EnemyStats enemyStats
   +boolean outOfBounds()
   }
 
@@ -95,7 +105,7 @@ class SpriteRender implements AnimationRender{
 package Contexts{
 interface Screen{
 }
-class Context implements Screen{
+abstract class Context implements Screen{
 -InputProcessor inputProcessor
 -ContextualInputProcessor iProc
 
