@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Shape;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
         boolean isGif;
 
         BodyFeatures bodyFeatures;
-        Map<AnimationState, String> animation =  new HashMap<>();
+        Map<AnimationState, String> animation =  new EnumMap<>(AnimationState.class);
         switch (type) {
             case KNIFE: {
                 scale = 0.7f;

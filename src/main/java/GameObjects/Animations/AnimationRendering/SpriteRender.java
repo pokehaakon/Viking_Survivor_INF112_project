@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class SpriteRender implements AnimationRender {
     private int flipMultiplier = 1;
 
     private AnimationLibrary animationLibrary;
-    Map<AnimationState, Sprite> stateAnimations = new HashMap<>();
+    Map<AnimationState, Sprite> stateAnimations = new EnumMap<>(AnimationState.class);
 
     public SpriteRender(AnimationLibrary animationLibrary, Map<AnimationState, String> stateAnimations) {
         this.animationLibrary = animationLibrary;

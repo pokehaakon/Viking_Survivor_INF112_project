@@ -12,6 +12,7 @@ import TextureHandling.GdxTextureHandler;
 import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.*;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
         Enemy enemy;
         float scale;
         EnemyStats stats;
-        Map<AnimationState,String> animations = new HashMap<>();
+        Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
 
 
         boolean isGif;

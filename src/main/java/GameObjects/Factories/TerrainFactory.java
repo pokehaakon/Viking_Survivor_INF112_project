@@ -12,10 +12,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 import static GameObjects.Animations.AnimationRendering.GIFS.*;
@@ -43,8 +40,8 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
         float scale;
         BodyFeatures bodyFeatures;
 
-        Map<AnimationState, String> animations = new HashMap<>();
-        Map<AnimationState, String> gifAnimations = new HashMap<>();
+        Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
+        Map<AnimationState, String> gifAnimations = new EnumMap<>(AnimationState.class);
 
         AnimationRender render;
         Shape shape;

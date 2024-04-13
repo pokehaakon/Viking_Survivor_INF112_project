@@ -6,6 +6,7 @@ import GameObjects.GameObject;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import static GameObjects.Animations.AnimationRendering.GIFS.FRAME_DURATION;
@@ -13,7 +14,7 @@ import static GameObjects.Animations.AnimationRendering.GIFS.FRAME_DURATION;
 
 public class GIFRender<E extends Enum<E>> implements AnimationRender {
 
-    private Map<AnimationState, GifPair> animationMovement = new HashMap<>();
+    private final Map<AnimationState, GifPair> animationMovement = new EnumMap<>(AnimationState.class);
 
 
 

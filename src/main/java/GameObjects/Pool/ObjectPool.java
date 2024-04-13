@@ -20,14 +20,15 @@ public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
      * When we start the game, we create and store a desired amount of each object type
      * We use this pool to recirculate objects, so we don't have to create new instances every time an object spawns
      * @param factory desired object factory
-     * @param objectTypes  list of the different types of each object
+     * @param objectTypes list of the different types of each object
      * @param poolSize number of objects to create of each object type
      */
     public ObjectPool(World world, IFactory<T, E> factory, List<E> objectTypes, int poolSize) {
         this.world = world;
         this.factory = factory;
         this.objectTypes = objectTypes;
-        this.objectPool = new HashMap<>();
+        this.objectPool = new EnumMap<>(objectTypes.get(0).getDeclaringClass());
+        //this.objectPool = new HashMap<>();
         this.random = new Random();
 
         if (poolSize <= 0) {

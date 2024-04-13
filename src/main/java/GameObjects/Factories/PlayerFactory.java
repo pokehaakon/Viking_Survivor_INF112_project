@@ -10,6 +10,7 @@ import GameObjects.BodyFeatures;
 import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.*;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
         float scale;
         PlayerStats stats;
         BodyFeatures bodyFeatures;
-        Map<AnimationState, String> animations = new HashMap<>();
+        Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
 
         switch (type) {
             case PLAYER1: {

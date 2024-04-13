@@ -37,7 +37,7 @@ public class KeyStates {
 
     private void build(List<Pair<Integer, GameKey>> keyBinds) {
         keyBindsMap = new HashMap<>();
-        ikeyBindsMap = new HashMap<>();
+        ikeyBindsMap = new EnumMap<>(GameKey.class);
         Set<GameKey> values = new HashSet<>();
         for (Pair<Integer, GameKey> p : keyBinds) {
             if (keyBindsMap.get(p.getLeft()) != null) {
@@ -51,7 +51,7 @@ public class KeyStates {
             ikeyBindsMap.put(p.getRight(), p.getLeft());
         }
 
-        stateOfKey = new HashMap<>();
+        stateOfKey = new EnumMap<>(GameKey.class);
         for (GameKey gk : GameKey.values()) {
             stateOfKey.put(gk, false);
         }
