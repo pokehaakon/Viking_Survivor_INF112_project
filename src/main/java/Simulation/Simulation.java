@@ -73,7 +73,6 @@ public class Simulation implements Runnable {
 
 
 
-
             lastFrameStart = System.nanoTime();
             long t0 = System.nanoTime();
 
