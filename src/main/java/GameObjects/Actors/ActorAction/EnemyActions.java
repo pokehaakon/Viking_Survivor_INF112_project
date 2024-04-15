@@ -1,8 +1,8 @@
 package GameObjects.Actors.ActorAction;
 
-import GameObjects.Actors.Actor;
-import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Actors.Player.Player;
+import GameObjects.Actors.Enemy;
+import GameObjects.Actors.Player;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import static Tools.FilterTool.createFilter;
 import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
@@ -16,7 +16,11 @@ public abstract class EnemyActions {
      *
      */
     public static ActorAction<Enemy> moveInStraightLine() {
-        return Actor::move;
+        return (e) ->{
+            e.updateDirectionState();
+            e.updateAnimationState();
+            e.move();
+        };
     }
 
     /**
@@ -28,6 +32,8 @@ public abstract class EnemyActions {
         return (e) -> {
             e.velocityVector.add(player.getBody().getPosition()).sub(e.getBody().getWorldCenter());
             e.move();
+            e.updateDirectionState();
+            e.updateAnimationState();
         };
 
     }
@@ -45,6 +51,17 @@ public abstract class EnemyActions {
             }
         };
     }
+
+    public static ActorAction<Enemy> coolDown(long coolDownDuration) {
+        return (e) -> {
+            if(e.isUnderAttack()) {
+                if(TimeUtils.millis() - e.getLastAttackedTime() > coolDownDuration) {
+                    e.setUnderAttack(false);
+                }
+            }
+        };
+    }
+
 
 
 

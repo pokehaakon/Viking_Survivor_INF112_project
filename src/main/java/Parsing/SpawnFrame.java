@@ -1,6 +1,6 @@
 package Parsing;
 
-import GameObjects.Actors.ObjectTypes.EnemyType;
+import GameObjects.ObjectTypes.EnemyType;
 
 import java.util.List;
 

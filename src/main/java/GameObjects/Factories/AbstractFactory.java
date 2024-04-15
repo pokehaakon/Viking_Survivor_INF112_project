@@ -1,5 +1,7 @@
 package GameObjects.Factories;
 
+import GameObjects.Animations.AnimationRendering.AnimationRender;
+import GameObjects.Animations.AnimationRendering.SpriteRender;
 import GameObjects.GameObject;
 import TextureHandling.TextureHandler;
 
@@ -8,7 +10,8 @@ import java.util.List;
 
 public abstract class AbstractFactory<T extends GameObject<E>, E extends Enum<E>> implements IFactory<T, E> {
 
-    TextureHandler textureHandler;
+    protected AnimationRender  spriteRender;
+    protected AnimationRender gifRender;
 
     /**
      * Create multiple enemies
@@ -31,8 +34,14 @@ public abstract class AbstractFactory<T extends GameObject<E>, E extends Enum<E>
     }
 
     @Override
-    public void setTextureHandler(TextureHandler newTextureHandler) {
-        textureHandler = newTextureHandler;
+    public void setSpriteRender(AnimationRender spriteRender) {
+        this.spriteRender = spriteRender;
     }
+
+    @Override
+    public void setGifRender(AnimationRender gifRender) {
+        this.gifRender = gifRender;
+    }
+
 
 }

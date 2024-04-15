@@ -1,11 +1,10 @@
 package InputProcessing;
 
-import InputProcessing.Contexts.Context;
+import Contexts.Context;
+import Contexts.ContextFactory;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import org.apache.maven.surefire.shared.lang3.tuple.ImmutablePair;
-import org.apache.maven.surefire.shared.lang3.tuple.Pair;
 
 public class ContextualInputProcessor implements InputProcessor {
     private Context currentContext;

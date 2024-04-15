@@ -1,42 +1,41 @@
 package GameObjects.Factories;
 
 
-import GameObjects.Actors.ObjectTypes.EnemyType;
+import GameObjects.Animations.AnimationRendering.*;
+import GameObjects.Animations.AnimationState;
+import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.Actors.Stats.EnemyStats;
 import GameObjects.Actors.Stats.Stats;
-import Animations.ActorAnimation;
-import Animations.ActorAnimations;
-import Animations.AnimationConstants;
-import GameObjects.Actors.Enemy.Enemy;
+import GameObjects.Actors.Enemy;
 import GameObjects.BodyFeatures;
 import TextureHandling.GdxTextureHandler;
-import TextureHandling.TextureHandler;
 import Tools.FilterTool;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.*;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 
-import static Animations.AnimationConstants.PLAYER_IDLE_RIGHT;
+import static GameObjects.Animations.AnimationRendering.GIFS.*;
 import static Tools.FilterTool.createFilter;
-import static Tools.ShapeTools.createSquareShape;
+import static Tools.ShapeTools.createCircleShape;
 
 
 public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
 
     private final Filter filter;
 
-
     public EnemyFactory() {
         super();
-        // default
-        textureHandler = new GdxTextureHandler();
+
+
         filter  = createFilter(
                 FilterTool.Category.ENEMY,
                 new FilterTool.Category[]{
                         FilterTool.Category.WALL,
                         FilterTool.Category.ENEMY,
-                        FilterTool.Category.PLAYER
+                        FilterTool.Category.PLAYER,
+                        FilterTool.Category.BULLET
                 }
         );
 
@@ -56,34 +55,37 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
 
         Enemy enemy;
         float scale;
-        Shape shape;
-        Texture texture;
-        ActorAnimation animation;
         EnemyStats stats;
+        Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
 
+
+        boolean isGif;
+        Shape shape;
 
         switch (type) {
-            case ENEMY1: {
-                scale = AnimationConstants.ENEMY1_SCALE;
-                texture = textureHandler.loadTexture(PLAYER_IDLE_RIGHT);
-                shape = createSquareShape(
-                        (float)(texture.getWidth())*scale,
-                        (float) (texture.getHeight()*scale)
-
-                );
-                animation = ActorAnimations.enemyMoveAnimation();
+            case RAVEN: {
+                scale = RAVEN_SCALE;
                 stats = Stats.enemy1();
+                animations.put(AnimationState.MOVING, RAVEN_FILE_PATH);
+                shape = createCircleShape(0.5f*scale*RAVEN_WIDTH/2);
+                isGif = true;
                 break;
             }
-            case ENEMY2: {
-                scale = AnimationConstants.ENEMY2_SCALE;
-                texture = textureHandler.loadTexture(PLAYER_IDLE_RIGHT);
-                shape = createSquareShape(
-                        texture.getWidth()*scale,
-                        texture.getHeight()*scale);
-
-                animation = ActorAnimations.enemyMoveAnimation();
+            case ORC: {
+                scale = ORC_SCALE;
                 stats = Stats.enemy2();
+                animations.put(AnimationState.MOVING, ORC_FILE_PATH);
+                shape = createCircleShape(0.3f*scale*ORC_WIDTH/2);
+                isGif = true;
+                break;
+            }
+            case WOLF: {
+                scale = ORC_SCALE;
+                stats = Stats.enemy2();
+
+                animations.put(AnimationState.MOVING, WOLF_FILE_PATH);
+                shape = createCircleShape(0.5f*scale*WOLF_WIDTH/2);
+                isGif = true;
                 break;
             }
             default:
@@ -100,14 +102,9 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 false,
                 BodyDef.BodyType.DynamicBody);
 
-        enemy = new Enemy();
-        enemy.setBodyFeatures(bodyFeatures);
-        enemy.setScale(scale);
-        enemy.setSprite(texture);
-        enemy.setAnimation(animation);
-        enemy.setType(type);
-        enemy.setStats(stats);
-
+        enemy = new Enemy(type,animations,bodyFeatures,scale,stats);
+        enemy.setAnimationState(AnimationState.MOVING);
+        enemy.isGif = true;
         return enemy;
     }
 

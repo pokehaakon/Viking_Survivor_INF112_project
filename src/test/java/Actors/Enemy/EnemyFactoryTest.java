@@ -1,7 +1,7 @@
 package Actors.Enemy;
 
-import Actors.MockEnemyFactory;
-import GameObjects.Actors.ObjectTypes.EnemyType;
+
+import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.Factories.EnemyFactory;
 import TextureHandling.TextureHandler;
 import com.badlogic.gdx.ApplicationListener;
@@ -67,13 +67,13 @@ class EnemyFactoryTest {
             }};
         new HeadlessApplication(listener, config);
 
-       enemyFactory = new MockEnemyFactory().get();
+       enemyFactory = new EnemyFactory();
 
     }
 
     @Test
     void correctSize() {
-        assertEquals(5, enemyFactory.create(5, EnemyType.ENEMY1).size());
+        assertEquals(5, enemyFactory.create(5, EnemyType.RAVEN).size());
     }
 
 
@@ -85,7 +85,7 @@ class EnemyFactoryTest {
         });
 
         assertThrows(IllegalArgumentException.class, () -> {
-            enemyFactory.create(0, EnemyType.ENEMY1);
+            enemyFactory.create(0, EnemyType.RAVEN);
         });
     }
 

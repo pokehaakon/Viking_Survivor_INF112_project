@@ -1,30 +1,28 @@
 package GameObjects.Factories;
 
-import GameObjects.Actors.ObjectTypes.PlayerType;
-import GameObjects.Actors.Player.Player;
+import GameObjects.Animations.AnimationState;
+import GameObjects.ObjectTypes.PlayerType;
+import GameObjects.Actors.Player;
 import GameObjects.Actors.Stats.PlayerStats;
 import GameObjects.Actors.Stats.Stats;
-import Animations.ActorAnimation;
-import Animations.ActorAnimations;
-import Animations.AnimationConstants;
+//import Animations.ActorAnimations;
 import GameObjects.BodyFeatures;
-import TextureHandling.GdxTextureHandler;
-import TextureHandling.TextureHandler;
 import Tools.FilterTool;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static Tools.BodyTool.createBody;
+import static GameObjects.Animations.AnimationRendering.GIFS.*;
+import static Tools.FilterTool.Category.PLAYER;
 import static Tools.FilterTool.createFilter;
-import static Tools.ShapeTools.createSquareShape;
+import static Tools.ShapeTools.createCircleShape;
 
-public class PlayerFactory implements IFactory<Player, PlayerType>{
-    private TextureHandler textureHandler;
+public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
+
     public PlayerFactory() {
-        textureHandler = new GdxTextureHandler();
     }
     @Override
     public Player create(PlayerType type) {
@@ -34,37 +32,29 @@ public class PlayerFactory implements IFactory<Player, PlayerType>{
 
         Player player;
         float scale;
-        Shape shape;
-        String spawnGIF;
-        Texture texture;
-        ActorAnimation animation;
         PlayerStats stats;
         BodyFeatures bodyFeatures;
+        Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
 
         switch (type) {
             case PLAYER1: {
-                scale = AnimationConstants.PLAYER_SCALE;
-                spawnGIF = AnimationConstants.PLAYER_IDLE_RIGHT;
-                texture = textureHandler.loadTexture(spawnGIF);
-                shape = createSquareShape(
-                        (float)(texture.getWidth())*scale,
-                        (float) (texture.getHeight()*scale)
-
-                );
-                animation = ActorAnimations.playerMoveAnimation();
-
+                scale = PLAYER_SCALE;
                 stats = Stats.player();
+                animations.put(AnimationState.MOVING, PlAYER_MOVING_FILE_PATH);
+                animations.put(AnimationState.IDLE, PlAYER_IDLE_FILE_PATH);
                 break;
             }
 
             default:
-                throw new IllegalArgumentException("Invalid enemy type");
+                throw new IllegalArgumentException("Invalid player type");
         }
 
         Filter filter = createFilter(
-                FilterTool.Category.PLAYER,
+                PLAYER,
                 new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL}
         );
+
+        Shape shape = createCircleShape(0.3f*scale*PLAYER_WIDTH/2);
 
         bodyFeatures = new BodyFeatures(
                 shape,
@@ -76,13 +66,8 @@ public class PlayerFactory implements IFactory<Player, PlayerType>{
                 BodyDef.BodyType.DynamicBody);
 
 
-        player = new Player();
-        player.setStats(stats);
-        player.setScale(scale);
-        player.setBodyFeatures(bodyFeatures);
-        player.setSprite(texture);
-        player.setAnimation(animation);
-        player.setType(type);
+        player = new Player(type,animations,bodyFeatures,scale,stats);
+        player.setAnimationState(AnimationState.IDLE);
 
         return player;
     }
@@ -92,8 +77,5 @@ public class PlayerFactory implements IFactory<Player, PlayerType>{
         return null;
     }
 
-    @Override
-    public void setTextureHandler(TextureHandler newTextureHandler) {
-        textureHandler = newTextureHandler;
-    }
+
 }

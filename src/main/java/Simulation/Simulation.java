@@ -1,30 +1,31 @@
 package Simulation;
 
 import GameObjects.Actors.ActorAction.ActorAction;
-import GameObjects.Actors.Enemy.Enemy;
-import GameObjects.Actors.ObjectTypes.EnemyType;
-import GameObjects.Actors.ObjectTypes.SwarmType;
-import GameObjects.Actors.ObjectTypes.TerrainType;
-import GameObjects.Actors.Player.Player;
-import GameObjects.ObjectPool;
-import GameObjects.Terrain.Terrain;
-import InputProcessing.Contexts.MVPContext;
-import InputProcessing.Coordinates.SpawnCoordinates;
-import InputProcessing.Coordinates.SwarmCoordinates;
+import GameObjects.Actors.ActorAction.EnemyActions;
+import GameObjects.Actors.Enemy;
+import GameObjects.ObjectTypes.EnemyType;
+import GameObjects.ObjectTypes.SwarmType;
+import GameObjects.ObjectTypes.TerrainType;
+import GameObjects.Actors.Player;
+import GameObjects.Pool.ObjectPool;
+import GameObjects.StaticObjects.Terrain;
+import GameObjects.Actors.Weapon;
+import Contexts.ReleaseCandidateContext;
+import Coordinates.SpawnCoordinates;
+import Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
 import Tools.RollingSum;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 
-import static GameObjects.Actors.ActorAction.EnemyActions.destroyIfDefeated;
-import static GameObjects.Actors.ActorAction.EnemyActions.moveInStraightLine;
-import static GameObjects.Actors.Stats.Stats.SWARM_SPEED_MULTIPLIER;
+import static GameObjects.Actors.ActorAction.EnemyActions.*;
 
 public class Simulation implements Runnable {
     private Lock renderLock;
@@ -36,16 +37,22 @@ public class Simulation implements Runnable {
     private boolean paused = false;
     private long frame = 0;
     public final int SET_UPS = 60;
-    private final MVPContext context;
+    private final ReleaseCandidateContext context;
     long lastSpawnTime;
     private Player player;
     private ObjectPool<Enemy, EnemyType> enemyPool;
     private List<Enemy> enemies;
     private AtomicLong synchronizer;
 
+    private Weapon mainWeapon;
+
     private long lastSwarmSpawnTime;
 
-    public Simulation(MVPContext context) {
+    private long lastOrbit;
+
+    private float ORBIT_INTERVAL = 1000;
+
+    public Simulation(ReleaseCandidateContext context) {
         this.context = context;
         renderLock = context.getRenderLock();
         keyStates = context.getKeyStates();
@@ -57,6 +64,8 @@ public class Simulation implements Runnable {
         player = context.getPlayer();
         enemyPool = context.getEnemyPool();
         enemies = context.getDrawableEnemies();
+
+        mainWeapon = context.getOrbitWeapon();
     }
 
     @Override
@@ -85,36 +94,52 @@ public class Simulation implements Runnable {
                 enemy.doAction();
             }
 
+
             context.getPlayer().doAction();
 
-            if (TimeUtils.millis() - lastSpawnTime > 1000) {
-                spawnSwarm(EnemyType.ENEMY1, SwarmType.LINE,10,100, SWARM_SPEED_MULTIPLIER);
+            // random spawning for now
+            if (TimeUtils.millis() - lastSpawnTime > 5000) {
+                spawnRandomEnemies(5,Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
+
                 spawnTerrain(TerrainType.TREE);
+                spawnTerrain(TerrainType.PICKUPORB);
+
             }
+            if(TimeUtils.millis() - lastSwarmSpawnTime > 15000) {
+                spawnSwarm(EnemyType.RAVEN,SwarmType.LINE,10,60,5);
+            }
+
+            for(Weapon weapon : player.getInventory()) {
+                weapon.doAction();
+            }
+
 
             doSpinSleep(lastFrameStart, dt);
             UPS.add(System.nanoTime() - lastFrameStart);
             while (frame > synchronizer.get()){continue;}
             renderLock.lock();
+
             world.step(1/(float) 60, 10, 10);
 
+
             removeDestroyedEnemies();
-            //context.updateActorActions();
-            //context.removeDestroyedEnemies();
 
-
-//        for (Body b : toBeKilled) {
-//            world.destroyBody(b);
-//        }
-//
-//        toBeKilled.clear();
 
             renderLock.unlock();
             long simTimeToUpdate = System.nanoTime() - t0;
 
+
             updateTime.add(simTimeToUpdate);
+
             frame++;
-        }
+
+            if(player.HP <= 0) {
+                context.gameOver();
+                stopSim();
+            }
+
+            }
+
     }
 
     private void doSpinSleep(long lastFrameStart, long dt) {
@@ -138,20 +163,24 @@ public class Simulation implements Runnable {
 
     private void spawnEnemies(EnemyType enemyType, int num, List<ActorAction> actions) {
         for(Enemy enemy: enemyPool.get(enemyType, num)) {
-            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), MVPContext.SPAWN_RADIUS));
+            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
             for(ActorAction action : actions) {
                 enemy.setAction(action);
             }
+
+            enemy.renderAnimations(context.getAnimationLibrary());
             enemies.add(enemy);
         }
+        lastSpawnTime = TimeUtils.millis();
     }
 
     private void spawnRandomEnemies(int num, List<ActorAction> actions) {
         for(Enemy enemy : enemyPool.getRandom(num)) {
-            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), MVPContext.SPAWN_RADIUS));
+            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
             for(ActorAction action : actions) {
                 enemy.setAction(action);
             }
+            enemy.renderAnimations(context.getAnimationLibrary());
             enemies.add(enemy);
         }
         lastSpawnTime = TimeUtils.millis();
@@ -159,22 +188,24 @@ public class Simulation implements Runnable {
 
     private void spawnTerrain(TerrainType type) {
         Terrain terrain = context.getTerrainPool().get(type);
-        terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), MVPContext.SPAWN_RADIUS));
+        terrain.renderAnimations(context.getAnimationLibrary());
+        terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
         context.getDrawableTerrain().add(terrain);
-        lastSwarmSpawnTime = TimeUtils.millis();
+        lastSpawnTime = TimeUtils.millis();
     }
 
 
     private void spawnSwarm(EnemyType enemyType, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
         List<Enemy> swarmMembers = enemyPool.get(enemyType, size);
-        List<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType, swarmMembers, player.getBody().getPosition(), MVPContext.SPAWN_RADIUS, size, spacing, speedMultiplier);
+        List<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType, swarmMembers, player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS, size, spacing, speedMultiplier);
         for(Enemy enemy : swarm) {
             enemy.setAction(moveInStraightLine());
             enemy.setAction(destroyIfDefeated(player));
+            enemy.renderAnimations(context.getAnimationLibrary());
             enemies.add(enemy);
         }
 
-        lastSpawnTime = TimeUtils.millis();
+        lastSwarmSpawnTime = TimeUtils.millis();
     }
 
     public void stopSim() {
@@ -190,6 +221,20 @@ public class Simulation implements Runnable {
     }
     public long getFrameNumber() {
         return frame;
+    }
+
+    public void orbitWeapon() {
+
+        if(TimeUtils.millis() - lastOrbit > ORBIT_INTERVAL) {
+            mainWeapon.doAction();
+        }
+        if (mainWeapon.getAngleToPlayer() >= 2 * Math.PI) {
+            mainWeapon.getBody().setActive(false);
+            mainWeapon.setAngleToPlayer(0);
+            lastOrbit = TimeUtils.millis();
+
+        }
+
     }
 
 }

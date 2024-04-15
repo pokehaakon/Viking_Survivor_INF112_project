@@ -1,18 +1,18 @@
 package GameObjects;
 
-import GameObjects.Actors.ActorAction.ActorAction;
-import GameObjects.Actors.IGameObject;
-import TextureHandling.GdxTextureHandler;
-import TextureHandling.TextureHandler;
+import GameObjects.Animations.AnimationRendering.AnimationLibrary;
+import GameObjects.Animations.AnimationRendering.GIFRender;
+import GameObjects.Animations.AnimationRendering.SpriteRender;
+import GameObjects.Animations.AnimationState;
+import GameObjects.Actors.DirectionState;
+import GameObjects.Animations.AnimationRendering.AnimationRender;
 import Tools.BodyTool;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
+import java.util.Objects;
 
 public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
@@ -20,38 +20,56 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     protected float scale;
 
-    protected boolean destroyed = false;
+    public boolean isGif = true;
 
-    protected Texture currentSprite;
+    protected boolean destroyed = false;
 
     protected E type;
 
     protected BodyFeatures bodyFeatures;
 
+    protected AnimationState animationState;
+
+    protected DirectionState directionState;
 
 
 
-    public GameObject(String spritePath, BodyFeatures bodyFeatures, float scale) {
-        currentSprite = new Texture(Gdx.files.internal(spritePath));
+    protected AnimationRender animationRender;
+
+    protected Map<AnimationState,String> animations;
+    // for sprite
+    public GameObject(E type,Map<AnimationState,String> animations, BodyFeatures bodyFeatures, float scale) {
+        this.animations = animations;
+        //this.render = render;
         this.bodyFeatures = bodyFeatures;
         this.scale = scale;
+        this.type = type;
     }
 
-    public GameObject() {
-    }
 
     @Override
     public void destroy() {
         destroyed = true;
     }
 
+    public void draw(SpriteBatch batch, float elapsedTime) {
+        if(animationRender == null) {
+            throw new NullPointerException("Remember to call renderAnimations()!");
+        }
+        animationRender.draw(batch, elapsedTime, this);
+    }
 
 
-    @Override
-    public void draw(SpriteBatch batch) {
 
-        Vector2 pos = body.getPosition();
-        batch.draw(currentSprite,pos.x,pos.y, currentSprite.getWidth()*scale,  currentSprite.getHeight()*scale);
+    public void setAnimationState(AnimationState state){
+        animationState = state;
+
+    }
+
+
+    public void setAnimation(AnimationState state) {
+        animationRender.setAnimation(state);
+
 
     }
 
@@ -65,10 +83,6 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
         return destroyed;
     }
 
-    @Override
-    public void setSprite(Texture texture) {
-        currentSprite = texture;
-    }
 
     @Override
     public void revive() {
@@ -103,6 +117,7 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
                 bodyFeatures.restitution(),
                 bodyFeatures.isSensor(),
                 bodyFeatures.type());
+        body.setUserData(this);
     }
 
    @Override
@@ -115,6 +130,42 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
     public void setScale(float newScale) {
         scale = newScale;
     }
+
+    public float getScale() {
+        return scale;
+    }
+
+    public AnimationState getAnimationState() {
+        return animationState;
+    }
+
+    public DirectionState getDirectionState() {
+        return directionState;
+    }
+
+
+
+    public BodyFeatures getBodyFeatures() {
+        return bodyFeatures;
+    }
+
+
+    @Override
+    public void renderAnimations(AnimationLibrary animationLibrary) {
+        // to avoid setting render to object which already has a render
+        if(Objects.isNull(animationRender)) {
+            if(isGif) {
+                this.animationRender = new GIFRender<>(animationLibrary,animations);
+            }
+            else {
+                this.animationRender = new SpriteRender(animationLibrary,animations);
+            }
+            this.animationRender.setAnimation(animationState);
+        }
+
+    }
+
+
 
 
 }

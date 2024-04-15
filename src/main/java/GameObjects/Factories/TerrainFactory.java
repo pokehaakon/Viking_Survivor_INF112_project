@@ -1,30 +1,34 @@
 package GameObjects.Factories;
 
-import GameObjects.Actors.ObjectTypes.TerrainType;
+import GameObjects.Animations.AnimationRendering.*;
+import GameObjects.Animations.AnimationState;
+import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.BodyFeatures;
-import GameObjects.Terrain.Terrain;
+import GameObjects.StaticObjects.Terrain;
 import TextureHandling.GdxTextureHandler;
 import TextureHandling.TextureHandler;
 import Tools.FilterTool;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import static Tools.BodyTool.*;
+
+import static GameObjects.Animations.AnimationRendering.GIFS.*;
+import static GameObjects.Animations.AnimationRendering.Sprites.TREE_WIDTH;
 import static Tools.FilterTool.createFilter;
+import static Tools.ShapeTools.createCircleShape;
 import static Tools.ShapeTools.createSquareShape;
 
-public class TerrainFactory implements IFactory<Terrain, TerrainType>{
+public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
 
-    private TextureHandler textureHandler;
+
 
     public TerrainFactory() {
+        super();
 
-        //default
-        textureHandler = new GdxTextureHandler();
+
     }
     @Override
     public Terrain create(TerrainType type) {
@@ -34,33 +38,43 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
 
         Terrain terrain;
         float scale;
-        Texture texture;
-        Shape shape;
         BodyFeatures bodyFeatures;
 
+        Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
+        Map<AnimationState, String> gifAnimations = new EnumMap<>(AnimationState.class);
+
+        AnimationRender render;
+        Shape shape;
+
+        boolean isGif;
 
         switch (type) {
             case TREE: {
-                texture = textureHandler.loadTexture("img_2.png");
-                scale = 0.6f;
-                shape = createSquareShape(
-                        (float)(texture.getWidth())*scale,
-                        (float) (texture.getHeight()*scale)
-                );
+                scale = 0.1f;
+                animations.put(AnimationState.STATIC,"tree.png");
+                shape = createCircleShape(scale*TREE_WIDTH/2);
+                isGif = false;
                 break;
             }
-
+            case PICKUPORB:
+                scale = 0.5f;
+                animations.put(AnimationState.STATIC, PICK_UP_ORB_FILE_PATH);
+                shape = createCircleShape(0.2f*scale*PICKUP_ORB_WIDTH/2);
+                isGif = true;
+                break;
             default:
-                throw new IllegalArgumentException("Invalid enemy type");
+                throw new IllegalArgumentException("Invalid terrain type");
         }
         Filter filter = createFilter(
                 FilterTool.Category.WALL,
                 new FilterTool.Category[]{
                         //FilterTool.Category.WALL,
                         FilterTool.Category.ENEMY,
-                        FilterTool.Category.PLAYER
+                        FilterTool.Category.PLAYER,
+                        FilterTool.Category.BULLET
                 }
         );
+
 
         bodyFeatures = new BodyFeatures(
                 shape,
@@ -71,11 +85,9 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
                 false,
                 BodyDef.BodyType.StaticBody);
 
-        terrain = new Terrain();
-        terrain.setScale(scale);
-        terrain.setBodyFeatures(bodyFeatures);
-        terrain.setType(type);
-        terrain.setSprite(texture);
+        terrain = new Terrain(type,animations,bodyFeatures,scale);
+        terrain.setAnimationState(AnimationState.STATIC);
+        terrain.isGif = isGif;
 
         return terrain;
     }
@@ -93,9 +105,4 @@ public class TerrainFactory implements IFactory<Terrain, TerrainType>{
         return terrain;
     }
 
-    @Override
-    public void setTextureHandler(TextureHandler newTextureHandler) {
-        textureHandler =  newTextureHandler;
-
-    }
 }

@@ -1,7 +1,7 @@
 package Parsing;
 
 
-import GameObjects.Actors.ObjectTypes.EnemyType;
+import GameObjects.ObjectTypes.EnemyType;
 import org.apache.maven.surefire.shared.lang3.tuple.ImmutablePair;
 import org.apache.maven.surefire.shared.lang3.tuple.Pair;
 
