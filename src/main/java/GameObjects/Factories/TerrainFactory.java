@@ -5,11 +5,7 @@ import GameObjects.Animations.AnimationState;
 import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.BodyFeatures;
 import GameObjects.StaticObjects.Terrain;
-import TextureHandling.GdxTextureHandler;
-import TextureHandling.TextureHandler;
 import Tools.FilterTool;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.*;
@@ -19,7 +15,6 @@ import static GameObjects.Animations.AnimationRendering.GIFS.*;
 import static GameObjects.Animations.AnimationRendering.Sprites.TREE_WIDTH;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
-import static Tools.ShapeTools.createSquareShape;
 
 public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
 
@@ -89,7 +84,7 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
                 false,
                 BodyDef.BodyType.StaticBody);
 
-        terrain = new Terrain(type,new ObjectAnimations(animations,animationType,spawnState),bodyFeatures,scale);
+        terrain = new Terrain(type,new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale);
 
         return terrain;
     }

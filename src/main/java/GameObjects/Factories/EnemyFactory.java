@@ -8,12 +8,10 @@ import GameObjects.Actors.Stats.EnemyStats;
 import GameObjects.Actors.Stats.Stats;
 import GameObjects.Actors.Enemy;
 import GameObjects.BodyFeatures;
-import TextureHandling.GdxTextureHandler;
 import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 import static GameObjects.Animations.AnimationRendering.GIFS.*;
@@ -106,7 +104,7 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 false,
                 BodyDef.BodyType.DynamicBody);
 
-        enemy = new Enemy(type,new ObjectAnimations(animations,animationType,spawnState),bodyFeatures,scale,stats);
+        enemy = new Enemy(type,new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale,stats);
 
         return enemy;
     }

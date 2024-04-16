@@ -1,7 +1,7 @@
 package GameObjects.Factories;
 
+import GameObjects.Animations.AnimationRendering.AnimationHandler;
 import GameObjects.Animations.AnimationRendering.AnimationType;
-import GameObjects.Animations.AnimationRendering.ObjectAnimations;
 import GameObjects.Animations.AnimationState;
 import GameObjects.ObjectTypes.PlayerType;
 import GameObjects.Actors.Player;
@@ -13,7 +13,6 @@ import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +70,7 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
                 BodyDef.BodyType.DynamicBody);
 
 
-        player = new Player(type,new ObjectAnimations(animations,animationType,spawnState),bodyFeatures,scale,stats);
+        player = new Player(type,new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale,stats);
 
 
         return player;

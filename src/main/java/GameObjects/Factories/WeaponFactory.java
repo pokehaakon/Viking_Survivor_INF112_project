@@ -7,16 +7,12 @@ import GameObjects.ObjectTypes.WeaponType;
 import GameObjects.BodyFeatures;
 import GameObjects.Actors.Weapon;
 
-import TextureHandling.GdxTextureHandler;
-import TextureHandling.TextureHandler;
 import Tools.FilterTool;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Shape;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +68,7 @@ public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
                 true,
                 BodyDef.BodyType.DynamicBody);
 
-        weapon = new Weapon(type, new ObjectAnimations(animation,animationType,spawnState),bodyFeatures,scale);
+        weapon = new Weapon(type, new AnimationHandler(animation,animationType,spawnState),bodyFeatures,scale);
 
 
 

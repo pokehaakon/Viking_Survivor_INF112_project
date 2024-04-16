@@ -17,7 +17,6 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     protected float scale;
 
-    public boolean isGif = true;
 
     protected boolean destroyed = false;
 
@@ -25,25 +24,17 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     protected BodyFeatures bodyFeatures;
 
-    protected AnimationState animationState;
 
     protected DirectionState directionState;
 
-
-
-    protected AnimationRender animationRender;
-
-    protected ObjectAnimations objectAnimations;
+    protected AnimationHandler animationHandler;
     // for sprite
-    public GameObject(E type, ObjectAnimations objectAnimations, BodyFeatures bodyFeatures, float scale) {
-        this.objectAnimations = objectAnimations;
-        //this.animations = animations;
-        //this.render = render;
+    public GameObject(E type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale) {
+        this.animationHandler = animationHandler;
         this.bodyFeatures = bodyFeatures;
         this.scale = scale;
         this.type = type;
 
-        animationState = objectAnimations.spawnState();
     }
 
 
@@ -53,22 +44,19 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
     }
 
     public void draw(SpriteBatch batch, float elapsedTime) {
-        if(animationRender == null) {
-            throw new NullPointerException("Remember to call renderAnimations()!");
-        }
-        animationRender.draw(batch, elapsedTime, this);
+       animationHandler.getAnimationRenderer().draw(batch,elapsedTime,this);
     }
 
 
 
     public void setAnimationState(AnimationState state){
-        animationState = state;
+        animationHandler.setAnimationState(state);
 
     }
 
 
     public void setAnimation(AnimationState state) {
-        animationRender.setAnimation(state);
+        animationHandler.getAnimationRenderer().setAnimation(state);
 
 
     }
@@ -135,9 +123,6 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
         return scale;
     }
 
-    public AnimationState getAnimationState() {
-        return animationState;
-    }
 
     public DirectionState getDirectionState() {
         return directionState;
@@ -153,20 +138,11 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
     @Override
     public void renderAnimations(AnimationLibrary animationLibrary) {
         // to avoid setting render to object which already has a render
-        if(Objects.isNull(animationRender)) {
-            if(objectAnimations.type() == AnimationType.GIF) {
-                this.animationRender = new GIFRender<>(animationLibrary,objectAnimations.animationMap());
-            }
-            else {
-                this.animationRender = new SpriteRender(animationLibrary,objectAnimations.animationMap());
-            }
-            this.animationRender.setAnimation(animationState);
-        }
-
+        animationHandler.renderAnimations(animationLibrary);
     }
 
     public Map<AnimationState,String> getAnimations() {
-        return objectAnimations.animationMap();
+        return animationHandler.getAnimationMap();
     }
 
 

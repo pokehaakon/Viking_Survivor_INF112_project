@@ -1,13 +1,10 @@
 package GameObjects.Actors;
 
-import GameObjects.Animations.AnimationRendering.ObjectAnimations;
-import GameObjects.Animations.AnimationState;
+import GameObjects.Animations.AnimationRendering.AnimationHandler;
+
 import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.Actors.Stats.EnemyStats;
 import GameObjects.BodyFeatures;
-import GameObjects.Animations.AnimationRendering.AnimationRender;
-
-import java.util.Map;
 
 import static Tools.FilterTool.createFilter;
 
@@ -19,8 +16,8 @@ public class Enemy extends Actor<EnemyType> {
 
 
 
-    public Enemy(EnemyType type, ObjectAnimations objectAnimations, BodyFeatures bodyFeatures, float scale, EnemyStats stats) {
-        super(type,objectAnimations, bodyFeatures, scale);
+    public Enemy(EnemyType type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale, EnemyStats stats) {
+        super(type,animationHandler, bodyFeatures, scale);
         this.stats = stats;
 
         // stats
