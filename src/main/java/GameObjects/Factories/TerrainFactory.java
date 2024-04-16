@@ -56,12 +56,7 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
                 isGif = false;
                 break;
             }
-            case PICKUPORB:
-                scale = 0.5f;
-                animations.put(AnimationState.STATIC, PICK_UP_ORB_FILE_PATH);
-                shape = createCircleShape(0.2f*scale*PICKUP_ORB_WIDTH/2);
-                isGif = true;
-                break;
+
             default:
                 throw new IllegalArgumentException("Invalid terrain type");
         }

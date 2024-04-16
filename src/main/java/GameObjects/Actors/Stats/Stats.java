@@ -26,6 +26,7 @@ public abstract class Stats {
     public static final float ENEMY2_KNOCKBACK_RESISTANCE = 100;
 
     public static final int SWARM_SPEED_MULTIPLIER = 5;
+    public static final float XPAMOUNT = 10;
 
 
 
@@ -40,6 +41,10 @@ public abstract class Stats {
 
     public static EnemyStats enemy2() {
         return new EnemyStats(ENEMY2_HP,ENEMY2_SPEED,ENEMY2_DAMAGE,ENEMY2_ARMOUR, ENEMY2_KNOCKBACK_RESISTANCE);
+    }
+
+    public static PickupStats pickupStats() {
+        return new PickupStats(XPAMOUNT);
     }
 
 

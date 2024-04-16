@@ -3,7 +3,9 @@ package Simulation;
 import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.Actors.ActorAction.EnemyActions;
 import GameObjects.Actors.Enemy;
+import GameObjects.Actors.Pickups;
 import GameObjects.ObjectTypes.EnemyType;
+import GameObjects.ObjectTypes.PickupType;
 import GameObjects.ObjectTypes.SwarmType;
 import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.Actors.Player;
@@ -15,6 +17,7 @@ import Coordinates.SpawnCoordinates;
 import Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
 import Tools.RollingSum;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -39,6 +42,7 @@ public class Simulation implements Runnable {
     public final int SET_UPS = 60;
     private final ReleaseCandidateContext context;
     long lastSpawnTime;
+    long lastPickupSpawnTime;
     private Player player;
     private ObjectPool<Enemy, EnemyType> enemyPool;
     private List<Enemy> enemies;
@@ -103,7 +107,7 @@ public class Simulation implements Runnable {
                 spawnRandomEnemies(5,Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
 
                 spawnTerrain(TerrainType.TREE);
-                spawnTerrain(TerrainType.PICKUPORB);
+
 
             }
             if(TimeUtils.millis() - lastSwarmSpawnTime > 15000) {
@@ -114,6 +118,13 @@ public class Simulation implements Runnable {
                 weapon.doAction();
             }
 
+            // If an enemy is defeated, spawn a pickuporb
+            for (Enemy enemy : enemies) {
+                if (enemy.isDestroyed()) {
+                    spawnPickups(PickupType.PICKUPORB, enemy.getBody().getPosition());
+                    System.out.println("PICKUP SPAWNED");
+                }
+            }
 
             doSpinSleep(lastFrameStart, dt);
             UPS.add(System.nanoTime() - lastFrameStart);
@@ -193,6 +204,14 @@ public class Simulation implements Runnable {
         terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
         context.getDrawableTerrain().add(terrain);
         lastSpawnTime = TimeUtils.millis();
+    }
+
+    private void spawnPickups(PickupType type, Vector2 position) {
+        Pickups pickup = context.getPickupsPool().get(type);
+        pickup.renderAnimations(context.getAnimationLibrary());
+        pickup.setPosition(position);
+        context.getDrawablePickups().add(pickup);
+        lastPickupSpawnTime = TimeUtils.millis();
     }
 
 
