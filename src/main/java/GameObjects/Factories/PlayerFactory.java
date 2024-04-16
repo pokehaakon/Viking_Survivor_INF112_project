@@ -1,5 +1,7 @@
 package GameObjects.Factories;
 
+import GameObjects.Animations.AnimationRendering.AnimationType;
+import GameObjects.Animations.AnimationRendering.ObjectAnimations;
 import GameObjects.Animations.AnimationState;
 import GameObjects.ObjectTypes.PlayerType;
 import GameObjects.Actors.Player;
@@ -35,13 +37,16 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
         PlayerStats stats;
         BodyFeatures bodyFeatures;
         Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
-
+        AnimationType animationType;
+        AnimationState spawnState;
         switch (type) {
             case PLAYER1: {
                 scale = PLAYER_SCALE;
                 stats = Stats.player();
                 animations.put(AnimationState.MOVING, PlAYER_MOVING_FILE_PATH);
                 animations.put(AnimationState.IDLE, PlAYER_IDLE_FILE_PATH);
+                animationType = AnimationType.GIF;
+                spawnState = AnimationState.IDLE;
                 break;
             }
 
@@ -66,8 +71,8 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
                 BodyDef.BodyType.DynamicBody);
 
 
-        player = new Player(type,animations,bodyFeatures,scale,stats);
-        player.setAnimationState(AnimationState.IDLE);
+        player = new Player(type,new ObjectAnimations(animations,animationType,spawnState),bodyFeatures,scale,stats);
+
 
         return player;
     }

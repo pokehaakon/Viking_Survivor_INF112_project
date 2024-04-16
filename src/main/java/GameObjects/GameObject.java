@@ -1,11 +1,8 @@
 package GameObjects;
 
-import GameObjects.Animations.AnimationRendering.AnimationLibrary;
-import GameObjects.Animations.AnimationRendering.GIFRender;
-import GameObjects.Animations.AnimationRendering.SpriteRender;
+import GameObjects.Animations.AnimationRendering.*;
 import GameObjects.Animations.AnimationState;
 import GameObjects.Actors.DirectionState;
-import GameObjects.Animations.AnimationRendering.AnimationRender;
 import Tools.BodyTool;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -36,14 +33,17 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     protected AnimationRender animationRender;
 
-    protected Map<AnimationState,String> animations;
+    protected ObjectAnimations objectAnimations;
     // for sprite
-    public GameObject(E type,Map<AnimationState,String> animations, BodyFeatures bodyFeatures, float scale) {
-        this.animations = animations;
+    public GameObject(E type, ObjectAnimations objectAnimations, BodyFeatures bodyFeatures, float scale) {
+        this.objectAnimations = objectAnimations;
+        //this.animations = animations;
         //this.render = render;
         this.bodyFeatures = bodyFeatures;
         this.scale = scale;
         this.type = type;
+
+        animationState = objectAnimations.spawnState();
     }
 
 
@@ -154,11 +154,11 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
     public void renderAnimations(AnimationLibrary animationLibrary) {
         // to avoid setting render to object which already has a render
         if(Objects.isNull(animationRender)) {
-            if(isGif) {
-                this.animationRender = new GIFRender<>(animationLibrary,animations);
+            if(objectAnimations.type() == AnimationType.GIF) {
+                this.animationRender = new GIFRender<>(animationLibrary,objectAnimations.animationMap());
             }
             else {
-                this.animationRender = new SpriteRender(animationLibrary,animations);
+                this.animationRender = new SpriteRender(animationLibrary,objectAnimations.animationMap());
             }
             this.animationRender.setAnimation(animationState);
         }
@@ -166,7 +166,7 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
     }
 
     public Map<AnimationState,String> getAnimations() {
-        return animations;
+        return objectAnimations.animationMap();
     }
 
 

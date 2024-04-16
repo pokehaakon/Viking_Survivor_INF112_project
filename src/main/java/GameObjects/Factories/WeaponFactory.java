@@ -39,7 +39,8 @@ public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
 
         Weapon weapon;
         float scale;
-        boolean isGif;
+        AnimationType animationType;
+        AnimationState spawnState;
 
         BodyFeatures bodyFeatures;
         Map<AnimationState, String> animation =  new EnumMap<>(AnimationState.class);
@@ -47,7 +48,8 @@ public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
             case KNIFE: {
                 scale = 0.7f;
                 animation.put(AnimationState.MOVING,KNIFE_FILE_PATH);
-                isGif = true;
+                animationType = AnimationType.GIF;
+                spawnState  = AnimationState.MOVING;
                 break;
             }
 
@@ -70,9 +72,9 @@ public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
                 true,
                 BodyDef.BodyType.DynamicBody);
 
-        weapon = new Weapon(type, animation,bodyFeatures,scale);
-        weapon.setAnimationState(AnimationState.MOVING);
-        weapon.isGif = isGif;
+        weapon = new Weapon(type, new ObjectAnimations(animation,animationType,spawnState),bodyFeatures,scale);
+
+
 
         return weapon;
     }

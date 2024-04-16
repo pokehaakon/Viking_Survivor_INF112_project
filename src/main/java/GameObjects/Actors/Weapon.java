@@ -1,6 +1,7 @@
 package GameObjects.Actors;
 
 import GameObjects.Actors.Actor;
+import GameObjects.Animations.AnimationRendering.ObjectAnimations;
 import GameObjects.Animations.AnimationState;
 import GameObjects.ObjectTypes.WeaponType;
 import GameObjects.Actors.Player;
@@ -18,8 +19,8 @@ public class Weapon extends Actor<WeaponType>  {
     private long lastAttack;
 
     private Player owner;
-    public Weapon(WeaponType type, Map<AnimationState,String> animations, BodyFeatures bodyFeatures, float scale) {
-        super(type,animations,bodyFeatures,scale);
+    public Weapon(WeaponType type, ObjectAnimations objectAnimations, BodyFeatures bodyFeatures, float scale) {
+        super(type,objectAnimations,bodyFeatures,scale);
     }
 
 

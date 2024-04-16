@@ -1,5 +1,6 @@
 package GameObjects.Actors;
 
+import GameObjects.Animations.AnimationRendering.ObjectAnimations;
 import GameObjects.Animations.AnimationState;
 import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.BodyFeatures;
@@ -28,8 +29,8 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
 
     private long lastAttackedTime;
 
-    public Actor(E type, Map<AnimationState,String> animations, BodyFeatures bodyFeatures, float scale) {
-        super(type,animations,bodyFeatures,scale);
+    public Actor(E type, ObjectAnimations objectAnimations, BodyFeatures bodyFeatures, float scale) {
+        super(type,objectAnimations,bodyFeatures,scale);
         velocityVector = new Vector2();
 
         actions  = new HashSet<>();

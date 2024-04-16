@@ -1,5 +1,6 @@
 package GameObjects.StaticObjects;
 
+import GameObjects.Animations.AnimationRendering.ObjectAnimations;
 import GameObjects.Animations.AnimationState;
 import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.Actors.Player;
@@ -12,8 +13,8 @@ import java.util.Map;
 
 public class Terrain extends GameObject<TerrainType> {
 
-    public Terrain(TerrainType type, Map<AnimationState,String> animations, BodyFeatures bodyFeatures, float scale) {
-        super(type,animations, bodyFeatures, scale);
+    public Terrain(TerrainType type, ObjectAnimations objectAnimations, BodyFeatures bodyFeatures, float scale) {
+        super(type,objectAnimations, bodyFeatures, scale);
     }
 
     public boolean outOfBounds(Player player, double deSpawnRadius) {

@@ -1,5 +1,6 @@
 package GameObjects.Actors;
 
+import GameObjects.Animations.AnimationRendering.ObjectAnimations;
 import GameObjects.Animations.AnimationState;
 import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.Actors.Stats.EnemyStats;
@@ -18,8 +19,8 @@ public class Enemy extends Actor<EnemyType> {
 
 
 
-    public Enemy(EnemyType type, Map<AnimationState,String> animations, BodyFeatures bodyFeatures, float scale, EnemyStats stats) {
-        super(type,animations, bodyFeatures, scale);
+    public Enemy(EnemyType type, ObjectAnimations objectAnimations, BodyFeatures bodyFeatures, float scale, EnemyStats stats) {
+        super(type,objectAnimations, bodyFeatures, scale);
         this.stats = stats;
 
         // stats
