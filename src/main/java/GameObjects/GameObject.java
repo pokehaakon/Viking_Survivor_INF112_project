@@ -165,6 +165,10 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     }
 
+    public Map<AnimationState,String> getAnimations() {
+        return animations;
+    }
+
 
 
 

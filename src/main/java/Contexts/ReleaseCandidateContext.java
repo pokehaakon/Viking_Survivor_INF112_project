@@ -100,6 +100,8 @@ public class ReleaseCandidateContext extends Context {
 
     private List<Terrain> spawnedTerrain;
 
+    private List<Weapon> drawableWeapons;
+
     private WeaponFactory weaponFactory;
 
     private Sprite grass;
@@ -114,6 +116,8 @@ public class ReleaseCandidateContext extends Context {
     private static boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
 
     private Box2DDebugRenderer debugRenderer;
+
+    private ObjectPool<Weapon,WeaponType> weaponPool;
 
     private ObjectPool<Terrain, TerrainType> terrainPool;
 
@@ -308,6 +312,13 @@ public class ReleaseCandidateContext extends Context {
             i++;
         }
 
+        for(Weapon weapon : drawableWeapons) {
+            if(weapon.getBody().isActive()) {
+                weapon.draw(batch,elapsedTime);
+            }
+
+        }
+
         for(Terrain terrain : drawableTerrain) {
             if(i > 100) batch.flush();
             terrain.draw(batch, elapsedTime);
@@ -344,9 +355,7 @@ public class ReleaseCandidateContext extends Context {
         }
         //batch.setColor(Color.WHITE);
 
-        if(orbitWeapon.getBody().isActive()) {
-            orbitWeapon.draw(batch,elapsedTime);
-        }
+
 
         if(player.isUnderAttack()) {
             batch.setColor(Color.RED);
@@ -436,6 +445,7 @@ public class ReleaseCandidateContext extends Context {
 
         weaponFactory = new WeaponFactory();
         playerFactory = new PlayerFactory();
+        drawableWeapons =  new ArrayList<>();
 
         player = playerFactory.create(PlayerType.PLAYER1);
         player.addToWorld(world);
@@ -445,11 +455,8 @@ public class ReleaseCandidateContext extends Context {
 
         player.renderAnimations(animationLibrary);
 
-        orbitWeapon = weaponFactory.create(WeaponType.KNIFE);
-        orbitWeapon.addToWorld(world);
-        orbitWeapon.setAction(WeaponActions.orbitPlayer(150,0.2f,  player, 1000));
-        orbitWeapon.setOwner(player);
-        orbitWeapon.renderAnimations(animationLibrary);
+
+
 
 
         //      Create top XP bar:
@@ -522,15 +529,40 @@ public class ReleaseCandidateContext extends Context {
 
         enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);
         terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.values()), 200);
+        weaponPool = new ObjectPool<>(world,weaponFactory, List.of(WeaponType.values()), 20);
 
-
-
+        spawnOrbitingWeapons(player,4,WeaponType.KNIFE,150,0.1f,0);
         toBoKilled = new HashSet<>();
 
         world.setContactListener(new ObjectContactListener());
 
         //world.step(1/60f, 10, 10);
     }
+
+    /**
+     * Orbits desired amount of weapons around player
+     * @param player player to orbit
+     * @param numWeapons number of weapons to orbit
+     * @param weaponType type of weapon to orbit
+     * @param orbitRadius radius of weapon to player
+     * @param orbitSpeed speed of weapons
+     * @param orbitInterval time between each orbit loop
+     */
+    private void spawnOrbitingWeapons(Player player,int numWeapons,WeaponType weaponType,float orbitRadius,float orbitSpeed,long orbitInterval){
+        float angle=0;
+        for(Weapon weapon:weaponPool.get(weaponType,numWeapons)){
+            weapon.setAction(WeaponActions.orbitPlayer(orbitRadius,orbitSpeed,player,orbitInterval));
+            weapon.setOwner(player);
+            weapon.setAngleToPlayer(angle);
+            weapon.renderAnimations(animationLibrary);
+            drawableWeapons.add(weapon);
+            angle+=(float)((float)2*Math.PI/numWeapons);
+        }
+
+    }
+
+
+
 
 
 
@@ -592,5 +624,9 @@ public class ReleaseCandidateContext extends Context {
 
     public AnimationLibrary getAnimationLibrary() {
         return animationLibrary;
+    }
+
+    public List<Weapon> getDrawableWeapons() {
+        return drawableWeapons;
     }
 }
