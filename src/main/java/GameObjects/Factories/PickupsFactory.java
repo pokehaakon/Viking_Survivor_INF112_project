@@ -6,6 +6,7 @@ import GameObjects.Actors.Stats.Stats;
 import GameObjects.Animations.AnimationState;
 import GameObjects.BodyFeatures;
 import GameObjects.ObjectTypes.PickupType;
+import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Filter;
@@ -19,9 +20,17 @@ import static Tools.ShapeTools.createCircleShape;
 
 public class PickupsFactory extends AbstractFactory<Pickups, PickupType>{
     private final Filter filter;
-    public PickupsFactory(Filter filter) {
+    public PickupsFactory() {
         super();
-        this.filter = filter;
+        filter = createFilter(
+                FilterTool.Category.PICKUP,
+                new FilterTool.Category[]{
+                        FilterTool.Category.WALL,
+                        FilterTool.Category.ENEMY,
+                        FilterTool.Category.PLAYER,
+                        FilterTool.Category.BULLET
+                }
+        );
 
 
     }

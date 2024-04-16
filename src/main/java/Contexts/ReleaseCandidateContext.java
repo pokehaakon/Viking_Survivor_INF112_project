@@ -439,15 +439,7 @@ public class ReleaseCandidateContext extends Context {
         enemyFactory = new EnemyFactory();
         drawableEnemies = new ArrayList<>();
 
-        pickupsFactory = new PickupsFactory(createFilter(
-                FilterTool.Category.PICKUP,
-                new FilterTool.Category[]{
-                        FilterTool.Category.WALL,
-                        FilterTool.Category.ENEMY,
-                        FilterTool.Category.PLAYER,
-                        FilterTool.Category.BULLET
-                }
-        ));
+        pickupsFactory = new PickupsFactory();
 
         terrainFactory = new TerrainFactory();
         drawableTerrain = new ArrayList<>();
