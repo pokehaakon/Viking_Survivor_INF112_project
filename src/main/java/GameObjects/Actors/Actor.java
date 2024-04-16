@@ -123,7 +123,7 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
         else {
             newState = AnimationState.MOVING;
         }
-        if(animationState != newState) {
+        if(animationHandler.getAnimationState() != newState) {
             setAnimationState(newState);
             setAnimation(newState);
         }
