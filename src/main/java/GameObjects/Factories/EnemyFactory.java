@@ -24,8 +24,9 @@ import static Tools.ShapeTools.createCircleShape;
 public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
 
     private final Filter filter;
+    private final AnimationLibrary animationLibrary;
 
-    public EnemyFactory() {
+    public EnemyFactory(AnimationLibrary animationLibrary) {
         super();
 
 
@@ -39,6 +40,7 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 }
         );
 
+        this.animationLibrary = animationLibrary;
     }
 
     /**
@@ -105,6 +107,7 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
         enemy = new Enemy(type,animations,bodyFeatures,scale,stats);
         enemy.setAnimationState(AnimationState.MOVING);
         enemy.isGif = true;
+        enemy.renderAnimations(animationLibrary);
         return enemy;
     }
 

@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 
 import static GameObjects.Actors.ActorAction.EnemyActions.*;
+import static Tools.ListTools.removeDestroyed;
 
 public class Simulation implements Runnable {
     private Lock renderLock;
@@ -102,14 +103,14 @@ public class Simulation implements Runnable {
 
             // random spawning for now
             if (TimeUtils.millis() - lastSpawnTime > 5000) {
-                spawnRandomEnemies(5,Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
+                //spawnRandomEnemies(5,Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
 
                 spawnTerrain(TerrainType.TREE);
                 spawnTerrain(TerrainType.PICKUPORB);
 
             }
             if(TimeUtils.millis() - lastSwarmSpawnTime > 15000) {
-                spawnSwarm(EnemyType.RAVEN,SwarmType.LINE,10,60,5);
+                //spawnSwarm(EnemyType.RAVEN,SwarmType.LINE,10,60,5);
             }
 
             for(Weapon weapon : player.getInventory()) {
@@ -127,7 +128,7 @@ public class Simulation implements Runnable {
             world.step(1/(float) 60, 10, 10);
 
 
-            removeDestroyedEnemies();
+            removeDestroyed(enemies, enemyPool, true);
 
 
             renderLock.unlock();
@@ -151,46 +152,32 @@ public class Simulation implements Runnable {
         while(lastFrameStart + dt - System.nanoTime() > 0) {}
     }
 
-    /**
-     * Despawns destroyed enemies by returning them to enemy pool and removing them from the spawned enemy list
-     */
-    public void removeDestroyedEnemies() {
-        int i = 0;
-        for (Enemy e : enemies) {
-            if (e.isDestroyed()) {
-                enemyPool.returnToPool(e);
-            } else {
-                enemies.set(i++, e);
-            }
-        }
-        enemies.subList(i, enemies.size()).clear();
-    }
 
-    private void spawnEnemies(EnemyType enemyType, int num, List<ActorAction> actions) {
-        for(Enemy enemy: enemyPool.get(enemyType, num)) {
-            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
-            for(ActorAction action : actions) {
-                enemy.setAction(action);
-            }
-
-            enemy.renderAnimations(context.getAnimationLibrary());
-            enemies.add(enemy);
-        }
-        lastSpawnTime = TimeUtils.millis();
-    }
-
-    private void spawnRandomEnemies(int num, List<ActorAction> actions) {
-        for(Enemy enemy : enemyPool.getRandom(num)) {
-            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
-            for(ActorAction action : actions) {
-                enemy.setAction(action);
-            }
-            enemy.renderAnimations(context.getAnimationLibrary());
-            enemies.add(enemy);
-        }
-        lastSpawnTime = TimeUtils.millis();
-    }
-
+//    private void spawnEnemies(EnemyType enemyType, int num, List<ActorAction> actions) {
+//        for(Enemy enemy: enemyPool.get(enemyType, num)) {
+//            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
+//            for(ActorAction action : actions) {
+//                enemy.setAction(action);
+//            }
+//
+//            enemy.renderAnimations(context.getAnimationLibrary());
+//            enemies.add(enemy);
+//        }
+//        lastSpawnTime = TimeUtils.millis();
+//    }
+//
+//    private void spawnRandomEnemies(int num, List<ActorAction> actions) {
+//        for(Enemy enemy : enemyPool.getRandom(num)) {
+//            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
+//            for(ActorAction action : actions) {
+//                enemy.setAction(action);
+//            }
+//            enemy.renderAnimations(context.getAnimationLibrary());
+//            enemies.add(enemy);
+//        }
+//        lastSpawnTime = TimeUtils.millis();
+//    }
+//
     private void spawnTerrain(TerrainType type) {
         Terrain terrain = context.getTerrainPool().get(type);
         terrain.renderAnimations(context.getAnimationLibrary());
@@ -198,20 +185,20 @@ public class Simulation implements Runnable {
         context.getDrawableTerrain().add(terrain);
         lastSpawnTime = TimeUtils.millis();
     }
-
-
-    private void spawnSwarm(EnemyType enemyType, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
-        List<Enemy> swarmMembers = enemyPool.get(enemyType, size);
-        List<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType, swarmMembers, player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS, size, spacing, speedMultiplier);
-        for(Enemy enemy : swarm) {
-            enemy.setAction(moveInStraightLine());
-            enemy.setAction(destroyIfDefeated(player));
-            enemy.renderAnimations(context.getAnimationLibrary());
-            enemies.add(enemy);
-        }
-
-        lastSwarmSpawnTime = TimeUtils.millis();
-    }
+//
+//
+//    private void spawnSwarm(EnemyType enemyType, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
+//        List<Enemy> swarmMembers = enemyPool.get(enemyType, size);
+//        List<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType, swarmMembers, player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS, size, spacing, speedMultiplier);
+//        for(Enemy enemy : swarm) {
+//            enemy.setAction(moveInStraightLine());
+//            enemy.setAction(destroyIfDefeated(player));
+//            enemy.renderAnimations(context.getAnimationLibrary());
+//            enemies.add(enemy);
+//        }
+//
+//        lastSwarmSpawnTime = TimeUtils.millis();
+//    }
 
     public void stopSim() {
         quit = true;

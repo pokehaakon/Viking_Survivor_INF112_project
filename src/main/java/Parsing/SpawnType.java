@@ -1,6 +1,6 @@
 package Parsing;
 
 public enum SpawnType {
-    BOSS, WAVE;
+    BOSS, WAVE, CONTINUOUS, SWARM
 
 }

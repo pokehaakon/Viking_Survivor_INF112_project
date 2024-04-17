@@ -90,7 +90,7 @@ class MapParserTest {
     @Test
     void parseFrameBody() {
         MapParser m = mapParserFromString("""
-                    RAVEN ORC; BOSS 100 HARD
+                    RAVEN; BOSS 100 HARD
                     RAVEN; WAVE 10 20 #this should be ignored
                 """);
 
@@ -99,17 +99,17 @@ class MapParserTest {
 
         assertEquals(2, frames.size());
         frame = frames.get(0);
-        assertEquals(2, frame.spawnable().size());
-        assertEquals(EnemyType.RAVEN, frame.spawnable().get(0));
-        assertEquals(EnemyType.ORC, frame.spawnable().get(1));
+        //assertEquals(2, frame.spawnable().size());
+        assertEquals(EnemyType.RAVEN, frame.spawnable());
+        //assertEquals(EnemyType.ORC, frame.spawnable().get(1));
         assertEquals(SpawnType.BOSS, frame.spawnType());
         assertEquals(2, frame.args().size());
         assertEquals("100", frame.args().get(0));
         assertEquals("HARD", frame.args().get(1));
 
         frame = frames.get(1);
-        assertEquals(1, frame.spawnable().size());
-        assertEquals(EnemyType.RAVEN, frame.spawnable().get(0));
+        //assertEquals(1, frame.spawnable().size());
+        assertEquals(EnemyType.RAVEN, frame.spawnable());
         assertEquals(SpawnType.WAVE, frame.spawnType());
         assertEquals(2, frame.args().size());
         assertEquals("10", frame.args().get(0));
@@ -138,7 +138,7 @@ class MapParserTest {
                 00:01:
                     RAVEN; WAVE 10 20
                 300f:
-                    RAVEN ORC; BOSS 100 HARD
+                    ORC; BOSS 100 HARD
                 """);
 
 
@@ -150,8 +150,8 @@ class MapParserTest {
         assertTrue(spawnFrames.containsKey(60L));
         assertEquals(1, spawnFrames.get(60L).size());
         frame = spawnFrames.get(60L).get(0);
-        assertEquals(1, frame.spawnable().size());
-        assertEquals(EnemyType.RAVEN, frame.spawnable().get(0));
+        //assertEquals(1, frame.spawnable().size());
+        assertEquals(EnemyType.RAVEN, frame.spawnable());
         assertEquals(SpawnType.WAVE, frame.spawnType());
         assertEquals(2, frame.args().size());
         assertEquals("10", frame.args().get(0));
@@ -160,9 +160,9 @@ class MapParserTest {
         assertTrue(spawnFrames.containsKey(300L));
         assertEquals(1, spawnFrames.get(300L).size());
         frame = spawnFrames.get(300L).get(0);
-        assertEquals(2, frame.spawnable().size());
-        assertEquals(EnemyType.RAVEN, frame.spawnable().get(0));
-        assertEquals(EnemyType.ORC, frame.spawnable().get(1));
+        //assertEquals(2, frame.spawnable().size());
+        assertEquals(EnemyType.ORC, frame.spawnable());
+        //assertEquals(EnemyType.ORC, frame.spawnable().get(1));
         assertEquals(SpawnType.BOSS, frame.spawnType());
         assertEquals(2, frame.args().size());
         assertEquals("100", frame.args().get(0));

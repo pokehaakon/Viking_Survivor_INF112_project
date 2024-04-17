@@ -53,14 +53,17 @@ import java.util.concurrent.locks.ReentrantLock;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.getBottomLeftCorrection;
 import static VikingSurvivor.app.Main.SCREEN_WIDTH;
+import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
 
 public class ReleaseCandidateContext extends Context {
+    public static final double SPAWN_RADIUS = (double)0.7*SCREEN_WIDTH;
+    public static final Vector2 SPAWN_RECT = new Vector2(SCREEN_WIDTH, SCREEN_HEIGHT);
+    public static final Vector2 DE_SPAWN_RECT = SPAWN_RECT.cpy().scl(1.3f);
 
 
     private final SpriteBatch batch;
     private final OrthographicCamera camera;
 
-    public static final double SPAWN_RADIUS = (double)0.7*SCREEN_WIDTH;
 
     private World world;
 
@@ -155,7 +158,6 @@ public class ReleaseCandidateContext extends Context {
         renderLock = new ReentrantLock(true);
         synchronizer = new AtomicLong();
 
-        gameWorld = new GameWorld("mapdefines/test.wdef");
 
         //create and start simulation
         createWorld();
@@ -429,7 +431,7 @@ public class ReleaseCandidateContext extends Context {
 
         //map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
 
-        enemyFactory = new EnemyFactory();
+        enemyFactory = new EnemyFactory(animationLibrary);
         drawableEnemies = new ArrayList<>();
 
         terrainFactory = new TerrainFactory();
@@ -525,7 +527,7 @@ public class ReleaseCandidateContext extends Context {
         enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);
         terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.values()), 200);
 
-
+        gameWorld = new GameWorld("mapdefines/test.wdef", player, enemyPool, terrainPool, drawableEnemies, drawableTerrain);
 
         toBoKilled = new HashSet<>();
 

@@ -67,7 +67,7 @@ class EnemyFactoryTest {
             }};
         new HeadlessApplication(listener, config);
 
-       enemyFactory = new EnemyFactory();
+       enemyFactory = new EnemyFactory(null);
 
     }
 

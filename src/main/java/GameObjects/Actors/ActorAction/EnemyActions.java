@@ -38,15 +38,42 @@ public abstract class EnemyActions {
 
     }
 
+//    /**
+//     * Handles the despawning of enemies.
+//     * Enemy despawns when it is out of bounds or killed.
+//     * @param player its location is used to determine if the enemy is out of bounds
+//     * @return an ActorAction object
+//     */
+//    public static ActorAction<Enemy> destroyIfDefeatedOrOutOfBounds(Player player) {
+//        return (e) -> {
+//            if(e.HP <= 0 || e.outOfBounds(player, DESPAWN_RADIUS)) {
+//                e.destroy();
+//            }
+//        };
+//    }
+
     /**
      * Handles the despawning of enemies.
-     * Enemy despawns when it is out of bounds or killed.
+     * Enemy despawns when it is out of bounds.
      * @param player its location is used to determine if the enemy is out of bounds
      * @return an ActorAction object
      */
-    public static ActorAction<Enemy> destroyIfDefeated(Player player) {
+    public static ActorAction<Enemy> destroyIfOutOfBounds(Player player) {
         return (e) -> {
-            if(e.HP <= 0 || e.outOfBounds(player,DESPAWN_RADIUS)) {
+            if(e.outOfBounds(player, DESPAWN_RADIUS)) {
+                e.destroy();
+            }
+        };
+    }
+
+    /**
+     * Handles the despawning of enemies.
+     * Enemy despawns when it is out of bounds or killed.
+     * @return an ActorAction object
+     */
+    public static ActorAction<Enemy> destroyIfDefeated() {
+        return (e) -> {
+            if(e.HP <= 0) {
                 e.destroy();
             }
         };

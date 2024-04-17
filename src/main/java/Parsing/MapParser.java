@@ -126,7 +126,7 @@ public class MapParser extends TextParser {
                 return opt;
             }).get();
 
-            return Optional.of(new SpawnFrame(spawnable, spawnType, args));
+            return Optional.of(new SpawnFrame(spawnable.get(0), spawnType, args));
         }).get();
     }
 

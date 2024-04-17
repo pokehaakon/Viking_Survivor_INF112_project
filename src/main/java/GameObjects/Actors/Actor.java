@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,10 +43,28 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
      * Defines an action for the actor to perform
      * @param action
      */
-    public void setAction(ActorAction action) {
+    public <T extends Actor<E>> void setAction(ActorAction<T> action) {
         actions.add(action);
         
     }
+
+    /**
+     * Defines an actions for the actor to perform
+     * @param actions
+     */
+    public <T extends Actor<E>> void setActions(List<ActorAction<T>> actions) {
+        this.actions.addAll(actions);
+    }
+
+    /**
+     * Defines an actions for the actor to perform
+     * @param actions
+     */
+    @SafeVarargs
+    public final <T extends Actor<E>> void setActions(ActorAction<T>... actions) {
+        this.actions.addAll(List.of(actions));
+    }
+
     /**
      * The actor performs its actions
      */
