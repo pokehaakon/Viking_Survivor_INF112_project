@@ -4,6 +4,7 @@ import Contexts.Context;
 import Contexts.ContextFactory;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class ContextualInputProcessor implements InputProcessor {
@@ -13,7 +14,7 @@ public class ContextualInputProcessor implements InputProcessor {
 
 
 
-    public ContextualInputProcessor(SpriteBatch batch, Camera camera){
+    public ContextualInputProcessor(SpriteBatch batch, OrthographicCamera camera){
         contextFactory = new ContextFactory(batch, camera, this);
     }
 

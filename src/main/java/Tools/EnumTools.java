@@ -1,6 +1,6 @@
 package Tools;
 
-import GameObjects.Actors.ObjectTypes.EnemyType;
+import GameObjects.ObjectTypes.EnemyType;
 
 public abstract class EnumTools {
     public static <E extends Enum<E>> String[] enumToStrings(Class<E> e) {
@@ -12,13 +12,13 @@ public abstract class EnumTools {
         return strings;
     }
 
-    public static String[] stringValues() {
-        int len = EnemyType.values().length;
-        String[] strings = new String[len];
-        int i = 0;
-        for (EnemyType e : EnemyType.values()) {
-            strings[i++] = e.toString();
-        }
-        return strings;
-    }
+//    public static String[] stringValues() {
+//        int len = EnemyType.values().length;
+//        String[] strings = new String[len];
+//        int i = 0;
+//        for (EnemyType e : EnemyType.values()) {
+//            strings[i++] = e.toString();
+//        }
+//        return strings;
+//    }
 }

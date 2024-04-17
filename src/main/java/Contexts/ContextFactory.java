@@ -4,6 +4,7 @@ import Contexts.*;
 
 import InputProcessing.ContextualInputProcessor;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -13,9 +14,9 @@ import java.util.Map;
 public class ContextFactory implements Disposable {
     private final Map<String, Context> createdContexts;
     private final SpriteBatch batch;
-    private final Camera camera;
+    private final OrthographicCamera camera;
     private final ContextualInputProcessor iProc;
-    public ContextFactory(SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
+    public ContextFactory(SpriteBatch batch, OrthographicCamera camera, ContextualInputProcessor iProc) {
         this.batch = batch;
         this.iProc = iProc;
         this.camera = camera;

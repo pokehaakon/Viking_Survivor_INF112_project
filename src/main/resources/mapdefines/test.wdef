@@ -1,0 +1,5 @@
+!MAP_PATH=assets/damaged_roads_map.tmx
+
+00:00:
+    RAVEN ORC; BOSS 100 HARD
+    RAVEN; WAVE 10 20

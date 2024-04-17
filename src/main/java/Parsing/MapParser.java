@@ -2,8 +2,9 @@ package Parsing;
 
 
 import GameObjects.ObjectTypes.EnemyType;
+import Tools.Tuple;
 import org.apache.maven.surefire.shared.lang3.tuple.ImmutablePair;
-import org.apache.maven.surefire.shared.lang3.tuple.Pair;
+import org.javatuples.Pair;
 
 import java.util.*;
 
@@ -12,7 +13,8 @@ import static Tools.EnumTools.enumToStrings;
 
 public class MapParser extends TextParser {
     private Map<String, String> defines;
-    private Map<Long, List<SpawnFrame>> timeFrames;
+    private List<Pair<Long, List<SpawnFrame>>> timeFrames;
+
     public MapParser(String filename) {
         super(filename);
     }
@@ -21,8 +23,9 @@ public class MapParser extends TextParser {
         super(text);
     }
 
+
     public void doParse() {
-        if (defines == null) return;
+        if (defines != null) return;
         parseMapText();
     }
 
@@ -31,16 +34,24 @@ public class MapParser extends TextParser {
         timeFrames = parseTimeFrames();
     }
 
+    public List<Pair<Long, List<SpawnFrame>>> getTimeFrames() {
+        return timeFrames;
+    }
+
+    public Map<String, String> getDefines() {
+        return defines;
+    }
+
     public Map<String, String> parseDefines() {
         Map<String, String> defines = new HashMap<>();
         many(() -> Try(() -> {
-            parseLiteral('!');
-            Optional<String> key = strip(this::letters, ' ', '\t');
-            //String key = parseUntilLiteral('=', ' ', '\t').get();
-            next();
-            Optional<String> value = strip(this::letters, ' ', '\t');
-            //String value = parseUntilLiteral('\n').get();
-            next();
+            many(() -> choose(this::parseEmptyLine, this::parseComment));
+
+            if (parseLiteral('!').isEmpty()) return Optional.empty();
+            Optional<String> key = parseUntilLiteral('=').map(String::strip);
+            if (parseLiteral('=').isEmpty()) return Optional.empty();
+            Optional<String> value = parseUntilLiteral('\n').map(String::strip);
+
             if (key.isEmpty() && value.isEmpty()) return Optional.empty();
             if (key.isEmpty() || value.isEmpty())
                 throw new ParserException(this, "Error while reading MapFile Header", this.stream);
@@ -49,20 +60,21 @@ public class MapParser extends TextParser {
         }));
         return defines;
     }
-    public Map<Long, List<SpawnFrame>> parseTimeFrames() {
+    public List<Pair<Long, List<SpawnFrame>>>  parseTimeFrames() {
         many(() -> choose(this::parseEmptyLine, this::parseComment));
+
         List<Pair<Long, List<SpawnFrame>>> pairs = many(() -> Try(() -> {
-            int frame = choose(
+            long frame = choose(
                     () -> {
                         int minutes = numbers().map(Integer::parseInt).get();
-                        parseLiteral(':');
+                        if (parseLiteral(':').isEmpty()) return Optional.empty();
                         int seconds = numbers().map(Integer::parseInt).get();
-                        parseLiteral(':');
+                        if (parseLiteral(':').isEmpty()) return Optional.empty();
                         return Optional.of(60 * (seconds + 60 * minutes));
                     },
                     () -> {
                         int frameNum = numbers().map(Integer::parseInt).get();
-                        parseStringLiteral("f:");
+                        if (parseStringLiteral("f:").isEmpty()) return Optional.empty();
                         return Optional.of(frameNum);
                     }
             ).get();
@@ -70,15 +82,18 @@ public class MapParser extends TextParser {
             parseEmptyLine();
 
             List<SpawnFrame> body = parseFrameBody();
-            return Optional.of(
-                    (Pair<Long, List<SpawnFrame>>) new ImmutablePair<>((long)frame, body)
-            );
+            return Optional.of(Tuple.of(frame, body));
         })).get();
-        Map<Long, List<SpawnFrame>> map = new HashMap<>();
+
+        long lastFrame = -1;
         for(Pair<Long, List<SpawnFrame>> p : pairs) {
-            map.put(p.getLeft(), p.getRight());
+            if (lastFrame < p.getValue0()) {
+                lastFrame = p.getValue0();
+                continue;
+            }
+            throw new ParserException(this, "error at frame with value: " + p.getValue0() + "f, (value is higher than previous value)" , this.stream);
         }
-        return map;
+        return pairs;
     }
 
     public List<SpawnFrame> parseFrameBody() {
@@ -106,8 +121,8 @@ public class MapParser extends TextParser {
             space();
 
             List<String> args = some(() -> {
-                Optional<String> opt = parseUntilLiteral(' ', '\n', '#');
                 space();
+                Optional<String> opt = parseUntilLiteral(' ', '\n', '#');
                 return opt;
             }).get();
 

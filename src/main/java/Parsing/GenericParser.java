@@ -110,6 +110,7 @@ public abstract class  GenericParser<StreamType, ReturnType> {
 
     @SafeVarargs
     public final Optional<ReturnType> parseUntilLiteral(StreamType... ms) {
+        if (stream.atEOF()) return Optional.empty();
         for (StreamType m : ms)
             if (stream.getCurrent().equals(m)) return Optional.empty();
 

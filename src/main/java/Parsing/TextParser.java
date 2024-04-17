@@ -93,4 +93,8 @@ public class TextParser extends GenericParser<Character, String> {
             return Optional.of(b.toString());
         });
     }
+
+    public Optional<String> parseNewLineLiteral() {
+        return parseLiteral('\n', '\r');
+    }
 }

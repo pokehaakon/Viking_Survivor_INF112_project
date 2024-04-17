@@ -19,6 +19,7 @@ import GameObjects.Actors.Weapon;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.Simulation;
+import Simulation.GameWorld;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -30,8 +31,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -59,7 +58,7 @@ public class ReleaseCandidateContext extends Context {
 
 
     private final SpriteBatch batch;
-    private final Camera camera;
+    private final OrthographicCamera camera;
 
     public static final double SPAWN_RADIUS = (double)0.7*SCREEN_WIDTH;
 
@@ -132,15 +131,15 @@ public class ReleaseCandidateContext extends Context {
 
     boolean gameOver = false;
 
-    private TiledMap map;
-    private OrthogonalTiledMapRenderer tiledMapRenderer;
-    private float tiledMapScale = 4f;
+//    private TiledMap map;
+//    private OrthogonalTiledMapRenderer tiledMapRenderer;
+//    private float tiledMapScale = 4f;
 
 
+    private GameWorld gameWorld;
 
 
-
-    public ReleaseCandidateContext(String name, SpriteBatch batch, Camera camera, ContextualInputProcessor iProc) {
+    public ReleaseCandidateContext(String name, SpriteBatch batch, OrthographicCamera camera, ContextualInputProcessor iProc) {
         super(name, iProc);
 
         this.batch = batch;
@@ -155,6 +154,8 @@ public class ReleaseCandidateContext extends Context {
         font.setColor(Color.RED);
         renderLock = new ReentrantLock(true);
         synchronizer = new AtomicLong();
+
+        gameWorld = new GameWorld("mapdefines/test.wdef");
 
         //create and start simulation
         createWorld();
@@ -267,11 +268,11 @@ public class ReleaseCandidateContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.GREEN);
 
-        this.tiledMapRenderer = new OrthogonalTiledMapRenderer(map, tiledMapScale);
-        tiledMapRenderer.setView((OrthographicCamera) camera);
-        tiledMapRenderer.render();
+//        this.tiledMapRenderer = new OrthogonalTiledMapRenderer(map, tiledMapScale);
+//        tiledMapRenderer.setView((OrthographicCamera) camera);
+//        tiledMapRenderer.render();
 
-
+        gameWorld.render(camera, delta);
         debugRenderer.render(world, camera.combined);
 
 
@@ -426,7 +427,7 @@ public class ReleaseCandidateContext extends Context {
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
 
-        map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
+        //map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
 
         enemyFactory = new EnemyFactory();
         drawableEnemies = new ArrayList<>();
@@ -439,7 +440,8 @@ public class ReleaseCandidateContext extends Context {
 
         player = playerFactory.create(PlayerType.PLAYER1);
         player.addToWorld(world);
-        player.setPosition(getMiddleOfMapPosition(map, tiledMapScale));
+        //player.setPosition(getMiddleOfMapPosition(map, tiledMapScale));
+        player.setPosition(new Vector2());
         player.setAction(PlayerActions.moveToInput(keyStates));
         player.setAction(PlayerActions.coolDown(500));
 
@@ -593,4 +595,6 @@ public class ReleaseCandidateContext extends Context {
     public AnimationLibrary getAnimationLibrary() {
         return animationLibrary;
     }
+
+    public GameWorld getGameWorld() {return gameWorld;}
 }

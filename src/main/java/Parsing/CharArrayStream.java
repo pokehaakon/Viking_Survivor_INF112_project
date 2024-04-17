@@ -6,7 +6,7 @@ public class CharArrayStream implements Streamable<Character> {
     private int lineCount = 0;
     private int colCount = 0;
     public CharArrayStream(String s) {
-        text = s.toCharArray();
+        text = s.replace("\r", "").toCharArray();
     }
     public CharArrayStream(char[] s) {
         text = s;

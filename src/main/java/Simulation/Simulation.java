@@ -52,6 +52,8 @@ public class Simulation implements Runnable {
 
     private float ORBIT_INTERVAL = 1000;
 
+    private GameWorld gameWorld;
+
     public Simulation(ReleaseCandidateContext context) {
         this.context = context;
         renderLock = context.getRenderLock();
@@ -66,6 +68,7 @@ public class Simulation implements Runnable {
         enemies = context.getDrawableEnemies();
 
         mainWeapon = context.getOrbitWeapon();
+        gameWorld = context.getGameWorld();
     }
 
     @Override
@@ -118,6 +121,8 @@ public class Simulation implements Runnable {
             UPS.add(System.nanoTime() - lastFrameStart);
             while (frame > synchronizer.get()){continue;}
             renderLock.lock();
+
+            gameWorld.act(frame);
 
             world.step(1/(float) 60, 10, 10);
 
