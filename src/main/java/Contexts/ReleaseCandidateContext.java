@@ -260,6 +260,22 @@ public class ReleaseCandidateContext extends Context {
 
     }
 
+    private void updateCamera(Vector2 player, int viewportWidth, int viewportHeight, TiledMap map, float tiledMapScale) {
+        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
+        float mapHeight = layer.getHeight() * layer.getTileHeight() * tiledMapScale;
+        float mapWidth = layer.getWidth() * layer.getTileWidth() * tiledMapScale;
+
+        if(player.x < viewportWidth / 2) camera.position.x = viewportWidth / 2;
+        else if(player.x > mapWidth - viewportWidth / 2) camera.position.x = mapWidth - viewportWidth / 2;
+        else camera.position.x = player.x;
+
+        if(player.y < viewportHeight / 2) camera.position.y = viewportHeight / 2;
+        else if(player.y > mapHeight - viewportHeight / 2) camera.position.y = mapHeight - viewportHeight / 2;
+        else camera.position.y = player.y;
+
+        camera.update();
+    }
+
     @Override
     public void render(float delta) {
 
@@ -278,6 +294,7 @@ public class ReleaseCandidateContext extends Context {
 
         debugRenderer.render(world, camera.combined);
 
+        updateCamera(player.getBody().getPosition(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), map, tiledMapScale);
 
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
@@ -287,11 +304,11 @@ public class ReleaseCandidateContext extends Context {
         float playerPosX = origin.x;
         float playerPosY = origin.y;
 
-        //center camera at player
-        camera.position.x = playerPosX;
-        camera.position.y = playerPosY;
-        camera.position.z = 0;
-        camera.update(true);
+//        //center camera at player
+//        camera.position.x = playerPosX;
+//        camera.position.y = playerPosY;
+//        camera.position.z = 0;
+//        camera.update(true);
 
         batch.begin();
 
