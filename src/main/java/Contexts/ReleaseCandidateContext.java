@@ -19,6 +19,8 @@ import GameObjects.Actors.Weapon;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.Simulation;
+import Tools.BodyTool;
+import Tools.FilterTool;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -28,10 +30,16 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.PolygonMapObject;
+import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -138,7 +146,7 @@ public class ReleaseCandidateContext extends Context {
 
     private TiledMap map;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
-    private float tiledMapScale = 4f;
+    private float tiledMapScale = 1f;
 
 
 
@@ -445,6 +453,47 @@ public class ReleaseCandidateContext extends Context {
         return new Vector2(mapWidth * tileWidth * scale / 2f, mapHeight * tileHeight * scale / 2f);
     }
 
+    private float[] createPolyLine(PolygonMapObject polygon) {
+        for(float juice : polygon.getPolygon().getTransformedVertices()) System.out.println(juice);
+        float[] points = polygon.getPolygon().getTransformedVertices();
+        float[] newPoints = new float[points.length + 2];
+        newPoints[0] = 0.0f;
+        newPoints[1] = 0.0f;
+
+        for (int i = 0; i < points.length; i++) {
+            newPoints[i + 2] = points[i];
+        }
+        return newPoints;
+    }
+
+    private void createMapObjects(String objectLayerName, World world) {
+        MapLayer layer = map.getLayers().get(objectLayerName);
+
+        for(MapObject object : layer.getObjects()) {
+
+            // create the shape
+            ChainShape shape = new ChainShape();
+            shape.createChain(createPolyLine((PolygonMapObject) object));
+
+            BodyTool.createBody(
+                    world,
+                    new Vector2(),
+                    shape,
+                    createFilter(
+                            FilterTool.Category.WALL,
+                            new FilterTool.Category[] {
+                                    FilterTool.Category.PLAYER
+                            }
+                    ),
+                    1f,
+                    0f,
+                    0f,
+                    false,
+                    BodyDef.BodyType.StaticBody
+            );
+        }
+    }
+
     private void createWorld() {
         // sets up world
         animationLibrary = new AnimationLibrary();
@@ -453,6 +502,8 @@ public class ReleaseCandidateContext extends Context {
         world = new World(new Vector2(0, 0), true);
 
         map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
+
+        createMapObjects("area", world);
 
         enemyFactory = new EnemyFactory();
         drawableEnemies = new ArrayList<>();
