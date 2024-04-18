@@ -1,5 +1,5 @@
 package GameObjects.ObjectTypes;
 
 public enum PickupType {
-    PICKUPORB,
+    XP_PICKUP,
 }

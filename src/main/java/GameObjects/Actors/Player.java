@@ -5,7 +5,6 @@ import GameObjects.ObjectTypes.PickupType;
 import GameObjects.ObjectTypes.PlayerType;
 import GameObjects.Actors.Stats.PlayerStats;
 import GameObjects.BodyFeatures;
-import GameObjects.Animations.AnimationRendering.AnimationRender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +56,7 @@ public class Player extends Actor<PlayerType> {
 
 
     public void pickup(Pickups pickup) {
-        if(pickup.getType() == PickupType.PICKUPORB) {
+        if(pickup.getType() == PickupType.XP_PICKUP) {
             XP += 10;
         }
     }

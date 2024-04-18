@@ -32,8 +32,8 @@ public abstract class GIFS {
     public static final float PLAYER_SCALE = 0.7f;
     public static final float RAVEN_SCALE = 0.3f;
     public static final float ORC_SCALE = 0.3f;
-
-    public static final float PICKUPORB_SCALE = 0.3f;
+    public static final float WOLF_SCALE = 0.3f;
+    public static final float PICKUP_ORB_SCALE = 0.3f;
 
     public static Map<String, GifPair> gifMap(){
         Map<String, GifPair> map = new HashMap<>();

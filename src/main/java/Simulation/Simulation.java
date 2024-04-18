@@ -122,10 +122,10 @@ public class Simulation implements Runnable {
                 weapon.doAction();
             }
 
-            // If an enemy is defeated, spawn a pickuporb
+            // If an enemy is defeated, there is a 50% chance to spawn a pickuporb
             for (Enemy enemy : enemies) {
-                if (enemy.isDestroyed()) {
-                    spawnPickups(PickupType.PICKUPORB, enemy.getBody().getPosition());
+                if (enemy.isDestroyed() && Math.random() > 0.5) {
+                    spawnPickups(PickupType.XP_PICKUP, enemy.getBody().getPosition());
                 }
             }
 

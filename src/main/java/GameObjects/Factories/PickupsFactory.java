@@ -42,12 +42,13 @@ public class PickupsFactory extends AbstractFactory<Pickups, PickupType>{
         Pickups pickup;
         PickupStats stats = null;
         Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
-        float scale = PICKUPORB_SCALE;
+        float scale = PICKUP_ORB_SCALE;
+
         boolean isGif;
 
         CircleShape shape;
         switch (type) {
-            case PICKUPORB -> {
+            case XP_PICKUP -> {
                 stats = Stats.pickupStats();
                 animations.put(AnimationState.MOVING, PICK_UP_ORB_FILE_PATH);
                 shape = createCircleShape(0.5f * scale * PICKUP_ORB_WIDTH / 2);
