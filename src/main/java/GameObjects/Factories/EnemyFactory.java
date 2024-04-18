@@ -22,9 +22,8 @@ import static Tools.ShapeTools.createCircleShape;
 public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
 
     private final Filter filter;
-    private final AnimationLibrary animationLibrary;
 
-    public EnemyFactory(AnimationLibrary animationLibrary) {
+    public EnemyFactory() {
         super();
 
 
@@ -38,7 +37,6 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 }
         );
 
-        this.animationLibrary = animationLibrary;
     }
 
     /**
@@ -106,7 +104,7 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 false,
                 BodyDef.BodyType.DynamicBody);
 
-        enemy = new Enemy(type,new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale,stats);
+        enemy = new Enemy(type, new AnimationHandler(animations, animationType, spawnState), bodyFeatures, scale, stats);
 
         return enemy;
     }

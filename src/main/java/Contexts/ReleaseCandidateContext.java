@@ -308,7 +308,7 @@ public class ReleaseCandidateContext extends Context {
         gameWorld.render(camera, delta);
         debugRenderer.render(world, camera.combined);
 
-        updateCamera(player.getBody().getPosition(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), map, tiledMapScale);
+        //updateCamera(player.getBody().getPosition(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), map, tiledMapScale);
 
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
@@ -480,33 +480,33 @@ public class ReleaseCandidateContext extends Context {
         return newPoints;
     }
 
-    private void createMapObjects(String objectLayerName, World world) {
-        MapLayer layer = map.getLayers().get(objectLayerName);
-
-        for(MapObject object : layer.getObjects()) {
-
-            // create the shape
-            ChainShape shape = new ChainShape();
-            shape.createChain(createPolyLine((PolygonMapObject) object));
-
-            BodyTool.createBody(
-                    world,
-                    new Vector2(),
-                    shape,
-                    createFilter(
-                            FilterTool.Category.WALL,
-                            new FilterTool.Category[] {
-                                    FilterTool.Category.PLAYER
-                            }
-                    ),
-                    1f,
-                    0f,
-                    0f,
-                    false,
-                    BodyDef.BodyType.StaticBody
-            );
-        }
-    }
+//    private void createMapObjects(String objectLayerName, World world) {
+//        MapLayer layer = map.getLayers().get(objectLayerName);
+//
+//        for(MapObject object : layer.getObjects()) {
+//
+//            // create the shape
+//            ChainShape shape = new ChainShape();
+//            shape.createChain(createPolyLine((PolygonMapObject) object));
+//
+//            BodyTool.createBody(
+//                    world,
+//                    new Vector2(),
+//                    shape,
+//                    createFilter(
+//                            FilterTool.Category.WALL,
+//                            new FilterTool.Category[] {
+//                                    FilterTool.Category.PLAYER
+//                            }
+//                    ),
+//                    1f,
+//                    0f,
+//                    0f,
+//                    false,
+//                    BodyDef.BodyType.StaticBody
+//            );
+//        }
+//    }
 
     private void createWorld() {
         // sets up world
@@ -518,16 +518,16 @@ public class ReleaseCandidateContext extends Context {
         //map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
 
         enemyFactory = new EnemyFactory();
-        drawableEnemies = new ArrayList<>();
-
         pickupsFactory = new PickupsFactory();
-
         terrainFactory = new TerrainFactory();
+        weaponFactory = new WeaponFactory();
+        playerFactory = new PlayerFactory();
+
+
+        drawableEnemies = new ArrayList<>();
         drawableTerrain = new ArrayList<>();
         drawablePickups = new ArrayList<>();
 
-        weaponFactory = new WeaponFactory();
-        playerFactory = new PlayerFactory();
         drawableWeapons =  new ArrayList<>();
 
         player = playerFactory.create(PlayerType.PLAYER1);
@@ -621,7 +621,7 @@ public class ReleaseCandidateContext extends Context {
 
         spawnOrbitingWeapons(player,4,WeaponType.KNIFE,150,0.1f,0);
 
-        gameWorld = new GameWorld("mapdefines/test.wdef", player, enemyPool, terrainPool, drawableEnemies, drawableTerrain);
+        gameWorld = new GameWorld("mapdefines/test.wdef", player, enemyPool, terrainPool, drawableEnemies, drawableTerrain, animationLibrary);
 
         toBoKilled = new HashSet<>();
 

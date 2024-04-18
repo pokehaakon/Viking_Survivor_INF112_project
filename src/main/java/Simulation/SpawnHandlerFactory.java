@@ -2,6 +2,7 @@ package Simulation;
 
 import GameObjects.Actors.Enemy;
 import GameObjects.Actors.Player;
+import GameObjects.Animations.AnimationRendering.AnimationLibrary;
 import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.Pool.ObjectPool;
@@ -22,12 +23,14 @@ public class SpawnHandlerFactory {
     private final List<Enemy> activeEnemies;
     private final List<Terrain> activeTerrain;
     private final Player player;
+    private final AnimationLibrary animationLibrary;
 
     public SpawnHandlerFactory(Player player,
                                ObjectPool<Enemy, EnemyType> enemyPool,
                                ObjectPool<Terrain, TerrainType> terrainPool,
                                List<Enemy> activeEnemies,
-                               List<Terrain> activeTerrain
+                               List<Terrain> activeTerrain,
+                               AnimationLibrary animationLibrary
         ) {
 
         this.player = player;
@@ -35,6 +38,7 @@ public class SpawnHandlerFactory {
         this.terrainPool = terrainPool;
         this.activeEnemies = activeEnemies;
         this.activeTerrain = activeTerrain;
+        this.animationLibrary = animationLibrary;
     }
 
     public ISpawnHandler create(EnemyType enemyType, SpawnType spawnType, List<String> args) {
@@ -48,6 +52,7 @@ public class SpawnHandlerFactory {
                     e -> {
                         e.setActions(chasePlayer(player), destroyIfDefeated(), destroyIfOutOfBounds(player));
                         e.setPosition(randomPointOutsideScreenRect(player.getBody().getPosition()));
+                        e.renderAnimations(animationLibrary);
                     },
                     enemyPool,
                     activeEnemies
@@ -58,6 +63,7 @@ public class SpawnHandlerFactory {
                 e -> {
                     e.setActions(chasePlayer(player), destroyIfDefeated(), destroyIfOutOfBounds(player));
                     e.setPosition(randomPointOutsideScreenRect(player.getBody().getPosition()));
+                    e.renderAnimations(animationLibrary);
                 },
                 enemyPool,
                 activeEnemies

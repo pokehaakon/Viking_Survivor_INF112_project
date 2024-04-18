@@ -83,7 +83,7 @@ class EnemyPoolTest {
     void setup() {
         world = new World(new Vector2(0,0), true);
         poolSize = 10;
-        mockEnemyFactory = new EnemyFactory(null);
+        mockEnemyFactory = new EnemyFactory();
         testPool = new ObjectPool<>(world, mockEnemyFactory, objectTypes, poolSize);
 
         enemiesInPool = new ArrayList<>();

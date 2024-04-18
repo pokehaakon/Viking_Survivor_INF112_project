@@ -44,7 +44,7 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
     }
 
     public void draw(SpriteBatch batch, float elapsedTime) {
-       animationHandler.getAnimationRenderer().draw(batch,elapsedTime,this);
+       animationHandler.getAnimationRenderer().draw(batch, elapsedTime,this);
     }
 
 

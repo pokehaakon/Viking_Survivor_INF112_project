@@ -202,12 +202,12 @@ public class Simulation implements Runnable {
         pickups.subList(i, pickups.size()).clear();
     }
 
-    private void spawnEnemies(EnemyType enemyType, int num, List<ActorAction> actions) {
-        for(Enemy enemy: enemyPool.get(enemyType, num)) {
-            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
-            for(ActorAction action : actions) {
-                enemy.setAction(action);
-            }
+//    private void spawnEnemies(EnemyType enemyType, int num, List<ActorAction> actions) {
+//        for(Enemy enemy: enemyPool.get(enemyType, num)) {
+//            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
+//            for(ActorAction action : actions) {
+//                enemy.setAction(action);
+//            }
 
 //    private void spawnEnemies(EnemyType enemyType, int num, List<ActorAction> actions) {
 //        for(Enemy enemy: enemyPool.get(enemyType, num)) {
@@ -256,7 +256,7 @@ public class Simulation implements Runnable {
         List<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType, swarmMembers, player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS, size, spacing, speedMultiplier);
         for(Enemy enemy : swarm) {
             enemy.setAction(moveInStraightLine());
-            enemy.setAction(destroyIfDefeated(player));
+            enemy.setAction(destroyIfDefeated());
             enemy.renderAnimations(context.getAnimationLibrary());
             enemies.add(enemy);
         }
