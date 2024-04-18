@@ -1,6 +1,10 @@
 package Tools;
 
-import GameObjects.ObjectTypes.EnemyType;
+import org.javatuples.Pair;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public abstract class EnumTools {
     public static <E extends Enum<E>> String[] enumToStrings(Class<E> e) {
@@ -21,4 +25,11 @@ public abstract class EnumTools {
 //        }
 //        return strings;
 //    }
+
+    public abstract static class HashMapTool {
+
+        public static <V, K> Map<V, K> mapFromPairs(List<Pair<V, K>> pairs) {
+            return pairs.stream().collect(Collectors.toMap(Pair::getValue0, Pair::getValue1));
+        }
+    }
 }

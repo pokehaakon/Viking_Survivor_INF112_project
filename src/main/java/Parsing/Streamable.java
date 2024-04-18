@@ -15,7 +15,7 @@ public interface Streamable<T> {
      * returns the char at the current position, and then increments to the next element
      * @return the char at the current position
      */
-    T next();
+    T next() throws ParsingException;
 
     /**
      *

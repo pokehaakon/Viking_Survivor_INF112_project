@@ -3,11 +3,13 @@ package Parsing;
 
 import GameObjects.ObjectTypes.EnemyType;
 import Tools.Tuple;
-import org.apache.maven.surefire.shared.lang3.tuple.ImmutablePair;
 import org.javatuples.Pair;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import static Tools.EnumTools.HashMapTool.mapFromPairs;
 import static Tools.EnumTools.enumToStrings;
 
 
@@ -43,47 +45,43 @@ public class MapParser extends TextParser {
     }
 
     public Map<String, String> parseDefines() {
-        Map<String, String> defines = new HashMap<>();
-        many(() -> Try(() -> {
+        return mapFromPairs(many(iTry(() -> {
             many(() -> choose(this::parseEmptyLine, this::parseComment));
+            parseLiteral('!');
+            Optional<String> key = test(iparseUntilLiteral('=')).map(String::strip);
+            parseLiteral('=');
+            Optional<String> value = test(iparseUntilLiteral('\n')).map(String::strip);
 
-            if (parseLiteral('!').isEmpty()) return Optional.empty();
-            Optional<String> key = parseUntilLiteral('=').map(String::strip);
-            if (parseLiteral('=').isEmpty()) return Optional.empty();
-            Optional<String> value = parseUntilLiteral('\n').map(String::strip);
-
-            if (key.isEmpty() && value.isEmpty()) return Optional.empty();
+            if (key.isEmpty() && value.isEmpty()) error();
             if (key.isEmpty() || value.isEmpty())
                 throw new ParserException(this, "Error while reading MapFile Header", this.stream);
-            defines.put(key.get(), value.get());
-            return Optional.of(key.get() + ":" + value.get() + "\n");
-        }));
-        return defines;
+            return Tuple.of(key.get(), value.get());
+        })));
     }
     public List<Pair<Long, List<SpawnFrame>>>  parseTimeFrames() {
         many(() -> choose(this::parseEmptyLine, this::parseComment));
 
-        List<Pair<Long, List<SpawnFrame>>> pairs = many(() -> Try(() -> {
+        List<Pair<Long, List<SpawnFrame>>> pairs = many(iTry(() -> {
             long frame = choose(
                     () -> {
-                        int minutes = numbers().map(Integer::parseInt).get();
-                        if (parseLiteral(':').isEmpty()) return Optional.empty();
-                        int seconds = numbers().map(Integer::parseInt).get();
-                        if (parseLiteral(':').isEmpty()) return Optional.empty();
-                        return Optional.of(60 * (seconds + 60 * minutes));
+                        long minutes = Long.parseLong(numbers());
+                        parseLiteral(':');
+                        long seconds = Long.parseLong(numbers());
+                        parseLiteral(':');
+                        return 60 * (seconds + 60 * minutes);
                     },
                     () -> {
-                        int frameNum = numbers().map(Integer::parseInt).get();
-                        if (parseStringLiteral("f:").isEmpty()) return Optional.empty();
-                        return Optional.of(frameNum);
+                        long frameNum = Long.parseLong(numbers());
+                        parseStringLiteral("f:");
+                        return frameNum;
                     }
-            ).get();
-            parseComment();
-            parseEmptyLine();
+            );
+            Void(this::parseComment);
+            Void(this::parseEmptyLine);
 
             List<SpawnFrame> body = parseFrameBody();
-            return Optional.of(Tuple.of(frame, body));
-        })).get();
+            return Tuple.of(frame, body);
+        }));
 
         long lastFrame = -1;
         for(Pair<Long, List<SpawnFrame>> p : pairs) {
@@ -96,50 +94,59 @@ public class MapParser extends TextParser {
         return pairs;
     }
 
-    public List<SpawnFrame> parseFrameBody() {
+    public List<SpawnFrame> parseFrameBody() throws ParsingException {
         return some(() -> {
-            many(() -> choose(this::parseEmptyLine, this::parseComment));
+            many(ichoose(this::parseEmptyLine, this::parseComment));
 
-            choose(() -> parseLiteral('\t'), () -> parseStringLiteral("    ")); //support space and tap tabulation
-            if(undo(this::letter).isEmpty()) return Optional.empty(); //next should be a letter
+            choose(
+                    iparseLiteral('\t'),
+                    iparseStringLiteral("    ")
+            ); //support space and tap tabulation
 
-            List<EnemyType> spawnable = some(() -> {
-                if (undo(() -> parseLiteral(';')).isPresent()) return Optional.empty();
-                Optional<String> opt = parseStringLiteral(enumToStrings(EnemyType.class));
-                if(opt.isEmpty())
-                    throw new ParserException(this, "Could not find the EnemyType", this.stream);
-                space();
-                return opt.map(EnemyType::valueOf);
-            }).get();
-            if(parseLiteral('\n').isPresent()) return Optional.empty();
+            iundo(this::letter); //next should be a letter
+
+            EnemyType spawnable = test(iparseStringLiteral(enumToStrings(EnemyType.class)))
+                    .map(EnemyType::valueOf)
+                    .orElseThrow(() -> new ParserException(this, "Could not find the SpawnType", this.stream));
+
+//            List<EnemyType> spawnable = some(() -> {
+//                shouldError(iundo(iparseLiteral(';')));
+//
+//                Optional<String> enemyString = test(iparseStringLiteral(enumToStrings(EnemyType.class)));
+//                if(enemyString.isEmpty())
+//                    throw new ParserException(this, "Could not find the EnemyType", this.stream);
+//                space();
+//                return enemyString.map(EnemyType::valueOf).get();
+//            });
+
+            shouldError(iparseLiteral('\n'));
             parseLiteral(';');
 
             space();
-            SpawnType spawnType = parseStringLiteral(enumToStrings(SpawnType.class))
+            SpawnType spawnType = test(iparseStringLiteral(enumToStrings(SpawnType.class)))
                     .map(SpawnType::valueOf)
                     .orElseThrow(() -> new ParserException(this, "Could not find the SpawnType", this.stream));
             space();
 
             List<String> args = some(() -> {
                 space();
-                Optional<String> opt = parseUntilLiteral(' ', '\n', '#');
-                return opt;
-            }).get();
+                return parseUntilLiteral(' ', '\n', '#');
+            });
 
-            return Optional.of(new SpawnFrame(spawnable.get(0), spawnType, args));
-        }).get();
+            return new SpawnFrame(spawnable, spawnType, args);
+        });
     }
 
     /**
      * Parses everything between a '#' and newline
      * @return the string of the comment
      */
-    public Optional<String> parseComment() {
+    public String parseComment() throws ParsingException {
         return Try(() -> {
-            space();
-            if (parseLiteral('#').isEmpty()) return Optional.empty();
-            Optional<String> opt = parseUntilLiteral('\n');
-            Try(() -> parseLiteral('\n'));
+            Void(this::space);
+            parseLiteral('#');
+            String opt = parseUntilLiteral('\n');
+            Void(iparseLiteral('\n'));
             return opt;
         });
     }

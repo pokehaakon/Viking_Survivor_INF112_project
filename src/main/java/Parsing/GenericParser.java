@@ -1,16 +1,21 @@
 package Parsing;
 
-import javax.swing.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
-public abstract class  GenericParser<StreamType, ReturnType> {
+public abstract class GenericParser<StreamType, ReturnType> {
     protected Streamable<StreamType> stream;
     private final Function<List<StreamType>, ReturnType> wrapper;
 
     private final Function<String, List<StreamType>> stringToList;
+
+    public interface ThrowingSupplier<T> {
+        T get() throws ParsingException;
+    }
 
     public GenericParser(
             String filename,
@@ -52,9 +57,9 @@ public abstract class  GenericParser<StreamType, ReturnType> {
      * Gives next Character, unless at EOF
      * @return the next character
      */
-    public Optional<ReturnType> next() {
-        if (stream.atEOF()) return Optional.empty();
-        return Optional.of(wrap(stream.next()));
+    public ReturnType next() throws ParsingException {
+        //if (stream.atEOF()) throw new ParsingException();
+        return wrap(stream.next());
     }
 
     /**
@@ -62,11 +67,11 @@ public abstract class  GenericParser<StreamType, ReturnType> {
      * @param n number of characters to get
      * @return the next 'n' characters
      */
-    public Optional<ReturnType> next(int n) {
-        if (stream.atEOF()) return Optional.empty();
+    public ReturnType next(int n) throws ParsingException {
+        //if (stream.atEOF()) throw new ParsingException();
         List<StreamType> b = new ArrayList<>();
         for (int i = 0; i < n; i++) b.add(stream.next());
-        return Optional.of(wrap(b));
+        return wrap(b);
     }
 
     /**
@@ -81,17 +86,19 @@ public abstract class  GenericParser<StreamType, ReturnType> {
      * @param parser the parser to try
      * @return the return value of the parser
      */
-    public <T> Optional<T> Try(Supplier<Optional<T>> parser) {
+    public <T> T Try(ThrowingSupplier<T> parser) throws ParsingException {
         Streamable<StreamType> oldStream = stream.copy();
         try {
-            Optional<T> opt = parser.get();
-            if (opt.isPresent()) return opt;
+            return parser.get();
+        } catch (ParsingException e) {
             stream = oldStream;
-            return opt;
-        } catch (ArrayIndexOutOfBoundsException | NoSuchElementException e) {
-            stream = oldStream;
-            return Optional.empty();
+            throw e;
         }
+
+    }
+
+    public <T> ThrowingSupplier<T> iTry(ThrowingSupplier<T> parser) {
+        return () -> Try(parser);
     }
 
     /**
@@ -99,70 +106,96 @@ public abstract class  GenericParser<StreamType, ReturnType> {
      * @param parsers array of the parsers to try
      * @return the return value of the succeeding parser
      */
-    public <T> Optional<T> choose(Supplier<Optional<T>>... parsers) {
-        for (Supplier<Optional<T>> p : parsers) {
-            Optional <T> opt = Try(p);
-            if (opt.isPresent()) return opt;
+    @SafeVarargs
+    public final <T> T choose(ThrowingSupplier<T>... parsers) throws ParsingException {
+        for (ThrowingSupplier<T> p : parsers) {
+            try {
+                return Try(p);
+            } catch (ParsingException ignored){}
         }
 
-        return Optional.empty();
+        throw new ParsingException();
     }
 
     @SafeVarargs
-    public final Optional<ReturnType> parseUntilLiteral(StreamType... ms) {
-        if (stream.atEOF()) return Optional.empty();
+    public final <T> ThrowingSupplier<T> ichoose(ThrowingSupplier<T>... parsers) {
+        return () -> choose(parsers);
+    }
+
+    @SafeVarargs
+    public final ReturnType parseUntilLiteral(StreamType... ms) throws ParsingException {
+        if (stream.atEOF()) throw new ParsingException();
         for (StreamType m : ms)
-            if (stream.getCurrent().equals(m)) return Optional.empty();
+            if (stream.getCurrent().equals(m)) throw new ParsingException();
 
         List<StreamType> b = new ArrayList<>();
         while (!stream.atEOF()) {
             StreamType r = stream.getCurrent();
             for (StreamType m : ms)
-                if (r.equals(m)) return Optional.of(wrap(b));
+                if (r.equals(m)) return wrap(b);
             stream.next();
             b.add(r);
         }
-        return Optional.of(wrap(b));
-    }
-
-    public Optional<ReturnType> parseLiteral(StreamType c) {
-        if (!stream.getCurrent().equals(c)) return Optional.empty();
-        stream.next();
-        return Optional.of(wrap(c));
+        return wrap(b);
     }
 
     @SafeVarargs
-    public final Optional<ReturnType> parseLiteral(StreamType... chars) {
+    public final ThrowingSupplier<ReturnType> iparseUntilLiteral(StreamType... ms) {
+        return () -> parseUntilLiteral(ms);
+    }
+
+    public ReturnType parseLiteral(StreamType c) throws ParsingException {
+        if (!stream.getCurrent().equals(c)) throw new ParsingException();
+        stream.next();
+        return wrap(c);
+    }
+
+    public ThrowingSupplier<ReturnType> iparseLiteral(StreamType c) {
+        return () -> parseLiteral(c);
+    }
+
+    @SafeVarargs
+    public final ReturnType parseLiteral(StreamType... chars) throws ParsingException {
         StreamType m = stream.getCurrent();
         for (StreamType c : chars) {
             if (!m.equals(c)) continue;
             stream.next();
-            return Optional.of(wrap(c));
+            return wrap(c);
         }
-        return Optional.empty();
+        throw new ParsingException();
     }
 
     @SafeVarargs
-    public final Optional<ReturnType> parseStringLiteral(List<StreamType>... strings) {
+    public final ThrowingSupplier<ReturnType> iparseLiteral(StreamType... chars) {
+        return () -> parseLiteral(chars);
+    }
+
+    @SafeVarargs
+    public final ReturnType parseStringLiteral(List<StreamType>... strings) throws ParsingException {
         for (List<StreamType> s : strings) {
             Streamable<StreamType> cStream = stream.copy();
             //char[] cString = s.toCharArray();
             boolean found = true;
             for (StreamType streamType : s) {
-                if (streamType == cStream.next()) continue;
+                if (streamType.equals(cStream.next())) continue;
                 found = false;
                 break;
             }
             if (!found) continue;
             stream = cStream;
-            return Optional.of(wrap(s));
+            return wrap(s);
         }
-        return Optional.empty();
+        throw new ParsingException();
     }
 
     @SafeVarargs
-    public final Optional<ReturnType> parseStringLiteral(Iterable<StreamType>... strings) {
-        Iterable<StreamType>[] arr = new Iterable[strings.length];
+    public final ThrowingSupplier<ReturnType> iparseStringLiteral(List<StreamType>... strings) {
+        return () -> parseStringLiteral(strings);
+    }
+
+    @SafeVarargs
+    public final ReturnType parseStringLiteral(Iterable<StreamType>... strings) throws ParsingException {
+        List<StreamType>[] arr = new List[strings.length];
         int i = 0;
         for(Iterable<StreamType> itr : strings) {
             arr[i++] = iterableToList(itr);
@@ -171,7 +204,11 @@ public abstract class  GenericParser<StreamType, ReturnType> {
     }
 
     @SafeVarargs
-    public final Optional<ReturnType> parseStringLiteral(String... strings) {
+    public final ThrowingSupplier<ReturnType> iparseStringLiteral(Iterable<StreamType>... strings) {
+        return () -> parseStringLiteral(strings);
+    }
+
+    public final ReturnType parseStringLiteral(String... strings) throws ParsingException {
         if (stringToList == null) throw new RuntimeException("String parsing not defined for this parser");
         List<StreamType>[] arr = new List[strings.length];
         int i = 0;
@@ -181,20 +218,31 @@ public abstract class  GenericParser<StreamType, ReturnType> {
         return parseStringLiteral(arr);
     }
 
+    public final ThrowingSupplier<ReturnType> iparseStringLiteral(String... strings) {
+        return () -> parseStringLiteral(strings);
+    }
+
     /**
      * Runs the given parser zero or more times
      * @param parser the parser to apply
      * @return
      */
-    public <T>  Optional<List<T>> many(Supplier<Optional<T>> parser) {
+    public <T> List<T> many(ThrowingSupplier<T> parser) {
         List<T> out = new ArrayList<>();
 
-        Optional<T> parsedString;
-        while ((parsedString = parser.get()).isPresent()){
-            out.add(parsedString.get());
+        while (true) {
+            try {
+                out.add(parser.get());
+            } catch (ParsingException ignored) {
+                break;
+            }
         }
 
-        return Optional.of(out);
+        return out;
+    }
+
+    public <T> Supplier<List<T>> imany(ThrowingSupplier<T> parser) {
+        return () -> many(parser);
     }
 
     /**
@@ -202,48 +250,66 @@ public abstract class  GenericParser<StreamType, ReturnType> {
      * @param parser
      * @return
      */
-    public <T> Optional<List<T>> some(Supplier<Optional<T>> parser) {
+    public <T> List<T> some(ThrowingSupplier<T> parser) throws ParsingException {
         return Try(() ->  {
             List<T> out = new ArrayList<>();
             //first
-            Optional<T> parsedString = parser.get();
-            if (parsedString.isEmpty()) {
-                return Optional.empty();
-            }
-            out.add(parsedString.get());
+            out.add(parser.get());
 
             //others
-            while ((parsedString = parser.get()).isPresent()){
-                out.add(parsedString.get());
+            while (true) {
+                try {
+                    out.add(parser.get());
+                } catch (ParsingException ignored) {
+                    break;
+                }
             }
-            return Optional.of(out);
+
+            return out;
         });
     }
 
-    public Optional<ReturnType> parseLiteralFromFunction(Function<StreamType, Boolean> f) {
-        if (!f.apply(stream.getCurrent())) {
-            return Optional.empty();
-        }
-        return Optional.of(wrap(stream.next()));
+    public <T> ThrowingSupplier<List<T>> isome(ThrowingSupplier<T> parser) {
+        return () -> some(parser);
     }
 
-    public Optional<ReturnType> parseStringFromFunction(Function<StreamType, Boolean> f) {
+    public ReturnType parseLiteralFromFunction(Function<StreamType, Boolean> f) throws ParsingException {
+        if (!f.apply(stream.getCurrent())) {
+            throw new ParsingException();
+        }
+        return wrap(stream.next());
+    }
+
+    public ThrowingSupplier<ReturnType> iparseLiteralFromFunction(Function<StreamType, Boolean> f) {
+        return () -> parseLiteralFromFunction(f);
+    }
+
+    public ReturnType parseStringFromFunction(Function<StreamType, Boolean> f) throws ParsingException {
         List<StreamType> b = new ArrayList<>();
         while (!stream.atEOF()) {
             if (!f.apply(stream.getCurrent())) break;
             b.add(stream.getCurrent());
             stream.next();
         }
-        if (b.isEmpty()) return Optional.empty();
-        return Optional.of(wrap(b));
+        if (b.isEmpty()) throw new ParsingException();
+        return wrap(b);
+    }
+
+    public ThrowingSupplier<ReturnType> iparseStringFromFunction(Function<StreamType, Boolean> f) {
+        return () -> parseStringFromFunction(f);
     }
 
     @SafeVarargs
-    public final <T> Optional<T> strip(Supplier<Optional<T>> parser, StreamType... cs) {
+    public final <T> T strip(ThrowingSupplier<T> parser, StreamType... cs) throws ParsingException {
         many(() -> parseLiteral(cs));
-        Optional<T> opt = parser.get();
+        T opt = parser.get();
         many(() -> parseLiteral(cs));
         return opt;
+    }
+
+    @SafeVarargs
+    public final <T> ThrowingSupplier<T> istrip(ThrowingSupplier<T> parser, StreamType... cs) {
+        return () -> strip(parser, cs);
     }
 
     /**
@@ -251,14 +317,55 @@ public abstract class  GenericParser<StreamType, ReturnType> {
      * @param parser the parser to try
      * @return the return value of the parser
      */
-    public <T> Optional<T> undo(Supplier<Optional<T>> parser) {
+    public <T> T undo(ThrowingSupplier<T> parser) throws ParsingException {
         Streamable<StreamType> oldStream = stream.copy();
         try {
             return parser.get();
         } catch (ArrayIndexOutOfBoundsException | NoSuchElementException e) {
-            return Optional.empty();
+            throw new ParsingException();
         } finally {
             stream = oldStream;
         }
     }
+
+    public <T> ThrowingSupplier<T> iundo(ThrowingSupplier<T> parser)  {
+        return () -> undo(parser);
+    }
+
+    public <T> T orElse(ThrowingSupplier<T> parser, T other) {
+        try {
+            return parser.get();
+        } catch (ParsingException ignored) {}
+        return other;
+    }
+
+    public <T> Supplier<T> iorElse(ThrowingSupplier<T> parser, T other) {
+        return () -> orElse(parser, other);
+    }
+
+    public <T> T error() throws ParsingException {
+        throw new ParsingException();
+    }
+
+    public <T> Optional<T> test(ThrowingSupplier<T> parser) {
+        try {
+            return Optional.of(Try(parser));
+        } catch (ParsingException e) {
+            return Optional.empty();
+        }
+    }
+
+    public <T> void shouldError(ThrowingSupplier<T> parser) throws ParsingException {
+        try {
+            parser.get();
+        } catch (ParsingException e) {
+            return;
+        }
+        error();
+    }
+
+    public <T> void Void(ThrowingSupplier<T> parser) {
+        try {parser.get();} catch (ParsingException ignored) {}
+    }
+
 }

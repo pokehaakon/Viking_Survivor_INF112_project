@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class TextParser extends GenericParser<Character, String> {
 
@@ -50,51 +49,44 @@ public class TextParser extends GenericParser<Character, String> {
     }
 
 
-    public Optional<String> letter() {
+    public String letter() throws ParsingException {
         return parseLiteralFromFunction(Character::isLetter);
     }
 
-    public Optional<String> letters() {
+    public String letters() throws ParsingException {
         return parseStringFromFunction(Character::isLetter);
     }
 
-    public Optional<String> number() {
+    public String number() throws ParsingException {
         return parseLiteralFromFunction(Character::isDigit);
     }
 
-    public Optional<String> numbers() {
+    public String numbers() throws ParsingException {
         return parseStringFromFunction(Character::isDigit);
     }
 
-    public Optional<String> space() {
-        Optional<List<String>> opt = many(() -> parseLiteral(' ', '\t'));
-        return opt.map(strings -> String.join("", strings));
+    public String space() {
+
+        return String.join("", many(() -> parseLiteral(' ', '\t')));
     }
 
-    public Optional<String> skipLine() {
-        String s = parseUntilLiteral('\n').orElseGet(() -> "");
-        if(parseLiteral('\n').isPresent()) return Optional.of(s + "\n");
-        return Optional.empty();
+    public String skipLine() throws ParsingException {
+        String s = orElse(iparseLiteral('\n'), "");
+        return parseLiteral('\n') + s;
     }
 
     /**
      * Parses a line with just spaces, tabs and ending with a newline
      * @return
      */
-    public Optional<String> parseEmptyLine() {
+    public String parseEmptyLine() throws ParsingException {
         return Try(() -> {
-            StringBuilder b = new StringBuilder();
-            for (String s : many(() -> parseLiteral(' ', '\t')).get()) {
-                b.append(s);
-            }
-            Optional<String> opt = parseLiteral('\n');
-            if (opt.isEmpty()) return Optional.empty();
-            opt.ifPresent(b::append);
-            return Optional.of(b.toString());
+            String s = String.join("", many(iparseLiteral(' ', '\t')));
+            return s + parseLiteral('\n');
         });
     }
 
-    public Optional<String> parseNewLineLiteral() {
+    public String parseNewLineLiteral() throws ParsingException {
         return parseLiteral('\n', '\r');
     }
 }

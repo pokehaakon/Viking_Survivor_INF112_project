@@ -88,7 +88,7 @@ class MapParserTest {
 
 
     @Test
-    void parseFrameBody() {
+    void parseFrameBody() throws ParsingException {
         MapParser m = mapParserFromString("""
                     RAVEN; BOSS 100 HARD
                     RAVEN; WAVE 10 20 #this should be ignored
@@ -147,7 +147,6 @@ class MapParserTest {
         var spawnFrames = spawnFramesList.stream().collect(Collectors.toMap(Pair::getValue0, Pair::getValue1));
 
         assertTrue(spawnFrames.containsKey(60L));
-        assertTrue(spawnFrames.containsKey(60L));
         assertEquals(1, spawnFrames.get(60L).size());
         frame = spawnFrames.get(60L).get(0);
         //assertEquals(1, frame.spawnable().size());
@@ -171,7 +170,19 @@ class MapParserTest {
 
     @Test
     void testWorld() {
-        MapParser p = new MapParser("mapdefines/test.wdef");
+        MapParser p = mapParserFromString("""
+                !MAP_PATH=assets/damaged_roads_map.tmx
+                                
+                00:00:
+                    #ORC; BOSS 100 HARD
+                    #RAVEN; WAVE 10 20
+                    RAVEN; CONTINUOUS size:10 maxSpawnEachFrame:1
+                                
+                00:10:
+                    ORC; WAVE size:20 maxSpawnEachFrame:1
+                                
+                """);
+        //MapParser p = new MapParser("mapdefines/test.wdef");
         p.doParse();
         var defines = p.getDefines();
 
@@ -180,7 +191,7 @@ class MapParserTest {
         assertEquals("assets/damaged_roads_map.tmx", defines.get("MAP_PATH"));
 
         var frames = p.getTimeFrames();
-        assertEquals(1, frames.size());
+        assertEquals(2, frames.size());
 
 
     }
