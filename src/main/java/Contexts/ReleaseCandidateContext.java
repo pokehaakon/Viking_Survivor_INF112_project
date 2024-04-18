@@ -122,6 +122,7 @@ public class ReleaseCandidateContext extends Context {
     private Box2DDebugRenderer debugRenderer;
 
     private ObjectPool<Weapon,WeaponType> weaponPool;
+    private ObjectPool<Pickups, PickupType> pickupsPool;
 
     private ObjectPool<Terrain, TerrainType> terrainPool;
 
