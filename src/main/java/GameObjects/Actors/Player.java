@@ -17,6 +17,7 @@ public class Player extends Actor<PlayerType> {
     private PlayerStats stats;
 
     List<Weapon> weaponInventory;
+    private float maxHP;
 
 
     public Player(PlayerType type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale, PlayerStats stats) {
@@ -24,6 +25,7 @@ public class Player extends Actor<PlayerType> {
         this.stats = stats;
 
         HP = stats.HP();
+        maxHP = 100;
         speed = stats.speed();
         damage = stats.damage();
         armour = stats.armour();
@@ -58,6 +60,13 @@ public class Player extends Actor<PlayerType> {
     public void pickup(Pickups pickup) {
         if(pickup.getType() == PickupType.XP_PICKUP) {
             XP += 10;
+        }
+        else if(pickup.getType() == PickupType.HP_PICKUP) {
+            if (HP + 10 > maxHP) {
+                HP = maxHP;
+            }
+            else
+                HP += 10;
         }
     }
 }

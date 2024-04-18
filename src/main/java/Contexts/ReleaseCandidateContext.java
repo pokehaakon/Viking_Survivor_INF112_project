@@ -405,6 +405,7 @@ public class ReleaseCandidateContext extends Context {
         batch.setColor(Color.WHITE);
         if(!gameOver) {
             font.draw(batch, "Player HP: " + String.valueOf(player.HP), playerPosX +400,playerPosY +470);
+            font.draw(batch, "Player XP: " + String.valueOf(player.XP), playerPosX +400,playerPosY +450);
         }
 
 
@@ -541,7 +542,7 @@ public class ReleaseCandidateContext extends Context {
 
 
 
-        pickup = pickupsFactory.create(PickupType.PICKUPORB);
+        pickup = pickupsFactory.create(PickupType.XP_PICKUP);
         pickup.renderAnimations(animationLibrary);
 
 

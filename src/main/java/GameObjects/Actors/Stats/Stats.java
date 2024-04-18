@@ -26,7 +26,10 @@ public abstract class Stats {
     public static final float ENEMY2_KNOCKBACK_RESISTANCE = 100;
 
     public static final int SWARM_SPEED_MULTIPLIER = 5;
-    public static final float XPAMOUNT = 10;
+    public static final float XP_Pickup_XPAMOUNT = 10;
+    public static final float XP_Pickup_HPAMOUNT = 0;
+    public static final float HP_Pickup_HPAMOUNT = 10;
+    public static final float HP_Pickup_XPAMOUNT = 0;
     public static final boolean IS_PICKED_UP = false;
 
 
@@ -44,10 +47,13 @@ public abstract class Stats {
         return new EnemyStats(ENEMY2_HP,ENEMY2_SPEED,ENEMY2_DAMAGE,ENEMY2_ARMOUR, ENEMY2_KNOCKBACK_RESISTANCE);
     }
 
-    public static PickupStats pickupStats() {
-        return new PickupStats(XPAMOUNT);
+    public static PickupStats XP_Pickup_stats() {
+        return new PickupStats(XP_Pickup_XPAMOUNT, XP_Pickup_HPAMOUNT);
     }
 
+    public static PickupStats HP_Pickup_stats() {
+        return new PickupStats(HP_Pickup_XPAMOUNT, HP_Pickup_HPAMOUNT);
+    }
 
 
 
