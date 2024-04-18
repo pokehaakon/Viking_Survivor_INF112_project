@@ -1,6 +1,7 @@
 package Simulation;
 
 import GameObjects.Actors.Enemy;
+import GameObjects.Actors.Pickups;
 import GameObjects.Actors.Player;
 import GameObjects.Actors.Weapon;
 import com.badlogic.gdx.physics.box2d.*;
@@ -27,6 +28,11 @@ public class ObjectContactListener implements ContactListener {
                 || (b1.getUserData() instanceof Enemy && b2.getUserData() instanceof Weapon);
     }
 
+    private boolean playerPickupCollision(Body b1, Body b2) {
+        return (b1.getUserData() instanceof Player && b2.getUserData() instanceof Pickups)
+                || (b1.getUserData() instanceof Pickups && b2.getUserData() instanceof Player);
+    }
+
 
     @Override
     public void beginContact(Contact contact) {
@@ -44,6 +50,14 @@ public class ObjectContactListener implements ContactListener {
             if(!player.isUnderAttack()) {
                 enemy.attack(player, enemy.damage);
             }
+            System.out.println("PLAYER COLLISION");
+        }
+        else if (playerPickupCollision(b1, b2)) {
+            Player player = b1.getUserData() instanceof Player ? (Player) b1.getUserData():(Player) b2.getUserData();
+            Pickups pickup = b1.getUserData() instanceof Pickups ? (Pickups) b1.getUserData():(Pickups) b2.getUserData();
+            player.pickup(pickup);
+            pickup.setPickedUp(true);
+            System.out.println("PICKUP COLLISION");
         }
 
 

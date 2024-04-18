@@ -16,7 +16,7 @@ public abstract class FilterTool {
         ENEMY,
         WALL,
         BULLET,
-        ;
+        PICKUP;
 
         Category() {if (this.ordinal() > 15) {throw new RuntimeException("TOO MANY CATEGORIES, MAX 16!");}}
 
