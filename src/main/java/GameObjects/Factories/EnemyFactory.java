@@ -8,12 +8,10 @@ import GameObjects.Actors.Stats.EnemyStats;
 import GameObjects.Actors.Stats.Stats;
 import GameObjects.Actors.Enemy;
 import GameObjects.BodyFeatures;
-import TextureHandling.GdxTextureHandler;
 import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 import static GameObjects.Animations.AnimationRendering.GIFS.*;
@@ -61,8 +59,9 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
         Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
 
 
-        boolean isGif;
+        AnimationType animationType;
         Shape shape;
+        AnimationState spawnState;
 
         switch (type) {
             case RAVEN: {
@@ -70,7 +69,8 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 stats = Stats.enemy1();
                 animations.put(AnimationState.MOVING, RAVEN_FILE_PATH);
                 shape = createCircleShape(0.5f*scale*RAVEN_WIDTH/2);
-                isGif = true;
+                animationType = AnimationType.GIF;
+                spawnState = AnimationState.MOVING;
                 break;
             }
             case ORC: {
@@ -78,7 +78,8 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 stats = Stats.enemy2();
                 animations.put(AnimationState.MOVING, ORC_FILE_PATH);
                 shape = createCircleShape(0.3f*scale*ORC_WIDTH/2);
-                isGif = true;
+                animationType = AnimationType.GIF;
+                spawnState = AnimationState.MOVING;
                 break;
             }
             case WOLF: {
@@ -87,7 +88,8 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
 
                 animations.put(AnimationState.MOVING, WOLF_FILE_PATH);
                 shape = createCircleShape(0.5f*scale*WOLF_WIDTH/2);
-                isGif = true;
+                animationType = AnimationType.GIF;
+                spawnState = AnimationState.MOVING;
                 break;
             }
             default:
@@ -104,10 +106,8 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
                 false,
                 BodyDef.BodyType.DynamicBody);
 
-        enemy = new Enemy(type,animations,bodyFeatures,scale,stats);
-        enemy.setAnimationState(AnimationState.MOVING);
-        enemy.isGif = true;
-        enemy.renderAnimations(animationLibrary);
+        enemy = new Enemy(type,new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale,stats);
+
         return enemy;
     }
 

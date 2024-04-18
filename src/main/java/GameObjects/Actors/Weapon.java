@@ -1,13 +1,9 @@
 package GameObjects.Actors;
 
-import GameObjects.Actors.Actor;
-import GameObjects.Animations.AnimationState;
-import GameObjects.ObjectTypes.WeaponType;
-import GameObjects.Actors.Player;
-import GameObjects.BodyFeatures;
-import GameObjects.Animations.AnimationRendering.AnimationRender;
+import GameObjects.Animations.AnimationRendering.AnimationHandler;
 
-import java.util.Map;
+import GameObjects.ObjectTypes.WeaponType;
+import GameObjects.BodyFeatures;
 
 public class Weapon extends Actor<WeaponType>  {
     private final long ORBIT_INTERVAL = 1000;
@@ -18,8 +14,8 @@ public class Weapon extends Actor<WeaponType>  {
     private long lastAttack;
 
     private Player owner;
-    public Weapon(WeaponType type, Map<AnimationState,String> animations, BodyFeatures bodyFeatures, float scale) {
-        super(type,animations,bodyFeatures,scale);
+    public Weapon(WeaponType type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale) {
+        super(type,animationHandler,bodyFeatures,scale);
     }
 
 

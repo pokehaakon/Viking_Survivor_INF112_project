@@ -1,5 +1,7 @@
 package GameObjects.Factories;
 
+import GameObjects.Animations.AnimationRendering.AnimationHandler;
+import GameObjects.Animations.AnimationRendering.AnimationType;
 import GameObjects.Animations.AnimationState;
 import GameObjects.ObjectTypes.PlayerType;
 import GameObjects.Actors.Player;
@@ -11,7 +13,6 @@ import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,13 +36,16 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
         PlayerStats stats;
         BodyFeatures bodyFeatures;
         Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
-
+        AnimationType animationType;
+        AnimationState spawnState;
         switch (type) {
             case PLAYER1: {
                 scale = PLAYER_SCALE;
                 stats = Stats.player();
                 animations.put(AnimationState.MOVING, PlAYER_MOVING_FILE_PATH);
                 animations.put(AnimationState.IDLE, PlAYER_IDLE_FILE_PATH);
+                animationType = AnimationType.GIF;
+                spawnState = AnimationState.IDLE;
                 break;
             }
 
@@ -51,7 +55,7 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
 
         Filter filter = createFilter(
                 PLAYER,
-                new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL}
+                new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL, FilterTool.Category.PICKUP}
         );
 
         Shape shape = createCircleShape(0.3f*scale*PLAYER_WIDTH/2);
@@ -66,8 +70,8 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
                 BodyDef.BodyType.DynamicBody);
 
 
-        player = new Player(type,animations,bodyFeatures,scale,stats);
-        player.setAnimationState(AnimationState.IDLE);
+        player = new Player(type,new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale,stats);
+
 
         return player;
     }

@@ -2,6 +2,7 @@ package GameObjects.Pool;
 
 import GameObjects.Factories.IFactory;
 import GameObjects.GameObject;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.*;
@@ -90,4 +91,11 @@ public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
     }
 
 
+    public void setPosition(Vector2 vector2) {
+        for (SmallPool<T> pool : objectPool.values()) {
+            for (T object : pool.getPool()) {
+                object.setPosition(vector2);
+            }
+        }
+    }
 }

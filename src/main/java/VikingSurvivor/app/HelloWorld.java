@@ -21,11 +21,7 @@ public class HelloWorld implements ApplicationListener {
 		batch = new SpriteBatch();
 		//batch.maxSpritesInBatch = 256;
 
-		//camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		camera.position.x = Gdx.graphics.getWidth() / 2f;
-		camera.position.y = Gdx.graphics.getHeight() / 2f;
-		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 
 		inProc = new ContextualInputProcessor(batch, camera);

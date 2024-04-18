@@ -5,11 +5,7 @@ import GameObjects.Animations.AnimationState;
 import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.BodyFeatures;
 import GameObjects.StaticObjects.Terrain;
-import TextureHandling.GdxTextureHandler;
-import TextureHandling.TextureHandler;
 import Tools.FilterTool;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.*;
@@ -19,7 +15,6 @@ import static GameObjects.Animations.AnimationRendering.GIFS.*;
 import static GameObjects.Animations.AnimationRendering.Sprites.TREE_WIDTH;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
-import static Tools.ShapeTools.createSquareShape;
 
 public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
 
@@ -46,6 +41,9 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
         AnimationRender render;
         Shape shape;
 
+        AnimationState spawnState;
+        AnimationType animationType;
+
         boolean isGif;
 
         switch (type) {
@@ -53,15 +51,11 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
                 scale = 0.1f;
                 animations.put(AnimationState.STATIC,"tree.png");
                 shape = createCircleShape(scale*TREE_WIDTH/2);
-                isGif = false;
+                animationType = AnimationType.SPRITE;
+                spawnState = AnimationState.STATIC;
                 break;
             }
-            case PICKUPORB:
-                scale = 0.5f;
-                animations.put(AnimationState.STATIC, PICK_UP_ORB_FILE_PATH);
-                shape = createCircleShape(0.2f*scale*PICKUP_ORB_WIDTH/2);
-                isGif = true;
-                break;
+
             default:
                 throw new IllegalArgumentException("Invalid terrain type");
         }
@@ -85,9 +79,7 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
                 false,
                 BodyDef.BodyType.StaticBody);
 
-        terrain = new Terrain(type,animations,bodyFeatures,scale);
-        terrain.setAnimationState(AnimationState.STATIC);
-        terrain.isGif = isGif;
+        terrain = new Terrain(type,new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale);
 
         return terrain;
     }

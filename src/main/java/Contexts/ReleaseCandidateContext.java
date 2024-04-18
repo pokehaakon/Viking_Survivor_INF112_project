@@ -2,9 +2,10 @@ package Contexts;
 
 import GameObjects.Actors.ActorAction.WeaponActions;
 import GameObjects.Actors.Enemy;
+import GameObjects.Actors.Pickups;
 import GameObjects.Animations.AnimationRendering.AnimationLibrary;
-import GameObjects.ObjectTypes.EnemyType;
-import GameObjects.ObjectTypes.PlayerType;
+import GameObjects.Factories.*;
+import GameObjects.ObjectTypes.*;
 import GameObjects.Actors.ActorAction.PlayerActions;
 import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.ObjectTypes.WeaponType;
@@ -29,8 +30,16 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.PolygonMapObject;
+import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -68,7 +77,7 @@ public class ReleaseCandidateContext extends Context {
     private World world;
 
     private Player player;
-
+    private Pickups pickup;
     private Weapon orbitWeapon;
     private ArrayList<Enemy> spawnedEnemies;
     private final BitmapFont font;
@@ -85,7 +94,7 @@ public class ReleaseCandidateContext extends Context {
     private final Lock renderLock;
 
     private ProgressBar xpBar;
-    private int xpAmount;
+    private float xpAmount;
     private int level;
     private Label levelLabel;
     private Label timerLabel;
@@ -97,15 +106,19 @@ public class ReleaseCandidateContext extends Context {
     private final Simulation sim;
     private final Thread simThread;
     private  EnemyFactory enemyFactory;
+    private PickupsFactory pickupsFactory;
 
     private TerrainFactory terrainFactory;
 
     private List<Terrain> spawnedTerrain;
 
+    private List<Weapon> drawableWeapons;
+
     private WeaponFactory weaponFactory;
 
     private Sprite grass;
     private List<Terrain> drawableTerrain;
+    private List<Pickups> drawablePickups;
     private List<Enemy> drawableEnemies;
 
     private AnimationLibrary animationLibrary;
@@ -116,6 +129,9 @@ public class ReleaseCandidateContext extends Context {
     private static boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
 
     private Box2DDebugRenderer debugRenderer;
+
+    private ObjectPool<Weapon,WeaponType> weaponPool;
+    private ObjectPool<Pickups, PickupType> pickupsPool;
 
     private ObjectPool<Terrain, TerrainType> terrainPool;
 
@@ -157,7 +173,6 @@ public class ReleaseCandidateContext extends Context {
         font.setColor(Color.RED);
         renderLock = new ReentrantLock(true);
         synchronizer = new AtomicLong();
-
 
         //create and start simulation
         createWorld();
@@ -259,6 +274,22 @@ public class ReleaseCandidateContext extends Context {
 
     }
 
+    private void updateCamera(Vector2 player, int viewportWidth, int viewportHeight, TiledMap map, float tiledMapScale) {
+        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
+        float mapHeight = layer.getHeight() * layer.getTileHeight() * tiledMapScale;
+        float mapWidth = layer.getWidth() * layer.getTileWidth() * tiledMapScale;
+
+        if(player.x < viewportWidth / 2) camera.position.x = viewportWidth / 2;
+        else if(player.x > mapWidth - viewportWidth / 2) camera.position.x = mapWidth - viewportWidth / 2;
+        else camera.position.x = player.x;
+
+        if(player.y < viewportHeight / 2) camera.position.y = viewportHeight / 2;
+        else if(player.y > mapHeight - viewportHeight / 2) camera.position.y = mapHeight - viewportHeight / 2;
+        else camera.position.y = player.y;
+
+        camera.update();
+    }
+
     @Override
     public void render(float delta) {
 
@@ -277,6 +308,7 @@ public class ReleaseCandidateContext extends Context {
         gameWorld.render(camera, delta);
         debugRenderer.render(world, camera.combined);
 
+        updateCamera(player.getBody().getPosition(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), map, tiledMapScale);
 
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
@@ -286,11 +318,11 @@ public class ReleaseCandidateContext extends Context {
         float playerPosX = origin.x;
         float playerPosY = origin.y;
 
-        //center camera at player
-        camera.position.x = playerPosX;
-        camera.position.y = playerPosY;
-        camera.position.z = 0;
-        camera.update(true);
+//        //center camera at player
+//        camera.position.x = playerPosX;
+//        camera.position.y = playerPosY;
+//        camera.position.z = 0;
+//        camera.update(true);
 
         batch.begin();
 
@@ -311,11 +343,26 @@ public class ReleaseCandidateContext extends Context {
             i++;
         }
 
+        for(Weapon weapon : drawableWeapons) {
+            if(weapon.getBody().isActive()) {
+                weapon.draw(batch,elapsedTime);
+            }
+
+        }
+
         for(Terrain terrain : drawableTerrain) {
             if(i > 100) batch.flush();
             terrain.draw(batch, elapsedTime);
             i++;
         }
+
+        // Draw pickups
+        for (Pickups pickup : drawablePickups) {
+            if(i > 100) batch.flush();
+            pickup.draw(batch, elapsedTime);
+            i++;
+        }
+
 
         if(!gameOver) {
             // Performance statistics
@@ -347,9 +394,7 @@ public class ReleaseCandidateContext extends Context {
         }
         //batch.setColor(Color.WHITE);
 
-        if(orbitWeapon.getBody().isActive()) {
-            orbitWeapon.draw(batch,elapsedTime);
-        }
+
 
         if(player.isUnderAttack()) {
             batch.setColor(Color.RED);
@@ -422,6 +467,47 @@ public class ReleaseCandidateContext extends Context {
         return new Vector2(mapWidth * tileWidth * scale / 2f, mapHeight * tileHeight * scale / 2f);
     }
 
+    private float[] createPolyLine(PolygonMapObject polygon) {
+        for(float juice : polygon.getPolygon().getTransformedVertices()) System.out.println(juice);
+        float[] points = polygon.getPolygon().getTransformedVertices();
+        float[] newPoints = new float[points.length + 2];
+        newPoints[0] = 0.0f;
+        newPoints[1] = 0.0f;
+
+        for (int i = 0; i < points.length; i++) {
+            newPoints[i + 2] = points[i];
+        }
+        return newPoints;
+    }
+
+    private void createMapObjects(String objectLayerName, World world) {
+        MapLayer layer = map.getLayers().get(objectLayerName);
+
+        for(MapObject object : layer.getObjects()) {
+
+            // create the shape
+            ChainShape shape = new ChainShape();
+            shape.createChain(createPolyLine((PolygonMapObject) object));
+
+            BodyTool.createBody(
+                    world,
+                    new Vector2(),
+                    shape,
+                    createFilter(
+                            FilterTool.Category.WALL,
+                            new FilterTool.Category[] {
+                                    FilterTool.Category.PLAYER
+                            }
+                    ),
+                    1f,
+                    0f,
+                    0f,
+                    false,
+                    BodyDef.BodyType.StaticBody
+            );
+        }
+    }
+
     private void createWorld() {
         // sets up world
         animationLibrary = new AnimationLibrary();
@@ -431,14 +517,18 @@ public class ReleaseCandidateContext extends Context {
 
         //map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
 
-        enemyFactory = new EnemyFactory(animationLibrary);
+        enemyFactory = new EnemyFactory();
         drawableEnemies = new ArrayList<>();
+
+        pickupsFactory = new PickupsFactory();
 
         terrainFactory = new TerrainFactory();
         drawableTerrain = new ArrayList<>();
+        drawablePickups = new ArrayList<>();
 
         weaponFactory = new WeaponFactory();
         playerFactory = new PlayerFactory();
+        drawableWeapons =  new ArrayList<>();
 
         player = playerFactory.create(PlayerType.PLAYER1);
         player.addToWorld(world);
@@ -449,11 +539,11 @@ public class ReleaseCandidateContext extends Context {
 
         player.renderAnimations(animationLibrary);
 
-        orbitWeapon = weaponFactory.create(WeaponType.KNIFE);
-        orbitWeapon.addToWorld(world);
-        orbitWeapon.setAction(WeaponActions.orbitPlayer(150,0.2f,  player, 1000));
-        orbitWeapon.setOwner(player);
-        orbitWeapon.renderAnimations(animationLibrary);
+
+
+
+        pickup = pickupsFactory.create(PickupType.PICKUPORB);
+        pickup.renderAnimations(animationLibrary);
 
 
         //      Create top XP bar:
@@ -526,6 +616,10 @@ public class ReleaseCandidateContext extends Context {
 
         enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);
         terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.values()), 200);
+        weaponPool = new ObjectPool<>(world,weaponFactory, List.of(WeaponType.values()), 20);
+        pickupsPool = new ObjectPool<>(world, pickupsFactory, List.of(PickupType.values()), 200);
+
+        spawnOrbitingWeapons(player,4,WeaponType.KNIFE,150,0.1f,0);
 
         gameWorld = new GameWorld("mapdefines/test.wdef", player, enemyPool, terrainPool, drawableEnemies, drawableTerrain);
 
@@ -535,6 +629,31 @@ public class ReleaseCandidateContext extends Context {
 
         //world.step(1/60f, 10, 10);
     }
+
+    /**
+     * Orbits desired amount of weapons around player
+     * @param player player to orbit
+     * @param numWeapons number of weapons to orbit
+     * @param weaponType type of weapon to orbit
+     * @param orbitRadius radius of weapon to player
+     * @param orbitSpeed speed of weapons
+     * @param orbitInterval time between each orbit loop
+     */
+    private void spawnOrbitingWeapons(Player player,int numWeapons,WeaponType weaponType,float orbitRadius,float orbitSpeed,long orbitInterval){
+        float angle=0;
+        for(Weapon weapon:weaponPool.get(weaponType,numWeapons)){
+            weapon.setAction(WeaponActions.orbitPlayer(orbitRadius,orbitSpeed,player,orbitInterval));
+            weapon.setOwner(player);
+            weapon.setAngleToPlayer(angle);
+            weapon.renderAnimations(animationLibrary);
+            drawableWeapons.add(weapon);
+            angle+=(float)((float)2*Math.PI/numWeapons);
+        }
+
+    }
+
+
+
 
 
 
@@ -578,10 +697,17 @@ public class ReleaseCandidateContext extends Context {
         return enemyPool;
     }
 
+    public ObjectPool<Pickups, PickupType> getPickupsPool() {
+        return pickupsPool;
+    }
+
     public List<Terrain> getDrawableTerrain() {
         return drawableTerrain;
     }
 
+    public List<Pickups> getDrawablePickups() {
+        return drawablePickups;
+    }
     public ObjectPool<Terrain, TerrainType> getTerrainPool() {
         return terrainPool;
     }
@@ -599,4 +725,8 @@ public class ReleaseCandidateContext extends Context {
     }
 
     public GameWorld getGameWorld() {return gameWorld;}
+
+    public List<Weapon> getDrawableWeapons() {
+        return drawableWeapons;
+    }
 }
