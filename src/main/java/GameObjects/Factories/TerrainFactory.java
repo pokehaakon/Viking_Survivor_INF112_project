@@ -38,6 +38,7 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
         Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
         Map<AnimationState, String> gifAnimations = new EnumMap<>(AnimationState.class);
 
+        AnimationRender render;
         Shape shape;
 
         AnimationState spawnState;
@@ -54,13 +55,7 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
                 spawnState = AnimationState.STATIC;
                 break;
             }
-            case PICKUPORB:
-                scale = 0.5f;
-                animations.put(AnimationState.STATIC, PICK_UP_ORB_FILE_PATH);
-                shape = createCircleShape(0.2f*scale*PICKUP_ORB_WIDTH/2);
-                animationType = AnimationType.GIF;
-                spawnState = AnimationState.STATIC;
-                break;
+
             default:
                 throw new IllegalArgumentException("Invalid terrain type");
         }

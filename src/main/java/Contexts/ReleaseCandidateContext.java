@@ -2,9 +2,10 @@ package Contexts;
 
 import GameObjects.Actors.ActorAction.WeaponActions;
 import GameObjects.Actors.Enemy;
+import GameObjects.Actors.Pickups;
 import GameObjects.Animations.AnimationRendering.AnimationLibrary;
-import GameObjects.ObjectTypes.EnemyType;
-import GameObjects.ObjectTypes.PlayerType;
+import GameObjects.Factories.*;
+import GameObjects.ObjectTypes.*;
 import GameObjects.Actors.ActorAction.PlayerActions;
 import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.ObjectTypes.WeaponType;
@@ -19,6 +20,7 @@ import GameObjects.Actors.Weapon;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.Simulation;
+import Tools.FilterTool;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -66,7 +68,7 @@ public class ReleaseCandidateContext extends Context {
     private World world;
 
     private Player player;
-
+    private Pickups pickup;
     private Weapon orbitWeapon;
     private ArrayList<Enemy> spawnedEnemies;
     private final BitmapFont font;
@@ -83,7 +85,7 @@ public class ReleaseCandidateContext extends Context {
     private final Lock renderLock;
 
     private ProgressBar xpBar;
-    private int xpAmount;
+    private float xpAmount;
     private int level;
     private Label levelLabel;
     private Label timerLabel;
@@ -95,6 +97,7 @@ public class ReleaseCandidateContext extends Context {
     private final Simulation sim;
     private final Thread simThread;
     private  EnemyFactory enemyFactory;
+    private PickupsFactory pickupsFactory;
 
     private TerrainFactory terrainFactory;
 
@@ -106,6 +109,7 @@ public class ReleaseCandidateContext extends Context {
 
     private Sprite grass;
     private List<Terrain> drawableTerrain;
+    private List<Pickups> drawablePickups;
     private List<Enemy> drawableEnemies;
 
     private AnimationLibrary animationLibrary;
@@ -279,6 +283,7 @@ public class ReleaseCandidateContext extends Context {
     @Override
     public void render(float delta) {
 
+        xpAmount += player.XP;
         FPS.add(System.nanoTime() - previousFrameStart);
 
         previousFrameStart = System.nanoTime();
@@ -341,6 +346,14 @@ public class ReleaseCandidateContext extends Context {
             terrain.draw(batch, elapsedTime);
             i++;
         }
+
+        // Draw pickups
+        for (Pickups pickup : drawablePickups) {
+            if(i > 100) batch.flush();
+            pickup.draw(batch, elapsedTime);
+            i++;
+        }
+
 
         if(!gameOver) {
             // Performance statistics
@@ -457,8 +470,11 @@ public class ReleaseCandidateContext extends Context {
         enemyFactory = new EnemyFactory();
         drawableEnemies = new ArrayList<>();
 
+        pickupsFactory = new PickupsFactory();
+
         terrainFactory = new TerrainFactory();
         drawableTerrain = new ArrayList<>();
+        drawablePickups = new ArrayList<>();
 
         weaponFactory = new WeaponFactory();
         playerFactory = new PlayerFactory();
@@ -474,6 +490,9 @@ public class ReleaseCandidateContext extends Context {
 
 
 
+
+        pickup = pickupsFactory.create(PickupType.PICKUPORB);
+        pickup.renderAnimations(animationLibrary);
 
 
         //      Create top XP bar:
@@ -547,6 +566,7 @@ public class ReleaseCandidateContext extends Context {
         enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);
         terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.values()), 200);
         weaponPool = new ObjectPool<>(world,weaponFactory, List.of(WeaponType.values()), 20);
+        pickupsPool = new ObjectPool<>(world, pickupsFactory, List.of(PickupType.values()), 200);
 
         spawnOrbitingWeapons(player,4,WeaponType.KNIFE,150,0.1f,0);
         toBoKilled = new HashSet<>();
@@ -623,10 +643,17 @@ public class ReleaseCandidateContext extends Context {
         return enemyPool;
     }
 
+    public ObjectPool<Pickups, PickupType> getPickupsPool() {
+        return pickupsPool;
+    }
+
     public List<Terrain> getDrawableTerrain() {
         return drawableTerrain;
     }
 
+    public List<Pickups> getDrawablePickups() {
+        return drawablePickups;
+    }
     public ObjectPool<Terrain, TerrainType> getTerrainPool() {
         return terrainPool;
     }

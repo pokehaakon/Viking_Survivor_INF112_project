@@ -3,7 +3,9 @@ package Simulation;
 import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.Actors.ActorAction.EnemyActions;
 import GameObjects.Actors.Enemy;
+import GameObjects.Actors.Pickups;
 import GameObjects.ObjectTypes.EnemyType;
+import GameObjects.ObjectTypes.PickupType;
 import GameObjects.ObjectTypes.SwarmType;
 import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.Actors.Player;
@@ -15,6 +17,7 @@ import Coordinates.SpawnCoordinates;
 import Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
 import Tools.RollingSum;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -39,9 +42,12 @@ public class Simulation implements Runnable {
     public final int SET_UPS = 60;
     private final ReleaseCandidateContext context;
     long lastSpawnTime;
+    long lastPickupSpawnTime;
     private Player player;
     private ObjectPool<Enemy, EnemyType> enemyPool;
+    private ObjectPool<Pickups, PickupType> pickupPool;
     private List<Enemy> enemies;
+    private List<Pickups> pickups;
     private AtomicLong synchronizer;
 
     private Weapon mainWeapon;
@@ -68,6 +74,8 @@ public class Simulation implements Runnable {
         enemies = context.getDrawableEnemies();
         weapons = context.getDrawableWeapons();
 
+        pickupPool = context.getPickupsPool();
+        pickups = context.getDrawablePickups();
         mainWeapon = context.getOrbitWeapon();
     }
 
@@ -110,13 +118,23 @@ public class Simulation implements Runnable {
                 spawnRandomEnemies(5,Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
 
                 spawnTerrain(TerrainType.TREE);
-                spawnTerrain(TerrainType.PICKUPORB);
+
 
             }
             if(TimeUtils.millis() - lastSwarmSpawnTime > 15000) {
                 spawnSwarm(EnemyType.RAVEN,SwarmType.LINE,10,60,5);
             }
 
+
+            // If an enemy is defeated, spawn a pickuporb
+            for (Enemy enemy : enemies) {
+                if (enemy.isDestroyed()) {
+                    spawnPickups(PickupType.PICKUPORB, enemy.getBody().getPosition());
+                }
+            }
+
+            // If a pickup is picked up, remove it from the list of pickups
+            removePickedUpPickups();
 
 
             doSpinSleep(lastFrameStart, dt);
@@ -166,6 +184,18 @@ public class Simulation implements Runnable {
         enemies.subList(i, enemies.size()).clear();
     }
 
+    public void removePickedUpPickups() {
+        int i = 0;
+        for (Pickups p : pickups) {
+            if (p.isPickedUp()) {
+                pickupPool.returnToPool(p);
+            } else {
+                pickups.set(i++, p);
+            }
+        }
+        pickups.subList(i, pickups.size()).clear();
+    }
+
     private void spawnEnemies(EnemyType enemyType, int num, List<ActorAction> actions) {
         for(Enemy enemy: enemyPool.get(enemyType, num)) {
             enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
@@ -197,6 +227,14 @@ public class Simulation implements Runnable {
         terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
         context.getDrawableTerrain().add(terrain);
         lastSpawnTime = TimeUtils.millis();
+    }
+
+    private void spawnPickups(PickupType type, Vector2 position) {
+        Pickups pickup = context.getPickupsPool().get(type);
+        pickup.renderAnimations(context.getAnimationLibrary());
+        pickup.setPosition(position);
+        context.getDrawablePickups().add(pickup);
+        lastPickupSpawnTime = TimeUtils.millis();
     }
 
 

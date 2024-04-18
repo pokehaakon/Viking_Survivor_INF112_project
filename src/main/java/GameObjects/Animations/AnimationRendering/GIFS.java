@@ -33,6 +33,8 @@ public abstract class GIFS {
     public static final float RAVEN_SCALE = 0.3f;
     public static final float ORC_SCALE = 0.3f;
 
+    public static final float PICKUPORB_SCALE = 0.3f;
+
     public static Map<String, GifPair> gifMap(){
         Map<String, GifPair> map = new HashMap<>();
         map.put(RAVEN_FILE_PATH,new GifPair(getGIF(RAVEN_FILE_PATH),flippedGIF(getGIF(RAVEN_FILE_PATH))));
