@@ -58,6 +58,8 @@ public class Simulation implements Runnable {
 
     private float ORBIT_INTERVAL = 1000;
 
+    List<Weapon> weapons;
+
     public Simulation(ReleaseCandidateContext context) {
         this.context = context;
         renderLock = context.getRenderLock();
@@ -70,6 +72,7 @@ public class Simulation implements Runnable {
         player = context.getPlayer();
         enemyPool = context.getEnemyPool();
         enemies = context.getDrawableEnemies();
+        weapons = context.getDrawableWeapons();
 
         pickupPool = context.getPickupsPool();
         pickups = context.getDrawablePickups();
@@ -99,8 +102,12 @@ public class Simulation implements Runnable {
             }
 
 
-            for (Enemy enemy : context.getDrawableEnemies()) {
+            for (Enemy enemy : enemies) {
                 enemy.doAction();
+            }
+
+            for(Weapon weapon : weapons) {
+                weapon.doAction();
             }
 
 
@@ -118,9 +125,6 @@ public class Simulation implements Runnable {
                 spawnSwarm(EnemyType.RAVEN,SwarmType.LINE,10,60,5);
             }
 
-            for(Weapon weapon : player.getInventory()) {
-                weapon.doAction();
-            }
 
             // If an enemy is defeated, there is a 50% chance to spawn a pickuporb
             for (Enemy enemy : enemies) {

@@ -1,6 +1,6 @@
 package GameObjects.Actors;
 
-import GameObjects.Animations.AnimationState;
+import GameObjects.Animations.AnimationRendering.AnimationHandler;
 import GameObjects.ObjectTypes.PickupType;
 import GameObjects.ObjectTypes.PlayerType;
 import GameObjects.Actors.Stats.PlayerStats;
@@ -19,15 +19,15 @@ public class Player extends Actor<PlayerType> {
     List<Weapon> weaponInventory;
 
 
-    public Player(PlayerType type, Map<AnimationState,String> animations, BodyFeatures bodyFeatures, float scale, PlayerStats stats) {
-        super(type,animations,bodyFeatures, scale);
+    public Player(PlayerType type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale, PlayerStats stats) {
+        super(type,animationHandler,bodyFeatures, scale);
         this.stats = stats;
 
         HP = stats.HP();
         speed = stats.speed();
         damage = stats.damage();
         armour = stats.armour();
-        XP = 0;
+        XP = stats.XP();
         level = 1;
         directionState = DirectionState.RIGHT;
 

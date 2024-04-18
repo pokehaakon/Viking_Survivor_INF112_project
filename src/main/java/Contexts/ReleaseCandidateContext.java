@@ -541,7 +541,7 @@ public class ReleaseCandidateContext extends Context {
 
 
 
-        pickup = pickupsFactory.create(PickupType.XP_PICKUP);
+        pickup = pickupsFactory.create(PickupType.PICKUPORB);
         pickup.renderAnimations(animationLibrary);
 
 

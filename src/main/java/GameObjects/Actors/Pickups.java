@@ -2,6 +2,7 @@ package GameObjects.Actors;
 
 import GameObjects.Actors.Stats.PickupStats;
 import GameObjects.Actors.Stats.Stats;
+import GameObjects.Animations.AnimationRendering.AnimationHandler;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
 import GameObjects.ObjectTypes.PickupType;
@@ -12,8 +13,8 @@ public class Pickups extends GameObject<PickupType> {
     final PickupStats stats;
     public boolean isPickedUp;
 
-    public Pickups(PickupType type, Map animations, BodyFeatures bodyFeatures, float scale, PickupStats stats) {
-        super(type, animations, bodyFeatures, scale);
+    public Pickups(PickupType type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale, PickupStats stats) {
+        super(type, animationHandler, bodyFeatures, scale);
         this.stats = stats;
         isPickedUp = false;
     }

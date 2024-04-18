@@ -1,15 +1,15 @@
 package GameObjects.Actors;
 
+import GameObjects.Animations.AnimationRendering.AnimationHandler;
+
 import GameObjects.Animations.AnimationState;
 import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
-import GameObjects.Animations.AnimationRendering.AnimationRender;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor {
@@ -28,8 +28,8 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
 
     private long lastAttackedTime;
 
-    public Actor(E type, Map<AnimationState,String> animations, BodyFeatures bodyFeatures, float scale) {
-        super(type,animations,bodyFeatures,scale);
+    public Actor(E type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale) {
+        super(type,animationHandler,bodyFeatures,scale);
         velocityVector = new Vector2();
 
         actions  = new HashSet<>();
@@ -123,7 +123,7 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
         else {
             newState = AnimationState.MOVING;
         }
-        if(animationState != newState) {
+        if(animationHandler.getAnimationState() != newState) {
             setAnimationState(newState);
             setAnimation(newState);
         }

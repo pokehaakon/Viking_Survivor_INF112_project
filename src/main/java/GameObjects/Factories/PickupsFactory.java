@@ -3,6 +3,8 @@ package GameObjects.Factories;
 import GameObjects.Actors.Pickups;
 import GameObjects.Actors.Stats.PickupStats;
 import GameObjects.Actors.Stats.Stats;
+import GameObjects.Animations.AnimationRendering.AnimationHandler;
+import GameObjects.Animations.AnimationRendering.AnimationType;
 import GameObjects.Animations.AnimationState;
 import GameObjects.BodyFeatures;
 import GameObjects.ObjectTypes.PickupType;
@@ -42,17 +44,19 @@ public class PickupsFactory extends AbstractFactory<Pickups, PickupType>{
         Pickups pickup;
         PickupStats stats = null;
         Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
-        float scale = PICKUP_ORB_SCALE;
+        AnimationType animationType;
+        AnimationState spawnState;
+        float scale = PICKUPORB_SCALE;
 
-        boolean isGif;
 
         CircleShape shape;
         switch (type) {
-            case XP_PICKUP -> {
+            case PICKUPORB -> {
                 stats = Stats.pickupStats();
                 animations.put(AnimationState.MOVING, PICK_UP_ORB_FILE_PATH);
                 shape = createCircleShape(0.5f * scale * PICKUP_ORB_WIDTH / 2);
-                isGif = true;
+                animationType = AnimationType.GIF;
+                spawnState = AnimationState.MOVING;
                 break;
             }
             default -> throw new IllegalStateException("Unexpected value: " + type);
@@ -69,9 +73,9 @@ public class PickupsFactory extends AbstractFactory<Pickups, PickupType>{
 
 
 
-        pickup = new Pickups(type, animations, bodyfeatures, scale, stats);
+        pickup = new Pickups(type, new AnimationHandler(animations, animationType, spawnState), bodyfeatures, scale, stats);
         pickup.setAnimationState(AnimationState.MOVING);
-        pickup.isGif = true;
+
 
 
 

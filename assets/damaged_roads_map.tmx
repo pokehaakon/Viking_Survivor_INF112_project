@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="17">
  <tileset firstgid="1" source="grass.tsx"/>
  <tileset firstgid="65" source="cross_road_damaged.tsx"/>
  <tileset firstgid="129" source="horizontal_road_damaged.tsx"/>
@@ -140,4 +140,17 @@
 57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64,57,58,59,60,61,62,63,64
 </data>
  </layer>
+ <objectgroup id="2" name="roads">
+  <object id="10" name="road_1" x="0" y="1200">
+   <polygon points="0,0 864,0 864,64 640,64 640,464 592,464 592,64 0,64 0,16"/>
+  </object>
+  <object id="12" name="road_2" x="1328" y="0">
+   <polygon points="0,0 0,704 -768,704 -768,768 0,768 0,1200 -352,1200 -352,1264 272,1264 272,1216 272,1200 48,1200 48,768 720,768 720,704 48,704 48,0"/>
+  </object>
+ </objectgroup>
+ <objectgroup id="3" name="area">
+  <object id="16" name="border" x="0" y="0">
+   <polygon points="0,0 2048,0 2048,2048 0,2048"/>
+  </object>
+ </objectgroup>
 </map>
