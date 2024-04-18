@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import static GameObjects.Animations.AnimationRendering.GIFS.*;
 import static Tools.FilterTool.createFilter;
@@ -22,6 +23,7 @@ import static Tools.ShapeTools.createCircleShape;
 public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
 
     private final Filter filter;
+    private EnumMap<EnemyType, Function<EnemyType, Enemy>> factories;
 
     public EnemyFactory() {
         super();
@@ -60,6 +62,18 @@ public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
         AnimationType animationType;
         Shape shape;
         AnimationState spawnState;
+
+//        factories.put(EnemyType.RAVEN, (enemyType) -> {
+//            scale = RAVEN_SCALE;
+//            stats = Stats.enemy1();
+//            animations.put(AnimationState.MOVING, RAVEN_FILE_PATH);
+//            shape = createCircleShape(0.5f*scale*RAVEN_WIDTH/2);
+//            animationType = AnimationType.GIF;
+//            spawnState = AnimationState.MOVING;
+//            return null;
+//        });
+//
+//        factories.get(type).apply(type);
 
         switch (type) {
             case RAVEN: {

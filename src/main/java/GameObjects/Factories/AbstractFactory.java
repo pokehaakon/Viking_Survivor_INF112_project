@@ -7,6 +7,7 @@ import TextureHandling.TextureHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public abstract class AbstractFactory<T extends GameObject<E>, E extends Enum<E>> implements IFactory<T, E> {
 
@@ -43,5 +44,12 @@ public abstract class AbstractFactory<T extends GameObject<E>, E extends Enum<E>
         this.gifRender = gifRender;
     }
 
-
+    public static <A extends GameObject<B>, B extends Enum<B>> AbstractFactory<A, B> createFactory(Function<B, A> creator) {
+        return new AbstractFactory<>() {
+            @Override
+            public A create(B type) {
+                return creator.apply(type);
+            }
+        };
+    }
 }

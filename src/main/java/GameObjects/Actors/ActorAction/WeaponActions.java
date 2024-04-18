@@ -26,7 +26,7 @@ public abstract class WeaponActions {
                 float y = (float) (Math.sin(w.getAngleToPlayer()) * orbitRadius);
                 w.getBody().setTransform(new Vector2(x, y).add(player.getBody().getPosition()), w.getBody().getAngle());
                 w.setAngleToPlayer(w.getAngleToPlayer() + orbitSpeed);
-                if (w.getAngleToPlayer() >= 2 * Math.PI) {
+                if (w.getAngleToPlayer() >= 2 * Math.PI) { //TODO wrong round
                     System.out.println("Full round");
                     w.getBody().setActive(false);
                     w.setLastAttack(TimeUtils.millis());
