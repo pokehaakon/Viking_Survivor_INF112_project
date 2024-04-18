@@ -45,7 +45,9 @@ public class Simulation implements Runnable {
     long lastPickupSpawnTime;
     private Player player;
     private ObjectPool<Enemy, EnemyType> enemyPool;
+    private ObjectPool<Pickups, PickupType> pickupPool;
     private List<Enemy> enemies;
+    private List<Pickups> pickups;
     private AtomicLong synchronizer;
 
     private Weapon mainWeapon;
@@ -69,6 +71,8 @@ public class Simulation implements Runnable {
         enemyPool = context.getEnemyPool();
         enemies = context.getDrawableEnemies();
 
+        pickupPool = context.getPickupsPool();
+        pickups = context.getDrawablePickups();
         mainWeapon = context.getOrbitWeapon();
     }
 
@@ -122,9 +126,12 @@ public class Simulation implements Runnable {
             for (Enemy enemy : enemies) {
                 if (enemy.isDestroyed()) {
                     spawnPickups(PickupType.PICKUPORB, enemy.getBody().getPosition());
-                    System.out.println("PICKUP SPAWNED");
                 }
             }
+
+            // If a pickup is picked up, remove it from the list of pickups
+            removePickedUpPickups();
+
 
             doSpinSleep(lastFrameStart, dt);
             UPS.add(System.nanoTime() - lastFrameStart);
@@ -171,6 +178,18 @@ public class Simulation implements Runnable {
             }
         }
         enemies.subList(i, enemies.size()).clear();
+    }
+
+    public void removePickedUpPickups() {
+        int i = 0;
+        for (Pickups p : pickups) {
+            if (p.isPickedUp()) {
+                pickupPool.returnToPool(p);
+            } else {
+                pickups.set(i++, p);
+            }
+        }
+        pickups.subList(i, pickups.size()).clear();
     }
 
     private void spawnEnemies(EnemyType enemyType, int num, List<ActorAction> actions) {

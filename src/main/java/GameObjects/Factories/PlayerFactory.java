@@ -51,7 +51,7 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
 
         Filter filter = createFilter(
                 PLAYER,
-                new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL}
+                new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL, FilterTool.Category.PICKUP}
         );
 
         Shape shape = createCircleShape(0.3f*scale*PLAYER_WIDTH/2);

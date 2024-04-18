@@ -9,11 +9,21 @@ import GameObjects.ObjectTypes.PickupType;
 import java.util.Map;
 
 public class Pickups extends GameObject<PickupType> {
-    private final PickupStats stats;
+    final PickupStats stats;
+    public boolean isPickedUp;
 
     public Pickups(PickupType type, Map animations, BodyFeatures bodyFeatures, float scale, PickupStats stats) {
         super(type, animations, bodyFeatures, scale);
         this.stats = stats;
+        isPickedUp = false;
+    }
+
+    public boolean isPickedUp() {
+        return isPickedUp;
+    }
+
+    public void setPickedUp(boolean pickedUp) {
+        isPickedUp = pickedUp;
     }
 
 

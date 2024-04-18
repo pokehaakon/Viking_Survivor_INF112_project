@@ -27,6 +27,7 @@ public abstract class Stats {
 
     public static final int SWARM_SPEED_MULTIPLIER = 5;
     public static final float XPAMOUNT = 10;
+    public static final boolean IS_PICKED_UP = false;
 
 
 
@@ -46,7 +47,6 @@ public abstract class Stats {
     public static PickupStats pickupStats() {
         return new PickupStats(XPAMOUNT);
     }
-
 
 
 

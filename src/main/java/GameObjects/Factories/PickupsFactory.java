@@ -25,12 +25,10 @@ public class PickupsFactory extends AbstractFactory<Pickups, PickupType>{
         filter = createFilter(
                 FilterTool.Category.PICKUP,
                 new FilterTool.Category[]{
-                        FilterTool.Category.WALL,
-                        FilterTool.Category.ENEMY,
-                        FilterTool.Category.PLAYER,
-                        FilterTool.Category.BULLET
+                        FilterTool.Category.PLAYER
                 }
         );
+
 
 
     }
@@ -65,7 +63,7 @@ public class PickupsFactory extends AbstractFactory<Pickups, PickupType>{
                 1,
                 0,
                 0,
-                false,
+                true,
                 BodyDef.BodyType.DynamicBody);
 
 

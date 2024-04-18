@@ -1,6 +1,7 @@
 package GameObjects.Actors;
 
 import GameObjects.Animations.AnimationState;
+import GameObjects.ObjectTypes.PickupType;
 import GameObjects.ObjectTypes.PlayerType;
 import GameObjects.Actors.Stats.PlayerStats;
 import GameObjects.BodyFeatures;
@@ -27,7 +28,7 @@ public class Player extends Actor<PlayerType> {
         speed = stats.speed();
         damage = stats.damage();
         armour = stats.armour();
-        XP = stats.XP();
+        XP = 0;
         level = 1;
         directionState = DirectionState.RIGHT;
 
@@ -55,7 +56,9 @@ public class Player extends Actor<PlayerType> {
     }
 
 
-
-
-
+    public void pickup(Pickups pickup) {
+        if(pickup.getType() == PickupType.PICKUPORB) {
+            XP += 10;
+        }
+    }
 }

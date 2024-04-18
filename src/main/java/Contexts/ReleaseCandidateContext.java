@@ -80,7 +80,7 @@ public class ReleaseCandidateContext extends Context {
     private final Lock renderLock;
 
     private ProgressBar xpBar;
-    private int xpAmount;
+    private float xpAmount;
     private int level;
     private Label levelLabel;
     private Label timerLabel;
@@ -258,6 +258,7 @@ public class ReleaseCandidateContext extends Context {
     @Override
     public void render(float delta) {
 
+        xpAmount += player.XP;
         FPS.add(System.nanoTime() - previousFrameStart);
 
         previousFrameStart = System.nanoTime();
