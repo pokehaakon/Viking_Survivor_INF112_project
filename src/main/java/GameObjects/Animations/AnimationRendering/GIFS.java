@@ -27,6 +27,7 @@ public abstract class GIFS {
     public static final String HP_ORB_FILE_PATH= "HP_Pickup.gif";
 
     public static final String KNIFE_FILE_PATH= "knife.gif";
+    public static final String AXE_FILE_PATH= "axe.gif";
 
 
     // scale
@@ -47,6 +48,7 @@ public abstract class GIFS {
         map.put(PICK_UP_ORB_FILE_PATH,new GifPair(getGIF(PICK_UP_ORB_FILE_PATH),flippedGIF(getGIF(PICK_UP_ORB_FILE_PATH))));
         map.put(HP_ORB_FILE_PATH,new GifPair(getGIF(HP_ORB_FILE_PATH),flippedGIF(getGIF(HP_ORB_FILE_PATH))));
         map.put(KNIFE_FILE_PATH,new GifPair(getGIF(KNIFE_FILE_PATH),flippedGIF(getGIF(KNIFE_FILE_PATH))));
+        map.put(AXE_FILE_PATH,new GifPair(getGIF(AXE_FILE_PATH),flippedGIF(getGIF(AXE_FILE_PATH))));
         return map;
     }
 

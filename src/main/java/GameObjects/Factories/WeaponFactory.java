@@ -16,8 +16,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import static GameObjects.Animations.AnimationRendering.GIFS.KNIFE_FILE_PATH;
-import static GameObjects.Animations.AnimationRendering.GIFS.KNIFE_WIDT;
+import static GameObjects.Animations.AnimationRendering.GIFS.*;
 import static Tools.FilterTool.Category.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
@@ -42,8 +41,15 @@ public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
         Map<AnimationState, String> animation =  new EnumMap<>(AnimationState.class);
         switch (type) {
             case KNIFE: {
-                scale = 0.7f;
+                scale = 0.5f;
                 animation.put(AnimationState.MOVING,KNIFE_FILE_PATH);
+                animationType = AnimationType.GIF;
+                spawnState  = AnimationState.MOVING;
+                break;
+            }
+            case AXE: {
+                scale = 0.2f;
+                animation.put(AnimationState.MOVING,AXE_FILE_PATH);
                 animationType = AnimationType.GIF;
                 spawnState  = AnimationState.MOVING;
                 break;

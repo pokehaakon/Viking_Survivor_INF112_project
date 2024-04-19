@@ -619,7 +619,8 @@ public class ReleaseCandidateContext extends Context {
         weaponPool = new ObjectPool<>(world,weaponFactory, List.of(WeaponType.values()), 20);
         pickupsPool = new ObjectPool<>(world, pickupsFactory, List.of(PickupType.values()), 200);
 
-        spawnOrbitingWeapons(player,4,WeaponType.KNIFE,150,0.1f,0);
+        spawnOrbitingWeapons(player,2,WeaponType.KNIFE,150,0.1f,0, 0);
+        spawnOrbitingWeapons(player,2,WeaponType.AXE,150,0.1f,0, (float)Math.PI/2);
         toBoKilled = new HashSet<>();
 
         world.setContactListener(new ObjectContactListener());
@@ -636,8 +637,7 @@ public class ReleaseCandidateContext extends Context {
      * @param orbitSpeed speed of weapons
      * @param orbitInterval time between each orbit loop
      */
-    private void spawnOrbitingWeapons(Player player,int numWeapons,WeaponType weaponType,float orbitRadius,float orbitSpeed,long orbitInterval){
-        float angle=0;
+    private void spawnOrbitingWeapons(Player player,int numWeapons,WeaponType weaponType,float orbitRadius,float orbitSpeed,long orbitInterval, float angle){
         for(Weapon weapon:weaponPool.get(weaponType,numWeapons)){
             weapon.setAction(WeaponActions.orbitPlayer(orbitRadius,orbitSpeed,player,orbitInterval));
             weapon.setOwner(player);

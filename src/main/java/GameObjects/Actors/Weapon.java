@@ -45,4 +45,5 @@ public class Weapon extends Actor<WeaponType>  {
     public Player getOwner() {
         return owner;
     }
+
 }

@@ -130,9 +130,9 @@ public class Simulation implements Runnable {
             for (Enemy enemy : enemies) {
                 if (enemy.HP <= 0) {
                     double randomValue = Math.random();
-                    if (randomValue < 0.50) {
+                    if (randomValue < 0.60) {
                         continue;
-                    } else if (randomValue < 0.85) {
+                    } else if (randomValue < 0.90) {
                         spawnPickups(PickupType.XP_PICKUP, enemy.getBody().getPosition());
                     } else {
                         spawnPickups(PickupType.HP_PICKUP, enemy.getBody().getPosition());
