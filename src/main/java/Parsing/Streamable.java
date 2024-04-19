@@ -39,7 +39,7 @@ public interface Streamable<T> {
     int getLinePos();
 
     /**
-     * Gets debug information about the current char
+     * Gets debug information about the current state of the stream
      * @return
      */
     String getDebugInfo();

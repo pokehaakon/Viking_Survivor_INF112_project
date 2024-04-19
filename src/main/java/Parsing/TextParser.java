@@ -8,24 +8,7 @@ import java.util.List;
 public class TextParser extends GenericParser<Character, String> {
 
     public TextParser(String filename) {
-        super(
-                filename,
-                (s) -> new CharArrayStream(Gdx.files.internal(filename).readString()),
-                (l) -> {
-                    StringBuilder b = new StringBuilder();
-                    for (Character c : l) {
-                        b.append(c);
-                    }
-                    return b.toString();
-                },
-                (s) -> {
-                    List<Character> cs = new ArrayList<>(s.length());
-                    for(int i = 0; i < s.length(); i++) {
-                        cs.add(s.charAt(i));
-                    }
-                    return cs;
-                }
-        );
+        this(Gdx.files.internal(filename).readString().toCharArray());
     }
 
     public TextParser(char[] text) {
@@ -48,44 +31,67 @@ public class TextParser extends GenericParser<Character, String> {
         );
     }
 
-
+    /**
+     * Parses one letter
+     * @return the parsed letter
+     */
     public String letter() throws ParsingException {
         return parseLiteralFromFunction(Character::isLetter);
     }
 
+    /**
+     * Parses a string of letters
+     * @return the parsed string
+     */
     public String letters() throws ParsingException {
         return parseStringFromFunction(Character::isLetter);
     }
 
+    /**
+     * Parses one number
+     * @return the parsed number
+     */
     public String number() throws ParsingException {
         return parseLiteralFromFunction(Character::isDigit);
     }
 
+    /**
+     * Parses a string of numbers
+     * @return the parsed numbers
+     */
     public String numbers() throws ParsingException {
         return parseStringFromFunction(Character::isDigit);
     }
 
-    public String space() {
 
+    /**
+     * Parses tabs and spaces
+     * @return the parsed tabs and spaces
+     */
+    public String space() {
         return String.join("", many(() -> parseLiteral(' ', '\t')));
     }
 
+    /**
+     * Parses spaces, then a newline char, errors if there is no newline
+     * @return the parsed string
+     */
     public String skipLine() throws ParsingException {
-        String s = orElse(iparseLiteral('\n'), "");
-        return parseLiteral('\n') + s;
+        return space() + parseLiteral('\n');
     }
 
     /**
-     * Parses a line with just spaces, tabs and ending with a newline
-     * @return
+     * Tries to parse a line with just spaces, tabs and ending with a newline
+     * @return the parsed string
      */
     public String parseEmptyLine() throws ParsingException {
-        return Try(() -> {
-            String s = String.join("", many(iparseLiteral(' ', '\t')));
-            return s + parseLiteral('\n');
-        });
+        return Try(() -> space() + parseLiteral('\n'));
     }
 
+    /**
+     * Parses either '\n' or '\r'
+     * @return the parsed char
+     */
     public String parseNewLineLiteral() throws ParsingException {
         return parseLiteral('\n', '\r');
     }

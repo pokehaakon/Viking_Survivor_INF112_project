@@ -2,6 +2,9 @@ package Parsing;
 
 import Coordinates.SwarmCoordinates;
 
+import java.util.Arrays;
+import java.util.function.Function;
+
 public class CharArrayStream implements Streamable<Character> {
     private final char[] text;
     private int head = 0;
@@ -37,7 +40,7 @@ public class CharArrayStream implements Streamable<Character> {
 
     @Override
     public Character next() throws ParsingException {
-        if (text.length == head + 1) throw new ParsingException();
+        if (text.length == head) throw new ParsingException();
         if (currentChar == '\n') {
             lineCount++;
             colCount = 0;
@@ -45,7 +48,7 @@ public class CharArrayStream implements Streamable<Character> {
             colCount++;
         }
         var temp = currentChar;
-        currentChar = text[++head];
+        currentChar = text.length != head + 1 ? text[++head] : 0;
         return temp;
     }
 
@@ -84,5 +87,19 @@ public class CharArrayStream implements Streamable<Character> {
             b.append(' ');
         b.append('^');
         return b.toString();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof CharArrayStream otherStream) {
+            return this == other
+                    || head == otherStream.head
+                    && Arrays.equals(otherStream.getText(), this.text);
+        }
+        return false;
+    }
+
+    public char[] getText() {
+        return text;
     }
 }

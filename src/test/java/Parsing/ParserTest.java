@@ -2,23 +2,24 @@ package Parsing;
 
 import GameObjects.ObjectTypes.EnemyType;
 import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
 import org.javatuples.Pair;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Map;
+import javax.xml.stream.events.Characters;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-class MapParserTest {
+class ParserTest {
 
     @BeforeAll
     static void setUpBeforeAll() {
@@ -64,6 +65,7 @@ class MapParserTest {
     public static MapParser mapParserFromString(String s) {
         return new MapParser(s.toCharArray());
     }
+
     @Test
     void parseDefines() {
         MapParser m = mapParserFromString("""
@@ -193,6 +195,106 @@ class MapParserTest {
         var frames = p.getTimeFrames();
         assertEquals(2, frames.size());
 
+
+    }
+
+    @Test
+    void testTextParser() throws ParsingException {
+        TextParser parser = new TextParser("aab112".toCharArray());
+
+        assertEquals("a", parser.letter());
+        assertEquals("ab", parser.letters());
+        assertThrowsExactly(ParsingException.class, parser::letter);
+
+        assertEquals("1", parser.number());
+        assertEquals("12", parser.numbers());
+        assertThrowsExactly(ParsingException.class, parser::number);
+
+
+        parser = new TextParser("\t\t  abc".toCharArray());
+        assertEquals("\t\t  ", parser.space());
+
+
+        parser = new TextParser("\t\t \nabc\n".toCharArray());
+        assertEquals("\t\t \n", parser.skipLine());
+        assertThrowsExactly(ParsingException.class, parser::skipLine);
+
+        parser = new TextParser("\n\ra".toCharArray());
+        assertEquals("\n", parser.parseNewLineLiteral());
+        assertEquals("\r", parser.parseNewLineLiteral());
+        assertThrowsExactly(ParsingException.class, parser::parseNewLineLiteral);
+
+        parser = new TextParser("\t\t \n".toCharArray());
+        assertEquals("\t\t \n", parser.parseEmptyLine());
+        assertThrowsExactly(ParsingException.class, parser::parseEmptyLine);
+    }
+
+
+    @Test
+    void testGenericParser() throws ParsingException {
+        TextParser parser1 = new TextParser("parsed".toCharArray());
+
+        assertThrowsExactly(ParsingException.class, parser1::error);
+        assertThrowsExactly(ParsingException.class, () -> parser1.shouldError(() -> null));
+
+        assertEquals("parsed", parser1.iorElse(parser1.iparseStringLiteral("parsed"), "default").get());
+        assertEquals("default", parser1.iorElse(parser1.iparseStringLiteral("parsed"), "default").get());
+
+
+        TextParser parser2 = new TextParser("undo".toCharArray());
+        assertThrowsExactly(ParsingException.class, () -> parser2.undo(() -> {
+                parser2.parseLiteral('u');
+                parser2.error();
+                return null;
+        }));
+        assertEquals("u", parser2.undo(parser2.iparseLiteral('u')));
+        assertEquals("undo", parser2.parseStringLiteral("undo"));
+
+
+        TextParser parser3 = new TextParser("___stripped___next".toCharArray());
+        assertEquals("stripped", parser3.istrip(parser3.iparseStringLiteral("stripped"), '_').get());
+        assertEquals("next", parser3.parseStringLiteral("next"));
+
+        parser3.reset();
+        assertEquals("_", parser3.next());
+        assertEquals("__s", parser3.next(3));
+    }
+
+    @Test
+    void fileNameTester() {
+        MapParser p = new MapParser("mapdefines/test.wdef");
+        var a = p.stream;
+        var b = p.stream.copy();
+
+        assertEquals(a, b);
+        assertEquals(a, a);
+    }
+
+    @Test
+    void charStreamTest() {
+        CharArrayStream stream = new CharArrayStream("this is a stream\nwith multiple\nlines");
+        assertEquals(0, stream.getLine());
+        assertEquals(0, stream.getLinePos());
+
+        for (int i = 0; i < 16; i++) {
+            assertDoesNotThrow(stream::next);
+        }
+
+        assertEquals(0, stream.getLine());
+        assertEquals(16, stream.getLinePos());
+
+        assertDoesNotThrow(stream::next);
+
+        assertEquals(1, stream.getLine());
+        assertEquals(0, stream.getLinePos());
+
+        assertDoesNotThrow(stream::next);
+
+        assertEquals("with multiple\n ^", stream.getDebugInfo());
+        assertEquals('i', stream.getCurrent());
+
+
+        assertNotEquals("", stream);
 
     }
 }
