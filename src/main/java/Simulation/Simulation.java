@@ -236,7 +236,7 @@ public class Simulation implements Runnable {
 //
     private void spawnTerrain(TerrainType type) {
         Terrain terrain = context.getTerrainPool().get(type);
-        terrain.renderAnimations(context.getAnimationLibrary());
+        //terrain.renderAnimations(context.getAnimationLibrary());
         terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
         context.getDrawableTerrain().add(terrain);
         lastSpawnTime = TimeUtils.millis();
@@ -244,7 +244,7 @@ public class Simulation implements Runnable {
 
     private void spawnPickups(PickupType type, Vector2 position) {
         Pickups pickup = context.getPickupsPool().get(type);
-        pickup.renderAnimations(context.getAnimationLibrary());
+        //pickup.renderAnimations(context.getAnimationLibrary());
         pickup.setPosition(position);
         context.getDrawablePickups().add(pickup);
         lastPickupSpawnTime = TimeUtils.millis();
@@ -257,7 +257,7 @@ public class Simulation implements Runnable {
         for(Enemy enemy : swarm) {
             enemy.setAction(moveInStraightLine());
             enemy.setAction(destroyIfDefeated());
-            enemy.renderAnimations(context.getAnimationLibrary());
+            //enemy.renderAnimations(context.getAnimationLibrary());
             enemies.add(enemy);
         }
 

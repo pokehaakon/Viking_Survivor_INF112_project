@@ -268,6 +268,11 @@ class ParserTest {
 
         assertEquals(a, b);
         assertEquals(a, a);
+
+//        p.doParse();
+//
+//        System.out.println(p.getDefines());
+//        System.out.println(p.getTimeFrames());
     }
 
     @Test

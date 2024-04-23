@@ -1,7 +1,7 @@
 package GameObjects.Actors;
 
-import GameObjects.Animations.AnimationState;
-import GameObjects.Animations.ActorMovement;
+import Rendering.Animations.AnimationState;
+import Rendering.Animations.ActorMovement;
 
 public interface IAnimation {
 
@@ -32,7 +32,6 @@ public interface IAnimation {
      * Set the new animation state and the corresponding GIF
      * Only changes the animation state if it is different from the last
      * @param newState
-     * @param gifPath
      */
     void setAnimationState(AnimationState newState);
 }

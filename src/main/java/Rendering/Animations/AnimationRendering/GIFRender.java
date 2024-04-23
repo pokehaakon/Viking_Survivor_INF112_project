@@ -1,46 +1,35 @@
-package GameObjects.Animations.AnimationRendering;
+package Rendering.Animations.AnimationRendering;
 
-import GameObjects.Animations.AnimationState;
+import Rendering.Animations.AnimationState;
 import GameObjects.Actors.DirectionState;
 import GameObjects.GameObject;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
-import static GameObjects.Animations.AnimationRendering.GIFS.FRAME_DURATION;
+
+import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
 
-public class GIFRender<E extends Enum<E>> implements AnimationRender {
+public class GIFRender implements AnimationRender {
 
     private final Map<AnimationState, GifPair> animationMovement = new EnumMap<>(AnimationState.class);
-
-
-
     private GifPair currentGIF;
 
-    private AnimationLibrary animationLibrary;
-
-
-
-    public GIFRender(AnimationLibrary animationLibrary, Map<AnimationState, String> animationMovement) {
-        this.animationLibrary = animationLibrary;
+    protected GIFRender(Map<AnimationState, String> animationMovement) {
         getGifPairs(animationMovement);
-
-
     }
 
 
     @Override
-    public void draw(SpriteBatch batch, float elapsedTime, GameObject object) {
-        TextureRegion region;
-        if(object.getDirectionState() == DirectionState.RIGHT) {
-            region = currentGIF.right().getKeyFrame(elapsedTime);
-        }
-        else {
-            region = currentGIF.left().getKeyFrame(elapsedTime);
-        }
+    public void draw(SpriteBatch batch, long frame, GameObject<?> object) {
+        float elapsedTime = (float) frame / SET_FPS;
+        TextureRegion region = object.getDirectionState() == DirectionState.RIGHT
+                ? currentGIF.right().getKeyFrame(elapsedTime)
+                : currentGIF.left().getKeyFrame(elapsedTime);
+
         batch.draw(
                 region,
                 object.getBody().getPosition().x - (float) region.getRegionWidth() /2*object.getScale(),
@@ -50,15 +39,11 @@ public class GIFRender<E extends Enum<E>> implements AnimationRender {
         );
     }
 
-
-
     @Override
     public void setAnimation(AnimationState state) {
         currentGIF = animationMovement.get(state);
-        currentGIF.right().setFrameDuration(FRAME_DURATION);
-        currentGIF.left().setFrameDuration(FRAME_DURATION);
-
-
+        currentGIF.right().setFrameDuration(GIFS.FRAME_DURATION);
+        currentGIF.left().setFrameDuration(GIFS.FRAME_DURATION);
     }
 
     @Override
@@ -76,16 +61,16 @@ public class GIFRender<E extends Enum<E>> implements AnimationRender {
     }
 
     @Override
-    public void setAnimations(Map<AnimationState, String> animationMap) {
+    public void initAnimations(Map<AnimationState, String> animationMap) {
         getGifPairs(animationMap);
-
     }
 
-    private void getGifPairs(Map<AnimationState,String> map) {
+    private void getGifPairs(Map<AnimationState, String> map) {
+        //animationMovement.clear(); //?
         for(Map.Entry<AnimationState, String> entry : map.entrySet()) {
             AnimationState state = entry.getKey();
             String filePath = entry.getValue();
-            animationMovement.put(state, animationLibrary.getGif(filePath));
+            animationMovement.put(state, GIFS.getGIF(filePath));
         }
     }
 

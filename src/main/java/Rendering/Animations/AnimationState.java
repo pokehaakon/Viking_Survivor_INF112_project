@@ -1,4 +1,4 @@
-package GameObjects.Animations;
+package Rendering.Animations;
 
 public enum AnimationState {
     MOVING,

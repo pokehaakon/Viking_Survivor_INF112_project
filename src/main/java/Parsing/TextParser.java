@@ -8,7 +8,7 @@ import java.util.List;
 public class TextParser extends GenericParser<Character, String> {
 
     public TextParser(String filename) {
-        this(Gdx.files.internal(filename).readString().toCharArray());
+        this(Gdx.files.internal(filename).readString().replace('\r', '\n').toCharArray());
     }
 
     public TextParser(char[] text) {

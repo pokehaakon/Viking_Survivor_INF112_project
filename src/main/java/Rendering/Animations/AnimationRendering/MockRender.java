@@ -1,19 +1,19 @@
-package GameObjects.Animations.AnimationRendering;
+package Rendering.Animations.AnimationRendering;
 
-import GameObjects.Animations.AnimationState;
+import Rendering.Animations.AnimationState;
 import GameObjects.GameObject;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.Map;
 
-public class MockRender implements AnimationRender{
+public class MockRender implements AnimationRender {
 
     public MockRender() {
 
     }
 
     @Override
-    public void draw(SpriteBatch batch, float elapsedTime, GameObject object) {
+    public void draw(SpriteBatch batch, long frame, GameObject<?> object) {
 
     }
 
@@ -33,7 +33,7 @@ public class MockRender implements AnimationRender{
     }
 
     @Override
-    public void setAnimations(Map<AnimationState, String> animationMap) {
+    public void initAnimations(Map<AnimationState, String> animationMap) {
 
     }
 }

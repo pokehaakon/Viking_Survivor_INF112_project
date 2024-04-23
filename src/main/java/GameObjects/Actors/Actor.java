@@ -1,18 +1,16 @@
 package GameObjects.Actors;
 
-import GameObjects.Animations.AnimationRendering.AnimationHandler;
+import Rendering.Animations.AnimationRendering.AnimationHandler;
 
-import GameObjects.Animations.AnimationState;
+import Rendering.Animations.AnimationState;
 import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
-import GameObjects.Animations.AnimationRendering.AnimationRender;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor {

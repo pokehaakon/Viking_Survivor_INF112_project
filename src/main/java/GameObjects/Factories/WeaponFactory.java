@@ -1,8 +1,9 @@
 package GameObjects.Factories;
 
 
-import GameObjects.Animations.AnimationRendering.*;
-import GameObjects.Animations.AnimationState;
+import Rendering.Animations.AnimationRendering.AnimationHandler;
+import Rendering.Animations.AnimationRendering.AnimationType;
+import Rendering.Animations.AnimationState;
 import GameObjects.ObjectTypes.WeaponType;
 import GameObjects.BodyFeatures;
 import GameObjects.Actors.Weapon;
@@ -16,8 +17,8 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import static GameObjects.Animations.AnimationRendering.GIFS.KNIFE_FILE_PATH;
-import static GameObjects.Animations.AnimationRendering.GIFS.KNIFE_WIDT;
+import static Rendering.Animations.AnimationRendering.GIFS.KNIFE_FILE_PATH;
+import static Rendering.Animations.AnimationRendering.GIFS.KNIFE_WIDT;
 import static Tools.FilterTool.Category.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;

@@ -1,8 +1,8 @@
 package GameObjects.Factories;
 
-import GameObjects.Animations.AnimationRendering.AnimationHandler;
-import GameObjects.Animations.AnimationRendering.AnimationType;
-import GameObjects.Animations.AnimationState;
+import Rendering.Animations.AnimationRendering.AnimationHandler;
+import Rendering.Animations.AnimationRendering.AnimationType;
+import Rendering.Animations.AnimationState;
 import GameObjects.ObjectTypes.PlayerType;
 import GameObjects.Actors.Player;
 import GameObjects.Actors.Stats.PlayerStats;
@@ -16,7 +16,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import static GameObjects.Animations.AnimationRendering.GIFS.*;
+import static Rendering.Animations.AnimationRendering.GIFS.*;
 import static Tools.FilterTool.Category.PLAYER;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
@@ -42,8 +42,8 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
             case PLAYER1: {
                 scale = PLAYER_SCALE;
                 stats = Stats.player();
-                animations.put(AnimationState.MOVING, PlAYER_MOVING_FILE_PATH);
-                animations.put(AnimationState.IDLE, PlAYER_IDLE_FILE_PATH);
+                animations.put(AnimationState.MOVING, PLAYER_MOVING_FILE_PATH);
+                animations.put(AnimationState.IDLE, PLAYER_IDLE_FILE_PATH);
                 animationType = AnimationType.GIF;
                 spawnState = AnimationState.IDLE;
                 break;

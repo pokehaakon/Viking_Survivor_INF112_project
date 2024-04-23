@@ -1,9 +1,7 @@
 package GameObjects.Factories;
 
-import GameObjects.Animations.AnimationRendering.AnimationRender;
-import GameObjects.Animations.AnimationRendering.SpriteRender;
+import Rendering.Animations.AnimationRendering.AnimationRender;
 import GameObjects.GameObject;
-import TextureHandling.TextureHandler;
 
 import java.util.ArrayList;
 import java.util.List;

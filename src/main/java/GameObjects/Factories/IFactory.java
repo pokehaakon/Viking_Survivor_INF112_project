@@ -1,8 +1,7 @@
 package GameObjects.Factories;
 
-import GameObjects.Animations.AnimationRendering.AnimationRender;
+import Rendering.Animations.AnimationRendering.AnimationRender;
 import GameObjects.GameObject;
-import TextureHandling.TextureHandler;
 
 import java.util.List;
 
@@ -27,7 +26,6 @@ public interface IFactory<T extends GameObject<E>, E extends Enum<E>> {
 
     /**
      * Changes the FileHandler. For testing purposes.
-     * @param textureHandler the new texture handler
      */
     void setSpriteRender(AnimationRender spriteRender);
 

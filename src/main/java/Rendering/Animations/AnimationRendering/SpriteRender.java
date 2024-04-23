@@ -1,13 +1,12 @@
-package GameObjects.Animations.AnimationRendering;
+package Rendering.Animations.AnimationRendering;
 
-import GameObjects.Animations.AnimationState;
+import Rendering.Animations.AnimationState;
 import GameObjects.GameObject;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 public class SpriteRender implements AnimationRender {
@@ -18,21 +17,15 @@ public class SpriteRender implements AnimationRender {
 
     private int flipMultiplier = 1;
 
-    private AnimationLibrary animationLibrary;
+
     Map<AnimationState, Sprite> stateAnimations = new EnumMap<>(AnimationState.class);
 
-    public SpriteRender(AnimationLibrary animationLibrary, Map<AnimationState, String> stateAnimations) {
-        this.animationLibrary = animationLibrary;
+    protected SpriteRender(Map<AnimationState, String> stateAnimations) {
         getSprites(stateAnimations);
     }
 
-    public SpriteRender(AnimationLibrary animationLibrary) {
-        this.animationLibrary = animationLibrary;
-
-    }
-
     @Override
-    public void draw(SpriteBatch batch, float elapsedTime, GameObject object) {
+    public void draw(SpriteBatch batch, long frame, GameObject<?> object) {
         Vector2 pos = object.getBody().getPosition();
         batch.draw(sprite,
                 pos.x - sprite.getWidth()/2*object.getScale(), // subtracting offset
@@ -59,15 +52,14 @@ public class SpriteRender implements AnimationRender {
     }
 
     @Override
-    public void setAnimations(Map<AnimationState, String> animationMap) {
+    public void initAnimations(Map<AnimationState, String> animationMap) {
         getSprites(animationMap);
-
     }
     private void getSprites(Map<AnimationState,String> map) {
         for(Map.Entry<AnimationState, String> entry : map.entrySet()) {
             AnimationState state = entry.getKey();
             String filePath = entry.getValue();
-            stateAnimations.put(state, animationLibrary.getSprite(filePath));
+            stateAnimations.put(state, Sprites.getSprite(filePath));
         }
     }
 

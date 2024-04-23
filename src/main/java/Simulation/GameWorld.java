@@ -2,7 +2,6 @@ package Simulation;
 
 import GameObjects.Actors.Enemy;
 import GameObjects.Actors.Player;
-import GameObjects.Animations.AnimationRendering.AnimationLibrary;
 import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.Pool.ObjectPool;
@@ -17,13 +16,10 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.Disposable;
 import org.javatuples.Pair;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static GameObjects.Actors.ActorAction.EnemyActions.destroyIfDefeated;
-import static GameObjects.Actors.ActorAction.EnemyActions.destroyIfOutOfBounds;
 import static Tools.ListTools.removeDestroyed;
 
 public class GameWorld implements Disposable {
@@ -44,7 +40,6 @@ public class GameWorld implements Disposable {
     private final List<Enemy> activeEnemies;
     private final List<Terrain> activeTerrain;
     private final Player player;
-    private final AnimationLibrary animationLibrary;
 
     public GameWorld(
             String worldDef,
@@ -52,8 +47,7 @@ public class GameWorld implements Disposable {
             ObjectPool<Enemy, EnemyType> enemyPool,
             ObjectPool<Terrain, TerrainType> terrainPool,
             List<Enemy> activeEnemies,
-            List<Terrain> activeTerrain,
-            AnimationLibrary animationLibrary
+            List<Terrain> activeTerrain
     ) {
         if (!worldDef.endsWith(".wdef")) {
             throw new RuntimeException("world definition file needs ending '.wdef', got : " + worldDef);
@@ -64,9 +58,8 @@ public class GameWorld implements Disposable {
         this.terrainPool = terrainPool;
         this.activeEnemies = activeEnemies;
         this.activeTerrain = activeTerrain;
-        this.animationLibrary = animationLibrary;
 
-        handlerFactory = new SpawnHandlerFactory(player, enemyPool, terrainPool, activeEnemies, activeTerrain, animationLibrary);
+        handlerFactory = new SpawnHandlerFactory(player, enemyPool, terrainPool, activeEnemies, activeTerrain);
 
         MapParser parser = new MapParser(worldDef);
 

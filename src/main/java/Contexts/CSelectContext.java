@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-public class CSelectContext extends Context{
+class CSelectContext extends Context{
     private final SpriteBatch batch;
     private Stage stage;
     private Table table;

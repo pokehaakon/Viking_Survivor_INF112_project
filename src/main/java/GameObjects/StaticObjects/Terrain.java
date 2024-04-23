@@ -1,6 +1,6 @@
 package GameObjects.StaticObjects;
 
-import GameObjects.Animations.AnimationRendering.AnimationHandler;
+import Rendering.Animations.AnimationRendering.AnimationHandler;
 
 import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.Actors.Player;

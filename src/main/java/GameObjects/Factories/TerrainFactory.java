@@ -1,7 +1,9 @@
 package GameObjects.Factories;
 
-import GameObjects.Animations.AnimationRendering.*;
-import GameObjects.Animations.AnimationState;
+import Rendering.Animations.AnimationRendering.AnimationHandler;
+import Rendering.Animations.AnimationRendering.AnimationRender;
+import Rendering.Animations.AnimationRendering.AnimationType;
+import Rendering.Animations.AnimationState;
 import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.BodyFeatures;
 import GameObjects.StaticObjects.Terrain;
@@ -11,8 +13,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import java.util.*;
 
 
-import static GameObjects.Animations.AnimationRendering.GIFS.*;
-import static GameObjects.Animations.AnimationRendering.Sprites.TREE_WIDTH;
+import static Rendering.Animations.AnimationRendering.Sprites.TREE_WIDTH;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 

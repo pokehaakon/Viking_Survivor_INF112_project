@@ -3,6 +3,7 @@ package VikingSurvivor.app;
 import InputProcessing.*;
 import Contexts.Context;
 //import InputProcessing.Contexts.TrainingContext;
+import Rendering.Animations.AnimationRendering.GIFS;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 
 public class HelloWorld implements ApplicationListener {
+	public static final int SET_FPS = 60;
 	private SpriteBatch batch;
     private OrthographicCamera camera;
 	private Context currentContext;
@@ -18,6 +20,7 @@ public class HelloWorld implements ApplicationListener {
 
 	@Override
 	public void create() {
+
 		batch = new SpriteBatch();
 		//batch.maxSpritesInBatch = 256;
 
@@ -38,7 +41,7 @@ public class HelloWorld implements ApplicationListener {
 		currentContext = inProc.getCurrentContext();
 
 
-		Gdx.graphics.setForegroundFPS(60);
+		Gdx.graphics.setForegroundFPS(SET_FPS);
 	}
 
 

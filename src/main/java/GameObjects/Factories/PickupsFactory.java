@@ -3,9 +3,9 @@ package GameObjects.Factories;
 import GameObjects.Actors.Pickups;
 import GameObjects.Actors.Stats.PickupStats;
 import GameObjects.Actors.Stats.Stats;
-import GameObjects.Animations.AnimationRendering.AnimationHandler;
-import GameObjects.Animations.AnimationRendering.AnimationType;
-import GameObjects.Animations.AnimationState;
+import Rendering.Animations.AnimationRendering.AnimationHandler;
+import Rendering.Animations.AnimationRendering.AnimationType;
+import Rendering.Animations.AnimationState;
 import GameObjects.BodyFeatures;
 import GameObjects.ObjectTypes.PickupType;
 import Tools.FilterTool;
@@ -16,7 +16,7 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import java.util.EnumMap;
 import java.util.Map;
 
-import static GameObjects.Animations.AnimationRendering.GIFS.*;
+import static Rendering.Animations.AnimationRendering.GIFS.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 

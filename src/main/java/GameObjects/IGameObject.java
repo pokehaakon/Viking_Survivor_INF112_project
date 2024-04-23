@@ -1,6 +1,6 @@
 package GameObjects;
 
-import GameObjects.Animations.AnimationRendering.AnimationLibrary;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
@@ -20,7 +20,7 @@ public interface IGameObject<E> {
      * Handles the sprite drawing
      * @param batch the current sprite batch
      */
-//    void draw(SpriteBatch batch);
+    void draw(SpriteBatch batch, long frame);
 
     /**
      *
@@ -82,11 +82,11 @@ public interface IGameObject<E> {
      */
     void setScale(float newScale);
 
-    /**
-     * This assigns animations to objects (gif or sprites), depending on the animation map of the object
-     * @param animationLibrary the library which contains the gif and sprites
-     */
-    void renderAnimations(AnimationLibrary animationLibrary);
+//    /**
+//     * This assigns animations to objects (gif or sprites), depending on the animation map of the object
+//     * @param animationLibrary the library which contains the gif and sprites
+//     */
+//    void renderAnimations(AnimationLibrary animationLibrary);
 
 
 

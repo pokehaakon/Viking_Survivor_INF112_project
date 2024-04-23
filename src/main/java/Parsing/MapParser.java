@@ -61,6 +61,7 @@ public class MapParser extends TextParser {
     public List<Pair<Long, List<SpawnFrame>>>  parseTimeFrames() {
         many(() -> choose(this::parseEmptyLine, this::parseComment));
 
+        //parses frame header
         List<Pair<Long, List<SpawnFrame>>> pairs = many(iTry(() -> {
             long frame = choose(
                     () -> {
@@ -76,8 +77,8 @@ public class MapParser extends TextParser {
                         return frameNum;
                     }
             );
-            Void(this::parseComment);
-            Void(this::parseEmptyLine);
+            //Void(this::parseComment);
+            //Void(this::parseEmptyLine);
 
             List<SpawnFrame> body = parseFrameBody();
             return Tuple.of(frame, body);

@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-public class PauseContext extends Context {
+class PauseContext extends Context {
     private final SpriteBatch batch;
     private Stage stage;
     private Table table;

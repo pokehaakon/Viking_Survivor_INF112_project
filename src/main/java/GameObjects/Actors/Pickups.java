@@ -1,13 +1,10 @@
 package GameObjects.Actors;
 
 import GameObjects.Actors.Stats.PickupStats;
-import GameObjects.Actors.Stats.Stats;
-import GameObjects.Animations.AnimationRendering.AnimationHandler;
+import Rendering.Animations.AnimationRendering.AnimationHandler;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
 import GameObjects.ObjectTypes.PickupType;
-
-import java.util.Map;
 
 public class Pickups extends GameObject<PickupType> {
     final PickupStats stats;

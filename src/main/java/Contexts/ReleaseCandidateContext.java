@@ -3,7 +3,6 @@ package Contexts;
 import GameObjects.Actors.ActorAction.WeaponActions;
 import GameObjects.Actors.Enemy;
 import GameObjects.Actors.Pickups;
-import GameObjects.Animations.AnimationRendering.AnimationLibrary;
 import GameObjects.Factories.*;
 import GameObjects.ObjectTypes.*;
 import GameObjects.Actors.ActorAction.PlayerActions;
@@ -30,16 +29,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
-import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -121,7 +113,7 @@ public class ReleaseCandidateContext extends Context {
     private List<Pickups> drawablePickups;
     private List<Enemy> drawableEnemies;
 
-    private AnimationLibrary animationLibrary;
+//    private AnimationLibrary animationLibrary;
 
     private PlayerFactory playerFactory;
     private float zoomLevel = 1f;
@@ -134,8 +126,6 @@ public class ReleaseCandidateContext extends Context {
     private ObjectPool<Pickups, PickupType> pickupsPool;
 
     private ObjectPool<Terrain, TerrainType> terrainPool;
-
-    float elapsedTime;
     private Set<Body> toBoKilled;
 
 
@@ -329,8 +319,6 @@ public class ReleaseCandidateContext extends Context {
 
         // draw enemies
 
-        elapsedTime += Gdx.graphics.getDeltaTime();
-
         int i = 0;
 
         for (Enemy enemy : drawableEnemies) {
@@ -338,28 +326,28 @@ public class ReleaseCandidateContext extends Context {
             if(enemy.isUnderAttack()) {
                 batch.setColor(Color.RED);
             }
-            enemy.draw(batch, elapsedTime);
+            enemy.draw(batch, frameCount);
             batch.setColor(Color.WHITE);
             i++;
         }
 
         for(Weapon weapon : drawableWeapons) {
             if(weapon.getBody().isActive()) {
-                weapon.draw(batch,elapsedTime);
+                weapon.draw(batch, frameCount);
             }
 
         }
 
         for(Terrain terrain : drawableTerrain) {
             if(i > 100) batch.flush();
-            terrain.draw(batch, elapsedTime);
+            terrain.draw(batch, frameCount);
             i++;
         }
 
         // Draw pickups
         for (Pickups pickup : drawablePickups) {
             if(i > 100) batch.flush();
-            pickup.draw(batch, elapsedTime);
+            pickup.draw(batch, frameCount);
             i++;
         }
 
@@ -401,7 +389,7 @@ public class ReleaseCandidateContext extends Context {
         }
 
         if(!gameOver) {
-            player.draw(batch, elapsedTime);
+            player.draw(batch, frameCount);
         }
 
         batch.setColor(Color.WHITE);
@@ -510,7 +498,7 @@ public class ReleaseCandidateContext extends Context {
 
     private void createWorld() {
         // sets up world
-        animationLibrary = new AnimationLibrary();
+        //animationLibrary = new AnimationLibrary();
         debugRenderer = new Box2DDebugRenderer();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
@@ -537,13 +525,13 @@ public class ReleaseCandidateContext extends Context {
         player.setAction(PlayerActions.moveToInput(keyStates));
         player.setAction(PlayerActions.coolDown(500));
 
-        player.renderAnimations(animationLibrary);
+        //player.renderAnimations(animationLibrary);
 
 
 
 
         pickup = pickupsFactory.create(PickupType.PICKUPORB);
-        pickup.renderAnimations(animationLibrary);
+        //pickup.renderAnimations(animationLibrary);
 
 
         //      Create top XP bar:
@@ -621,7 +609,7 @@ public class ReleaseCandidateContext extends Context {
 
         spawnOrbitingWeapons(player,4,WeaponType.KNIFE,150,0.1f,0);
 
-        gameWorld = new GameWorld("mapdefines/test.wdef", player, enemyPool, terrainPool, drawableEnemies, drawableTerrain, animationLibrary);
+        gameWorld = new GameWorld("mapdefines/test.wdef", player, enemyPool, terrainPool, drawableEnemies, drawableTerrain);
 
         toBoKilled = new HashSet<>();
 
@@ -645,7 +633,7 @@ public class ReleaseCandidateContext extends Context {
             weapon.setAction(WeaponActions.orbitPlayer(orbitRadius,orbitSpeed,player,orbitInterval));
             weapon.setOwner(player);
             weapon.setAngleToPlayer(angle);
-            weapon.renderAnimations(animationLibrary);
+            //weapon.renderAnimations(animationLibrary);
             drawableWeapons.add(weapon);
             angle+=(float)((float)2*Math.PI/numWeapons);
         }
@@ -718,10 +706,6 @@ public class ReleaseCandidateContext extends Context {
 
     public void gameOver() {
         gameOver = true;
-    }
-
-    public AnimationLibrary getAnimationLibrary() {
-        return animationLibrary;
     }
 
     public GameWorld getGameWorld() {return gameWorld;}

@@ -1,7 +1,7 @@
 package GameObjects;
 
-import GameObjects.Animations.AnimationRendering.*;
-import GameObjects.Animations.AnimationState;
+import Rendering.Animations.AnimationRendering.AnimationHandler;
+import Rendering.Animations.AnimationState;
 import GameObjects.Actors.DirectionState;
 import Tools.BodyTool;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.Map;
-import java.util.Objects;
 
 public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
@@ -43,8 +42,9 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
         destroyed = true;
     }
 
-    public void draw(SpriteBatch batch, float elapsedTime) {
-       animationHandler.getAnimationRenderer().draw(batch, elapsedTime,this);
+    @Override
+    public void draw(SpriteBatch batch, long frame) {
+       animationHandler.getAnimationRenderer().draw(batch, frame,this);
     }
 
 
@@ -123,27 +123,17 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
         return scale;
     }
 
-
     public DirectionState getDirectionState() {
         return directionState;
     }
-
-
 
     public BodyFeatures getBodyFeatures() {
         return bodyFeatures;
     }
 
-
-    @Override
-    public void renderAnimations(AnimationLibrary animationLibrary) {
-        // to avoid setting render to object which already has a render
-        animationHandler.renderAnimations(animationLibrary);
-    }
-
-    public Map<AnimationState,String> getAnimations() {
-        return animationHandler.getAnimationMap();
-    }
+//    public Map<AnimationState,String> getAnimations() {
+//        return animationHandler.getAnimationMap();
+//    }
 
 
 

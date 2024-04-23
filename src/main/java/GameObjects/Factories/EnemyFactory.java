@@ -1,8 +1,9 @@
 package GameObjects.Factories;
 
 
-import GameObjects.Animations.AnimationRendering.*;
-import GameObjects.Animations.AnimationState;
+import Rendering.Animations.AnimationRendering.AnimationHandler;
+import Rendering.Animations.AnimationRendering.AnimationType;
+import Rendering.Animations.AnimationState;
 import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.Actors.Stats.EnemyStats;
 import GameObjects.Actors.Stats.Stats;
@@ -14,7 +15,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import java.util.EnumMap;
 import java.util.Map;
 
-import static GameObjects.Animations.AnimationRendering.GIFS.*;
+import static Rendering.Animations.AnimationRendering.GIFS.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
