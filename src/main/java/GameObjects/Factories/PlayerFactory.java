@@ -13,25 +13,26 @@ import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static GameObjects.Animations.AnimationRendering.GIFS.*;
+import static GameObjects.ObjectTypes.PlayerType.PLAYER1;
 import static Tools.FilterTool.Category.PLAYER;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
-public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
+public class PlayerFactory extends Factory<Player, PlayerType> {
 
     public PlayerFactory() {
+        registerAll(PlayerType.values());
     }
-    @Override
-    public Player create(PlayerType type) {
-        if(type == null) {
-            throw new NullPointerException("Type cannot be null!");
-        }
 
-        Player player;
+    @Override
+    public Supplier<Player> build(PlayerType type) {
+
+        return () ->{
+            Player player;
         float scale;
         PlayerStats stats;
         BodyFeatures bodyFeatures;
@@ -58,7 +59,7 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
                 new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL, FilterTool.Category.PICKUP}
         );
 
-        Shape shape = createCircleShape(0.3f*scale*PLAYER_WIDTH/2);
+        Shape shape = createCircleShape(0.3f * scale * PLAYER_WIDTH / 2);
 
         bodyFeatures = new BodyFeatures(
                 shape,
@@ -70,16 +71,13 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
                 BodyDef.BodyType.DynamicBody);
 
 
-        player = new Player(type,new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale,stats);
+        player = new Player(type, new AnimationHandler(animations, animationType, spawnState), bodyFeatures, scale, stats);
 
 
         return player;
-    }
+    };
+        }
 
-    @Override
-    public List<Player> create(int n, PlayerType type) {
-        return null;
-    }
 
 
 }

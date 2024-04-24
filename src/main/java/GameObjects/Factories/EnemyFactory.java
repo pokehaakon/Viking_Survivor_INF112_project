@@ -13,114 +13,93 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static GameObjects.Animations.AnimationRendering.GIFS.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
 
-public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
+public class EnemyFactory extends Factory<Enemy,EnemyType> {
 
-    private final Filter filter;
-    private EnumMap<EnemyType, Function<EnemyType, Enemy>> factories;
+
 
     public EnemyFactory() {
-        super();
-
-
-        filter  = createFilter(
-                FilterTool.Category.ENEMY,
-                new FilterTool.Category[]{
-                        FilterTool.Category.WALL,
-                        FilterTool.Category.ENEMY,
-                        FilterTool.Category.PLAYER,
-                        FilterTool.Category.BULLET
-                }
-        );
+        registerAll(EnemyType.values());
 
     }
 
-    /**
-     * Creates an instance of an enemy
-     * @param type the desired enemy type
-     * @return an enemy object
-     */
+
     @Override
-    public Enemy create(EnemyType type) {
+    public Supplier<Enemy> build(EnemyType type) {
 
-        if(type == null) {
-            throw new NullPointerException("Type cannot be null!");
-        }
+        return () -> {
+            Enemy enemy;
+            float scale;
+            EnemyStats stats;
+            Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
+            Filter filter = createFilter(
+                    FilterTool.Category.ENEMY,
+                    new FilterTool.Category[]{
+                            FilterTool.Category.WALL,
+                            FilterTool.Category.ENEMY,
+                            FilterTool.Category.PLAYER,
+                            FilterTool.Category.BULLET
+                    }
+            );
 
-        Enemy enemy;
-        float scale;
-        EnemyStats stats;
-        Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
+            AnimationType animationType;
+            Shape shape;
+            AnimationState spawnState;
 
+            switch (type) {
+                case RAVEN: {
+                    scale = RAVEN_SCALE;
+                    stats = Stats.enemy1();
+                    animations.put(AnimationState.MOVING, RAVEN_FILE_PATH);
+                    shape = createCircleShape(0.5f * scale * RAVEN_WIDTH / 2);
+                    animationType = AnimationType.GIF;
+                    spawnState = AnimationState.MOVING;
+                    break;
+                }
+                case ORC: {
+                    scale = ORC_SCALE;
+                    stats = Stats.enemy2();
+                    animations.put(AnimationState.MOVING, ORC_FILE_PATH);
+                    shape = createCircleShape(0.3f * scale * ORC_WIDTH / 2);
+                    animationType = AnimationType.GIF;
+                    spawnState = AnimationState.MOVING;
+                    break;
+                }
+                case WOLF: {
+                    scale = ORC_SCALE;
+                    stats = Stats.enemy2();
 
-        AnimationType animationType;
-        Shape shape;
-        AnimationState spawnState;
-
-//        factories.put(EnemyType.RAVEN, (enemyType) -> {
-//            scale = RAVEN_SCALE;
-//            stats = Stats.enemy1();
-//            animations.put(AnimationState.MOVING, RAVEN_FILE_PATH);
-//            shape = createCircleShape(0.5f*scale*RAVEN_WIDTH/2);
-//            animationType = AnimationType.GIF;
-//            spawnState = AnimationState.MOVING;
-//            return null;
-//        });
-//
-//        factories.get(type).apply(type);
-
-        switch (type) {
-            case RAVEN: {
-                scale = RAVEN_SCALE;
-                stats = Stats.enemy1();
-                animations.put(AnimationState.MOVING, RAVEN_FILE_PATH);
-                shape = createCircleShape(0.5f*scale*RAVEN_WIDTH/2);
-                animationType = AnimationType.GIF;
-                spawnState = AnimationState.MOVING;
-                break;
+                    animations.put(AnimationState.MOVING, WOLF_FILE_PATH);
+                    shape = createCircleShape(0.5f * scale * WOLF_WIDTH / 2);
+                    animationType = AnimationType.GIF;
+                    spawnState = AnimationState.MOVING;
+                    break;
+                }
+                default:
+                    throw new IllegalArgumentException("Invalid enemy type");
             }
-            case ORC: {
-                scale = ORC_SCALE;
-                stats = Stats.enemy2();
-                animations.put(AnimationState.MOVING, ORC_FILE_PATH);
-                shape = createCircleShape(0.3f*scale*ORC_WIDTH/2);
-                animationType = AnimationType.GIF;
-                spawnState = AnimationState.MOVING;
-                break;
-            }
-            case WOLF: {
-                scale = ORC_SCALE;
-                stats = Stats.enemy2();
-
-                animations.put(AnimationState.MOVING, WOLF_FILE_PATH);
-                shape = createCircleShape(0.5f*scale*WOLF_WIDTH/2);
-                animationType = AnimationType.GIF;
-                spawnState = AnimationState.MOVING;
-                break;
-            }
-            default:
-                throw new IllegalArgumentException("Invalid enemy type");
-        }
 
 
-        BodyFeatures bodyFeatures = new BodyFeatures(
-                shape,
-                filter,
-                1,
-                0,
-                0,
-                false,
-                BodyDef.BodyType.DynamicBody);
+            BodyFeatures bodyFeatures = new BodyFeatures(
+                    shape,
+                    filter,
+                    1,
+                    0,
+                    0,
+                    false,
+                    BodyDef.BodyType.DynamicBody);
 
-        enemy = new Enemy(type,new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale,stats);
+            enemy = new Enemy(type, new AnimationHandler(animations, animationType, spawnState), bodyFeatures, scale, stats);
 
-        return enemy;
+            return enemy;
+
+        };
     }
 
 }
