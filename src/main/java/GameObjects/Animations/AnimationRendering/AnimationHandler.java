@@ -50,7 +50,11 @@ public class AnimationHandler {
     }
 
 
-
+    /**
+     * Sets an animation render depending on its animation type (currently either sprite or GIF)
+     * The animation render is used for the draw() method, as different animation types requires different implementations
+     * @param animationLibrary the collection of animations where it gets the animations from
+     */
     public void renderAnimations(AnimationLibrary animationLibrary) {
         // avoid rendering multiple times
         if(Objects.isNull(animationRender)) {
