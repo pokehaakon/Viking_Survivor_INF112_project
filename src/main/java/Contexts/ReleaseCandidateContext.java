@@ -465,7 +465,7 @@ public class ReleaseCandidateContext extends Context {
         return new Vector2(mapWidth * tileWidth * scale / 2f, mapHeight * tileHeight * scale / 2f);
     }
 
-    private float[] createPolyLine(PolygonMapObject polygon) {
+    private float[] createPolyLine(PolygonMapObject polygon, float scale) {
         for(float juice : polygon.getPolygon().getTransformedVertices()) System.out.println(juice);
         float[] points = polygon.getPolygon().getTransformedVertices();
         float[] newPoints = new float[points.length + 2];
@@ -473,7 +473,7 @@ public class ReleaseCandidateContext extends Context {
         newPoints[1] = 0.0f;
 
         for (int i = 0; i < points.length; i++) {
-            newPoints[i + 2] = points[i];
+            newPoints[i + 2] = points[i] * scale;
         }
         return newPoints;
     }
@@ -485,7 +485,7 @@ public class ReleaseCandidateContext extends Context {
 
             // create the shape
             ChainShape shape = new ChainShape();
-            shape.createChain(createPolyLine((PolygonMapObject) object));
+            shape.createChain(createPolyLine((PolygonMapObject) object, tiledMapScale));
 
             BodyTool.createBody(
                     world,
