@@ -5,7 +5,7 @@ import Rendering.Animations.AnimationRendering.AnimationHandler;
 import GameObjects.ObjectTypes.WeaponType;
 import GameObjects.BodyFeatures;
 
-public class Weapon extends Actor<WeaponType>  {
+public class Weapon extends Actor  {
     private final long ORBIT_INTERVAL = 1000;
     public float damage;
     private long lastOrbit;
@@ -14,8 +14,8 @@ public class Weapon extends Actor<WeaponType>  {
     private long lastAttack;
 
     private Player owner;
-    public Weapon(WeaponType type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale) {
-        super(type,animationHandler,bodyFeatures,scale);
+    public Weapon(String name, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale) {
+        super(name, animationHandler, bodyFeatures, scale);
     }
 
 

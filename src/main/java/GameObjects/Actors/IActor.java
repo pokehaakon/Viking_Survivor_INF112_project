@@ -41,7 +41,7 @@ public interface IActor {
      * @param actor the actor which is attacked
      * @param damage the damage inflicted on the actor
      */
-   void attack(Actor<?> actor,float damage);
+   void attack(Actor actor,float damage);
 
 
     /**

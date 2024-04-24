@@ -8,10 +8,10 @@ import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
 
 
-public class Terrain extends GameObject<TerrainType> {
+public class Terrain extends GameObject {
 
-    public Terrain(TerrainType type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale) {
-        super(type,animationHandler, bodyFeatures, scale);
+    public Terrain(String name, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale) {
+        super(name, animationHandler, bodyFeatures, scale);
     }
 
     public boolean outOfBounds(Player player, double deSpawnRadius) {

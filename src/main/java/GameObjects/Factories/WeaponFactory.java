@@ -23,14 +23,15 @@ import static Tools.FilterTool.Category.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
-public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
+public class WeaponFactory extends AbstractFactory<Weapon>{
 
     public WeaponFactory() {
 
     }
+
     @Override
-    public Weapon create(WeaponType type) {
-        if(type == null) {
+    public Weapon create(String name) {
+        if(name == null) {
             throw new NullPointerException("Type cannot be null!");
         }
 
@@ -41,8 +42,8 @@ public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
 
         BodyFeatures bodyFeatures;
         Map<AnimationState, String> animation =  new EnumMap<>(AnimationState.class);
-        switch (type) {
-            case KNIFE: {
+        switch (name) {
+            case "WeaponType:KNIFE": {
                 scale = 0.7f;
                 animation.put(AnimationState.MOVING, KNIFE_FILE_PATH);
                 animation.put(AnimationState.IDLE, KNIFE_FILE_PATH);
@@ -70,15 +71,14 @@ public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
                 true,
                 BodyDef.BodyType.DynamicBody);
 
-        weapon = new Weapon(type, new AnimationHandler(animation, animationType, spawnState), bodyFeatures, scale);
+        weapon = new Weapon(name, new AnimationHandler(animation, animationType, spawnState), bodyFeatures, scale);
 
 
 
         return weapon;
     }
 
-    @Override
-    public List<Weapon> create(int n, WeaponType type) {
+    public List<Weapon> create(int n, String name) {
         return null;
     }
 

@@ -8,7 +8,7 @@ import GameObjects.BodyFeatures;
 
 import static Tools.FilterTool.createFilter;
 
-public class Enemy extends Actor<EnemyType> {
+public class Enemy extends Actor {
 
     public float knockBackResistance;
 
@@ -17,7 +17,20 @@ public class Enemy extends Actor<EnemyType> {
 
 
     public Enemy(EnemyType type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale, EnemyStats stats) {
-        super(type,animationHandler, bodyFeatures, scale);
+        super(type.toString(), animationHandler, bodyFeatures, scale);
+        this.stats = stats;
+
+        // stats
+        HP = stats.HP();
+        speed = stats.speed();
+        damage = stats.damage();
+        armour = stats.armour();
+        knockBackResistance = stats.knockBackResistance();
+
+    }
+
+    public Enemy(String type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale, EnemyStats stats) {
+        super(type, animationHandler, bodyFeatures, scale);
         this.stats = stats;
 
         // stats

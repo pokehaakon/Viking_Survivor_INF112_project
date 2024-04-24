@@ -17,16 +17,16 @@ import static Simulation.Coordinates.SwarmCoordinates.swarmInitializerPair;
 
 public class SpawnHandlerFactory {
 
-    private final ObjectPool<Enemy, EnemyType> enemyPool;
-    private final ObjectPool<Terrain, TerrainType> terrainPool;
+    private final ObjectPool<Enemy> enemyPool;
+    private final ObjectPool<Terrain> terrainPool;
 
     private final List<Enemy> activeEnemies;
     private final List<Terrain> activeTerrain;
     private final Player player;
 
     public SpawnHandlerFactory(Player player,
-                               ObjectPool<Enemy, EnemyType> enemyPool,
-                               ObjectPool<Terrain, TerrainType> terrainPool,
+                               ObjectPool<Enemy> enemyPool,
+                               ObjectPool<Terrain> terrainPool,
                                List<Enemy> activeEnemies,
                                List<Terrain> activeTerrain
         ) {
@@ -38,11 +38,11 @@ public class SpawnHandlerFactory {
         this.activeTerrain = activeTerrain;
     }
 
-    public ISpawnHandler create(EnemyType enemyType, SpawnType spawnType, List<String> args) {
+    public ISpawnHandler create(String enemyName, SpawnType spawnType, List<String> args) {
         return switch (spawnType) {
             case SWARM -> new SwarmSpawnHandler(
                     args,
-                    enemyType,
+                    enemyName,
                     e -> {
                         e.setActions(destroyIfDefeated(), destroyIfOutOfBounds(player));
                     },
@@ -54,8 +54,9 @@ public class SpawnHandlerFactory {
             case BOSS -> new BossSpawnHandler( //TODO
 
             );
-            case WAVE -> new WaveSpawnHandler(args,
-                    enemyType,
+            case WAVE -> new WaveSpawnHandler(
+                    args,
+                    enemyName,
                     e -> {
                         e.setActions(chasePlayer(player), destroyIfDefeated(), destroyIfOutOfBounds(player));
                         e.setPosition(randomPointOutsideScreenRect(player.getBody().getPosition()));
@@ -65,7 +66,7 @@ public class SpawnHandlerFactory {
             );
             case CONTINUOUS -> new ContinuousSpawnHandler(
                 args,
-                enemyType,
+                enemyName,
                 e -> {
                     e.setActions(chasePlayer(player), destroyIfDefeated(), destroyIfOutOfBounds(player));
                     e.setPosition(randomPointOutsideScreenRect(player.getBody().getPosition()));

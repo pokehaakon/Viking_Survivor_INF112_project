@@ -10,7 +10,7 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.Map;
 
-public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
+public abstract class GameObject implements IGameObject {
 
     protected Body body;
 
@@ -19,7 +19,7 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     protected boolean destroyed = false;
 
-    protected E type;
+    protected String name;
 
     protected BodyFeatures bodyFeatures;
 
@@ -28,12 +28,11 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     protected AnimationHandler animationHandler;
     // for sprite
-    public GameObject(E type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale) {
+    public GameObject(String name, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale) {
         this.animationHandler = animationHandler;
         this.bodyFeatures = bodyFeatures;
         this.scale = scale;
-        this.type = type;
-
+        this.name = name;
     }
 
 
@@ -74,14 +73,14 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
         destroyed = false;
     }
 
-    @Override
-    public void setType(E newType) {
-        type = newType;
-    }
+//    @Override
+//    public void setType(E newType) {
+//        type = newType;
+//    }
 
     @Override
-    public E getType() {
-        return type;
+    public String getType() {
+        return name;
     }
 
     @Override

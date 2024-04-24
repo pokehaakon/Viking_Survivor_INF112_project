@@ -8,8 +8,9 @@ import GameObjects.BodyFeatures;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class Player extends Actor<PlayerType> {
+public class Player extends Actor {
     public int level;
     public float XP;
 
@@ -18,8 +19,8 @@ public class Player extends Actor<PlayerType> {
     List<Weapon> weaponInventory;
 
 
-    public Player(PlayerType type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale, PlayerStats stats) {
-        super(type,animationHandler,bodyFeatures, scale);
+    public Player(String name, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale, PlayerStats stats) {
+        super(name, animationHandler,bodyFeatures, scale);
         this.stats = stats;
 
         HP = stats.HP();
@@ -51,7 +52,7 @@ public class Player extends Actor<PlayerType> {
     }
 
     public void pickup(Pickups pickup) {
-        if(pickup.getType() == PickupType.PICKUPORB) {
+        if(Objects.equals(pickup.getType(), "PickupType:" + "PICKUPORB")) {
             XP += 10;
         }
     }

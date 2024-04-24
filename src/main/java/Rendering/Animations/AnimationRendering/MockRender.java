@@ -13,7 +13,7 @@ public class MockRender implements AnimationRender {
     }
 
     @Override
-    public void draw(SpriteBatch batch, long frame, GameObject<?> object) {
+    public void draw(SpriteBatch batch, long frame, GameObject object) {
 
     }
 
@@ -32,8 +32,8 @@ public class MockRender implements AnimationRender {
         return 1f;
     }
 
-    @Override
-    public void initAnimations(Map<AnimationState, String> animationMap) {
-
-    }
+//    @Override
+//    public void initAnimations(Map<AnimationState, String> animationMap) {
+//
+//    }
 }

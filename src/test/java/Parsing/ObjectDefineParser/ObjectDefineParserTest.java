@@ -1,38 +1,22 @@
-package Actors.Enemy;
+package Parsing.ObjectDefineParser;
 
-
-import GameObjects.ObjectTypes.EnemyType;
-import GameObjects.Factories.EnemyFactory;
+import Parsing.Parser.ParsingException;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
-class EnemyFactoryTest {
-    EnemyFactory enemyFactory;
-
-    static World world;
-
-    Texture textureMock;
-
-    //TextureHandler mockTextureHandler;
-    @BeforeEach
-     void setUpBeforeAll() {
+class ObjectDefineParserTest {
+    @BeforeAll
+    static void setUpBeforeAll() {
         HeadlessApplicationConfiguration config = new HeadlessApplicationConfiguration();
-
         ApplicationListener listener = new ApplicationListener() {
 
             @Override
             public void create() {
-                world = new World(new Vector2(0,0), true);
-
             }
 
             @Override
@@ -65,28 +49,12 @@ class EnemyFactoryTest {
 
             }};
         new HeadlessApplication(listener, config);
-
-       enemyFactory = new EnemyFactory();
-
     }
 
     @Test
-    void correctSize() {
-        assertEquals(5, enemyFactory.create(5, EnemyType.RAVEN).size());
+    void testObjectDefineParser() throws ParsingException {
+        ObjectDefineParser parser = new ObjectDefineParser("ObjectDefines/test.obj");
+        var e = parser.parseDocument();
     }
 
-
-    @Test
-    void errorHandling() {
-
-        assertThrows(NullPointerException.class, () -> {
-            enemyFactory.create(null);
-        });
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            enemyFactory.create(0, EnemyType.RAVEN);
-        });
-    }
-
-    //to test: correct enemytype, correct position, correct number of enemies etc
 }

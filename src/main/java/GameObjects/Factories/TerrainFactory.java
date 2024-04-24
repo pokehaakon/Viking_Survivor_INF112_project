@@ -17,18 +17,17 @@ import static Rendering.Animations.AnimationRendering.Sprites.TREE_WIDTH;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
-public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
+public class TerrainFactory extends AbstractFactory<Terrain>{
 
 
 
     public TerrainFactory() {
         super();
-
-
     }
+
     @Override
-    public Terrain create(TerrainType type) {
-        if(type == null) {
+    public Terrain create(String name) {
+        if(name == null) {
             throw new NullPointerException("Type cannot be null!");
         }
 
@@ -46,9 +45,8 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
         AnimationType animationType;
 
         boolean isGif;
-
-        switch (type) {
-            case TREE: {
+        switch (name) {
+            case "TerrainType:TREE": {
                 scale = 0.1f;
                 animations.put(AnimationState.STATIC,"tree.png");
                 shape = createCircleShape(scale*TREE_WIDTH/2);
@@ -58,7 +56,7 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
             }
 
             default:
-                throw new IllegalArgumentException("Invalid terrain type");
+                throw new IllegalArgumentException("Invalid terrain type: " + name);
         }
         Filter filter = createFilter(
                 FilterTool.Category.WALL,
@@ -80,20 +78,20 @@ public class TerrainFactory extends AbstractFactory<Terrain, TerrainType>{
                 false,
                 BodyDef.BodyType.StaticBody);
 
-        terrain = new Terrain(type,new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale);
+        terrain = new Terrain(name, new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale);
 
         return terrain;
     }
 
-    @Override
-    public List<Terrain> create(int n, TerrainType type) {
+
+    public List<Terrain> create(int n, String name) {
         if (n <= 0) {
             throw new IllegalArgumentException("Number of enemies must be greater than zero");
         }
 
         List<Terrain> terrain = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
-            terrain.add(create(type));
+            terrain.add(create(name));
         }
         return terrain;
     }

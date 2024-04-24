@@ -17,6 +17,7 @@ public class AnimationHandler {
      * @param type sprite, gif, etc?
      * @param spawnState spawn state of object
      */
+    @Deprecated
     public AnimationHandler(Map<AnimationState, String> animationMap, AnimationType type, AnimationState spawnState) {
         if(animationMap.containsKey(spawnState)) {
             this.animationState = spawnState;
@@ -29,6 +30,30 @@ public class AnimationHandler {
         animationRender.setAnimation(animationState);
 
     }
+
+    /**
+     * Handles object animations
+     * Guesses the AnimationType based on file ending
+     * @param animationMap map of animation state as key and string (filepath) as value
+     * @param spawnState spawn state of object
+     */
+    public AnimationHandler(Map<AnimationState, String> animationMap, AnimationState spawnState) {
+        if(animationMap.containsKey(spawnState)) {
+            this.animationState = spawnState;
+        }
+        else {
+            throw new IllegalArgumentException("The state " + spawnState + " is not in the key of the animationMap: " + animationMap);
+        }
+
+        var type = animationMap.get(spawnState).endsWith(".gif")
+                ? AnimationType.GIF
+                : AnimationType.SPRITE;
+
+        animationRender = AnimationRender.of(type, animationMap);
+        animationRender.setAnimation(animationState);
+
+    }
+
     public AnimationState getAnimationState() {
         return animationState;
     }

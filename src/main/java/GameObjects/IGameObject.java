@@ -9,7 +9,7 @@ import com.badlogic.gdx.physics.box2d.World;
  * Interface for all game objects
  * (all objects rendered on the screen in the game)
  */
-public interface IGameObject<E> {
+public interface IGameObject {
 
     /**
      * Sets the destroyed-tag to true
@@ -45,17 +45,17 @@ public interface IGameObject<E> {
      */
     void revive();
 
-    /**
-     * Sets the object type
-     * @param newType the object type. A string value which tells us which type of enemy, terrain etc
-     */
-    void setType(E newType);
+//    /**
+//     * Sets the object type
+//     * @param newType the object type. A string value which tells us which type of enemy, terrain etc
+//     */
+//    void setType(String newType);
 
     /**
      *
      * @return the object type
      */
-    E getType();
+    String getType();
 
     /**
      * Changes the body position

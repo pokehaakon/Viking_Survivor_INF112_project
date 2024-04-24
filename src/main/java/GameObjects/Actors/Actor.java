@@ -14,14 +14,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor {
+public abstract class Actor extends GameObject implements IActor {
     public float speed, HP, damage, armour;
 
     protected List<ActorAction> actions;
     public boolean underAttack = false;
     private long lastAttackedTime;
 
-    public Actor(E type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale) {
+    public Actor(String type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale) {
         super(type, animationHandler, bodyFeatures, scale);
 
         //velocityVector = new Vector2();
@@ -33,7 +33,7 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
      * Defines an action for the actor to perform
      * @param action
      */
-    public <T extends Actor<E>> void setAction(ActorAction<T> action) {
+    public <T extends Actor> void setAction(ActorAction<T> action) {
         actions.add(action);
     }
 
@@ -41,7 +41,7 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
      * Defines an actions for the actor to perform
      * @param actions
      */
-    public <T extends Actor<E>> void setActions(List<ActorAction<T>> actions) {
+    public <T extends Actor> void setActions(List<ActorAction<T>> actions) {
         this.actions.addAll(actions);
     }
 
@@ -50,7 +50,7 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
      * @param actions
      */
     @SafeVarargs
-    public final <T extends Actor<E>> void setActions(ActorAction<T>... actions) {
+    public final <T extends Actor> void setActions(ActorAction<T>... actions) {
         this.actions.addAll(List.of(actions));
     }
 
@@ -105,7 +105,7 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
     }
 
     @Override
-    public void attack(Actor<?> actor, float damage) {
+    public void attack(Actor actor, float damage) {
         actor.HP -= damage;
         actor.setUnderAttack(true);
         actor.setLastAttackedTime(TimeUtils.millis());

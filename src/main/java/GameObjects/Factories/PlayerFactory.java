@@ -21,13 +21,13 @@ import static Tools.FilterTool.Category.PLAYER;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
-public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
+public class PlayerFactory extends AbstractFactory<Player>{
 
     public PlayerFactory() {
     }
     @Override
-    public Player create(PlayerType type) {
-        if(type == null) {
+    public Player create(String name) {
+        if(name == null) {
             throw new NullPointerException("Type cannot be null!");
         }
 
@@ -38,8 +38,8 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
         Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
         AnimationType animationType;
         AnimationState spawnState;
-        switch (type) {
-            case PLAYER1: {
+        switch (name) {
+            case "PlayerType:PLAYER1": {
                 scale = PLAYER_SCALE;
                 stats = Stats.player();
                 animations.put(AnimationState.MOVING, PLAYER_MOVING_FILE_PATH);
@@ -71,7 +71,7 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
 
 
         player = new Player(
-                type,
+                name,
                 new AnimationHandler(animations, animationType, spawnState),
                 bodyFeatures,
                 scale,
@@ -82,8 +82,7 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
         return player;
     }
 
-    @Override
-    public List<Player> create(int n, PlayerType type) {
+    public List<Player> create(int n, String name) {
         return null;
     }
 

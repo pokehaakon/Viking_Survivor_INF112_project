@@ -2,11 +2,15 @@ package Simulation;
 
 import GameObjects.Actors.Enemy;
 import GameObjects.Actors.Player;
+import GameObjects.Factories.ExperimentalAbstractFactory;
+import GameObjects.Factories.ExperimentalEnemyFactory;
 import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.Pool.ObjectPool;
 import GameObjects.StaticObjects.Terrain;
 import Parsing.MapParser;
+import Parsing.ObjectDefineParser.Defines.EnemyDefinition;
+import Parsing.ObjectDefineParser.ObjectDefineParser;
 import Parsing.SpawnFrame;
 import Simulation.SpawnHandler.SpawnHandlerFactory;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -35,8 +39,8 @@ public class GameWorld implements Disposable {
 
     private final SpawnHandlerFactory handlerFactory;
 
-    private final ObjectPool<Enemy, EnemyType> enemyPool;
-    private final ObjectPool<Terrain, TerrainType> terrainPool;
+    private final ObjectPool<Enemy> enemyPool;
+    private final ObjectPool<Terrain> terrainPool;
 
     private final List<Enemy> activeEnemies;
     private final List<Terrain> activeTerrain;
@@ -45,14 +49,15 @@ public class GameWorld implements Disposable {
     public GameWorld(
             String worldDef,
             Player player,
-            ObjectPool<Enemy, EnemyType> enemyPool,
-            ObjectPool<Terrain, TerrainType> terrainPool,
+            ObjectPool<Enemy> enemyPool,
+            ObjectPool<Terrain> terrainPool,
             List<Enemy> activeEnemies,
             List<Terrain> activeTerrain
     ) {
         if (!worldDef.endsWith(".wdef")) {
             throw new RuntimeException("world definition file needs ending '.wdef', got : " + worldDef);
         }
+
 
         this.player = player;
         this.enemyPool = enemyPool;
@@ -62,11 +67,24 @@ public class GameWorld implements Disposable {
 
         handlerFactory = new SpawnHandlerFactory(player, enemyPool, terrainPool, activeEnemies, activeTerrain);
 
-        MapParser parser = new MapParser(worldDef);
+        MapParser mapParser = new MapParser(worldDef);
+        defines = mapParser.doParseDefines();
+        ObjectDefineParser objectDefineParser = new ObjectDefineParser(defines.get("OBJECT_DEFINES"));
+        objectDefineParser.parseDocument();
 
-        parser.doParse();
-        defines = parser.getDefines();
-        timeFrames = parser.getTimeFrames();
+        ExperimentalAbstractFactory.empty();
+
+        for (var entry : objectDefineParser.variables.entrySet()) {
+            if (entry.getValue().get() instanceof EnemyDefinition enemyDefinition) {
+                ExperimentalEnemyFactory.register(entry.getKey().substring(1), enemyDefinition);
+            }
+        }
+
+        timeFrames = mapParser.doParseTimeFrames();
+
+
+        map = new TmxMapLoader().load(defines.get("MAP_PATH"));
+        mapRenderer = new OrthogonalTiledMapRenderer(map, mapScale);
 
         if (timeFrames != null) {
             nextFrame = timeFrames.get(0).getValue0();
@@ -74,8 +92,7 @@ public class GameWorld implements Disposable {
             nextFrame = Long.MAX_VALUE;
         }
 
-        map = new TmxMapLoader().load(defines.get("MAP_PATH"));
-        mapRenderer = new OrthogonalTiledMapRenderer(map, mapScale);
+
     }
     public void act(Long frame) {
         if (frame == nextFrame) {

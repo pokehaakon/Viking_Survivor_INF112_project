@@ -6,12 +6,12 @@ import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
 import GameObjects.ObjectTypes.PickupType;
 
-public class Pickups extends GameObject<PickupType> {
+public class Pickups extends GameObject {
     final PickupStats stats;
     public boolean isPickedUp;
 
-    public Pickups(PickupType type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale, PickupStats stats) {
-        super(type, animationHandler, bodyFeatures, scale);
+    public Pickups(String name, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale, PickupStats stats) {
+        super(name, animationHandler, bodyFeatures, scale);
         this.stats = stats;
         isPickedUp = false;
     }

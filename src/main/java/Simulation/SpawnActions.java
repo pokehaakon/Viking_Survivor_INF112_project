@@ -18,18 +18,18 @@ import static GameObjects.Actors.ActorAction.EnemyActions.*;
 
 public abstract class SpawnActions {
 
-    public static Enemy spawnEnemy(ObjectPool<Enemy, EnemyType> enemyPool, Vector2 position, EnemyType enemyType, List<ActorAction<Enemy>> actions) {
-        Enemy enemy = enemyPool.get(enemyType);
+    public static Enemy spawnEnemy(ObjectPool<Enemy> enemyPool, Vector2 position, String enemyName, List<ActorAction<Enemy>> actions) {
+        Enemy enemy = enemyPool.get(enemyName);
         enemy.setPosition(position);
         enemy.setActions(actions);
 
         return enemy;
     }
 
-    public static List<Enemy> spawnEnemies(int num, ObjectPool<Enemy, EnemyType> enemyPool, List<Vector2> positions, EnemyType enemyType, List<ActorAction<Enemy>> actions) {
+    public static List<Enemy> spawnEnemies(int num, ObjectPool<Enemy> enemyPool, List<Vector2> positions, String enemyName, List<ActorAction<Enemy>> actions) {
         List<Enemy> ls = new ArrayList<>(num);
         int i = 0;
-        for(Enemy enemy : enemyPool.get(enemyType, num)) {
+        for(Enemy enemy : enemyPool.get(enemyName, num)) {
             enemy.setPosition(positions.get(i++));
             enemy.setActions(actions);
             ls.add(enemy);
@@ -37,14 +37,14 @@ public abstract class SpawnActions {
         return ls;
     }
 
-    public static List<Enemy> spawnSwarm(int num, ObjectPool<Enemy, EnemyType> enemyPool, Vector2 position, EnemyType enemyType, SwarmType swarmType, Player player, int spacing, int speedMultiplier) {
+    public static List<Enemy> spawnSwarm(int num, ObjectPool<Enemy> enemyPool, Vector2 position, String enemyName, SwarmType swarmType, Player player, int spacing, int speedMultiplier) {
         Vector2 center = player.getBody().getPosition();
         Vector2 startPoint = randomSpawnPoint(center, ReleaseCandidateContext.SPAWN_RADIUS);
 
         List<Vector2> positions = SwarmCoordinates.getSwarmCoordinates(startPoint, SwarmType.LINE, num, spacing, center);
         List<ActorAction<Enemy>> actions = List.of(destroyIfOutOfBounds(player), destroyIfDefeated());
 
-        return spawnEnemies(num, enemyPool, positions, enemyType, actions);
+        return spawnEnemies(num, enemyPool, positions, enemyName, actions);
 
     }
 

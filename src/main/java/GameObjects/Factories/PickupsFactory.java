@@ -20,7 +20,7 @@ import static Rendering.Animations.AnimationRendering.GIFS.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
-public class PickupsFactory extends AbstractFactory<Pickups, PickupType>{
+public class PickupsFactory extends AbstractFactory<Pickups>{
     private final Filter filter;
     public PickupsFactory() {
         super();
@@ -30,14 +30,11 @@ public class PickupsFactory extends AbstractFactory<Pickups, PickupType>{
                         FilterTool.Category.PLAYER
                 }
         );
-
-
-
     }
 
     @Override
-    public Pickups create(PickupType type) {
-        if (type == null) {
+    public Pickups create(String name) {
+        if (name == null) {
             throw new NullPointerException("Type cannot be null!");
         }
 
@@ -50,8 +47,8 @@ public class PickupsFactory extends AbstractFactory<Pickups, PickupType>{
 
 
         CircleShape shape;
-        switch (type) {
-            case PICKUPORB -> {
+        switch (name) {
+            case "PickupType:PICKUPORB" -> {
                 stats = Stats.pickupStats();
                 animations.put(AnimationState.MOVING, PICK_UP_ORB_FILE_PATH);
                 shape = createCircleShape(0.5f * scale * PICKUP_ORB_WIDTH / 2);
@@ -59,7 +56,7 @@ public class PickupsFactory extends AbstractFactory<Pickups, PickupType>{
                 spawnState = AnimationState.MOVING;
                 break;
             }
-            default -> throw new IllegalStateException("Unexpected value: " + type);
+            default -> throw new IllegalStateException("Unexpected value: " + name);
         }
 
         BodyFeatures bodyfeatures = new BodyFeatures(
@@ -73,10 +70,8 @@ public class PickupsFactory extends AbstractFactory<Pickups, PickupType>{
 
 
 
-        pickup = new Pickups(type, new AnimationHandler(animations, animationType, spawnState), bodyfeatures, scale, stats);
+        pickup = new Pickups(name, new AnimationHandler(animations, animationType, spawnState), bodyfeatures, scale, stats);
         pickup.setAnimationState(AnimationState.MOVING);
-
-
 
 
         return pickup;

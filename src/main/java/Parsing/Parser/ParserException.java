@@ -1,7 +1,10 @@
-package Parsing;
+package Parsing.Parser;
+
+import Parsing.Stream.Streamable;
 
 public class ParserException extends RuntimeException {
-    public ParserException(GenericParser<?, ?> parser, String msg, Streamable<?> s) {
+    public String message;
+    public ParserException(GenericParser<?, ?> parser, String msg) {
         super(
                 msg + "\n\n" +
                         "Parse Error at: l" +
@@ -9,5 +12,7 @@ public class ParserException extends RuntimeException {
                         parser.stream.getLinePos() + "\n\n" +
                         parser.stream.getDebugInfo()
         );
+
+        message = msg;
     }
 }

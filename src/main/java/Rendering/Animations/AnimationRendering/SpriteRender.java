@@ -11,22 +11,26 @@ import java.util.Map;
 
 public class SpriteRender implements AnimationRender {
 
-    private Sprite sprite;
+    private Sprite sprite = null;
 
-    private boolean flip = false;
+    //private boolean flip = false;
 
-    private int flipMultiplier = 1;
+    //private int flipMultiplier = 1;
+    private AnimationState state;
 
-
-    Map<AnimationState, Sprite> stateAnimations = new EnumMap<>(AnimationState.class);
+    private final Map<AnimationState, Sprite> stateAnimations = new EnumMap<>(AnimationState.class);
+    //private Map<AnimationState, String> stateAnimationsTemp;
 
     protected SpriteRender(Map<AnimationState, String> stateAnimations) {
+        //stateAnimationsTemp = stateAnimations;
         getSprites(stateAnimations);
     }
 
     @Override
-    public void draw(SpriteBatch batch, long frame, GameObject<?> object) {
+    public void draw(SpriteBatch batch, long frame, GameObject object) {
         Vector2 pos = object.getBody().getPosition();
+        sprite = stateAnimations.get(state);
+        if (sprite == null) return;
         batch.draw(sprite,
                 pos.x - sprite.getWidth()/2*object.getScale(), // subtracting offset
                 pos.y - sprite.getWidth()/2*object.getScale(),
@@ -38,7 +42,8 @@ public class SpriteRender implements AnimationRender {
 
     @Override
     public void setAnimation(AnimationState state) {
-        sprite = stateAnimations.get(state);
+        this.state = state;
+        //sprite = stateAnimations.get(state);
     }
 
     @Override
@@ -51,15 +56,26 @@ public class SpriteRender implements AnimationRender {
         return stateAnimations.get(state).getHeight();
     }
 
-    @Override
-    public void initAnimations(Map<AnimationState, String> animationMap) {
-        getSprites(animationMap);
-    }
-    private void getSprites(Map<AnimationState,String> map) {
+//    @Override
+//    public void initAnimations(Map<AnimationState, String> animationMap) {
+//        getSprites(animationMap);
+//    }
+
+    /**
+     * IMPORTANT, ONLY LOAD IN RENDER THREAD!
+     * @param map
+     */
+    private void getSprites(Map<AnimationState, String> map) {
         for(Map.Entry<AnimationState, String> entry : map.entrySet()) {
             AnimationState state = entry.getKey();
             String filePath = entry.getValue();
-            stateAnimations.put(state, Sprites.getSprite(filePath));
+            stateAnimations.put(
+                    state,
+                    Sprites.getSprite(
+                            filePath,
+                            s -> stateAnimations.put(state, s)
+                    )
+            );
         }
     }
 

@@ -1,4 +1,6 @@
-package Parsing;
+package Parsing.Stream;
+
+import Parsing.Parser.ParsingException;
 
 import java.util.Arrays;
 
@@ -37,7 +39,7 @@ public class CharArrayStream implements Streamable<Character> {
 
     @Override
     public Character next() throws ParsingException {
-        if (text.length == head) throw new ParsingException();
+        if (text.length == head) throw new ParsingException("Reached EOF");
         if (currentChar == '\n') {
             lineCount++;
             colCount = 0;

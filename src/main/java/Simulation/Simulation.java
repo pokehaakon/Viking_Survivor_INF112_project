@@ -42,8 +42,8 @@ public class Simulation implements Runnable {
     long lastSpawnTime;
     long lastPickupSpawnTime;
     private Player player;
-    private ObjectPool<Enemy, EnemyType> enemyPool;
-    private ObjectPool<Pickups, PickupType> pickupPool;
+    private ObjectPool<Enemy> enemyPool;
+    private ObjectPool<Pickups> pickupPool;
     private List<Enemy> enemies;
     private List<Pickups> pickups;
     private AtomicLong synchronizer;
@@ -118,7 +118,7 @@ public class Simulation implements Runnable {
             if (TimeUtils.millis() - lastSpawnTime > 5000) {
                 //spawnRandomEnemies(5,Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
 
-                spawnTerrain(TerrainType.TREE);
+                spawnTerrain("TerrainType:TREE");
 
 
             }
@@ -130,7 +130,7 @@ public class Simulation implements Runnable {
             // If an enemy is defeated, spawn a pickuporb
             for (Enemy enemy : enemies) {
                 if (enemy.isDestroyed()) {
-                    spawnPickups(PickupType.PICKUPORB, enemy.getBody().getPosition());
+                    spawnPickups("PickupType:PICKUPORB", enemy.getBody().getPosition());
                 }
             }
 
@@ -232,16 +232,16 @@ public class Simulation implements Runnable {
 //        lastSpawnTime = TimeUtils.millis();
 //    }
 //
-    private void spawnTerrain(TerrainType type) {
-        Terrain terrain = context.getTerrainPool().get(type);
+    private void spawnTerrain(String TerrainName) {
+        Terrain terrain = context.getTerrainPool().get(TerrainName);
         //terrain.renderAnimations(context.getAnimationLibrary());
         terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
         context.getDrawableTerrain().add(terrain);
         lastSpawnTime = TimeUtils.millis();
     }
 
-    private void spawnPickups(PickupType type, Vector2 position) {
-        Pickups pickup = context.getPickupsPool().get(type);
+    private void spawnPickups(String pickupName, Vector2 position) {
+        Pickups pickup = context.getPickupsPool().get(pickupName);
         //pickup.renderAnimations(context.getAnimationLibrary());
         pickup.setPosition(position);
         context.getDrawablePickups().add(pickup);
@@ -249,8 +249,8 @@ public class Simulation implements Runnable {
     }
 
 
-    private void spawnSwarm(EnemyType enemyType, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
-        List<Enemy> swarmMembers = enemyPool.get(enemyType, size);
+    private void spawnSwarm(String enemyName, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
+        List<Enemy> swarmMembers = enemyPool.get(enemyName, size);
         List<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType, swarmMembers, player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS, spacing, speedMultiplier);
         for(Enemy enemy : swarm) {
             //enemy.setAction(moveInStraightLine());

@@ -1,7 +1,11 @@
 package Parsing;
 
 
+import GameObjects.Factories.ExperimentalEnemyFactory;
 import GameObjects.ObjectTypes.EnemyType;
+import Parsing.Parser.ParserException;
+import Parsing.Parser.ParsingException;
+import Parsing.Parser.TextParser;
 import Tools.Tuple;
 import org.javatuples.Pair;
 
@@ -12,29 +16,40 @@ import java.util.Optional;
 import static Tools.EnumTools.HashMapTool.mapFromPairs;
 import static Tools.EnumTools.enumToStrings;
 
-
 public class MapParser extends TextParser {
     private Map<String, String> defines;
     private List<Pair<Long, List<SpawnFrame>>> timeFrames;
 
     public MapParser(String filename) {
         super(filename);
+        if(!filename.endsWith(".wdef")) throw new IllegalArgumentException(filename + " must end with '.wdef'");
     }
 
     public MapParser(char[] text) {
         super(text);
     }
 
-
-    public void doParse() {
-        if (defines != null) return;
-        parseMapText();
-    }
-
-    private void parseMapText() {
+    public Map<String, String> doParseDefines() {
+        if (defines != null) return defines;
         defines = parseDefines();
-        timeFrames = parseTimeFrames();
+        return defines;
     }
+
+    public List<Pair<Long, List<SpawnFrame>>> doParseTimeFrames() {
+        if (timeFrames != null) return timeFrames;
+        timeFrames = parseTimeFrames();
+        return timeFrames;
+    }
+
+//    public void doParse() {
+//        if (defines != null) return;
+//        parseMapText();
+//    }
+
+//    private void parseMapText() {
+//        defines = parseDefines();
+//        timeFrames = parseTimeFrames();
+//    }
 
     public List<Pair<Long, List<SpawnFrame>>> getTimeFrames() {
         return timeFrames;
@@ -52,9 +67,9 @@ public class MapParser extends TextParser {
             parseLiteral('=');
             Optional<String> value = test(iparseUntilLiteral('\n')).map(String::strip);
 
-            if (key.isEmpty() && value.isEmpty()) error();
+            if (key.isEmpty() && value.isEmpty()) error("");
             if (key.isEmpty() || value.isEmpty())
-                throw new ParserException(this, "Error while reading MapFile Header", this.stream);
+                throw new ParserException(this, "Error while reading MapFile Header");
             return Tuple.of(key.get(), value.get());
         })));
     }
@@ -90,7 +105,7 @@ public class MapParser extends TextParser {
                 lastFrame = p.getValue0();
                 continue;
             }
-            throw new ParserException(this, "error at frame with value: " + p.getValue0() + "f, (value is higher than previous value)" , this.stream);
+            throw new ParserException(this, "error at frame with value: " + p.getValue0() + "f, (value is higher than previous value)");
         }
         return pairs;
     }
@@ -106,9 +121,8 @@ public class MapParser extends TextParser {
 
             iundo(this::letter); //next should be a letter
 
-            EnemyType spawnable = test(iparseStringLiteral(enumToStrings(EnemyType.class)))
-                    .map(EnemyType::valueOf)
-                    .orElseThrow(() -> new ParserException(this, "Could not find the SpawnType", this.stream));
+            String spawnable = test(iparseStringLiteral(ExperimentalEnemyFactory.getRegistered()))
+                    .orElseThrow(() -> new ParserException(this, "Could not find the SpawnType"));
 
 //            List<EnemyType> spawnable = some(() -> {
 //                shouldError(iundo(iparseLiteral(';')));
@@ -126,7 +140,7 @@ public class MapParser extends TextParser {
             space();
             SpawnType spawnType = test(iparseStringLiteral(enumToStrings(SpawnType.class)))
                     .map(SpawnType::valueOf)
-                    .orElseThrow(() -> new ParserException(this, "Could not find the SpawnType", this.stream));
+                    .orElseThrow(() -> new ParserException(this, "Could not find the SpawnType"));
             space();
 
             List<String> args = some(() -> {

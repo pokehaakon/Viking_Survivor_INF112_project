@@ -1,13 +1,18 @@
-package Parsing;
+package Parsing.Parser;
+
+import Parsing.Stream.Streamable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+
+
 public abstract class GenericParser<StreamType, ReturnType> {
-    protected Streamable<StreamType> stream;
+    public Streamable<StreamType> stream;
     private final Function<List<StreamType>, ReturnType> wrapper;
 
     private final Function<String, List<StreamType>> stringToList;
@@ -81,13 +86,12 @@ public abstract class GenericParser<StreamType, ReturnType> {
         stream.reset();
     }
 
-
     /**
      * Tries the given parser, if the parser fails, resets the stream and fails
      * @param parser the parser to try
      * @return the return value of the parser
      */
-    public <T> T Try(ThrowingSupplier<T> parser) throws ParsingException {
+    public  <T> T Try(ThrowingSupplier<T> parser) throws ParsingException {
         Streamable<StreamType> oldStream = stream.copy();
         try {
             return parser.get();
@@ -103,7 +107,7 @@ public abstract class GenericParser<StreamType, ReturnType> {
      * @param parser the parser to input
      * @return () -> Try(parser)
      */
-    public <T> ThrowingSupplier<T> iTry(ThrowingSupplier<T> parser) {
+    public final <T> ThrowingSupplier<T> iTry(ThrowingSupplier<T> parser) {
         return () -> Try(parser);
     }
 
@@ -114,12 +118,15 @@ public abstract class GenericParser<StreamType, ReturnType> {
      */
     @SafeVarargs
     public final <T> T choose(ThrowingSupplier<T>... parsers) throws ParsingException {
+        List<String> messanges = new ArrayList<>();
         for (ThrowingSupplier<T> p : parsers) {
             try {
                 return Try(p);
-            } catch (ParsingException ignored){}
+            } catch (ParsingException e){
+                messanges.add(e.msg);
+            }
         }
-        throw new ParsingException();
+        return error("failed choosing: \n" + String.join(" ,", messanges));
     }
 
 
@@ -140,9 +147,9 @@ public abstract class GenericParser<StreamType, ReturnType> {
      */
     @SafeVarargs
     public final ReturnType parseUntilLiteral(StreamType... literals) throws ParsingException {
-        if (stream.atEOF()) throw new ParsingException();
+        if (stream.atEOF()) error("Reached EOF");
         for (StreamType m : literals)
-            if (stream.getCurrent().equals(m)) throw new ParsingException();
+            if (stream.getCurrent().equals(m)) error("Did not parse any input, with literals: " + Arrays.toString(literals));
 
         List<StreamType> b = new ArrayList<>();
         while (!stream.atEOF()) {
@@ -171,7 +178,7 @@ public abstract class GenericParser<StreamType, ReturnType> {
      * @return the wrapped value of the parsed literal
      */
     public ReturnType parseLiteral(StreamType literal) throws ParsingException {
-        if (!stream.getCurrent().equals(literal)) throw new ParsingException();
+        if (!stream.getCurrent().equals(literal)) error("Failed parsing literal: " + literal);
         stream.next();
         return wrap(literal);
     }
@@ -199,7 +206,7 @@ public abstract class GenericParser<StreamType, ReturnType> {
             stream.next();
             return wrap(literal);
         }
-        throw new ParsingException();
+        return error("Failed parsing any literal: " + Arrays.toString(literals));
     }
 
     /**
@@ -232,7 +239,7 @@ public abstract class GenericParser<StreamType, ReturnType> {
             stream = cStream;
             return wrap(literalString);
         }
-        throw new ParsingException();
+        return error("Failed to parse any string: " + Arrays.toString(literalStrings));
     }
 
     /**
@@ -259,6 +266,31 @@ public abstract class GenericParser<StreamType, ReturnType> {
 //    public final ThrowingSupplier<ReturnType> iparseStringLiteral(Iterable<StreamType>... strings) {
 //        return () -> parseStringLiteral(strings);
 //    }
+
+    /**
+     * Parses one of the strings in 'strings' in order, fail if no string is parsed
+     * Special method for when StreamType 'stringToList' exists.
+     * @param strings array of strings
+     * @return the parsed string
+     */
+    public final ReturnType parseStringLiteral(List<String> strings) throws ParsingException {
+        if (stringToList == null) throw new RuntimeException("String parsing not defined for this parser");
+        List<StreamType>[] arr = new List[strings.size()];
+        int i = 0;
+        for(String str : strings) {
+            arr[i++] = stringToList.apply(str);
+        }
+        return parseStringLiteral(arr);
+    }
+
+    /**
+     * Create a ThrowingSupplier of {@link #parseStringLiteral(List strings)} with 'strings' as input
+     * @param strings the array to input
+     * @return () -> parseStringLiteral(strings)
+     */
+    public final ThrowingSupplier<ReturnType> iparseStringLiteral(List<String> strings) {
+        return () -> parseStringLiteral(strings);
+    }
 
     /**
      * Parses one of the strings in 'strings' in order, fail if no string is parsed
@@ -323,7 +355,11 @@ public abstract class GenericParser<StreamType, ReturnType> {
         return Try(() ->  {
             List<T> out = new ArrayList<>();
             //first
-            out.add(parser.get());
+            try {
+                out.add(parser.get());
+            } catch (ParsingException e) {
+                error("Failed to parse 'some' with error: \n" + e.msg);
+            }
 
             //others
             while (true) {
@@ -354,7 +390,7 @@ public abstract class GenericParser<StreamType, ReturnType> {
      */
     public ReturnType parseLiteralFromFunction(Function<StreamType, Boolean> f) throws ParsingException {
         if (!f.apply(stream.getCurrent())) {
-            throw new ParsingException();
+            error("Could not parse any input with function: " + f);
         }
         return wrap(stream.next());
     }
@@ -380,7 +416,7 @@ public abstract class GenericParser<StreamType, ReturnType> {
             b.add(stream.getCurrent());
             stream.next();
         }
-        if (b.isEmpty()) throw new ParsingException();
+        if (b.isEmpty()) error("Could not parse any input with function: " + f);
         return wrap(b);
     }
 
@@ -469,8 +505,8 @@ public abstract class GenericParser<StreamType, ReturnType> {
      * @return never returns
      * @throws ParsingException
      */
-    public <T> T error() throws ParsingException {
-        throw new ParsingException();
+    public <T> T error(String msg) throws ParsingException {
+        throw new ParsingException(msg);
     }
 
     /**
@@ -487,7 +523,7 @@ public abstract class GenericParser<StreamType, ReturnType> {
     }
 
     /**
-     * Calls {@link #error()} if 'parser' does not fail.
+     * Calls {@link #error(String msg)} if 'parser' does not fail.
      * @param parser the parser to test
      */
     public <T> void shouldError(ThrowingSupplier<T> parser) throws ParsingException {
@@ -496,7 +532,7 @@ public abstract class GenericParser<StreamType, ReturnType> {
         } catch (ParsingException e) {
             return;
         }
-        error();
+        error("Did not error when expected by parser: " + parser);
     }
 
     /**

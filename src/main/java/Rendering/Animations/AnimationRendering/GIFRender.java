@@ -16,15 +16,19 @@ import static VikingSurvivor.app.HelloWorld.SET_FPS;
 public class GIFRender implements AnimationRender {
 
     private final Map<AnimationState, GifPair> animationMovement = new EnumMap<>(AnimationState.class);
+//    private Map<AnimationState, String> animationMovementTemp;
     private GifPair currentGIF;
 
+    private AnimationState state;
+
     protected GIFRender(Map<AnimationState, String> animationMovement) {
+        //animationMovementTemp = animationMovement;
         getGifPairs(animationMovement);
     }
 
 
     @Override
-    public void draw(SpriteBatch batch, long frame, GameObject<?> object) {
+    public void draw(SpriteBatch batch, long frame, GameObject object) {
         float elapsedTime = (float) frame / SET_FPS;
         TextureRegion region = object.getDirectionState() == DirectionState.RIGHT
                 ? currentGIF.right().getKeyFrame(elapsedTime)
@@ -41,6 +45,11 @@ public class GIFRender implements AnimationRender {
 
     @Override
     public void setAnimation(AnimationState state) {
+        this.state = state;
+//        if (animationMovement.isEmpty()) {
+//            getGifPairs(animationMovementTemp);
+//            animationMovementTemp = null;
+//        }
         currentGIF = animationMovement.get(state);
         currentGIF.right().setFrameDuration(GIFS.FRAME_DURATION);
         currentGIF.left().setFrameDuration(GIFS.FRAME_DURATION);
@@ -60,18 +69,23 @@ public class GIFRender implements AnimationRender {
         return region.getRegionHeight();
     }
 
-    @Override
-    public void initAnimations(Map<AnimationState, String> animationMap) {
-        getGifPairs(animationMap);
-    }
+//    @Override
+//    public void initAnimations(Map<AnimationState, String> animationMap) {
+//        getGifPairs(animationMap);
+//    }
 
     private void getGifPairs(Map<AnimationState, String> map) {
         //animationMovement.clear(); //?
-        for(Map.Entry<AnimationState, String> entry : map.entrySet()) {
+        Map.Entry<AnimationState, String> lastentry = null;
+        
+        for(var entry : map.entrySet()) {
             AnimationState state = entry.getKey();
             String filePath = entry.getValue();
             animationMovement.put(state, GIFS.getGIF(filePath));
+            lastentry = entry;
         }
+        
+        currentGIF = animationMovement.get(lastentry.getKey());
     }
 
 

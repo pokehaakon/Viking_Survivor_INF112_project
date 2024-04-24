@@ -1,6 +1,8 @@
 package GameObjects.Actors.ActorAction;
 
-public interface ActorAction<T> {
+import GameObjects.Actors.Actor;
+
+public interface ActorAction<T extends Actor> {
 
     // this interface acts as an action object
 

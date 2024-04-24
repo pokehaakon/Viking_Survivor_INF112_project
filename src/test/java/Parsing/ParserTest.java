@@ -1,6 +1,10 @@
 package Parsing;
 
 import GameObjects.ObjectTypes.EnemyType;
+import Parsing.Parser.ParserException;
+import Parsing.Parser.ParsingException;
+import Parsing.Parser.TextParser;
+import Parsing.Stream.CharArrayStream;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
@@ -8,12 +12,8 @@ import org.javatuples.Pair;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import javax.xml.stream.events.Characters;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -234,7 +234,7 @@ class ParserTest {
     void testGenericParser() throws ParsingException {
         TextParser parser1 = new TextParser("parsed".toCharArray());
 
-        assertThrowsExactly(ParsingException.class, parser1::error);
+        assertThrowsExactly(ParsingException.class, () -> parser1.error(""));
         assertThrowsExactly(ParsingException.class, () -> parser1.shouldError(() -> null));
 
         assertEquals("parsed", parser1.iorElse(parser1.iparseStringLiteral("parsed"), "default").get());
@@ -244,7 +244,7 @@ class ParserTest {
         TextParser parser2 = new TextParser("undo".toCharArray());
         assertThrowsExactly(ParsingException.class, () -> parser2.undo(() -> {
                 parser2.parseLiteral('u');
-                parser2.error();
+                parser2.error("");
                 return null;
         }));
         assertEquals("u", parser2.undo(parser2.iparseLiteral('u')));

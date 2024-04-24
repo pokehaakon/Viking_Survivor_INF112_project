@@ -1,4 +1,5 @@
 !MAP_PATH=assets/damaged_roads_map.tmx
+!OBJECT_DEFINES=ObjectDefines/test.obj
 
 00:00:
     #ORC; BOSS 100 HARD

@@ -10,7 +10,7 @@ import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class SmallPool<T extends GameObject<?>> {
+public class SmallPool<T extends GameObject> {
 
     private final World world;
     private final Supplier<T> factory;

@@ -1,5 +1,6 @@
-package Parsing;
+package Parsing.Parser;
 
+import Parsing.Stream.CharArrayStream;
 import com.badlogic.gdx.Gdx;
 
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.List;
 public class TextParser extends GenericParser<Character, String> {
 
     public TextParser(String filename) {
-        this(Gdx.files.internal(filename).readString().replace('\r', '\n').toCharArray());
+        this((Gdx.files.internal(filename).readString().replace('\r', '\n') + "\n").toCharArray());
     }
 
     public TextParser(char[] text) {

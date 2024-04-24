@@ -1,4 +1,6 @@
-package Parsing;
+package Parsing.Stream;
+
+import Parsing.Parser.ParsingException;
 
 public interface Streamable<T> {
     /**

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -24,14 +25,14 @@ class EnemyPoolTest {
 
     private static EnemyFactory mockEnemyFactory;
 
-    private ObjectPool<Enemy, EnemyType> testPool;
+    private ObjectPool<Enemy> testPool;
 
-    List<EnemyType> objectTypes = List.of(EnemyType.values());
+    List<String> objectTypes = List.of(EnemyType.values()).stream().map(t -> "EnemyType:" + t.toString()).collect(Collectors.toList());
     static World world;
     int poolSize;
 
-    EnemyType enemy1;
-    EnemyType enemy2;
+    String enemy1;
+    String enemy2;
 
     List<Queue<Enemy>> enemiesInPool;
     @BeforeAll
@@ -88,9 +89,9 @@ class EnemyPoolTest {
 
         enemiesInPool = new ArrayList<>();
 
-        Map<EnemyType, SmallPool<Enemy>> poolMap = testPool.getObjectPool();
+        Map<String, SmallPool<Enemy>> poolMap = testPool.getObjectPool();
 
-        for(Map.Entry<EnemyType, SmallPool<Enemy>> entry : poolMap.entrySet() ) {
+        for(Map.Entry<String, SmallPool<Enemy>> entry : poolMap.entrySet() ) {
             SmallPool<Enemy> enemyList = entry.getValue();
             enemiesInPool.add(enemyList.getPool());
         }

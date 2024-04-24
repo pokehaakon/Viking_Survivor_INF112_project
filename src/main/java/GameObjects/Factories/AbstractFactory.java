@@ -6,7 +6,7 @@ import GameObjects.GameObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractFactory<T extends GameObject<E>, E extends Enum<E>> implements IFactory<T, E> {
+public abstract class AbstractFactory<T extends GameObject> implements IFactory<T> {
 
     protected AnimationRender  spriteRender;
     protected AnimationRender gifRender;
@@ -17,8 +17,7 @@ public abstract class AbstractFactory<T extends GameObject<E>, E extends Enum<E>
      * @param type the desired enemy type
      * @return a list of Enemy objects
      */
-    @Override
-    public List<T> create(int n, E type) {
+    public List<T> create(int n, String type) {
         if (n <= 0) {
             throw new IllegalArgumentException("Number of Objects must be greater than zero");
         }
@@ -31,15 +30,15 @@ public abstract class AbstractFactory<T extends GameObject<E>, E extends Enum<E>
         return objects;
     }
 
-    @Override
-    public void setSpriteRender(AnimationRender spriteRender) {
-        this.spriteRender = spriteRender;
-    }
-
-    @Override
-    public void setGifRender(AnimationRender gifRender) {
-        this.gifRender = gifRender;
-    }
+//    @Override
+//    public void setSpriteRender(AnimationRender spriteRender) {
+//        this.spriteRender = spriteRender;
+//    }
+//
+//    @Override
+//    public void setGifRender(AnimationRender gifRender) {
+//        this.gifRender = gifRender;
+//    }
 
 
 }

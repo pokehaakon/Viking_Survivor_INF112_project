@@ -33,8 +33,8 @@ public class SwarmSpawnHandler implements ISpawnHandler {
     private float speedMultiplier;
     private Supplier<Vector2> centerSupplier;
 
-    public SwarmSpawnHandler(List<String> args, EnemyType enemyType, Consumer<Enemy> initializer, Supplier<Vector2> centerSupplier, ObjectPool<Enemy, EnemyType> objectPool, List<Enemy> activeEnemies) {
-        pool = objectPool.getObjectPool().get(enemyType);
+    public SwarmSpawnHandler(List<String> args, String enemyName, Consumer<Enemy> initializer, Supplier<Vector2> centerSupplier, ObjectPool<Enemy> objectPool, List<Enemy> activeEnemies) {
+        pool = objectPool.getSmallPool(enemyName);
 
         this.size = Integer.parseInt(findPrefix("size:", args));
         //this.maxSpawnEachFrame = Integer.parseInt(findPrefix("maxSpawnEachFrame:", args));

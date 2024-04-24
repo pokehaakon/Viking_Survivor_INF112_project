@@ -21,8 +21,8 @@ public class WaveSpawnHandler implements ISpawnHandler {
     private final List<Enemy> activeEnemies;
     private final Consumer<Enemy> initializer;
 
-    public WaveSpawnHandler(List<String> args, EnemyType enemyType, Consumer<Enemy> initializer, ObjectPool<Enemy, EnemyType> objectPool, List<Enemy> activeEnemies) {
-        pool = objectPool.getObjectPool().get(enemyType);
+    public WaveSpawnHandler(List<String> args, String enemyName, Consumer<Enemy> initializer, ObjectPool<Enemy> objectPool, List<Enemy> activeEnemies) {
+        pool = objectPool.getSmallPool(enemyName);
         this.size = Integer.parseInt(findPrefix("size:", args));
         this.maxSpawnEachFrame = Integer.parseInt(findPrefix("maxSpawnEachFrame:", args));
         spawnedEnemies = 0;
