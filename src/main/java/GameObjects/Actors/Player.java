@@ -1,6 +1,7 @@
 package GameObjects.Actors;
 
 import GameObjects.Animations.AnimationRendering.AnimationHandler;
+import GameObjects.GameObject;
 import GameObjects.ObjectTypes.PickupType;
 import GameObjects.ObjectTypes.PlayerType;
 import GameObjects.Actors.Stats.PlayerStats;
@@ -10,6 +11,7 @@ import GameObjects.Animations.AnimationRendering.AnimationRender;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class Player extends Actor<PlayerType> {
     public int level;
@@ -57,8 +59,9 @@ public class Player extends Actor<PlayerType> {
 
 
     public void pickup(Pickups pickup) {
-        if(pickup.getType() == PickupType.PICKUPORB) {
-            XP += 10;
-        }
+        pickup.doAction();
+        pickup.setPickedUp(true);
     }
+
+
 }

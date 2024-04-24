@@ -1,9 +1,11 @@
 package Simulation;
 
-import GameObjects.Actors.ActorAction.ActorAction;
-import GameObjects.Actors.ActorAction.EnemyActions;
+import GameObjects.Actors.ObjectActions.Action;
+import GameObjects.Actors.ObjectActions.EnemyActions;
 import GameObjects.Actors.Enemy;
+import GameObjects.Actors.ObjectActions.PickupActions;
 import GameObjects.Actors.Pickups;
+import GameObjects.GameObject;
 import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.ObjectTypes.PickupType;
 import GameObjects.ObjectTypes.SwarmType;
@@ -22,13 +24,16 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 
-import static GameObjects.Actors.ActorAction.EnemyActions.*;
+import static GameObjects.Actors.ObjectActions.EnemyActions.*;
+import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
+import static VikingSurvivor.app.Main.SCREEN_WIDTH;
 
 public class Simulation implements Runnable {
     private Lock renderLock;
@@ -60,6 +65,12 @@ public class Simulation implements Runnable {
 
     List<Weapon> weapons;
 
+    ObjectPool<Terrain,TerrainType> terrainPool;
+
+    List<Terrain> terrain;
+
+
+
     public Simulation(ReleaseCandidateContext context) {
         this.context = context;
         renderLock = context.getRenderLock();
@@ -73,10 +84,12 @@ public class Simulation implements Runnable {
         enemyPool = context.getEnemyPool();
         enemies = context.getDrawableEnemies();
         weapons = context.getDrawableWeapons();
-
         pickupPool = context.getPickupsPool();
         pickups = context.getDrawablePickups();
-        mainWeapon = context.getOrbitWeapon();
+
+
+        terrainPool = context.getTerrainPool();
+        terrain = context.getDrawableTerrain();
     }
 
     @Override
@@ -109,27 +122,32 @@ public class Simulation implements Runnable {
             for(Weapon weapon : weapons) {
                 weapon.doAction();
             }
+            for(Terrain terrain : context.getDrawableTerrain()) {
+                if(terrain.outOfBounds(player.getBody().getPosition(),DESPAWN_RADIUS)) {
+                    terrain.destroy();
+                }
+            }
 
 
             context.getPlayer().doAction();
 
             // random spawning for now
-            if (TimeUtils.millis() - lastSpawnTime > 5000) {
-                spawnRandomEnemies(5,Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
-
-                spawnTerrain(TerrainType.TREE);
+            if (TimeUtils.millis() - lastSpawnTime > 10000) {
+                spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
+                spawnFixedTerrain(4,0.5f*SCREEN_WIDTH+200,0.5f*SCREEN_HEIGHT+200,500,TerrainType.TREE);
+                //spawnTerrain(TerrainType.TREE);
 
 
             }
             if(TimeUtils.millis() - lastSwarmSpawnTime > 15000) {
-                spawnSwarm(EnemyType.RAVEN,SwarmType.LINE,10,60,5);
+                //spawnSwarm(EnemyType.RAVEN,SwarmType.LINE,10,60,5);
             }
 
 
             // If an enemy is defeated, spawn a pickuporb
             for (Enemy enemy : enemies) {
                 if (enemy.isDestroyed()) {
-                    spawnPickups(PickupType.PICKUPORB, enemy.getBody().getPosition());
+                    spawnPickups(PickupType.PICKUPORB, enemy.getBody().getPosition(), List.of(PickupActions.giveHP(player, 10)));
                 }
             }
 
@@ -146,6 +164,8 @@ public class Simulation implements Runnable {
 
 
             removeDestroyedEnemies();
+
+            removeDestroyedTerrain();
 
 
             renderLock.unlock();
@@ -195,11 +215,21 @@ public class Simulation implements Runnable {
         }
         pickups.subList(i, pickups.size()).clear();
     }
-
-    private void spawnEnemies(EnemyType enemyType, int num, List<ActorAction> actions) {
+    public void removeDestroyedTerrain() {
+        int i = 0;
+        for (Terrain t : terrain) {
+            if (t.isDestroyed()) {
+                terrainPool.returnToPool(t);
+            } else {
+                terrain.set(i++, t);
+            }
+        }
+        terrain.subList(i, terrain.size()).clear();
+    }
+    private void spawnEnemies(EnemyType enemyType, int num, List<Action> actions) {
         for(Enemy enemy: enemyPool.get(enemyType, num)) {
             enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
-            for(ActorAction action : actions) {
+            for(Action action : actions) {
                 enemy.setAction(action);
             }
 
@@ -209,10 +239,10 @@ public class Simulation implements Runnable {
         lastSpawnTime = TimeUtils.millis();
     }
 
-    private void spawnRandomEnemies(int num, List<ActorAction> actions) {
+    private void spawnRandomEnemies(int num, List<Action> actions) {
         for(Enemy enemy : enemyPool.getRandom(num)) {
             enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
-            for(ActorAction action : actions) {
+            for(Action action : actions) {
                 enemy.setAction(action);
             }
             enemy.renderAnimations(context.getAnimationLibrary());
@@ -228,11 +258,30 @@ public class Simulation implements Runnable {
         context.getDrawableTerrain().add(terrain);
         lastSpawnTime = TimeUtils.millis();
     }
+    private void spawnFixedTerrain(int num,float distX, float distY,float minDistanceBetween, TerrainType type) {
+        List<Vector2> occupiedPositions = SpawnCoordinates.getOccupiedPositions(context.getDrawableTerrain());
+        System.out.println(context.getDrawableTerrain().size());
+        List<Vector2> availableSpawns = SpawnCoordinates.fixedSpawnPoints(num, distX,distY,minDistanceBetween,player.getBody().getPosition(),occupiedPositions);
 
-    private void spawnPickups(PickupType type, Vector2 position) {
+        for(Vector2 spawn: availableSpawns) {
+            Terrain terrain = context.getTerrainPool().get(type);
+            terrain.renderAnimations(context.getAnimationLibrary());
+            terrain.setPosition(spawn);
+            context.getDrawableTerrain().add(terrain);
+        }
+
+
+        lastSpawnTime = TimeUtils.millis();
+
+    }
+
+    private void spawnPickups(PickupType type, Vector2 position, List<Action<Pickups>> actions) {
         Pickups pickup = context.getPickupsPool().get(type);
         pickup.renderAnimations(context.getAnimationLibrary());
         pickup.setPosition(position);
+        for(Action<Pickups> action:actions) {
+            pickup.setAction(action);
+        }
         context.getDrawablePickups().add(pickup);
         lastPickupSpawnTime = TimeUtils.millis();
     }

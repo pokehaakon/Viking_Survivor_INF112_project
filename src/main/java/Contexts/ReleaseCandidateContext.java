@@ -1,22 +1,20 @@
 package Contexts;
 
-import GameObjects.Actors.ActorAction.WeaponActions;
-import GameObjects.Actors.Enemy;
+import GameObjects.Actors.*;
+import GameObjects.Actors.ObjectActions.*;
 
 import GameObjects.Animations.AnimationRendering.AnimationLibrary;
 import GameObjects.Factories.*;
 import GameObjects.ObjectTypes.*;
-import GameObjects.Actors.ActorAction.PlayerActions;
+import GameObjects.Actors.ObjectActions.PlayerActions;
 import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.ObjectTypes.WeaponType;
 import GameObjects.Factories.EnemyFactory;
-import GameObjects.Actors.Player;
 import GameObjects.Factories.PlayerFactory;
 import GameObjects.Factories.TerrainFactory;
 import GameObjects.Factories.WeaponFactory;
 import GameObjects.Pool.ObjectPool;
 import GameObjects.StaticObjects.Terrain;
-import GameObjects.Actors.Weapon;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Simulation.Simulation;
@@ -33,14 +31,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
-import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -60,6 +55,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static GameObjects.Actors.ObjectActions.WeaponActions.orbitPlayer;
+import static GameObjects.Actors.ObjectActions.WeaponActions.orbitPlayer;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.getBottomLeftCorrection;
 import static VikingSurvivor.app.Main.SCREEN_WIDTH;
@@ -76,10 +73,10 @@ public class ReleaseCandidateContext extends Context {
 
     private Player player;
     private Pickups pickup;
-    private Weapon orbitWeapon;
-    private ArrayList<Enemy> spawnedEnemies;
+
     private final BitmapFont font;
 
+    private ObjectFactory objectFactory;
     private RollingSum UpdateTime;
     private RollingSum FrameTime;
     private RollingSum FPS;
@@ -131,6 +128,7 @@ public class ReleaseCandidateContext extends Context {
     private ObjectPool<Weapon,WeaponType> weaponPool;
     private ObjectPool<Pickups, PickupType> pickupsPool;
 
+    Enemy e1;
     private ObjectPool<Terrain, TerrainType> terrainPool;
 
     float elapsedTime;
@@ -514,23 +512,20 @@ public class ReleaseCandidateContext extends Context {
         world = new World(new Vector2(0, 0), true);
 
         map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
-
+        objectFactory = new ObjectFactory();
         createMapObjects("area", world);
 
-        enemyFactory = new EnemyFactory();
+
         drawableEnemies = new ArrayList<>();
 
-        pickupsFactory = new PickupsFactory();
-
-        terrainFactory = new TerrainFactory();
         drawableTerrain = new ArrayList<>();
         drawablePickups = new ArrayList<>();
 
-        weaponFactory = new WeaponFactory();
-        playerFactory = new PlayerFactory();
         drawableWeapons =  new ArrayList<>();
 
-        player = playerFactory.create(PlayerType.PLAYER1);
+
+        player = new PlayerFactory().create(PlayerType.PLAYER1);
+
         player.addToWorld(world);
         player.setPosition(getMiddleOfMapPosition(map, tiledMapScale));
         player.setAction(PlayerActions.moveToInput(keyStates));
@@ -539,10 +534,6 @@ public class ReleaseCandidateContext extends Context {
         player.renderAnimations(animationLibrary);
 
 
-
-
-        pickup = pickupsFactory.create(PickupType.PICKUPORB);
-        pickup.renderAnimations(animationLibrary);
 
 
         //      Create top XP bar:
@@ -613,12 +604,12 @@ public class ReleaseCandidateContext extends Context {
         }
 
 
-        enemyPool = new ObjectPool<>(world, enemyFactory, List.of(EnemyType.values()),200);
-        terrainPool = new ObjectPool<>(world, terrainFactory, List.of(TerrainType.values()), 200);
-        weaponPool = new ObjectPool<>(world,weaponFactory, List.of(WeaponType.values()), 20);
-        pickupsPool = new ObjectPool<>(world, pickupsFactory, List.of(PickupType.values()), 200);
+        enemyPool = new ObjectPool<>(world, new EnemyFactory(), List.of(EnemyType.values()),200);
+        terrainPool = new ObjectPool<>(world, new TerrainFactory(), List.of(TerrainType.values()), 200);
+        weaponPool = new ObjectPool<>(world,new WeaponFactory(), List.of(WeaponType.values()), 20);
+        pickupsPool = new ObjectPool<>(world, new PickupsFactory(), List.of(PickupType.values()), 200);
 
-        spawnOrbitingWeapons(player,4,WeaponType.KNIFE,150,0.1f,0);
+        spawnOrbitingWeapons(player,1,WeaponType.KNIFE,150,0.1f,1000);
         toBoKilled = new HashSet<>();
 
         world.setContactListener(new ObjectContactListener());
@@ -637,7 +628,12 @@ public class ReleaseCandidateContext extends Context {
      */
     private void spawnOrbitingWeapons(Player player,int numWeapons,WeaponType weaponType,float orbitRadius,float orbitSpeed,long orbitInterval){
         float angle=0;
-        for(Weapon weapon:weaponPool.get(weaponType,numWeapons)){
+        List<Weapon> weapons = new ArrayList<>();
+        for(int i = 0; i < numWeapons;i++) {
+            weapons.add(new WeaponFactory().create(WeaponType.KNIFE));
+        }
+        for(Weapon weapon:weapons){
+            weapon.addToWorld(world);
             weapon.setAction(WeaponActions.orbitPlayer(orbitRadius,orbitSpeed,player,orbitInterval));
             weapon.setOwner(player);
             weapon.setAngleToPlayer(angle);
@@ -708,9 +704,7 @@ public class ReleaseCandidateContext extends Context {
         return terrainPool;
     }
 
-    public Weapon getOrbitWeapon() {
-        return orbitWeapon;
-    }
+
 
     public void gameOver() {
         gameOver = true;
@@ -722,5 +716,9 @@ public class ReleaseCandidateContext extends Context {
 
     public List<Weapon> getDrawableWeapons() {
         return drawableWeapons;
+    }
+
+    public ObjectFactory getObjectFactory() {
+        return objectFactory;
     }
 }

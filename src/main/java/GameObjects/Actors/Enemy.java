@@ -30,17 +30,7 @@ public class Enemy extends Actor<EnemyType> {
     }
 
 
-    /**
-     * Check if enemy is out of bounds - if the distance between player and enemy is over a certain threshold.
-     * If it is, then its destroy tag is set to true.
-     * @param player the player
-     */
-    public boolean outOfBounds(Actor player, double deSpawnRadius) {
-        float dx = body.getPosition().x - player.getBody().getPosition().x;
-        float dy =  body.getPosition().y - player.getBody().getPosition().y;
-        float dist = (float) Math.sqrt(dx*dx + dy*dy);
-        return(dist > deSpawnRadius);
-    }
+
 
     public void setStats(EnemyStats newStats) {
         HP = newStats.HP();

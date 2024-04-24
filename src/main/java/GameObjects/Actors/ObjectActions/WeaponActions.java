@@ -1,4 +1,4 @@
-package GameObjects.Actors.ActorAction;
+package GameObjects.Actors.ObjectActions;
 
 import GameObjects.Actors.Player;
 import GameObjects.Actors.Weapon;
@@ -15,7 +15,7 @@ public abstract class WeaponActions {
      * @param orbitInterval millis second between each orbit
      * @return a weapon action
      */
-    public static ActorAction<Weapon> orbitPlayer(float orbitRadius, float orbitSpeed, Player player, long orbitInterval) {
+    public static Action<Weapon> orbitPlayer(float orbitRadius, float orbitSpeed, Player player, long orbitInterval) {
 
         return (w) -> {
             if(TimeUtils.millis() - w.getLastAttack() > orbitInterval) {
@@ -27,7 +27,6 @@ public abstract class WeaponActions {
                 w.getBody().setTransform(new Vector2(x, y).add(player.getBody().getPosition()), w.getBody().getAngle());
                 w.setAngleToPlayer(w.getAngleToPlayer() + orbitSpeed);
                 if (w.getAngleToPlayer() >= 2 * Math.PI) { //TODO wrong round
-                    System.out.println("Full round");
                     w.getBody().setActive(false);
                     w.setLastAttack(TimeUtils.millis());
                     w.setAngleToPlayer(0);
