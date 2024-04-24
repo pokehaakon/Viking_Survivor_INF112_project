@@ -70,7 +70,13 @@ public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
                 BodyDef.BodyType.DynamicBody);
 
 
-        player = new Player(type,new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale,stats);
+        player = new Player(
+                type,
+                new AnimationHandler(animations, animationType, spawnState),
+                bodyFeatures,
+                scale,
+                stats
+        );
 
 
         return player;

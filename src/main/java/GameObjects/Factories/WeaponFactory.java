@@ -44,7 +44,8 @@ public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
         switch (type) {
             case KNIFE: {
                 scale = 0.7f;
-                animation.put(AnimationState.MOVING,KNIFE_FILE_PATH);
+                animation.put(AnimationState.MOVING, KNIFE_FILE_PATH);
+                animation.put(AnimationState.IDLE, KNIFE_FILE_PATH);
                 animationType = AnimationType.GIF;
                 spawnState  = AnimationState.MOVING;
                 break;
@@ -69,7 +70,7 @@ public class WeaponFactory extends AbstractFactory<Weapon, WeaponType>{
                 true,
                 BodyDef.BodyType.DynamicBody);
 
-        weapon = new Weapon(type, new AnimationHandler(animation,animationType,spawnState),bodyFeatures,scale);
+        weapon = new Weapon(type, new AnimationHandler(animation, animationType, spawnState), bodyFeatures, scale);
 
 
 

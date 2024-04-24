@@ -2,6 +2,9 @@ package Tools;
 
 import org.javatuples.*;
 
+import java.util.Iterator;
+import java.util.Spliterator;
+
 public abstract class Tuple {
     public static <A> Unit<A> of(A a) {
         return Unit.with(a);
@@ -32,5 +35,34 @@ public abstract class Tuple {
     }
     public static <A, B, C, D, E, F, G, H, I, J> Decade<A, B, C, D, E, F, G, H, I, J> of(A a, B b, C c, D d, E e, F f, G g, H h, I i, J j) {
         return Decade.with(a, b, c, d, e, f, g, h, i, j);
+    }
+
+    private abstract static class ZippedIterator<A> implements Iterator<A> {
+        Iterator[] iters;
+        public ZippedIterator(Iterator... iters) {
+            this.iters = iters;
+        }
+        @Override
+        public boolean hasNext() {
+            for (var i : iters) {if (i.hasNext()) return false;}
+            return true;
+        }
+    }
+
+    public static <A> Iterable<Unit<A>> zip(Iterable<A> as) {
+        var ai = as.iterator();
+        return () -> new ZippedIterator<>(ai) {
+            @Override
+            public Unit<A> next() {return Tuple.of(ai.next());}
+        };
+    }
+
+    public static <A, B> Iterable<Pair<A, B>> zip(Iterable<A> as, Iterable<B> bs) {
+        var ai = as.iterator();
+        var bi = bs.iterator();
+        return () -> new ZippedIterator<>(ai, bi) {
+            @Override
+            public Pair<A, B> next() {return Tuple.of(ai.next(), bi.next());}
+        };
     }
 }

@@ -1,7 +1,5 @@
 package Simulation;
 
-import GameObjects.Actors.ActorAction.ActorAction;
-import GameObjects.Actors.ActorAction.EnemyActions;
 import GameObjects.Actors.Enemy;
 import GameObjects.Actors.Pickups;
 import GameObjects.ObjectTypes.EnemyType;
@@ -13,8 +11,8 @@ import GameObjects.Pool.ObjectPool;
 import GameObjects.StaticObjects.Terrain;
 import GameObjects.Actors.Weapon;
 import Contexts.ReleaseCandidateContext;
-import Coordinates.SpawnCoordinates;
-import Coordinates.SwarmCoordinates;
+import Simulation.Coordinates.SpawnCoordinates;
+import Simulation.Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
 import Tools.RollingSum;
 import com.badlogic.gdx.math.Vector2;
@@ -22,7 +20,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
@@ -139,6 +136,7 @@ public class Simulation implements Runnable {
 
             // If a pickup is picked up, remove it from the list of pickups
             removePickedUpPickups();
+            removeDestroyedEnemies();
 
 
             doSpinSleep(lastFrameStart, dt);
@@ -253,9 +251,9 @@ public class Simulation implements Runnable {
 
     private void spawnSwarm(EnemyType enemyType, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
         List<Enemy> swarmMembers = enemyPool.get(enemyType, size);
-        List<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType, swarmMembers, player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS, size, spacing, speedMultiplier);
+        List<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType, swarmMembers, player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS, spacing, speedMultiplier);
         for(Enemy enemy : swarm) {
-            enemy.setAction(moveInStraightLine());
+            //enemy.setAction(moveInStraightLine());
             enemy.setAction(destroyIfDefeated());
             //enemy.renderAnimations(context.getAnimationLibrary());
             enemies.add(enemy);

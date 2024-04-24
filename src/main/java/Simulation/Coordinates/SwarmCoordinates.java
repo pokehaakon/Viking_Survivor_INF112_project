@@ -1,13 +1,20 @@
-package Coordinates;
+package Simulation.Coordinates;
 
+import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.Actors.Enemy;
 import GameObjects.ObjectTypes.SwarmType;
+import Tools.Tuple;
 import com.badlogic.gdx.math.Vector2;
+import org.javatuples.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-import static Coordinates.SpawnCoordinates.randomSpawnPoint;
+import static Simulation.Coordinates.SpawnCoordinates.randomSpawnPoint;
+import static GameObjects.Actors.ActorAction.EnemyActions.moveInStraightLine;
+import static Tools.Tuple.zip;
 
 public abstract class SwarmCoordinates {
 
@@ -18,7 +25,7 @@ public abstract class SwarmCoordinates {
      * @param spacing the distance between each enemy
      * @return a list of Vector2 objects
      */
-    public static List<Vector2> squareSwarm(int size, Vector2 startPoint, int spacing) {
+    public static List<Vector2> squareSwarm(int size, Vector2 startPoint, float spacing) {
         float sideLength = (float)Math.ceil(Math.sqrt(size));
         List<Vector2> swarmCoordinates = new ArrayList<>();
         for (int i = 0; i < sideLength; i++) {
@@ -39,22 +46,29 @@ public abstract class SwarmCoordinates {
      * @param target position of the target of which the line is normal to
      * @return list of Vector2 objects
      */
-    public static List<Vector2> lineSwarm(int size, int spacing, Vector2 centerPoint, Vector2 target) {
+    public static List<Vector2> lineSwarm(int size, float spacing, Vector2 centerPoint, Vector2 target) {
         List<Vector2> swarmCoordinates = new ArrayList<>();
 
         // Calculate the direction vector from centerPoint to targetCoordinate
-        Vector2 direction = new Vector2(target.x - centerPoint.x, target.y - centerPoint.y).nor();
+        Vector2 direction = target
+                .cpy()
+                .sub(centerPoint)
+                .nor();
 
         // Calculate the perpendicular vector (normal) to the direction vector
-        Vector2 normal = new Vector2(-direction.y, direction.x);
+        Vector2 normal = direction
+                .cpy()
+                .rotate90(1);
 
         // Adjust the starting position based on the direction and normal vectors
-        float startX = centerPoint.x - (size - 1) / 2f * spacing * normal.x;
-        float startY = centerPoint.y - (size - 1) / 2f * spacing * normal.y;
+        Vector2 start = normal
+                .cpy()
+                .scl(-(size - 1) / 2f * spacing)
+                .add(centerPoint);
 
         // Create the swarm coordinates based on the adjusted starting position
         for (int i = 0; i < size; i++) {
-            swarmCoordinates.add(new Vector2(startX + i * spacing * normal.x, startY + i * spacing * normal.y));
+            swarmCoordinates.add(new Vector2(start.x + i * spacing * normal.x, start.y + i * spacing * normal.y));
         }
 
         return swarmCoordinates;
@@ -90,7 +104,7 @@ public abstract class SwarmCoordinates {
      * @param target the position which the swarm moves towards
      * @return a list of Vector2 which represents the coordinates
      */
-     public static List<Vector2> getSwarmCoordinates(Vector2 startPoint,SwarmType swarmType, int size, int spacing, Vector2 target) {
+     public static List<Vector2> getSwarmCoordinates(Vector2 startPoint,SwarmType swarmType, int size, float spacing, Vector2 target) {
         if(swarmType == SwarmType.LINE) {
             return SwarmCoordinates.lineSwarm(size,spacing,startPoint, target);
         }
@@ -105,24 +119,33 @@ public abstract class SwarmCoordinates {
      * @param swarmMembers list of Enemy object which constitutes the swarm
      * @param center center of spawn circle
      * @param spawnRadius radius of spawn circle
-     * @param size number of enemies in swarm
      * @param spacing space between enemy
      * @return a List of Enemy objects
      */
-    public static List<Enemy> createSwarm(SwarmType swarmType, List<Enemy> swarmMembers, Vector2 center, double spawnRadius, int size, int spacing, int speedMultiplier) {
-        List<Enemy> swarm = new ArrayList<>(swarmMembers);
+    public static List<Enemy> createSwarm(SwarmType swarmType, List<Enemy> swarmMembers, Vector2 center, double spawnRadius, int spacing, float speedMultiplier) {
+        //List<Enemy> swarm = new ArrayList<>(swarmMembers);
         Vector2 startPoint = randomSpawnPoint(center, spawnRadius);
-        List<Vector2> swarmCoordinates = getSwarmCoordinates(startPoint, swarmType, size, spacing, center);
+        List<Vector2> swarmCoordinates = getSwarmCoordinates(startPoint, swarmType, swarmMembers.size(), spacing, center);
         Vector2 swarmDirection = SwarmCoordinates.swarmDirection(center, swarmType, swarmCoordinates);
 
-        for(int i = 0; i < swarm.size(); i++) {
-            Enemy enemy = swarm.get(i);
-            enemy.setPosition(swarmCoordinates.get(i));
-            enemy.setVelocityVector(swarmDirection);
+        for (var enemyCordPair : zip(swarmMembers, swarmCoordinates)) {
+            Enemy enemy = enemyCordPair.getValue0();
+            enemy.setPosition(enemyCordPair.getValue1());
+            enemy.setAction(moveInStraightLine(swarmDirection));
             enemy.setSpeed(speedMultiplier);
         }
 
-        return swarm;
+        return swarmMembers;
+    }
+
+    public static Pair<Supplier<ActorAction<Enemy>>, Supplier<Vector2>> swarmInitializerPair(SwarmType swarmType, int size, Vector2 center, double spawnRadius, float spacing, float speedMultiplier) {
+        Vector2 startPoint = randomSpawnPoint(center, spawnRadius);
+        List<Vector2> swarmCoordinates = getSwarmCoordinates(startPoint, swarmType, size, spacing, center);
+        Vector2 swarmDirection = SwarmCoordinates.swarmDirection(center, swarmType, swarmCoordinates);
+        var iter = swarmCoordinates.iterator();
+        var action = moveInStraightLine(swarmDirection);
+
+        return Tuple.of(() -> action, iter::next);
     }
 
 }

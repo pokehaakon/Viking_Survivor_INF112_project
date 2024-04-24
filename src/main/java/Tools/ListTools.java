@@ -7,6 +7,7 @@ import GameObjects.Pool.SmallPool;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 public abstract class ListTools {
     public static <T> void compactList(List<T> ls) {
@@ -43,9 +44,14 @@ public abstract class ListTools {
     }
 
     public static String findPrefix(String prefix, List<String> strings) {
-        for (String string : strings) {
-            if (string.startsWith(prefix)) return string.replaceFirst(prefix, "");
-        }
-        throw new NoSuchElementException("No string in list has prefix '" + prefix + "', in list: " + strings);
+        return findPrefixOptional(prefix, strings).orElseThrow(() -> new NoSuchElementException("No string in list has prefix '" + prefix + "', in list: " + strings));
     }
+
+    public static Optional<String> findPrefixOptional(String prefix, List<String> strings) {
+        for (String string : strings) {
+            if (string.startsWith(prefix)) return Optional.of(string.replaceFirst(prefix, ""));
+        }
+        return Optional.empty();
+    }
+
 }

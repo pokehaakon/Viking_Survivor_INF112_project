@@ -300,9 +300,12 @@ public class ReleaseCandidateContext extends Context {
 
         //updateCamera(player.getBody().getPosition(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), map, tiledMapScale);
 
+
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
         origin.sub(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
+        camera.position.x = origin.x;
+        camera.position.y = origin.y;
 
         // Save player position for further use
         float playerPosX = origin.x;

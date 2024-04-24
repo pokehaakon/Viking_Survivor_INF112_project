@@ -8,6 +8,7 @@ import GameObjects.Pool.ObjectPool;
 import GameObjects.StaticObjects.Terrain;
 import Parsing.MapParser;
 import Parsing.SpawnFrame;
+import Simulation.SpawnHandler.SpawnHandlerFactory;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;

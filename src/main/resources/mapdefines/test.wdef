@@ -6,4 +6,4 @@
     RAVEN; CONTINUOUS size:10 maxSpawnEachFrame:1
 
 00:10:
-    ORC; WAVE size:20 maxSpawnEachFrame:1
+    ORC; SWARM size:20 type:LINE

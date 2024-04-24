@@ -51,14 +51,11 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     public void setAnimationState(AnimationState state){
         animationHandler.setAnimationState(state);
-
     }
 
 
     public void setAnimation(AnimationState state) {
         animationHandler.getAnimationRenderer().setAnimation(state);
-
-
     }
 
     @Override

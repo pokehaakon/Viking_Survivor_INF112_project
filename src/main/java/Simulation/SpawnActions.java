@@ -1,7 +1,7 @@
 package Simulation;
 
 import Contexts.ReleaseCandidateContext;
-import Coordinates.SwarmCoordinates;
+import Simulation.Coordinates.SwarmCoordinates;
 import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.Actors.Enemy;
 import GameObjects.Actors.Player;
@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 
-import static Coordinates.SpawnCoordinates.randomSpawnPoint;
+import static Simulation.Coordinates.SpawnCoordinates.randomSpawnPoint;
 import static GameObjects.Actors.ActorAction.EnemyActions.*;
 
 public abstract class SpawnActions {
@@ -42,7 +42,7 @@ public abstract class SpawnActions {
         Vector2 startPoint = randomSpawnPoint(center, ReleaseCandidateContext.SPAWN_RADIUS);
 
         List<Vector2> positions = SwarmCoordinates.getSwarmCoordinates(startPoint, SwarmType.LINE, num, spacing, center);
-        List<ActorAction<Enemy>> actions = List.of(moveInStraightLine(), destroyIfOutOfBounds(player), destroyIfDefeated());
+        List<ActorAction<Enemy>> actions = List.of(destroyIfOutOfBounds(player), destroyIfDefeated());
 
         return spawnEnemies(num, enemyPool, positions, enemyType, actions);
 

@@ -1,4 +1,4 @@
-package Simulation;
+package Simulation.SpawnHandler;
 
 import GameObjects.Actors.Enemy;
 import GameObjects.Actors.Player;
@@ -7,11 +7,13 @@ import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.Pool.ObjectPool;
 import GameObjects.StaticObjects.Terrain;
 import Parsing.SpawnType;
+import Simulation.ISpawnHandler;
 
 import java.util.List;
 
-import static Coordinates.SpawnCoordinates.randomPointOutsideScreenRect;
+import static Simulation.Coordinates.SpawnCoordinates.randomPointOutsideScreenRect;
 import static GameObjects.Actors.ActorAction.EnemyActions.*;
+import static Simulation.Coordinates.SwarmCoordinates.swarmInitializerPair;
 
 public class SpawnHandlerFactory {
 
@@ -38,7 +40,17 @@ public class SpawnHandlerFactory {
 
     public ISpawnHandler create(EnemyType enemyType, SpawnType spawnType, List<String> args) {
         return switch (spawnType) {
-            case SWARM -> null; //TODO
+            case SWARM -> new SwarmSpawnHandler(
+                    args,
+                    enemyType,
+                    e -> {
+                        e.setActions(destroyIfDefeated(), destroyIfOutOfBounds(player));
+                    },
+                    () -> player.getBody().getPosition(),
+                    enemyPool,
+                    activeEnemies
+            );
+
             case BOSS -> new BossSpawnHandler( //TODO
 
             );

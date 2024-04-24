@@ -2,6 +2,7 @@ package GameObjects.Actors.ActorAction;
 
 import GameObjects.Actors.Enemy;
 import GameObjects.Actors.Player;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import static Tools.FilterTool.createFilter;
@@ -15,11 +16,10 @@ public abstract class EnemyActions {
      * Moves enemy in straight line according to its velocity vector and speed
      *
      */
-    public static ActorAction<Enemy> moveInStraightLine() {
-        return (e) ->{
-            e.updateDirectionState();
-            e.updateAnimationState();
-            e.move();
+    public static ActorAction<Enemy> moveInStraightLine(Vector2 vel) {
+        var newVel = vel.cpy();
+        return e -> {
+            e.getBody().setLinearVelocity(newVel.setLength(e.speed));
         };
     }
 
@@ -30,27 +30,18 @@ public abstract class EnemyActions {
      */
     public static ActorAction<Enemy> chasePlayer(Player player) {
         return (e) -> {
-            e.velocityVector.add(player.getBody().getPosition()).sub(e.getBody().getWorldCenter());
-            e.move();
-            e.updateDirectionState();
-            e.updateAnimationState();
+            var vel = e.getBody().getLinearVelocity();
+            vel
+                    .set(player.getBody().getPosition())
+                    .sub(e.getBody().getWorldCenter())
+                    .scl(e.speed);
+            e.getBody().setLinearVelocity(vel);
+            //e.move();
+            //e.updateDirectionState();
+            //e.updateAnimationState();
         };
 
     }
-
-//    /**
-//     * Handles the despawning of enemies.
-//     * Enemy despawns when it is out of bounds or killed.
-//     * @param player its location is used to determine if the enemy is out of bounds
-//     * @return an ActorAction object
-//     */
-//    public static ActorAction<Enemy> destroyIfDefeatedOrOutOfBounds(Player player) {
-//        return (e) -> {
-//            if(e.HP <= 0 || e.outOfBounds(player, DESPAWN_RADIUS)) {
-//                e.destroy();
-//            }
-//        };
-//    }
 
     /**
      * Handles the despawning of enemies.
@@ -61,7 +52,7 @@ public abstract class EnemyActions {
     public static ActorAction<Enemy> destroyIfOutOfBounds(Player player) {
         return (e) -> {
             if(e.outOfBounds(player, DESPAWN_RADIUS)) {
-                e.destroy();
+                e.kill();
             }
         };
     }
@@ -74,7 +65,7 @@ public abstract class EnemyActions {
     public static ActorAction<Enemy> destroyIfDefeated() {
         return (e) -> {
             if(e.HP <= 0) {
-                e.destroy();
+                e.kill();
             }
         };
     }

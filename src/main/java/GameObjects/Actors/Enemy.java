@@ -35,7 +35,7 @@ public class Enemy extends Actor<EnemyType> {
      * If it is, then its destroy tag is set to true.
      * @param player the player
      */
-    public boolean outOfBounds(Actor player, double deSpawnRadius) {
+    public boolean outOfBounds(Player player, double deSpawnRadius) {
         float dx = body.getPosition().x - player.getBody().getPosition().x;
         float dy =  body.getPosition().y - player.getBody().getPosition().y;
         float dist = (float) Math.sqrt(dx*dx + dy*dy);

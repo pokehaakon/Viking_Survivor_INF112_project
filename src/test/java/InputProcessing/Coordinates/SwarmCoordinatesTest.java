@@ -1,6 +1,6 @@
 package InputProcessing.Coordinates;
 
-import Coordinates.SwarmCoordinates;
+import Simulation.Coordinates.SwarmCoordinates;
 import com.badlogic.gdx.math.Vector2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

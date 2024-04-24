@@ -29,14 +29,11 @@ public class Player extends Actor<PlayerType> {
         XP = stats.XP();
         level = 1;
         directionState = DirectionState.RIGHT;
-
         weaponInventory = new ArrayList<>();
-
     }
 
-
-
     public void setStats(PlayerStats newStats) {
+        stats = newStats;
         HP = newStats.HP();
         speed = newStats.speed();
         damage = newStats.damage();
@@ -52,7 +49,6 @@ public class Player extends Actor<PlayerType> {
     public List<Weapon> getInventory() {
         return weaponInventory;
     }
-
 
     public void pickup(Pickups pickup) {
         if(pickup.getType() == PickupType.PICKUPORB) {

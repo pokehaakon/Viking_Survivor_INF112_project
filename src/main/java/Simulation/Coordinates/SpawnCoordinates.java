@@ -1,4 +1,4 @@
-package Coordinates;
+package Simulation.Coordinates;
 
 import Contexts.ReleaseCandidateContext;
 import com.badlogic.gdx.math.Vector2;

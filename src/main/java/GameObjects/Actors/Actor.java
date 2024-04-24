@@ -9,6 +9,7 @@ import GameObjects.GameObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,28 +17,17 @@ import java.util.Set;
 public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor {
     public float speed, HP, damage, armour;
 
-    private Set<ActorAction> actions;
-
-
-    // unit vector, direction of movement
-    public Vector2 velocityVector;
-
-    public boolean idle;
-
+    protected List<ActorAction> actions;
     public boolean underAttack = false;
-
-
     private long lastAttackedTime;
 
     public Actor(E type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale) {
-        super(type,animationHandler,bodyFeatures,scale);
-        velocityVector = new Vector2();
+        super(type, animationHandler, bodyFeatures, scale);
 
-        actions  = new HashSet<>();
+        //velocityVector = new Vector2();
+        actions  = new ArrayList<>();
         directionState = DirectionState.RIGHT;
     }
-
-
 
     /**
      * Defines an action for the actor to perform
@@ -45,7 +35,6 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
      */
     public <T extends Actor<E>> void setAction(ActorAction<T> action) {
         actions.add(action);
-
     }
 
     /**
@@ -68,93 +57,55 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
     /**
      * The actor performs its actions
      */
+    @SuppressWarnings({"unchecked"})
     public void doAction(){
-        for(ActorAction action : actions) {
-            action.act(this);
+        int i = 0;
+        while (i < actions.size()) {
+            actions.get(i++).act(this);
         }
+
+        updateDirectionState();
+        updateAnimationState();
     }
 
     /**
      * Reset actions
      */
     public void resetActions() {
-        actions = new HashSet<>();
+        actions.clear();
     }
 
-
-    @Override
-    public void resetVelocity(){
-        velocityVector = new Vector2();
-    }
-
-    @Override
-    public void setVelocityVector(float x, float y) {
-        velocityVector.x += x;
-        velocityVector.y += y;
+    /**
+     * Resets the actor and calls GameObject::destroy
+     */
+    public void kill() {
+        if (destroyed) return;
+        destroy();
+        resetActions();
     }
 
     @Override
-    public void setVelocityVector(Vector2 v) {
-        velocityVector.set(v);
-    }
-
-    @Override
-    public void move(){
-        velocityVector.setLength(speed);
-        body.setLinearVelocity(velocityVector);
-    }
-
-    @Override
-    public void setSpeed(int speedMultiplier) {
+    public void setSpeed(float speedMultiplier) {
         speed *= speedMultiplier;
     }
 
-
-    public boolean isIdle() {
-        return idle;
+    private void updateDirectionState() {
+        float vx = body.getLinearVelocity().x;
+        if (vx == 0) return;
+        directionState = vx < 0 ? DirectionState.LEFT : DirectionState.RIGHT;
     }
 
+    private void updateAnimationState() {
+        var newState = body.getLinearVelocity().len() == 0.0f ? AnimationState.IDLE : AnimationState.MOVING;
 
-    @Override
-    public void updateDirectionState() {
-        DirectionState newState;
-        if (velocityVector.x > 0) {
-            newState = DirectionState.RIGHT;
-        }
-        else if (velocityVector.x < 0) {
-            newState = DirectionState.LEFT;
-        }
-        else {
-            newState = directionState;
-        }
-
-        if(newState != directionState) {
-            directionState = newState;
-        }
-    }
-
-    @Override
-    public void updateAnimationState() {
-        AnimationState newState;
-        if(idle) {
-            newState = AnimationState.IDLE;
-        }
-        else {
-            newState = AnimationState.MOVING;
-        }
         if(animationHandler.getAnimationState() != newState) {
             setAnimationState(newState);
             setAnimation(newState);
         }
-
-
     }
 
-
-
     @Override
-    public void attack(Actor actor,float damage) {
-
+    public void attack(Actor<?> actor, float damage) {
         actor.HP -= damage;
         actor.setUnderAttack(true);
         actor.setLastAttackedTime(TimeUtils.millis());
@@ -179,9 +130,4 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
     public void setUnderAttack(boolean bool) {
         underAttack = bool;
     }
-
-
-
-
-
 }

@@ -13,40 +13,27 @@ public abstract class PlayerActions {
      */
 
     public static ActorAction<Player> moveToInput(KeyStates keyStates) {
+        return (player) -> {
 
-        return (p) ->{
-            p.idle = true;
-            p.resetVelocity();
-            if (keyStates.getState(KeyStates.GameKey.UP)) {
-                p.setVelocityVector(0,1);
-                p.idle = false;
-            }
-            if (keyStates.getState(KeyStates.GameKey.DOWN)) {
-                p.setVelocityVector(0,-1);
-                p.idle = false;
-            }
-            if (keyStates.getState(KeyStates.GameKey.LEFT)) {
-                p.setVelocityVector(-1,0);
-                p.idle = false;
+            var vel = player.getBody().getLinearVelocity();
+            vel.set(0, 0);
+            vel.y += keyStates.getState(KeyStates.GameKey.UP) ? 1 : 0;
+            vel.y += keyStates.getState(KeyStates.GameKey.DOWN) ? -1 : 0;
+            vel.x += keyStates.getState(KeyStates.GameKey.RIGHT) ? 1 : 0;
+            vel.x += keyStates.getState(KeyStates.GameKey.LEFT) ? -1 : 0;
+            vel.scl(player.speed);
 
-            }
-            if (keyStates.getState(KeyStates.GameKey.RIGHT)) {
-                p.setVelocityVector(1,0);
-                p.idle = false;
-            }
-            p.updateDirectionState();
-            p.updateAnimationState();
-            p.move();
+            player.getBody().setLinearVelocity(vel);
         };
     }
 
     public static ActorAction<Player> coolDown(long coolDownDuration) {
         return (p) -> {
-            if(p.isUnderAttack()) {
-                if(TimeUtils.millis() - p.getLastAttackedTime() > coolDownDuration) {
-                    p.setUnderAttack(false);
-                }
+            if (!p.isUnderAttack()) return;
+            if (TimeUtils.millis() - p.getLastAttackedTime() > coolDownDuration) {
+                p.setUnderAttack(false);
             }
+
         };
     }
 

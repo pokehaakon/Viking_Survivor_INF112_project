@@ -1,9 +1,6 @@
 package Parsing;
 
-import Coordinates.SwarmCoordinates;
-
 import java.util.Arrays;
-import java.util.function.Function;
 
 public class CharArrayStream implements Streamable<Character> {
     private final char[] text;
