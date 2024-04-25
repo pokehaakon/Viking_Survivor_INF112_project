@@ -8,9 +8,14 @@ public class PickupActions {
 
     public static Action<Pickups> giveHP(Player player, float hp) {
         return (p) ->{
-            player.HP += hp;
+            if (player.HP + hp > player.maxHP) {
+                player.HP = player.maxHP;
+            } else
+                player.HP += hp;
         };
     }
+
+
     public static Action<Pickups> giveXP(Player player, float xp) {
         return (p) ->{
             player.XP += xp;

@@ -144,11 +144,20 @@ public class Simulation implements Runnable {
             }
 
 
-            // If an enemy is defeated, spawn a pickuporb
+            // If an enemy is defeated, spawn a 30% chance to spawn a xp pickup and 20% chance to spawn a health pickup
             for (Enemy enemy : enemies) {
                 if (enemy.isDestroyed()) {
-                    spawnPickups(PickupType.XP_PICKUP, enemy.getBody().getPosition(), List.of(PickupActions.giveHP(player, 10)));
+                    if (Math.random() > 0.5) {
+                        spawnPickups(PickupType.XP_PICKUP, enemy.getBody().getPosition(), List.of(PickupActions.giveXP(player, 10)));
+                    }
+                    if (Math.random() > 0.8) {
+                        spawnPickups(PickupType.HP_PICKUP, enemy.getBody().getPosition(), List.of(PickupActions.giveHP(player, 10)));
+                    }
+                    else {
+                        continue;
+                    }
                 }
+
             }
 
             // If a pickup is picked up, remove it from the list of pickups

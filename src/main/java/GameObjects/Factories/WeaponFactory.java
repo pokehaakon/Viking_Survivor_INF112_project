@@ -16,8 +16,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import static GameObjects.Animations.AnimationRendering.GIFS.KNIFE_FILE_PATH;
-import static GameObjects.Animations.AnimationRendering.GIFS.KNIFE_WIDT;
+import static GameObjects.Animations.AnimationRendering.GIFS.*;
 import static Tools.FilterTool.Category.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
@@ -36,6 +35,13 @@ public class WeaponFactory extends Factory<Weapon,WeaponType> {
                 new AnimationHandler(Map.of(AnimationState.MOVING, KNIFE_FILE_PATH), AnimationType.GIF,AnimationState.MOVING),
                 defaultWeaponBodyFeatures(createCircleShape(0.2f * 0.7f * KNIFE_WIDT / 2)),
                 0.7f
+
+        ));
+        register( () -> new Weapon(
+                WeaponType.AXE,
+                new AnimationHandler(Map.of(AnimationState.MOVING, AXE_FILE_PATH), AnimationType.GIF,AnimationState.MOVING),
+                defaultWeaponBodyFeatures(createCircleShape(0.2f * 0.7f * AXE_WIDTH / 2)),
+                0.2f
 
         ));
     }
