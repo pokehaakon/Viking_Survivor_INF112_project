@@ -602,7 +602,7 @@ public class ReleaseCandidateContext extends Context {
         weaponPool = new ObjectPool<>(world,new WeaponFactory(), WeaponType.values(), 20);
         pickupsPool = new ObjectPool<>(world, new PickupsFactory(), PickupType.values(), 200);
 
-        spawnOrbitingWeapons(player,4,WeaponType.KNIFE,150,0.1f,1000);
+        spawnOrbitingWeapons(player,4,WeaponType.AXE,150,0.1f,1000);
         toBoKilled = new HashSet<>();
 
         world.setContactListener(new ObjectContactListener());
@@ -623,7 +623,7 @@ public class ReleaseCandidateContext extends Context {
         float angle=0;
         List<Weapon> weapons = new ArrayList<>();
         for(int i = 0; i < numWeapons;i++) {
-            weapons.add(new WeaponFactory().create(WeaponType.KNIFE));
+            weapons.add(new WeaponFactory().create(weaponType));
         }
         for(Weapon weapon:weapons){
             weapon.addToWorld(world);

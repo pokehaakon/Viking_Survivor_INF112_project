@@ -5,7 +5,6 @@ import GameObjects.Actors.ObjectActions.EnemyActions;
 import GameObjects.Actors.Enemy;
 import GameObjects.Actors.ObjectActions.PickupActions;
 import GameObjects.Actors.Pickups;
-import GameObjects.GameObject;
 import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.ObjectTypes.PickupType;
 import GameObjects.ObjectTypes.SwarmType;
@@ -24,7 +23,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -133,8 +131,8 @@ public class Simulation implements Runnable {
 
             // random spawning for now
             if (TimeUtils.millis() - lastSpawnTime > 10000) {
-                spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
-                spawnFixedTerrain(50,0.5f*SCREEN_WIDTH+200,0.5f*SCREEN_HEIGHT+200,500,TerrainType.TREE);
+                spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfOutOfBounds(player),EnemyActions.destroyIfDead(),EnemyActions.chasePlayer(player), coolDown(500)));
+                spawnFixedTerrain(4,0.5f*SCREEN_WIDTH+200,0.5f*SCREEN_HEIGHT+200,500,TerrainType.TREE);
                 //spawnTerrain(TerrainType.TREE);
 
 
@@ -146,11 +144,11 @@ public class Simulation implements Runnable {
 
             // If an enemy is defeated, spawn a 30% chance to spawn a xp pickup and 20% chance to spawn a health pickup
             for (Enemy enemy : enemies) {
-                if (enemy.isDestroyed()) {
-                    if (Math.random() > 0.5) {
+                if (enemy.isKilled()) {
+                    if (Math.random() > 0.8) {
                         spawnPickups(PickupType.XP_PICKUP, enemy.getBody().getPosition(), List.of(PickupActions.giveXP(player, 10)));
                     }
-                    if (Math.random() > 0.8) {
+                    if (Math.random() > 0.9) {
                         spawnPickups(PickupType.HP_PICKUP, enemy.getBody().getPosition(), List.of(PickupActions.giveHP(player, 10)));
                     }
                     else {
@@ -308,7 +306,8 @@ public class Simulation implements Runnable {
         List<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType, swarmMembers, player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS, size, spacing, speedMultiplier);
         for(Enemy enemy : swarm) {
             enemy.setAction(moveInStraightLine());
-            enemy.setAction(destroyIfDefeated(player));
+            enemy.setAction(destroyIfDead());
+            enemy.setAction(destroyIfOutOfBounds(player));
             enemy.renderAnimations(context.getAnimationLibrary());
             enemies.add(enemy);
         }

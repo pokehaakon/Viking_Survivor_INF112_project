@@ -8,13 +8,12 @@ import GameObjects.GameObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import java.util.HashSet;
-
 public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor {
     public float speed, HP, damage, armour;
 
     private long lastAttack;
 
+    private boolean isKilled = false;
 
     // unit vector, direction of movement
     public Vector2 velocityVector;
@@ -143,6 +142,19 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
         lastAttack = newAttack;
     }
 
+    public boolean isKilled() {
+        return isKilled;
+    }
+
+    public void kill() {
+        isKilled = true;
+    }
+
+    @Override
+    public void revive() {
+        destroyed = false;
+        isKilled = false;
+    }
 
 
 }
