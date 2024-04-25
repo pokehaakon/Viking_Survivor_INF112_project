@@ -12,12 +12,7 @@ import java.util.function.Supplier;
 public interface IFactory<T extends GameObject<E>, E extends Enum<E>> {
 
 
-    /**
-     * Creates a supplier - a set of instructions of creating the object
-     * @param type object type
-     * @return a custom object supplier
-     */
-     Supplier<T> build(E type);
+
 
 
     /**
@@ -37,18 +32,13 @@ public interface IFactory<T extends GameObject<E>, E extends Enum<E>> {
     List<T> create (E type, int num);
 
 
-    /**
-     * Adds a supplier of every enum type to the factory register
-     * @param types list of enum types to add to the factory inventory
-     */
-    void registerAll(E[] types);
+
 
 
     /**
      * Adds a type and its corresponding supplier to the factory inventory
-     * @param type
      * @param supplier
      */
-    void register(E type, Supplier<T> supplier);
+    void register(Supplier<T> supplier);
 
 }

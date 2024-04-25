@@ -12,6 +12,7 @@ import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.Shape;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -20,59 +21,39 @@ import java.util.function.Supplier;
 import static GameObjects.Animations.AnimationRendering.GIFS.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
+import static Tools.ShapeTools.createSquareShape;
 
 public class PickupsFactory extends Factory<Pickups,PickupType> {
-    public PickupsFactory() {
-        registerAll(PickupType.values());
-    }
 
-    @Override
-    public Supplier<Pickups> build(PickupType type) {
-
-        return () -> {
-            Pickups pickup;
-            PickupStats stats = null;
-            Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
-            AnimationType animationType;
-            AnimationState spawnState;
-            float scale = PICKUPORB_SCALE;
-            Filter filter = createFilter(
-                    FilterTool.Category.PICKUP,
-                    new FilterTool.Category[]{
-                            FilterTool.Category.PLAYER
-                    }
-            );
-
-            CircleShape shape;
-            switch (type) {
-                case PICKUPORB -> {
-                    stats = Stats.pickupStats();
-                    animations.put(AnimationState.MOVING, PICK_UP_ORB_FILE_PATH);
-                    shape = createCircleShape(0.5f * scale * PICKUP_ORB_WIDTH / 2);
-                    animationType = AnimationType.GIF;
-                    spawnState = AnimationState.MOVING;
-                    break;
-                }
-                default -> throw new IllegalStateException("Unexpected value: " + type);
+    private static final Filter DEFAULT_PICKUP_FILTER = createFilter(
+            FilterTool.Category.PICKUP,
+            new FilterTool.Category[]{
+                    FilterTool.Category.PLAYER
             }
+    );
 
-            BodyFeatures bodyfeatures = new BodyFeatures(
-                    shape,
-                    filter,
-                    1,
-                    0,
-                    0,
-                    true,
-                    BodyDef.BodyType.DynamicBody);
+    public PickupsFactory() {
 
+        register(() -> new Pickups(
+                PickupType.PICKUPORB,
+                new AnimationHandler(Map.of(AnimationState.IDLE,PICK_UP_ORB_FILE_PATH),AnimationType.GIF,AnimationState.IDLE),
+                defaultPickUpBodyFeatures(createCircleShape(0.5f * PICKUPORB_SCALE * PICKUP_ORB_WIDTH / 2)),
+                PICKUPORB_SCALE,
+                null
 
-            pickup = new Pickups(type, new AnimationHandler(animations, animationType, spawnState), bodyfeatures, scale, stats);
-            pickup.setAnimationState(AnimationState.MOVING);
-
-
-            return pickup;
-        };
-
+        ));
     }
+
+    private BodyFeatures defaultPickUpBodyFeatures(Shape shape) {
+        return new BodyFeatures(
+                shape,
+                DEFAULT_PICKUP_FILTER,
+                1,
+                0,
+                0,
+                true,
+                BodyDef.BodyType.DynamicBody);
+    }
+
 
 }

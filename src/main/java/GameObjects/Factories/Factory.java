@@ -28,16 +28,11 @@ public abstract class Factory<T extends GameObject<E>,E extends Enum<E>> impleme
     }
 
     @Override
-    public void register(E type, Supplier<T> supplier) {
-        supplierInventory.put(type,supplier);
+    public void register(Supplier<T> supplier) {
+        supplierInventory.put(supplier.get().getType(), supplier);
     }
 
-    @Override
-    public void registerAll(E[] types)  {
-        for(E type : types) {
-            register(type,build(type));
-        }
-    }
+
 
 
 }
