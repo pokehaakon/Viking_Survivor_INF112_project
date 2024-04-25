@@ -134,13 +134,13 @@ public class Simulation implements Runnable {
             // random spawning for now
             if (TimeUtils.millis() - lastSpawnTime > 10000) {
                 spawnRandomEnemies(5, Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
-                spawnFixedTerrain(50,0.5f*SCREEN_WIDTH+200,0.5f*SCREEN_HEIGHT+200,200,TerrainType.TREE);
+                spawnFixedTerrain(50,0.5f*SCREEN_WIDTH+200,0.5f*SCREEN_HEIGHT+200,500,TerrainType.TREE);
                 //spawnTerrain(TerrainType.TREE);
 
 
             }
             if(TimeUtils.millis() - lastSwarmSpawnTime > 15000) {
-                //spawnSwarm(EnemyType.RAVEN,SwarmType.LINE,10,60,5);
+                spawnSwarm(EnemyType.RAVEN,SwarmType.LINE,10,60,5);
             }
 
 

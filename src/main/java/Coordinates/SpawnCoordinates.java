@@ -31,7 +31,6 @@ public abstract class SpawnCoordinates extends Vector2 {
         return new Vector2((float)x,(float)y);
     }
 
-
     /**
      * Generates a list of spawn points, forming a square around the screen. If the number of desired spawn points exceeds
      * the number of available spawn points, then the method simply returns the available spawn points.
@@ -91,11 +90,7 @@ public abstract class SpawnCoordinates extends Vector2 {
         // randomize the spawn points
         Collections.shuffle(spawnPoints);
 
-        if(n <= spawnPoints.size()){
-            return spawnPoints.subList(0,n);
-        }
-
-        return spawnPoints;
+        return spawnPoints.subList(0, Math.min(n, spawnPoints.size()));
 
     }
 
@@ -111,27 +106,15 @@ public abstract class SpawnCoordinates extends Vector2 {
         if(minDistanceBetween <= 0) {
             throw new IllegalArgumentException("Distance between must be greater than zero!");
         }
-        boolean available = true;
+
         for(Vector2 pos : occupiedPositions) {
-            if (distance(pos, potentialSpawn) < minDistanceBetween) {
-                available = false;
-                break;
+            if (Vector2.dst(pos.x,pos.y, potentialSpawn.x,potentialSpawn.y) < minDistanceBetween) {
+                return false;
             }
         }
-        return available;
+        return true;
     }
 
-    /**
-     * Calculates distance between two vector2 objects
-     * @param a
-     * @param b
-     * @return a float
-     */
-    private static float distance(Vector2 a, Vector2 b) {
-        double dx = a.x - b.x;
-        double dy = a.y - b.y;
-        return (float)Math.sqrt(dx * dx + dy * dy);
-    }
 
 
 

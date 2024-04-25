@@ -26,7 +26,7 @@ class EnemyPoolTest {
 
     private ObjectPool<Enemy, EnemyType> testPool;
 
-    List<EnemyType> objectTypes = List.of(EnemyType.values());
+    EnemyType[] objectTypes = EnemyType.values();
     static World world;
     int poolSize;
 
@@ -95,8 +95,8 @@ class EnemyPoolTest {
             enemiesInPool.add(enemyList.getPool());
         }
 
-        enemy1 = objectTypes.get(0);
-        enemy2 = objectTypes.get(1);
+        enemy1 = objectTypes[0];
+        enemy2 = objectTypes[1];
     }
 
     @Test

@@ -19,7 +19,7 @@ public class GameObject<E extends Enum<E>> implements IGameObject<E> {
     protected Body body;
 
     protected float scale;
-    protected Set<Action> actions;
+    protected Set<Action> actions = new HashSet<>();
 
 
 
@@ -40,7 +40,7 @@ public class GameObject<E extends Enum<E>> implements IGameObject<E> {
         this.scale = scale;
         this.type = type;
 
-        actions = new HashSet<>();
+
 
     }
     /**
@@ -174,10 +174,7 @@ public class GameObject<E extends Enum<E>> implements IGameObject<E> {
      * @param pos the position which acts as center of spawn circle
      */
     public boolean outOfBounds(Vector2 pos, double deSpawnRadius) {
-        float dx = body.getPosition().x - pos.x;
-        float dy =  body.getPosition().y - pos.y;
-        float dist = (float) Math.sqrt(dx*dx + dy*dy);
-        return(dist > deSpawnRadius);
+        return(Vector2.dst(body.getPosition().x,body.getPosition().y,pos.x,pos.y) > deSpawnRadius);
     }
 
 

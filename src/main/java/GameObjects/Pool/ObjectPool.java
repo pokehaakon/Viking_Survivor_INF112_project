@@ -1,8 +1,6 @@
 package GameObjects.Pool;
 
-import GameObjects.Factories.Factory;
 import GameObjects.Factories.IFactory;
-import GameObjects.Factories.ObjectFactory;
 import GameObjects.GameObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -14,7 +12,7 @@ public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
     private final IFactory<T,E> factory;
     private final Map<E, SmallPool<T>> objectPool;
 
-    private final List<E> objectTypes;
+    private final E[] objectTypes;
     private final Random random;
 
     private final World world;
@@ -27,11 +25,11 @@ public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
      * @param objectTypes list of the different types of each object
      * @param poolSize number of objects to create of each object type
      */
-    public ObjectPool(World world, IFactory<T,E> factory, List<E> objectTypes, int poolSize) {
+    public ObjectPool(World world, IFactory<T,E> factory, E[] objectTypes, int poolSize) {
         this.world = world;
         this.factory = factory;
         this.objectTypes = objectTypes;
-        this.objectPool = new EnumMap<>(objectTypes.get(0).getDeclaringClass());
+        this.objectPool = new EnumMap<>(objectTypes[0].getDeclaringClass());
         this.random = new Random();
 
         if (poolSize <= 0) {
@@ -50,7 +48,7 @@ public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
 
 
     public T getRandom() {
-        E randomObjectType = objectTypes.get(random.nextInt(objectTypes.size()));
+        E randomObjectType = objectTypes[random.nextInt(objectTypes.length)];
         return get(randomObjectType);
     }
 

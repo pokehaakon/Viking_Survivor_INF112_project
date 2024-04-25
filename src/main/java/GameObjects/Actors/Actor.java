@@ -13,7 +13,7 @@ import java.util.HashSet;
 public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor {
     public float speed, HP, damage, armour;
 
-
+    private long lastAttack;
 
 
     // unit vector, direction of movement
@@ -135,7 +135,13 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
         underAttack = bool;
     }
 
+    public long getLastAttack() {
+        return lastAttack;
+    }
 
+    public void setLastAttack(long newAttack) {
+        lastAttack = newAttack;
+    }
 
 
 
