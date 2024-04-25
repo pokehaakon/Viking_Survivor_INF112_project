@@ -76,11 +76,11 @@ public interface IGameObject {
      */
    void setBodyFeatures(BodyFeatures features);
 
-    /**
-     * Sets scale for sprite size handling
-     * @param newScale
-     */
-    void setScale(float newScale);
+//    /**
+//     * Sets scale for sprite size handling
+//     * @param newScale
+//     */
+//    void setScale(float newScale);
 
 //    /**
 //     * This assigns animations to objects (gif or sprites), depending on the animation map of the object

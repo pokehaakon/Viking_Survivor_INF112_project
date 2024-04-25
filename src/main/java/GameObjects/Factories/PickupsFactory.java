@@ -12,6 +12,7 @@ import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.Shape;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -43,15 +44,15 @@ public class PickupsFactory extends AbstractFactory<Pickups>{
         Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
         AnimationType animationType;
         AnimationState spawnState;
-        float scale = PICKUPORB_SCALE;
+        float scale = 0.2f; //In Meters
 
 
-        CircleShape shape;
+        Shape shape;
         switch (name) {
             case "PickupType:PICKUPORB" -> {
                 stats = Stats.pickupStats();
                 animations.put(AnimationState.MOVING, PICK_UP_ORB_FILE_PATH);
-                shape = createCircleShape(0.5f * scale * PICKUP_ORB_WIDTH / 2);
+                shape = createCircleShape(scale / 2);
                 animationType = AnimationType.GIF;
                 spawnState = AnimationState.MOVING;
                 break;
@@ -70,7 +71,7 @@ public class PickupsFactory extends AbstractFactory<Pickups>{
 
 
 
-        pickup = new Pickups(name, new AnimationHandler(animations, animationType, spawnState), bodyfeatures, scale, stats);
+        pickup = new Pickups(name, new AnimationHandler(animations, spawnState), bodyfeatures, scale, stats);
         pickup.setAnimationState(AnimationState.MOVING);
 
 

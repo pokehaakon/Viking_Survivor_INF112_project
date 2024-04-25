@@ -4,7 +4,6 @@ import Rendering.Animations.AnimationRendering.AnimationHandler;
 import Rendering.Animations.AnimationRendering.AnimationRender;
 import Rendering.Animations.AnimationRendering.AnimationType;
 import Rendering.Animations.AnimationState;
-import GameObjects.ObjectTypes.TerrainType;
 import GameObjects.BodyFeatures;
 import GameObjects.StaticObjects.Terrain;
 import Tools.FilterTool;
@@ -47,9 +46,9 @@ public class TerrainFactory extends AbstractFactory<Terrain>{
         boolean isGif;
         switch (name) {
             case "TerrainType:TREE": {
-                scale = 0.1f;
+                scale = 3f;
                 animations.put(AnimationState.STATIC,"tree.png");
-                shape = createCircleShape(scale*TREE_WIDTH/2);
+                shape = createCircleShape(scale / 2);
                 animationType = AnimationType.SPRITE;
                 spawnState = AnimationState.STATIC;
                 break;
@@ -64,7 +63,7 @@ public class TerrainFactory extends AbstractFactory<Terrain>{
                         //FilterTool.Category.WALL,
                         FilterTool.Category.ENEMY,
                         FilterTool.Category.PLAYER,
-                        FilterTool.Category.BULLET
+                        FilterTool.Category.WEAPON
                 }
         );
 
@@ -78,7 +77,7 @@ public class TerrainFactory extends AbstractFactory<Terrain>{
                 false,
                 BodyDef.BodyType.StaticBody);
 
-        terrain = new Terrain(name, new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale);
+        terrain = new Terrain(name, new AnimationHandler(animations, spawnState), bodyFeatures, scale);
 
         return terrain;
     }

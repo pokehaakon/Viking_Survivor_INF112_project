@@ -33,7 +33,7 @@ public abstract class ShapeTools {
      */
     public static CircleShape createCircleShape(float radius) {
         CircleShape shape = new CircleShape();
-        shape.setRadius(radius);
+        shape.setRadius(radius * 2);
         return shape;
     }
 

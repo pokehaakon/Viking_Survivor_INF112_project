@@ -14,7 +14,7 @@ public abstract class GameObject implements IGameObject {
 
     protected Body body;
 
-    protected float scale;
+    protected final float scale;
 
 
     protected boolean destroyed = false;
@@ -45,8 +45,6 @@ public abstract class GameObject implements IGameObject {
     public void draw(SpriteBatch batch, long frame) {
        animationHandler.getAnimationRenderer().draw(batch, frame,this);
     }
-
-
 
     public void setAnimationState(AnimationState state){
         animationHandler.setAnimationState(state);
@@ -103,16 +101,9 @@ public abstract class GameObject implements IGameObject {
                 bodyFeatures.type());
         body.setUserData(this);
     }
-
-   @Override
+    @Override
     public void setBodyFeatures(BodyFeatures features) {
         bodyFeatures = features;
-    }
-
-
-    @Override
-    public void setScale(float newScale) {
-        scale = newScale;
     }
 
     public float getScale() {

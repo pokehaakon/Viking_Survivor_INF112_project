@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 public class Main {
 
     public static int SCREEN_WIDTH = 1024, SCREEN_HEIGHT = 1024;
+    public static final int PPM = 30;
     public static void main(String[] args) {
         Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
         cfg.setTitle("Viking Survivor");

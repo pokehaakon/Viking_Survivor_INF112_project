@@ -8,6 +8,7 @@ import GameObjects.GameObject;
 import Parsing.ObjectDefineParser.Defines.*;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
 import Tools.ShapeTools;
+import VikingSurvivor.app.Main;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Shape;
@@ -22,7 +23,7 @@ import java.util.function.Supplier;
 
 public abstract class ExperimentalEnemyFactory extends ExperimentalAbstractFactory {
     private static final Map<String, Supplier<Enemy>> factories = new HashMap<>();
-    private static final Map<String, Supplier<GameObject>> ofactories = new HashMap<>();
+    //private static final Map<String, Supplier<GameObject>> ofactories = new HashMap<>();
 
 
     static public List<String> getRegistered() {
@@ -37,7 +38,8 @@ public abstract class ExperimentalEnemyFactory extends ExperimentalAbstractFacto
         float scale = stats.scale;
 
         var struct = definition.structureDefinition;
-        var shape = getShapeFromShapeDefinition(struct.shapeDefinition);
+        var shape = getShapeFromShapeDefinition(struct.shapeDefinition, scale);
+        System.out.println("Filter: " + struct.filter.categoryBits + ", " + struct.filter.maskBits);
         BodyFeatures bodyFeatures = new BodyFeatures(
                 shape,
                 struct.filter,
@@ -69,7 +71,7 @@ public abstract class ExperimentalEnemyFactory extends ExperimentalAbstractFacto
         Supplier<GameObject> osupplier = supplier::get;
 
         factories.put(name, supplier);
-        ofactories.put(name, osupplier);
+        //ofactories.put(name, osupplier);
     }
 
     static private AnimationHandler animationHandlerFromAnimationDefinition(AnimationDefinition definition) {
@@ -79,12 +81,12 @@ public abstract class ExperimentalEnemyFactory extends ExperimentalAbstractFacto
         );
     }
 
-    static private Shape getShapeFromShapeDefinition(ShapeDefinition definition) {
+    static private Shape getShapeFromShapeDefinition(ShapeDefinition definition, float scale) {
         if (definition instanceof SquareShapeDefinition squareShapeDefinition) {
-            return ShapeTools.createSquareShape(squareShapeDefinition.width, squareShapeDefinition.height);
+            return ShapeTools.createSquareShape(squareShapeDefinition.width * scale, squareShapeDefinition.height * scale);
         }
         if (definition instanceof CircleShapeDefinition circleShapeDefinition) {
-            return ShapeTools.createCircleShape(circleShapeDefinition.radius);
+            return ShapeTools.createCircleShape(circleShapeDefinition.radius * scale);
         }
         if (definition instanceof PolygonShapeDefinition polygonShapeDefinition) {
             throw new NotImplementedException("Cannot create polygon shapes yet!");

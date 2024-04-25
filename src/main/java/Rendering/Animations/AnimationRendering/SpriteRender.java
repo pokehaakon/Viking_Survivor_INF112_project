@@ -2,6 +2,7 @@ package Rendering.Animations.AnimationRendering;
 
 import Rendering.Animations.AnimationState;
 import GameObjects.GameObject;
+import VikingSurvivor.app.Main;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -31,11 +32,16 @@ public class SpriteRender implements AnimationRender {
         Vector2 pos = object.getBody().getPosition();
         sprite = stateAnimations.get(state);
         if (sprite == null) return;
+        Vector2 regionRect = new Vector2(sprite.getRegionWidth(), sprite.getRegionHeight());
+        float max = Math.max(regionRect.x, regionRect.y);
+        max = regionRect.y;
+        regionRect.scl(1/max * object.getScale() * Main.PPM);
         batch.draw(sprite,
-                pos.x - sprite.getWidth()/2*object.getScale(), // subtracting offset
-                pos.y - sprite.getWidth()/2*object.getScale(),
-                sprite.getWidth() * object.getScale(),
-                sprite.getHeight() * object.getScale());
+                pos.x - regionRect.x / 2, // subtracting offset
+                pos.y - regionRect.y / 2,
+                regionRect.x,
+                regionRect.y
+        );
 
     }
 

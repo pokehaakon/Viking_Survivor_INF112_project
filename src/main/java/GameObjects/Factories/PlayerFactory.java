@@ -40,7 +40,7 @@ public class PlayerFactory extends AbstractFactory<Player>{
         AnimationState spawnState;
         switch (name) {
             case "PlayerType:PLAYER1": {
-                scale = PLAYER_SCALE;
+                scale = 1.8f;
                 stats = Stats.player();
                 animations.put(AnimationState.MOVING, PLAYER_MOVING_FILE_PATH);
                 animations.put(AnimationState.IDLE, PLAYER_IDLE_FILE_PATH);
@@ -58,7 +58,7 @@ public class PlayerFactory extends AbstractFactory<Player>{
                 new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL, FilterTool.Category.PICKUP}
         );
 
-        Shape shape = createCircleShape(0.3f*scale*PLAYER_WIDTH/2);
+        Shape shape = createCircleShape(scale / 2);
 
         bodyFeatures = new BodyFeatures(
                 shape,

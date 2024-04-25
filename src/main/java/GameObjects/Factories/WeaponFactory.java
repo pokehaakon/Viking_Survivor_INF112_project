@@ -4,7 +4,6 @@ package GameObjects.Factories;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
 import Rendering.Animations.AnimationRendering.AnimationType;
 import Rendering.Animations.AnimationState;
-import GameObjects.ObjectTypes.WeaponType;
 import GameObjects.BodyFeatures;
 import GameObjects.Actors.Weapon;
 
@@ -18,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import static Rendering.Animations.AnimationRendering.GIFS.KNIFE_FILE_PATH;
-import static Rendering.Animations.AnimationRendering.GIFS.KNIFE_WIDT;
+//import static Rendering.Animations.AnimationRendering.GIFS.KNIFE_WIDT;
 import static Tools.FilterTool.Category.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
@@ -57,11 +56,11 @@ public class WeaponFactory extends AbstractFactory<Weapon>{
         }
 
         Filter filter = createFilter(
-                BULLET,
+                WEAPON,
                 new FilterTool.Category[]{ FilterTool.Category.WALL, ENEMY}
         );
         //render.setAnimations(animation);
-        Shape shape = createCircleShape(0.2f*scale*KNIFE_WIDT/2);
+        Shape shape = createCircleShape(scale / 2);
         bodyFeatures = new BodyFeatures(
                 shape,
                 filter,
@@ -71,7 +70,7 @@ public class WeaponFactory extends AbstractFactory<Weapon>{
                 true,
                 BodyDef.BodyType.DynamicBody);
 
-        weapon = new Weapon(name, new AnimationHandler(animation, animationType, spawnState), bodyFeatures, scale);
+        weapon = new Weapon(name, new AnimationHandler(animation, spawnState), bodyFeatures, scale);
 
 
 

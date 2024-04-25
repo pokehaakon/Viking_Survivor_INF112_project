@@ -18,6 +18,7 @@ import GameObjects.StaticObjects.Terrain;
 import GameObjects.Actors.Weapon;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
+import Rendering.Animations.AnimationRendering.GIFS;
 import Rendering.Animations.AnimationRendering.Sprites;
 import Simulation.Simulation;
 import Simulation.GameWorld;
@@ -66,80 +67,43 @@ public class ReleaseCandidateContext extends Context {
 
     private final SpriteBatch batch;
     private final OrthographicCamera camera;
-
-
     private World world;
-
     private Player player;
-    private Pickups pickup;
-    private Weapon orbitWeapon;
-    private ArrayList<Enemy> spawnedEnemies;
     private final BitmapFont font;
-
     private RollingSum UpdateTime;
     private RollingSum FrameTime;
     private RollingSum FPS;
-
     private ObjectPool<Enemy> enemyPool;
-
     private RollingSum UPS;
     private long previousFrameStart = System.nanoTime();
-
     private final Lock renderLock;
-
     private ProgressBar xpBar;
-    private float xpAmount;
     private int level;
     private Label levelLabel;
     private Label timerLabel;
     private long startTime;
     private Table weaponTable;
-
     private KeyStates keyStates;
-
     private final Simulation sim;
     private final Thread simThread;
     //private EnemyFactory enemyFactory;
     private PickupsFactory pickupsFactory;
-
     private TerrainFactory terrainFactory;
-
-    private List<Terrain> spawnedTerrain;
-
     private List<Weapon> drawableWeapons;
-
     private WeaponFactory weaponFactory;
-
-    private Sprite grass;
     private List<Terrain> drawableTerrain;
     private List<Pickups> drawablePickups;
     private List<Enemy> drawableEnemies;
-
-//    private AnimationLibrary animationLibrary;
-
     private PlayerFactory playerFactory;
     private float zoomLevel = 1f;
     private long frameCount = 0;
     private static boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
-
     private Box2DDebugRenderer debugRenderer;
-
     private ObjectPool<Weapon> weaponPool;
     private ObjectPool<Pickups> pickupsPool;
-
     private ObjectPool<Terrain> terrainPool;
-    private Set<Body> toBoKilled;
-
-
-
+    private List<Body> toBoKilled;
     private AtomicLong synchronizer;
-
-    float angle = 0;
-
-    float totalRotation = 0;
-
-    long lastOrbit;
-
     boolean gameOver = false;
 
 //    private TiledMap map;
@@ -157,9 +121,19 @@ public class ReleaseCandidateContext extends Context {
         this.camera = camera;
 
         level = 0;
-        xpAmount = 0;
 
-        this.setInputProcessor(createInputProcessor());
+        this.keyStates = new KeyStates();
+        this.setInputProcessor(
+                new GameInputProcessor(
+                        this,
+                        camera,
+                        keyStates,
+                        flt -> {
+                            float temp = this.zoomLevel;
+                            zoomLevel = flt;
+                            return temp;
+                        }
+                ));
         setupDebug();
         font = new BitmapFont();
         font.setColor(Color.RED);
@@ -182,84 +156,7 @@ public class ReleaseCandidateContext extends Context {
     }
 
 
-    private InputProcessor createInputProcessor() {
-        Context me = this;
-        keyStates = new KeyStates();
-        return new InputProcessor() {
-            @Override
-            public boolean keyDown(int keycode) {
-                return switch (keycode) {
-                    case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.setInputKey(keycode);
-                    case Input.Keys.ESCAPE -> {keyStates.setInputKey(keycode); System.exit(0); yield true;}
-                    case Input.Keys.P -> {me.getContextualInputProcessor().setContext("PAUSEMENU"); yield true;}
-                    default -> false;
-                };
-            }
 
-            @Override
-            public boolean keyUp(int keycode) {
-
-                return switch (keycode) {
-                    case Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D -> keyStates.unsetInputKey(keycode);
-                    default -> false;
-                };
-            }
-
-            @Override
-            public boolean keyTyped(char character) {
-                return false;
-            }
-
-            @Override
-            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                //ignore pointer for now...
-                return switch (button) {
-                    case Input.Buttons.MIDDLE -> {
-                        zoomLevel = 1f;
-                        camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
-                        camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
-                        yield true;
-                    }
-                    default -> false;
-                };
-
-            }
-
-            @Override
-            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-                return false;
-            }
-
-            @Override
-            public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
-                return false;
-            }
-
-            @Override
-            public boolean touchDragged(int screenX, int screenY, int pointer) {
-                return false;
-            }
-
-            @Override
-            public boolean mouseMoved(int screenX, int screenY) {
-                return false;
-            }
-
-            @Override
-            public boolean scrolled(float amountX, float amountY) {
-                if (amountY > 0 && zoomLevel < 2) {
-                    zoomLevel *= 1.25f;
-                }
-                if (amountY < 0 && zoomLevel > 0.01f) {
-                    zoomLevel /= 1.25f;
-                }
-                camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
-                camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
-
-                return true;
-            }
-        };
-    }
 
     @Override
     public void show() {
@@ -271,12 +168,12 @@ public class ReleaseCandidateContext extends Context {
         float mapHeight = layer.getHeight() * layer.getTileHeight() * tiledMapScale;
         float mapWidth = layer.getWidth() * layer.getTileWidth() * tiledMapScale;
 
-        if(player.x < viewportWidth / 2) camera.position.x = viewportWidth / 2;
-        else if(player.x > mapWidth - viewportWidth / 2) camera.position.x = mapWidth - viewportWidth / 2;
+        if(player.x < viewportWidth / 2f) camera.position.x = viewportWidth / 2f;
+        else if(player.x > mapWidth - viewportWidth / 2f) camera.position.x = mapWidth - viewportWidth / 2f;
         else camera.position.x = player.x;
 
-        if(player.y < viewportHeight / 2) camera.position.y = viewportHeight / 2;
-        else if(player.y > mapHeight - viewportHeight / 2) camera.position.y = mapHeight - viewportHeight / 2;
+        if(player.y < viewportHeight / 2f) camera.position.y = viewportHeight / 2f;
+        else if(player.y > mapHeight - viewportHeight / 2f) camera.position.y = mapHeight - viewportHeight / 2f;
         else camera.position.y = player.y;
 
         camera.update();
@@ -288,6 +185,7 @@ public class ReleaseCandidateContext extends Context {
         FPS.add(System.nanoTime() - previousFrameStart);
 
         Sprites.loadWaiting();
+        GIFS.loadWaiting();
 
         previousFrameStart = System.nanoTime();
 
@@ -537,7 +435,7 @@ public class ReleaseCandidateContext extends Context {
 
 
 
-        pickup = pickupsFactory.create("PickupType:PICKUPORB");
+        //pickup = pickupsFactory.create("PickupType:PICKUPORB");
         //pickup.renderAnimations(animationLibrary);
 
 
@@ -635,7 +533,7 @@ public class ReleaseCandidateContext extends Context {
 
         gameWorld = new GameWorld("mapdefines/test.wdef", player, enemyPool, terrainPool, drawableEnemies, drawableTerrain);
 
-        toBoKilled = new HashSet<>();
+        toBoKilled = new ArrayList<>();
 
         world.setContactListener(new ObjectContactListener());
 
@@ -694,7 +592,7 @@ public class ReleaseCandidateContext extends Context {
         return UpdateTime;
     }
 
-    public Set<Body> getToBoKilled() {
+    public List<Body> getToBoKilled() {
         return toBoKilled;
     }
 
@@ -726,9 +624,9 @@ public class ReleaseCandidateContext extends Context {
         return terrainPool;
     }
 
-    public Weapon getOrbitWeapon() {
-        return orbitWeapon;
-    }
+//    public Weapon getOrbitWeapon() {
+//        return orbitWeapon;
+//    }
 
     public void gameOver() {
         gameOver = true;

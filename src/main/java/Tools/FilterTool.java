@@ -1,7 +1,6 @@
 package Tools;
 
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.physics.box2d.Filter;
 
 public abstract class FilterTool {
@@ -15,7 +14,7 @@ public abstract class FilterTool {
         PLAYER,
         ENEMY,
         WALL,
-        BULLET,
+        WEAPON,
         PICKUP;
 
         Category() {if (this.ordinal() > 15) {throw new RuntimeException("TOO MANY CATEGORIES, MAX 16!");}}

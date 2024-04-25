@@ -11,7 +11,7 @@ import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
 public abstract class EnemyActions {
 
 
-    public static final double DESPAWN_RADIUS = (double) 1.1*SCREEN_HEIGHT;
+    public static final double DESPAWN_RADIUS =  1.1 * SCREEN_HEIGHT;
     /**
      * Moves enemy in straight line according to its velocity vector and speed
      *
@@ -34,7 +34,7 @@ public abstract class EnemyActions {
             vel
                     .set(player.getBody().getPosition())
                     .sub(e.getBody().getWorldCenter())
-                    .scl(e.speed);
+                    .setLength(e.speed);
             e.getBody().setLinearVelocity(vel);
             //e.move();
             //e.updateDirectionState();

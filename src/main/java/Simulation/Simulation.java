@@ -34,7 +34,7 @@ public class Simulation implements Runnable {
     private World world;
     private RollingSum updateTime, UPS;
     private boolean quit = false;
-    private Set<Body> toBeKilled;
+    private List<Body> toBeKilled;
     private boolean paused = false;
     private long frame = 0;
     public final int SET_UPS = 60;
@@ -48,7 +48,7 @@ public class Simulation implements Runnable {
     private List<Pickups> pickups;
     private AtomicLong synchronizer;
 
-    private Weapon mainWeapon;
+    //private Weapon mainWeapon;
 
     private long lastSwarmSpawnTime;
 
@@ -76,7 +76,7 @@ public class Simulation implements Runnable {
 
         pickupPool = context.getPickupsPool();
         pickups = context.getDrawablePickups();
-        mainWeapon = context.getOrbitWeapon();
+        //mainWeapon = context.getOrbitWeapon();
         gameWorld = context.getGameWorld();
     }
 
@@ -98,36 +98,25 @@ public class Simulation implements Runnable {
             lastFrameStart = System.nanoTime();
             long t0 = System.nanoTime();
 
-            if (keyStates.getState(KeyStates.GameKey.QUIT)) {
-                stopSim();
-            }
-
-
-            for (Enemy enemy : enemies) {
-                enemy.doAction();
-            }
-
-            for(Weapon weapon : weapons) {
-                weapon.doAction();
-            }
+            if (keyStates.getState(KeyStates.GameKey.QUIT)) stopSim();
 
 
             context.getPlayer().doAction();
 
+            for (Enemy enemy : enemies) enemy.doAction();
+            for (Weapon weapon : weapons) weapon.doAction();
+
+
+
+
             // random spawning for now
             if (TimeUtils.millis() - lastSpawnTime > 5000) {
                 //spawnRandomEnemies(5,Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
-
                 spawnTerrain("TerrainType:TREE");
-
-
-            }
-            if(TimeUtils.millis() - lastSwarmSpawnTime > 15000) {
-                //spawnSwarm(EnemyType.RAVEN,SwarmType.LINE,10,60,5);
             }
 
 
-            // If an enemy is defeated, spawn a pickuporb
+            // If an enemy is defeated, spawn a pickup orb
             for (Enemy enemy : enemies) {
                 if (enemy.isDestroyed()) {
                     spawnPickups("PickupType:PICKUPORB", enemy.getBody().getPosition());
@@ -176,7 +165,7 @@ public class Simulation implements Runnable {
     /**
      * Despawns destroyed enemies by returning them to enemy pool and removing them from the spawned enemy list
      */
-    public void removeDestroyedEnemies() {
+    private void removeDestroyedEnemies() {
         int i = 0;
         for (Enemy e : enemies) {
             if (e.isDestroyed()) {
@@ -188,7 +177,7 @@ public class Simulation implements Runnable {
         enemies.subList(i, enemies.size()).clear();
     }
 
-    public void removePickedUpPickups() {
+    private void removePickedUpPickups() {
         int i = 0;
         for (Pickups p : pickups) {
             if (p.isPickedUp()) {
@@ -200,41 +189,8 @@ public class Simulation implements Runnable {
         pickups.subList(i, pickups.size()).clear();
     }
 
-//    private void spawnEnemies(EnemyType enemyType, int num, List<ActorAction> actions) {
-//        for(Enemy enemy: enemyPool.get(enemyType, num)) {
-//            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
-//            for(ActorAction action : actions) {
-//                enemy.setAction(action);
-//            }
-
-//    private void spawnEnemies(EnemyType enemyType, int num, List<ActorAction> actions) {
-//        for(Enemy enemy: enemyPool.get(enemyType, num)) {
-//            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
-//            for(ActorAction action : actions) {
-//                enemy.setAction(action);
-//            }
-//
-//            enemy.renderAnimations(context.getAnimationLibrary());
-//            enemies.add(enemy);
-//        }
-//        lastSpawnTime = TimeUtils.millis();
-//    }
-//
-//    private void spawnRandomEnemies(int num, List<ActorAction> actions) {
-//        for(Enemy enemy : enemyPool.getRandom(num)) {
-//            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
-//            for(ActorAction action : actions) {
-//                enemy.setAction(action);
-//            }
-//            enemy.renderAnimations(context.getAnimationLibrary());
-//            enemies.add(enemy);
-//        }
-//        lastSpawnTime = TimeUtils.millis();
-//    }
-//
     private void spawnTerrain(String TerrainName) {
         Terrain terrain = context.getTerrainPool().get(TerrainName);
-        //terrain.renderAnimations(context.getAnimationLibrary());
         terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
         context.getDrawableTerrain().add(terrain);
         lastSpawnTime = TimeUtils.millis();
@@ -242,39 +198,10 @@ public class Simulation implements Runnable {
 
     private void spawnPickups(String pickupName, Vector2 position) {
         Pickups pickup = context.getPickupsPool().get(pickupName);
-        //pickup.renderAnimations(context.getAnimationLibrary());
         pickup.setPosition(position);
         context.getDrawablePickups().add(pickup);
         lastPickupSpawnTime = TimeUtils.millis();
     }
-
-
-    private void spawnSwarm(String enemyName, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
-        List<Enemy> swarmMembers = enemyPool.get(enemyName, size);
-        List<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType, swarmMembers, player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS, spacing, speedMultiplier);
-        for(Enemy enemy : swarm) {
-            //enemy.setAction(moveInStraightLine());
-            enemy.setAction(destroyIfDefeated());
-            //enemy.renderAnimations(context.getAnimationLibrary());
-            enemies.add(enemy);
-        }
-
-        lastSwarmSpawnTime = TimeUtils.millis();
-    }
-//
-//
-//    private void spawnSwarm(EnemyType enemyType, SwarmType swarmType, int size, int spacing, int speedMultiplier) {
-//        List<Enemy> swarmMembers = enemyPool.get(enemyType, size);
-//        List<Enemy> swarm = SwarmCoordinates.createSwarm(swarmType, swarmMembers, player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS, size, spacing, speedMultiplier);
-//        for(Enemy enemy : swarm) {
-//            enemy.setAction(moveInStraightLine());
-//            enemy.setAction(destroyIfDefeated(player));
-//            enemy.renderAnimations(context.getAnimationLibrary());
-//            enemies.add(enemy);
-//        }
-//
-//        lastSwarmSpawnTime = TimeUtils.millis();
-//    }
 
     public void stopSim() {
         quit = true;
@@ -289,20 +216,6 @@ public class Simulation implements Runnable {
     }
     public long getFrameNumber() {
         return frame;
-    }
-
-    public void orbitWeapon() {
-
-        if(TimeUtils.millis() - lastOrbit > ORBIT_INTERVAL) {
-            mainWeapon.doAction();
-        }
-        if (mainWeapon.getAngleToPlayer() >= 2 * Math.PI) {
-            mainWeapon.getBody().setActive(false);
-            mainWeapon.setAngleToPlayer(0);
-            lastOrbit = TimeUtils.millis();
-
-        }
-
     }
 
 }

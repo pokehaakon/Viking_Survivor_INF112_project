@@ -20,7 +20,7 @@ public class Player extends Actor {
 
 
     public Player(String name, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale, PlayerStats stats) {
-        super(name, animationHandler,bodyFeatures, scale);
+        super(name, animationHandler, bodyFeatures, scale);
         this.stats = stats;
 
         HP = stats.HP();

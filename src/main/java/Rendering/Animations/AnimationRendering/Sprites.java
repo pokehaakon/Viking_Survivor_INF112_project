@@ -31,6 +31,11 @@ public abstract class Sprites {
                 location.accept(spriteMap.get(fileName));
             });
         }
+        if(spriteMap.get(fileName) == null) {
+            todos.add(() -> {
+                location.accept(spriteMap.get(fileName));
+            });
+        }
         return spriteMap.get(fileName);
     }
 
