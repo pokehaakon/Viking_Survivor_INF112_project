@@ -2,7 +2,7 @@ package Contexts;
 
 import GameObjects.Actors.*;
 import GameObjects.Actors.ObjectActions.*;
-
+import GameObjects.Actors.Pickups;
 import GameObjects.Animations.AnimationRendering.AnimationLibrary;
 import GameObjects.Factories.PickupsFactory;
 import GameObjects.Factories.*;

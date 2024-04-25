@@ -147,7 +147,7 @@ public class Simulation implements Runnable {
             // If an enemy is defeated, spawn a pickuporb
             for (Enemy enemy : enemies) {
                 if (enemy.isDestroyed()) {
-                    spawnPickups(PickupType.PICKUPORB, enemy.getBody().getPosition(), List.of(PickupActions.giveHP(player, 10)));
+                    spawnPickups(PickupType.XP_PICKUP, enemy.getBody().getPosition(), List.of(PickupActions.giveHP(player, 10)));
                 }
             }
 

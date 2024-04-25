@@ -35,12 +35,11 @@ public class PickupsFactory extends Factory<Pickups,PickupType> {
     public PickupsFactory() {
 
         register(() -> new Pickups(
-                PickupType.PICKUPORB,
+                PickupType.XP_PICKUP,
                 new AnimationHandler(Map.of(AnimationState.IDLE,PICK_UP_ORB_FILE_PATH),AnimationType.GIF,AnimationState.IDLE),
-                defaultPickUpBodyFeatures(createCircleShape(0.5f * PICKUPORB_SCALE * PICKUP_ORB_WIDTH / 2)),
-                PICKUPORB_SCALE,
+                defaultPickUpBodyFeatures(createCircleShape(0.5f * XP_PICKUP_SCALE * PICKUP_ORB_WIDTH / 2)),
+                XP_PICKUP_SCALE,
                 null
-
         ));
     }
 
