@@ -49,6 +49,7 @@ class SpawnCoordinatesTest {
 
     @Test
     void availableSpawn_minDistance() {
+
         occupiedPositions.add(new Vector2(0,0));
         potentialSpawn = new Vector2(4,0);
         minDistance = 4f;
@@ -83,15 +84,6 @@ class SpawnCoordinatesTest {
 
 
 
-    @Test
-    void availableSpawn() {
-
-
-    }
-
-    @Test
-    void getOccupiedPositions() {
-    }
 
     private static List<Object[]> spawnData() {
         return Arrays.asList(

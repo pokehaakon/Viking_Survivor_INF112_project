@@ -53,19 +53,20 @@ public abstract class SpawnCoordinates extends Vector2 {
 
 
         int numPointsX = (int) Math.ceil((2*distX)/ distanceBetweenPoints) +1 ;
-        int numPointsY = (int) Math.floor((2*distY) / distanceBetweenPoints) ;
+        int numPointsY = (int) Math.ceil((2*distY) / distanceBetweenPoints) +1;
 
         // adding points to top and bottom
         for(int i = 0; i < numPointsX; i++) {
             // to bottom
             Vector2 bottom = new Vector2(startX + i * distanceBetweenPoints, startY);
-            if(availableSpawn(bottom, occupiedSpawns,distanceBetweenPoints)) {
+            if(availableSpawn(bottom, occupiedSpawns,distanceBetweenPoints) && availableSpawn(bottom,spawnPoints,distanceBetweenPoints)) {
                 spawnPoints.add(bottom);
             }
             Vector2 top = new Vector2(startX + i * distanceBetweenPoints, endY);
             // to top
-            if(availableSpawn(top, occupiedSpawns,distanceBetweenPoints)) {
+            if(availableSpawn(top, occupiedSpawns,distanceBetweenPoints) && availableSpawn(top,spawnPoints,distanceBetweenPoints)) {
                 spawnPoints.add(top);
+
             }
         }
 
@@ -74,17 +75,20 @@ public abstract class SpawnCoordinates extends Vector2 {
 
             // left side
             Vector2 left = new Vector2(startX, startY + i * distanceBetweenPoints);
-            if(availableSpawn(left, occupiedSpawns,distanceBetweenPoints)) {
+            if(availableSpawn(left, occupiedSpawns,distanceBetweenPoints)&& availableSpawn(left,spawnPoints,distanceBetweenPoints)) {
                 spawnPoints.add(left);
+
             }
 
             // right side
             Vector2 right = new Vector2(endX, startY + i * distanceBetweenPoints);
-            if(availableSpawn(right, occupiedSpawns,distanceBetweenPoints)) {
+            if(availableSpawn(right, occupiedSpawns,distanceBetweenPoints) && availableSpawn(right,spawnPoints,distanceBetweenPoints)) {
                 spawnPoints.add(right);
+
             }
         }
 
+        // randomize the spawn points
         Collections.shuffle(spawnPoints);
 
         if(n <= spawnPoints.size()){
