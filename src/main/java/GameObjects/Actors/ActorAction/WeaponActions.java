@@ -27,7 +27,6 @@ public abstract class WeaponActions {
                 w.getBody().setTransform(new Vector2(x, y).add(player.getBody().getPosition()), w.getBody().getAngle());
                 w.setAngleToPlayer(w.getAngleToPlayer() + orbitSpeed);
                 if (w.getAngleToPlayer() >= 2 * Math.PI) {
-                    System.out.println("Full round");
                     w.getBody().setActive(false);
                     w.setLastAttack(TimeUtils.millis());
                     w.setAngleToPlayer(0);

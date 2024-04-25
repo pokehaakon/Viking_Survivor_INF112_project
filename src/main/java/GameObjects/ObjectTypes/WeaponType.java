@@ -2,5 +2,6 @@ package GameObjects.ObjectTypes;
 
 public enum WeaponType {
 
-     KNIFE  //PROJECTILE
+     KNIFE,  //PROJECTILE
+     AXE
 }
