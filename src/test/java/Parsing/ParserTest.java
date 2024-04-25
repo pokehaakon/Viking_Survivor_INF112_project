@@ -185,7 +185,9 @@ class ParserTest {
                                 
                 """);
         //MapParser p = new MapParser("mapdefines/test.wdef");
-        p.doParse();
+        //p.doParse();
+        p.parseDefines();
+        p.parseTimeFrames();
         var defines = p.getDefines();
 
         assertEquals(1, defines.size());
