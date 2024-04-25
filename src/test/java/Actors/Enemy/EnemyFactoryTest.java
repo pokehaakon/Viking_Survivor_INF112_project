@@ -9,6 +9,7 @@ import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.World;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ class EnemyFactoryTest {
     @BeforeEach
      void setUpBeforeAll() {
         HeadlessApplicationConfiguration config = new HeadlessApplicationConfiguration();
-
+        Box2D.init();
         ApplicationListener listener = new ApplicationListener() {
 
             @Override
