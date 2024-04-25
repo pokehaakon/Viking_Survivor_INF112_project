@@ -3,7 +3,7 @@ package Simulation;
 import GameObjects.Actors.ObjectActions.Action;
 import GameObjects.Actors.ObjectActions.EnemyActions;
 import GameObjects.Actors.Enemy;
-import GameObjects.Actors.ObjectActions.PickupActions;
+//import GameObjects.Actors.ObjectActions.PickupActions;
 import GameObjects.Actors.Pickups;
 import GameObjects.GameObject;
 import GameObjects.ObjectTypes.EnemyType;
@@ -143,11 +143,17 @@ public class Simulation implements Runnable {
                 spawnSwarm(EnemyType.RAVEN,SwarmType.LINE,10,60,5);
             }
 
-
+            // spawn with pickup actions
             // If an enemy is defeated, spawn a pickuporb
+//            for (Enemy enemy : enemies) {
+////                if (enemy.isDestroyed()) {
+////                    spawnPickups(PickupType.XP_PICKUP, enemy.getBody().getPosition(), List.of(PickupActions.giveHP(player, 10)));
+////                }
+//            }
+
             for (Enemy enemy : enemies) {
                 if (enemy.isDestroyed()) {
-                    spawnPickups(PickupType.XP_PICKUP, enemy.getBody().getPosition(), List.of(PickupActions.giveHP(player, 10)));
+                    spawnPickups(PickupType.XP_PICKUP, enemy.getBody().getPosition());
                 }
             }
 
@@ -274,17 +280,24 @@ public class Simulation implements Runnable {
         lastSpawnTime = TimeUtils.millis();
 
     }
-
-    private void spawnPickups(PickupType type, Vector2 position, List<Action<Pickups>> actions) {
+    private void spawnPickups(PickupType type, Vector2 position) {
         Pickups pickup = context.getPickupsPool().get(type);
         pickup.renderAnimations(context.getAnimationLibrary());
         pickup.setPosition(position);
-        for(Action<Pickups> action:actions) {
-            pickup.setAction(action);
-        }
         context.getDrawablePickups().add(pickup);
         lastPickupSpawnTime = TimeUtils.millis();
     }
+
+//    private void spawnPickups(PickupType type, Vector2 position, List<Action<Pickups>> actions) {
+//        Pickups pickup = context.getPickupsPool().get(type);
+//        pickup.renderAnimations(context.getAnimationLibrary());
+//        pickup.setPosition(position);
+//        for(Action<Pickups> action:actions) {
+//            pickup.setAction(action);
+//        }
+//        context.getDrawablePickups().add(pickup);
+//        lastPickupSpawnTime = TimeUtils.millis();
+//    }
 
 
     private void spawnSwarm(EnemyType enemyType, SwarmType swarmType, int size, int spacing, int speedMultiplier) {

@@ -55,9 +55,9 @@ public class ObjectContactListener implements ContactListener {
         else if (playerPickupCollision(b1, b2)) {
             Player player = b1.getUserData() instanceof Player ? (Player) b1.getUserData():(Player) b2.getUserData();
             Pickups pickup = b1.getUserData() instanceof Pickups ? (Pickups) b1.getUserData():(Pickups) b2.getUserData();
-            pickup.doAction();
+//            pickup.doAction();
             pickup.setPickedUp(true);
-            //player.pickup(pickup);
+            player.pickup(pickup);
             System.out.println("PICKUP COLLISION");
         }
 
