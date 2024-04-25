@@ -4,6 +4,7 @@ import GameObjects.Actors.*;
 import GameObjects.Actors.ObjectActions.*;
 
 import GameObjects.Animations.AnimationRendering.AnimationLibrary;
+import GameObjects.Factories.PickupsFactory;
 import GameObjects.Factories.*;
 import GameObjects.ObjectTypes.*;
 import GameObjects.Actors.ObjectActions.PlayerActions;
@@ -55,8 +56,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static GameObjects.Actors.ObjectActions.WeaponActions.orbitPlayer;
-import static GameObjects.Actors.ObjectActions.WeaponActions.orbitPlayer;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.getBottomLeftCorrection;
 import static VikingSurvivor.app.Main.SCREEN_WIDTH;
@@ -76,7 +75,7 @@ public class ReleaseCandidateContext extends Context {
 
     private final BitmapFont font;
 
-    private ObjectFactory objectFactory;
+
     private RollingSum UpdateTime;
     private RollingSum FrameTime;
     private RollingSum FPS;
@@ -100,12 +99,7 @@ public class ReleaseCandidateContext extends Context {
 
     private final Simulation sim;
     private final Thread simThread;
-    private  EnemyFactory enemyFactory;
-    private PickupsFactory pickupsFactory;
 
-    private TerrainFactory terrainFactory;
-
-    private List<Terrain> spawnedTerrain;
 
     private List<Weapon> drawableWeapons;
 
@@ -117,7 +111,7 @@ public class ReleaseCandidateContext extends Context {
     private List<Enemy> drawableEnemies;
 
     private AnimationLibrary animationLibrary;
-
+    public static float CONSTANT_FPS = 60f;
     private PlayerFactory playerFactory;
     private float zoomLevel = 1f;
     private long frameCount = 0;
@@ -512,7 +506,6 @@ public class ReleaseCandidateContext extends Context {
         world = new World(new Vector2(0, 0), true);
 
         map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
-        objectFactory = new ObjectFactory();
         createMapObjects("area", world);
 
 
@@ -604,12 +597,12 @@ public class ReleaseCandidateContext extends Context {
         }
 
 
-        enemyPool = new ObjectPool<>(world, new EnemyFactory(), List.of(EnemyType.values()),200);
-        terrainPool = new ObjectPool<>(world, new TerrainFactory(), List.of(TerrainType.values()), 200);
-        weaponPool = new ObjectPool<>(world,new WeaponFactory(), List.of(WeaponType.values()), 20);
-        pickupsPool = new ObjectPool<>(world, new PickupsFactory(), List.of(PickupType.values()), 200);
+        enemyPool = new ObjectPool<>(world, new EnemyFactory(), EnemyType.values(),200);
+        terrainPool = new ObjectPool<>(world, new TerrainFactory(), TerrainType.values(), 200);
+        weaponPool = new ObjectPool<>(world,new WeaponFactory(), WeaponType.values(), 20);
+        pickupsPool = new ObjectPool<>(world, new PickupsFactory(), PickupType.values(), 200);
 
-        spawnOrbitingWeapons(player,1,WeaponType.KNIFE,150,0.1f,1000);
+        spawnOrbitingWeapons(player,4,WeaponType.KNIFE,150,0.1f,1000);
         toBoKilled = new HashSet<>();
 
         world.setContactListener(new ObjectContactListener());
@@ -634,11 +627,12 @@ public class ReleaseCandidateContext extends Context {
         }
         for(Weapon weapon:weapons){
             weapon.addToWorld(world);
-            weapon.setAction(WeaponActions.orbitPlayer(orbitRadius,orbitSpeed,player,orbitInterval));
+            weapon.setAction(WeaponActions.orbitPlayer(this,orbitRadius,orbitSpeed,player,orbitInterval));
             weapon.setOwner(player);
             weapon.setAngleToPlayer(angle);
             weapon.renderAnimations(animationLibrary);
             drawableWeapons.add(weapon);
+
             angle+=(float)((float)2*Math.PI/numWeapons);
         }
 
@@ -718,7 +712,9 @@ public class ReleaseCandidateContext extends Context {
         return drawableWeapons;
     }
 
-    public ObjectFactory getObjectFactory() {
-        return objectFactory;
+    public long getCurrentFrame() {
+        return frameCount;
     }
+
+
 }
