@@ -1,4 +1,4 @@
-package GameObjects.Actors.ActorAction;
+package GameObjects.Actors.ObjectActions;
 
 import GameObjects.Actors.Enemy;
 import GameObjects.Actors.Player;
@@ -15,7 +15,7 @@ public abstract class EnemyActions {
      * Moves enemy in straight line according to its velocity vector and speed
      *
      */
-    public static ActorAction<Enemy> moveInStraightLine() {
+    public static Action<Enemy> moveInStraightLine() {
         return (e) ->{
             e.updateDirectionState();
             e.updateAnimationState();
@@ -28,7 +28,7 @@ public abstract class EnemyActions {
      * @param player object to be chased
      * @return
      */
-    public static ActorAction<Enemy> chasePlayer(Player player) {
+    public static Action<Enemy> chasePlayer(Player player) {
         return (e) -> {
             e.velocityVector.add(player.getBody().getPosition()).sub(e.getBody().getWorldCenter());
             e.move();
@@ -44,15 +44,15 @@ public abstract class EnemyActions {
      * @param player its location is used to determine if the enemy is out of bounds
      * @return an ActorAction object
      */
-    public static ActorAction<Enemy> destroyIfDefeated(Player player) {
+    public static Action<Enemy> destroyIfDefeated(Player player) {
         return (e) -> {
-            if(e.HP <= 0 || e.outOfBounds(player,DESPAWN_RADIUS)) {
+            if(e.HP <= 0 || e.outOfBounds(player.getBody().getPosition(),DESPAWN_RADIUS)) {
                 e.destroy();
             }
         };
     }
 
-    public static ActorAction<Enemy> coolDown(long coolDownDuration) {
+    public static Action<Enemy> coolDown(long coolDownDuration) {
         return (e) -> {
             if(e.isUnderAttack()) {
                 if(TimeUtils.millis() - e.getLastAttackedTime() > coolDownDuration) {

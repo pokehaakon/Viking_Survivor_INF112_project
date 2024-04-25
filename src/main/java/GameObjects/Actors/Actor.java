@@ -3,19 +3,17 @@ package GameObjects.Actors;
 import GameObjects.Animations.AnimationRendering.AnimationHandler;
 
 import GameObjects.Animations.AnimationState;
-import GameObjects.Actors.ActorAction.ActorAction;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.HashSet;
-import java.util.Set;
 
 public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements IActor {
     public float speed, HP, damage, armour;
 
-    private Set<ActorAction> actions;
+    private long lastAttack;
 
 
     // unit vector, direction of movement
@@ -32,35 +30,11 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
         super(type,animationHandler,bodyFeatures,scale);
         velocityVector = new Vector2();
 
-        actions  = new HashSet<>();
+
         directionState = DirectionState.RIGHT;
     }
 
 
-
-    /**
-     * Defines an action for the actor to perform
-     * @param action
-     */
-    public void setAction(ActorAction action) {
-        actions.add(action);
-
-    }
-    /**
-     * The actor performs its actions
-     */
-    public void doAction(){
-        for(ActorAction action : actions) {
-            action.act(this);
-        }
-    }
-
-    /**
-     * Reset actions
-     */
-    public void resetActions() {
-        actions = new HashSet<>();
-    }
 
 
     @Override
@@ -161,7 +135,13 @@ public abstract class Actor<E extends Enum<E>> extends GameObject<E> implements 
         underAttack = bool;
     }
 
+    public long getLastAttack() {
+        return lastAttack;
+    }
 
+    public void setLastAttack(long newAttack) {
+        lastAttack = newAttack;
+    }
 
 
 

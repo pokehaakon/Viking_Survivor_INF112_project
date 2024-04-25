@@ -11,7 +11,6 @@ public class Weapon extends Actor<WeaponType>  {
     private long lastOrbit;
     private float angleToPlayer = 0;
 
-    private long lastAttack;
 
     private Player owner;
     public Weapon(WeaponType type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale) {
@@ -34,13 +33,7 @@ public class Weapon extends Actor<WeaponType>  {
         player.addToInventory(this);
     }
 
-    public long getLastAttack() {
-        return lastAttack;
-    }
 
-    public void setLastAttack(long newAttack) {
-        lastAttack = newAttack;
-    }
 
     public Player getOwner() {
         return owner;

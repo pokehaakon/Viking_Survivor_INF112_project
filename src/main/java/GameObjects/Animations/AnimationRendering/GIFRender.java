@@ -20,7 +20,7 @@ public class GIFRender<E extends Enum<E>> implements AnimationRender {
 
     private GifPair currentGIF;
 
-    private AnimationLibrary animationLibrary;
+    private final AnimationLibrary animationLibrary;
 
 
 
@@ -63,7 +63,7 @@ public class GIFRender<E extends Enum<E>> implements AnimationRender {
 
     @Override
     public float getWidth(AnimationState state) {
-        // gets width of first frame. assume that all frames have equal dimensions
+        // gets width of first frame of gif. assume that all frames have equal dimensions
         TextureRegion region  = animationMovement.get(state).right().getKeyFrame(0);
         return region.getRegionWidth();
     }

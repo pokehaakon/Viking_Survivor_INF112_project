@@ -9,9 +9,10 @@ import java.util.*;
 
 
 public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
-    private final IFactory<T, E> factory;
+    private final IFactory<T,E> factory;
     private final Map<E, SmallPool<T>> objectPool;
-    private final List<E> objectTypes;
+
+    private final E[] objectTypes;
     private final Random random;
 
     private final World world;
@@ -24,12 +25,11 @@ public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
      * @param objectTypes list of the different types of each object
      * @param poolSize number of objects to create of each object type
      */
-    public ObjectPool(World world, IFactory<T, E> factory, List<E> objectTypes, int poolSize) {
+    public ObjectPool(World world, IFactory<T,E> factory, E[] objectTypes, int poolSize) {
         this.world = world;
         this.factory = factory;
         this.objectTypes = objectTypes;
-        this.objectPool = new EnumMap<>(objectTypes.get(0).getDeclaringClass());
-        //this.objectPool = new HashMap<>();
+        this.objectPool = new EnumMap<>(objectTypes[0].getDeclaringClass());
         this.random = new Random();
 
         if (poolSize <= 0) {
@@ -39,14 +39,16 @@ public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
         for (E objectType : objectTypes) {
             createObjectPool(objectType, poolSize);
         }
+
     }
 
     private void createObjectPool(E type, int size) {
         objectPool.put(type, new SmallPool<>(world, () -> factory.create(type), size));
     }
 
+
     public T getRandom() {
-        E randomObjectType = objectTypes.get(random.nextInt(objectTypes.size()));
+        E randomObjectType = objectTypes[random.nextInt(objectTypes.length)];
         return get(randomObjectType);
     }
 
@@ -96,6 +98,12 @@ public class ObjectPool<T extends GameObject<E>, E extends Enum<E>> {
             for (T object : pool.getPool()) {
                 object.setPosition(vector2);
             }
+        }
+    }
+
+    public void add(E[] types, int size) {
+        for(E type : types) {
+            createObjectPool(type,size);
         }
     }
 }

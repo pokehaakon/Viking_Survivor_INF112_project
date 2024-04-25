@@ -1,5 +1,7 @@
 package GameObjects;
 
+import GameObjects.Actors.Actor;
+import GameObjects.Actors.ObjectActions.Action;
 import GameObjects.Animations.AnimationRendering.*;
 import GameObjects.Animations.AnimationState;
 import GameObjects.Actors.DirectionState;
@@ -8,14 +10,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Set;
 
-public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
+public class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     protected Body body;
 
     protected float scale;
+    protected Set<Action> actions = new HashSet<>();
+
 
 
     protected boolean destroyed = false;
@@ -35,6 +40,24 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
         this.scale = scale;
         this.type = type;
 
+
+
+    }
+    /**
+     * Defines an action for the actor to perform
+     * @param action
+     */
+    public void setAction(Action action) {
+        actions.add(action);
+
+    }
+    /**
+     * The actor performs its actions
+     */
+    public void doAction(){
+        for(Action action : actions) {
+            action.act(this);
+        }
     }
 
 
@@ -143,6 +166,15 @@ public abstract class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     public Map<AnimationState,String> getAnimations() {
         return animationHandler.getAnimationMap();
+    }
+
+
+    /**
+     * Check if object is out of bounds - if the distance between a set position and object is over a certain threshold.
+     * @param pos the position which acts as center of spawn circle
+     */
+    public boolean outOfBounds(Vector2 pos, double deSpawnRadius) {
+        return(Vector2.dst(body.getPosition().x,body.getPosition().y,pos.x,pos.y) > deSpawnRadius);
     }
 
 

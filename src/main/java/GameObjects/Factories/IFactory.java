@@ -5,32 +5,40 @@ import GameObjects.GameObject;
 import TextureHandling.TextureHandler;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 //public interface IFactory<T extends GameObject<E>, E extends Enum<E>> {
 public interface IFactory<T extends GameObject<E>, E extends Enum<E>> {
 
+
+
+
+
     /**
      * Creates a game object of a desired type
-     * @param type
+     *
+     * @param type enum object type
      * @return a GameObject object
      */
-    T create(E type);
+    T create (E type);
 
     /**
-     * Creates a list of game objects
-     * @param n size of list
-     * @param type type of object
-     * @return a list of GameObject objects
+     * Create multiple game objects
+     * @param type desired type
+     * @param num number of instances
+     * @return list of game objects
      */
-    List<T> create(int n, E type);
+    List<T> create (E type, int num);
+
+
+
 
 
     /**
-     * Changes the FileHandler. For testing purposes.
-     * @param textureHandler the new texture handler
+     * Adds a type and its corresponding supplier to the factory inventory
+     * @param supplier
      */
-    void setSpriteRender(AnimationRender spriteRender);
-
-    void setGifRender(AnimationRender gifRender);
+    void register(Supplier<T> supplier);
 
 }

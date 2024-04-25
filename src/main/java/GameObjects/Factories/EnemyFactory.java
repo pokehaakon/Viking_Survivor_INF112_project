@@ -13,115 +13,65 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static GameObjects.Animations.AnimationRendering.GIFS.*;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
 
-public class EnemyFactory extends AbstractFactory<Enemy, EnemyType> {
+public class EnemyFactory extends Factory<Enemy,EnemyType> {
 
-    private final Filter filter;
-    private EnumMap<EnemyType, Function<EnemyType, Enemy>> factories;
+    private static final Filter DEFAULT_ENEMY_FILTER = createFilter(
+            FilterTool.Category.ENEMY,
+            new FilterTool.Category[]{
+                    FilterTool.Category.WALL,
+                    FilterTool.Category.ENEMY,
+                    FilterTool.Category.PLAYER,
+                    FilterTool.Category.BULLET
+            });
+
 
     public EnemyFactory() {
-        super();
 
+        register(() -> new Enemy(
+                EnemyType.RAVEN,
+                new AnimationHandler(Map.of(AnimationState.MOVING, RAVEN_FILE_PATH), AnimationType.GIF, AnimationState.MOVING),
+                defaultEnemyBodyFeatures(createCircleShape(0.5f * RAVEN_SCALE * RAVEN_WIDTH / 2)),
+                RAVEN_SCALE,
+                Stats.enemy1()
 
-        filter  = createFilter(
-                FilterTool.Category.ENEMY,
-                new FilterTool.Category[]{
-                        FilterTool.Category.WALL,
-                        FilterTool.Category.ENEMY,
-                        FilterTool.Category.PLAYER,
-                        FilterTool.Category.BULLET
-                }
-        );
+        ));
+
+        register(() -> new Enemy(
+                EnemyType.ORC,
+                new AnimationHandler(Map.of(AnimationState.MOVING, ORC_FILE_PATH), AnimationType.GIF, AnimationState.MOVING),
+                defaultEnemyBodyFeatures(createCircleShape(0.3f * ORC_SCALE * ORC_WIDTH / 2)),
+                ORC_SCALE,
+                Stats.enemy2()
+        ));
+
+        register(() -> new Enemy(
+                EnemyType.WOLF,
+                new AnimationHandler(Map.of(AnimationState.MOVING, WOLF_FILE_PATH), AnimationType.GIF, AnimationState.MOVING),
+                defaultEnemyBodyFeatures(createCircleShape(0.5f * ORC_SCALE * WOLF_WIDTH / 2)),
+                ORC_SCALE,
+                Stats.enemy2()
+        ));
+
 
     }
 
-    /**
-     * Creates an instance of an enemy
-     * @param type the desired enemy type
-     * @return an enemy object
-     */
-    @Override
-    public Enemy create(EnemyType type) {
-
-        if(type == null) {
-            throw new NullPointerException("Type cannot be null!");
-        }
-
-        Enemy enemy;
-        float scale;
-        EnemyStats stats;
-        Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
-
-
-        AnimationType animationType;
-        Shape shape;
-        AnimationState spawnState;
-
-//        factories.put(EnemyType.RAVEN, (enemyType) -> {
-//            scale = RAVEN_SCALE;
-//            stats = Stats.enemy1();
-//            animations.put(AnimationState.MOVING, RAVEN_FILE_PATH);
-//            shape = createCircleShape(0.5f*scale*RAVEN_WIDTH/2);
-//            animationType = AnimationType.GIF;
-//            spawnState = AnimationState.MOVING;
-//            return null;
-//        });
-//
-//        factories.get(type).apply(type);
-
-        switch (type) {
-            case RAVEN: {
-                scale = RAVEN_SCALE;
-                stats = Stats.enemy1();
-                animations.put(AnimationState.MOVING, RAVEN_FILE_PATH);
-                shape = createCircleShape(0.5f*scale*RAVEN_WIDTH/2);
-                animationType = AnimationType.GIF;
-                spawnState = AnimationState.MOVING;
-                break;
-            }
-            case ORC: {
-                scale = ORC_SCALE;
-                stats = Stats.enemy2();
-                animations.put(AnimationState.MOVING, ORC_FILE_PATH);
-                shape = createCircleShape(0.3f*scale*ORC_WIDTH/2);
-                animationType = AnimationType.GIF;
-                spawnState = AnimationState.MOVING;
-                break;
-            }
-            case WOLF: {
-                scale = ORC_SCALE;
-                stats = Stats.enemy2();
-
-                animations.put(AnimationState.MOVING, WOLF_FILE_PATH);
-                shape = createCircleShape(0.5f*scale*WOLF_WIDTH/2);
-                animationType = AnimationType.GIF;
-                spawnState = AnimationState.MOVING;
-                break;
-            }
-            default:
-                throw new IllegalArgumentException("Invalid enemy type");
-        }
-
-
-        BodyFeatures bodyFeatures = new BodyFeatures(
+    private static BodyFeatures defaultEnemyBodyFeatures(Shape shape) {
+        return new BodyFeatures(
                 shape,
-                filter,
+                DEFAULT_ENEMY_FILTER,
                 1,
                 0,
                 0,
                 false,
                 BodyDef.BodyType.DynamicBody);
-
-        enemy = new Enemy(type,new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale,stats);
-
-        return enemy;
     }
 
-}
 
+}

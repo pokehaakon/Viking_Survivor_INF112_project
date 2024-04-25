@@ -1,4 +1,4 @@
-package GameObjects.Actors.ActorAction;
+package GameObjects.Actors.ObjectActions;
 
 import GameObjects.Actors.Player;
 import InputProcessing.KeyStates;
@@ -12,7 +12,7 @@ public abstract class PlayerActions {
      * @return an action
      */
 
-    public static ActorAction<Player> moveToInput(KeyStates keyStates) {
+    public static Action<Player> moveToInput(KeyStates keyStates) {
 
         return (p) ->{
             p.idle = true;
@@ -40,7 +40,7 @@ public abstract class PlayerActions {
         };
     }
 
-    public static ActorAction<Player> coolDown(long coolDownDuration) {
+    public static Action<Player> coolDown(long coolDownDuration) {
         return (p) -> {
             if(p.isUnderAttack()) {
                 if(TimeUtils.millis() - p.getLastAttackedTime() > coolDownDuration) {

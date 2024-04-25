@@ -1,9 +1,14 @@
-package GameObjects.Actors.ActorAction;
+package GameObjects.Actors.ObjectActions;
 
+import Contexts.Context;
+import Contexts.ReleaseCandidateContext;
 import GameObjects.Actors.Player;
 import GameObjects.Actors.Weapon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
+
+import static Contexts.ReleaseCandidateContext.CONSTANT_FPS;
+import static Tools.RollingSum.millisToFrames;
 
 public abstract class WeaponActions {
 
@@ -15,10 +20,10 @@ public abstract class WeaponActions {
      * @param orbitInterval millis second between each orbit
      * @return a weapon action
      */
-    public static ActorAction<Weapon> orbitPlayer(float orbitRadius, float orbitSpeed, Player player, long orbitInterval) {
+    public static Action<Weapon> orbitPlayer(ReleaseCandidateContext context, float orbitRadius, float orbitSpeed, Player player, float orbitInterval) {
 
         return (w) -> {
-            if(TimeUtils.millis() - w.getLastAttack() > orbitInterval) {
+            if(context.getCurrentFrame() - w.getLastAttack() > millisToFrames(CONSTANT_FPS,orbitInterval) || w.getLastAttack() == 0) {
                 if(!w.getBody().isActive()) {
                     w.getBody().setActive(true);
                 }
@@ -28,7 +33,7 @@ public abstract class WeaponActions {
                 w.setAngleToPlayer(w.getAngleToPlayer() + orbitSpeed);
                 if (w.getAngleToPlayer() >= 2 * Math.PI) {
                     w.getBody().setActive(false);
-                    w.setLastAttack(TimeUtils.millis());
+                    w.setLastAttack(context.getCurrentFrame());
                     w.setAngleToPlayer(0);
 
                 }

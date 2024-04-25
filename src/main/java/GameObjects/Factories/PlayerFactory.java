@@ -13,73 +13,47 @@ import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static GameObjects.Animations.AnimationRendering.GIFS.*;
+import static GameObjects.ObjectTypes.PlayerType.PLAYER1;
 import static Tools.FilterTool.Category.PLAYER;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 
-public class PlayerFactory extends AbstractFactory<Player,PlayerType>{
-
+public class PlayerFactory extends Factory<Player, PlayerType> {
+    private static final Filter DEFAULT_PLAYER_FILTER = createFilter(
+            PLAYER,
+            new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL, FilterTool.Category.PICKUP}
+    );
     public PlayerFactory() {
+
+        register(() -> new Player(
+                PLAYER1,
+                new AnimationHandler(Map.of(AnimationState.MOVING, PlAYER_MOVING_FILE_PATH,
+                        AnimationState.IDLE, PlAYER_IDLE_FILE_PATH),
+                        AnimationType.GIF,AnimationState.IDLE),
+                defaultPlayerBodyFeatures(createCircleShape(0.3f * PLAYER_SCALE * PLAYER_WIDTH / 2)),
+                PLAYER_SCALE,
+                Stats.player()
+
+        ));
     }
-    @Override
-    public Player create(PlayerType type) {
-        if(type == null) {
-            throw new NullPointerException("Type cannot be null!");
-        }
 
-        Player player;
-        float scale;
-        PlayerStats stats;
-        BodyFeatures bodyFeatures;
-        Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
-        AnimationType animationType;
-        AnimationState spawnState;
-        switch (type) {
-            case PLAYER1: {
-                scale = PLAYER_SCALE;
-                stats = Stats.player();
-                animations.put(AnimationState.MOVING, PlAYER_MOVING_FILE_PATH);
-                animations.put(AnimationState.IDLE, PlAYER_IDLE_FILE_PATH);
-                animationType = AnimationType.GIF;
-                spawnState = AnimationState.IDLE;
-                break;
-            }
-
-            default:
-                throw new IllegalArgumentException("Invalid player type");
-        }
-
-        Filter filter = createFilter(
-                PLAYER,
-                new FilterTool.Category[]{FilterTool.Category.ENEMY, FilterTool.Category.WALL, FilterTool.Category.PICKUP}
-        );
-
-        Shape shape = createCircleShape(0.3f*scale*PLAYER_WIDTH/2);
-
-        bodyFeatures = new BodyFeatures(
+    private BodyFeatures defaultPlayerBodyFeatures(Shape shape) {
+        return new BodyFeatures(
                 shape,
-                filter,
+                DEFAULT_PLAYER_FILTER,
                 10,
                 0,
                 0,
                 false,
                 BodyDef.BodyType.DynamicBody);
 
-
-        player = new Player(type,new AnimationHandler(animations,animationType,spawnState),bodyFeatures,scale,stats);
-
-
-        return player;
     }
 
-    @Override
-    public List<Player> create(int n, PlayerType type) {
-        return null;
-    }
+
 
 
 }
