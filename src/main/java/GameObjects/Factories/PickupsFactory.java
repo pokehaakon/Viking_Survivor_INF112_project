@@ -46,17 +46,29 @@ public class PickupsFactory extends AbstractFactory<Pickups, PickupType>{
         Map<AnimationState, String> animations = new EnumMap<>(AnimationState.class);
         AnimationType animationType;
         AnimationState spawnState;
-        float scale = PICKUPORB_SCALE;
+        float scale = 0;
+        float xp_scale = XP_PICKUP_SCALE;
+        float hp_scale = HP_PICKUP_SCALE;
 
 
         CircleShape shape;
         switch (type) {
-            case PICKUPORB -> {
-                stats = Stats.pickupStats();
+            case XP_PICKUP -> {
+                stats = Stats.XP_Pickup_stats();
                 animations.put(AnimationState.MOVING, PICK_UP_ORB_FILE_PATH);
-                shape = createCircleShape(0.5f * scale * PICKUP_ORB_WIDTH / 2);
+                shape = createCircleShape(0.2f * xp_scale * PICKUP_ORB_WIDTH / 2);
                 animationType = AnimationType.GIF;
                 spawnState = AnimationState.MOVING;
+                scale = xp_scale;
+                break;
+            }
+            case HP_PICKUP -> {
+                stats = Stats.XP_Pickup_stats();
+                animations.put(AnimationState.MOVING, HP_ORB_FILE_PATH);
+                shape = createCircleShape(0.2f * hp_scale * PICKUP_ORB_WIDTH / 2);
+                animationType = AnimationType.GIF;
+                spawnState = AnimationState.MOVING;
+                scale = hp_scale;
                 break;
             }
             default -> throw new IllegalStateException("Unexpected value: " + type);

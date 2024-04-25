@@ -405,6 +405,7 @@ public class ReleaseCandidateContext extends Context {
         batch.setColor(Color.WHITE);
         if(!gameOver) {
             font.draw(batch, "Player HP: " + String.valueOf(player.HP), playerPosX +400,playerPosY +470);
+            font.draw(batch, "Player XP: " + String.valueOf(player.XP), playerPosX +400,playerPosY +450);
         }
 
 
@@ -541,7 +542,7 @@ public class ReleaseCandidateContext extends Context {
 
 
 
-        pickup = pickupsFactory.create(PickupType.PICKUPORB);
+        pickup = pickupsFactory.create(PickupType.XP_PICKUP);
         pickup.renderAnimations(animationLibrary);
 
 
@@ -618,7 +619,8 @@ public class ReleaseCandidateContext extends Context {
         weaponPool = new ObjectPool<>(world,weaponFactory, List.of(WeaponType.values()), 20);
         pickupsPool = new ObjectPool<>(world, pickupsFactory, List.of(PickupType.values()), 200);
 
-        spawnOrbitingWeapons(player,4,WeaponType.KNIFE,150,0.1f,0);
+        spawnOrbitingWeapons(player,2,WeaponType.KNIFE,150,0.1f,0, 0);
+        spawnOrbitingWeapons(player,2,WeaponType.AXE,150,0.1f,0, (float)Math.PI/2);
         toBoKilled = new HashSet<>();
 
         world.setContactListener(new ObjectContactListener());
@@ -635,8 +637,7 @@ public class ReleaseCandidateContext extends Context {
      * @param orbitSpeed speed of weapons
      * @param orbitInterval time between each orbit loop
      */
-    private void spawnOrbitingWeapons(Player player,int numWeapons,WeaponType weaponType,float orbitRadius,float orbitSpeed,long orbitInterval){
-        float angle=0;
+    private void spawnOrbitingWeapons(Player player,int numWeapons,WeaponType weaponType,float orbitRadius,float orbitSpeed,long orbitInterval, float angle){
         for(Weapon weapon:weaponPool.get(weaponType,numWeapons)){
             weapon.setAction(WeaponActions.orbitPlayer(orbitRadius,orbitSpeed,player,orbitInterval));
             weapon.setOwner(player);

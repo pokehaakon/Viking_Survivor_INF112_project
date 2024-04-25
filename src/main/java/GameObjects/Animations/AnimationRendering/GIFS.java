@@ -24,16 +24,19 @@ public abstract class GIFS {
     public static final String PlAYER_IDLE_FILE_PATH = "viking_idle_left-crop.gif";
 
     public static final String PICK_UP_ORB_FILE_PATH= "pickupOrb.gif";
+    public static final String HP_ORB_FILE_PATH= "HP_Pickup.gif";
 
     public static final String KNIFE_FILE_PATH= "knife.gif";
+    public static final String AXE_FILE_PATH= "axe.gif";
 
 
     // scale
     public static final float PLAYER_SCALE = 0.7f;
     public static final float RAVEN_SCALE = 0.3f;
     public static final float ORC_SCALE = 0.3f;
-
-    public static final float PICKUPORB_SCALE = 0.3f;
+    public static final float WOLF_SCALE = 0.3f;
+    public static final float XP_PICKUP_SCALE = 0.3f;
+    public static final float HP_PICKUP_SCALE = 0.5f;
 
     public static Map<String, GifPair> gifMap(){
         Map<String, GifPair> map = new HashMap<>();
@@ -43,7 +46,9 @@ public abstract class GIFS {
         map.put(PlAYER_MOVING_FILE_PATH, new GifPair(getGIF(PlAYER_MOVING_FILE_PATH),flippedGIF(getGIF(PlAYER_MOVING_FILE_PATH))));
         map.put(PlAYER_IDLE_FILE_PATH, new GifPair(getGIF(PlAYER_IDLE_FILE_PATH),flippedGIF(getGIF(PlAYER_IDLE_FILE_PATH))));
         map.put(PICK_UP_ORB_FILE_PATH,new GifPair(getGIF(PICK_UP_ORB_FILE_PATH),flippedGIF(getGIF(PICK_UP_ORB_FILE_PATH))));
+        map.put(HP_ORB_FILE_PATH,new GifPair(getGIF(HP_ORB_FILE_PATH),flippedGIF(getGIF(HP_ORB_FILE_PATH))));
         map.put(KNIFE_FILE_PATH,new GifPair(getGIF(KNIFE_FILE_PATH),flippedGIF(getGIF(KNIFE_FILE_PATH))));
+        map.put(AXE_FILE_PATH,new GifPair(getGIF(AXE_FILE_PATH),flippedGIF(getGIF(AXE_FILE_PATH))));
         return map;
     }
 
