@@ -1,53 +1,52 @@
 package Simulation.SpawnHandler;
 
-import GameObjects.Actors.Enemy;
-import GameObjects.Actors.Player;
-import GameObjects.ObjectTypes.EnemyType;
-import GameObjects.ObjectTypes.TerrainType;
+import GameObjects.Actors.Actor;
+import GameObjects.GameObject;
 import GameObjects.Pool.ObjectPool;
-import GameObjects.StaticObjects.Terrain;
 import Parsing.SpawnType;
 import Simulation.ISpawnHandler;
 
 import java.util.List;
 
+import static Contexts.ReleaseCandidateContext.DE_SPAWN_RECT;
+import static GameObjects.Actors.ActorAction.KilledAction.destroyIfDefeated;
+import static GameObjects.Actors.ActorAction.OutOfBoundsActions.deSpawnIfOutOfBounds;
 import static Simulation.Coordinates.SpawnCoordinates.randomPointOutsideScreenRect;
-import static GameObjects.Actors.ActorAction.EnemyActions.*;
-import static Simulation.Coordinates.SwarmCoordinates.swarmInitializerPair;
+import static GameObjects.Actors.ActorAction.MovementActions.*;
 
 public class SpawnHandlerFactory {
 
-    private final ObjectPool<Enemy> enemyPool;
-    private final ObjectPool<Terrain> terrainPool;
+    private final ObjectPool<Actor> actorPool;
+    private final ObjectPool<GameObject> terrainPool;
 
-    private final List<Enemy> activeEnemies;
-    private final List<Terrain> activeTerrain;
-    private final Player player;
+    private final List<Actor> activeEnemies;
+    private final List<GameObject> activeTerrain;
+    private final Actor player;
 
-    public SpawnHandlerFactory(Player player,
-                               ObjectPool<Enemy> enemyPool,
-                               ObjectPool<Terrain> terrainPool,
-                               List<Enemy> activeEnemies,
-                               List<Terrain> activeTerrain
+    public SpawnHandlerFactory(Actor player,
+                               ObjectPool<Actor> actorPool,
+                               ObjectPool<GameObject> terrainPool,
+                               List<Actor> activeEnemies,
+                               List<GameObject> activeTerrain
         ) {
 
         this.player = player;
-        this.enemyPool = enemyPool;
+        this.actorPool = actorPool;
         this.terrainPool = terrainPool;
         this.activeEnemies = activeEnemies;
         this.activeTerrain = activeTerrain;
     }
 
-    public ISpawnHandler create(String enemyName, SpawnType spawnType, List<String> args) {
+    public ISpawnHandler create(String actorName, SpawnType spawnType, List<String> args) {
         return switch (spawnType) {
             case SWARM -> new SwarmSpawnHandler(
                     args,
-                    enemyName,
+                    actorName,
                     e -> {
-                        e.setActions(destroyIfDefeated(), destroyIfOutOfBounds(player));
+                        e.addAction(destroyIfDefeated(), deSpawnIfOutOfBounds(player, DE_SPAWN_RECT));
                     },
                     () -> player.getBody().getPosition(),
-                    enemyPool,
+                    actorPool,
                     activeEnemies
             );
 
@@ -56,22 +55,22 @@ public class SpawnHandlerFactory {
             );
             case WAVE -> new WaveSpawnHandler(
                     args,
-                    enemyName,
+                    actorName,
                     e -> {
-                        e.setActions(chasePlayer(player), destroyIfDefeated(), destroyIfOutOfBounds(player));
+                        e.addAction(chaseActor(player), destroyIfDefeated(), deSpawnIfOutOfBounds(player, DE_SPAWN_RECT));
                         e.setPosition(randomPointOutsideScreenRect(player.getBody().getPosition()));
                     },
-                    enemyPool,
+                    actorPool,
                     activeEnemies
             );
             case CONTINUOUS -> new ContinuousSpawnHandler(
                 args,
-                enemyName,
+                    actorName,
                 e -> {
-                    e.setActions(chasePlayer(player), destroyIfDefeated(), destroyIfOutOfBounds(player));
+                    e.addAction(chaseActor(player), destroyIfDefeated(), deSpawnIfOutOfBounds(player, DE_SPAWN_RECT));
                     e.setPosition(randomPointOutsideScreenRect(player.getBody().getPosition()));
                 },
-                enemyPool,
+                actorPool,
                 activeEnemies
             );
         };

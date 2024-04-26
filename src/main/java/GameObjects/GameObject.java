@@ -1,5 +1,6 @@
 package GameObjects;
 
+import GameObjects.Factories.ExperimentalFactory;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
 import Rendering.Animations.AnimationState;
 import GameObjects.Actors.DirectionState;
@@ -10,49 +11,29 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.Map;
 
-public abstract class GameObject implements IGameObject {
+public class GameObject implements IGameObject {
+    private int ID;
+    private Body body;
+    private boolean destroyed = false;
+    private DirectionState directionState;
 
-    protected Body body;
+    protected final AnimationHandler animationHandler;
 
-    protected final float scale;
+    public final BodyFeatures bodyFeatures;
+    public final String name;
 
-
-    protected boolean destroyed = false;
-
-    protected String name;
-
-    protected BodyFeatures bodyFeatures;
-
-
-    protected DirectionState directionState;
-
-    protected AnimationHandler animationHandler;
-    // for sprite
-    public GameObject(String name, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale) {
+    public GameObject(String name, AnimationHandler animationHandler, BodyFeatures bodyFeatures) {
         this.animationHandler = animationHandler;
         this.bodyFeatures = bodyFeatures;
-        this.scale = scale;
         this.name = name;
-    }
 
+        setDirectionState(DirectionState.RIGHT);
+        ID = ExperimentalFactory.getUID();
+    }
 
     @Override
     public void destroy() {
         destroyed = true;
-    }
-
-    @Override
-    public void draw(SpriteBatch batch, long frame) {
-       animationHandler.getAnimationRenderer().draw(batch, frame,this);
-    }
-
-    public void setAnimationState(AnimationState state){
-        animationHandler.setAnimationState(state);
-    }
-
-
-    public void setAnimation(AnimationState state) {
-        animationHandler.getAnimationRenderer().setAnimation(state);
     }
 
     @Override
@@ -65,16 +46,11 @@ public abstract class GameObject implements IGameObject {
         return destroyed;
     }
 
-
     @Override
     public void revive() {
         destroyed = false;
+        ID = ExperimentalFactory.getUID();
     }
-
-//    @Override
-//    public void setType(E newType) {
-//        type = newType;
-//    }
 
     @Override
     public String getType() {
@@ -88,7 +64,6 @@ public abstract class GameObject implements IGameObject {
 
     @Override
     public void addToWorld(World world) {
-
         body = BodyTool.createBody(
                 world,
                 new Vector2(),
@@ -98,31 +73,39 @@ public abstract class GameObject implements IGameObject {
                 bodyFeatures.friction(),
                 bodyFeatures.restitution(),
                 bodyFeatures.isSensor(),
-                bodyFeatures.type());
+                bodyFeatures.type()
+        );
         body.setUserData(this);
     }
+
     @Override
-    public void setBodyFeatures(BodyFeatures features) {
-        bodyFeatures = features;
+    public void draw(SpriteBatch batch, long frame) {
+       animationHandler.getAnimationRenderer().draw(batch, frame,this);
     }
 
-    public float getScale() {
-        return scale;
+    @Override
+    public void setAnimationState(AnimationState state){
+        animationHandler.setAnimationState(state);
     }
 
+    @Override
+    public void setAnimation(AnimationState state) {
+        animationHandler.getAnimationRenderer().setAnimation(state);
+    }
+
+    @Override
     public DirectionState getDirectionState() {
         return directionState;
     }
 
-    public BodyFeatures getBodyFeatures() {
-        return bodyFeatures;
+    @Override
+    public void setDirectionState(DirectionState directionState) {
+        this.directionState = directionState;
     }
 
-//    public Map<AnimationState,String> getAnimations() {
-//        return animationHandler.getAnimationMap();
-//    }
-
-
-
+    @Override
+    public int getID() {
+        return ID;
+    }
 
 }

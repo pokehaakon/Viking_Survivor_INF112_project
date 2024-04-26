@@ -33,7 +33,7 @@ public abstract class FilterTool {
      * @param filters array of categories
      * @return the combined masks of the categories
      */
-    public static short combineMaskEnums(Category[] filters) {
+    public static short combineMaskEnums(Category... filters) {
         short mask = 0;
         for(Category m : filters) {
             mask = (short) (mask | m.getMask());
@@ -48,13 +48,14 @@ public abstract class FilterTool {
      * @param collidesWith the categories to collide with
      * @return a filter with the wanted properties
      */
-    public static Filter createFilter(Category thisIs, Category[] collidesWith) {
+    public static Filter createFilter(Category thisIs, Category... collidesWith) {
         return createFilter(
                 thisIs.getMask(),
                 combineMaskEnums(collidesWith),
                 (short) 0
         );
     }
+
 
     /**
      * Creates a Box2d collision filter for a body with in the categories in 'thisIs', colliding with the categories in 'collidesWith'

@@ -1,8 +1,7 @@
 package Parsing;
 
 
-import GameObjects.Factories.ExperimentalEnemyFactory;
-import GameObjects.ObjectTypes.EnemyType;
+import GameObjects.Factories.ExperimentalFactory;
 import Parsing.Parser.ParserException;
 import Parsing.Parser.ParsingException;
 import Parsing.Parser.TextParser;
@@ -121,8 +120,14 @@ public class MapParser extends TextParser {
 
             iundo(this::letter); //next should be a letter
 
-            String spawnable = test(iparseStringLiteral(ExperimentalEnemyFactory.getRegistered()))
-                    .orElseThrow(() -> new ParserException(this, "Could not find the SpawnType"));
+            String spawnable;
+            try {
+                spawnable = parseStringLiteral(ExperimentalFactory.getRegisteredActors());
+            } catch (ParsingException e) {
+                throw new ParserException(e, this, "Could not find the SpawnType");
+            }
+//            String spawnable = test(iparseStringLiteral(ExperimentalFactory.getRegistered()))
+//                    .orElseThrow(() -> new ParserException(this, "Could not find the SpawnType"));
 
 //            List<EnemyType> spawnable = some(() -> {
 //                shouldError(iundo(iparseLiteral(';')));

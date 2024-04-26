@@ -22,10 +22,12 @@ public class GIFRender implements AnimationRender {
     private GifPair currentGIF;
 
     private AnimationState state;
+    private final float scale;
 
-    protected GIFRender(Map<AnimationState, String> animationMovement) {
+    protected GIFRender(Map<AnimationState, String> animationMovement, float scale) {
         //animationMovementTemp = animationMovement;
         getGifPairs(animationMovement);
+        this.scale = scale;
     }
 
 
@@ -40,7 +42,7 @@ public class GIFRender implements AnimationRender {
         Vector2 regionRect = new Vector2(region.getRegionWidth(), region.getRegionHeight());
         float max = Math.max(regionRect.x, regionRect.y);
         max = regionRect.y;
-        regionRect.scl(1/max * object.getScale() * Main.PPM);
+        regionRect.scl(1/max * scale * Main.PPM);
         batch.draw(
                 region,
                 object.getBody().getPosition().x - regionRect.x / 2,

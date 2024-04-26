@@ -1,5 +1,7 @@
 package GameObjects;
 
+import GameObjects.Actors.DirectionState;
+import Rendering.Animations.AnimationState;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -41,15 +43,9 @@ public interface IGameObject {
     //void setSprite(Texture texture);
 
     /**
-     * Sets the destroyed-tag to false
+     * Sets the destroyed-tag to false and gives object a new ID
      */
     void revive();
-
-//    /**
-//     * Sets the object type
-//     * @param newType the object type. A string value which tells us which type of enemy, terrain etc
-//     */
-//    void setType(String newType);
 
     /**
      *
@@ -69,28 +65,15 @@ public interface IGameObject {
      */
     void addToWorld(World world);
 
+    void setAnimationState(AnimationState state);
+    void setAnimation(AnimationState state);
+
+    DirectionState getDirectionState();
+    void setDirectionState(DirectionState directionState);
 
     /**
-     * Sets body featues for body creation
-     * @param features BodyFeatures record
+     * @return the ID of the object
      */
-   void setBodyFeatures(BodyFeatures features);
-
-//    /**
-//     * Sets scale for sprite size handling
-//     * @param newScale
-//     */
-//    void setScale(float newScale);
-
-//    /**
-//     * This assigns animations to objects (gif or sprites), depending on the animation map of the object
-//     * @param animationLibrary the library which contains the gif and sprites
-//     */
-//    void renderAnimations(AnimationLibrary animationLibrary);
-
-
-
-
-
+    int getID();
 
 }

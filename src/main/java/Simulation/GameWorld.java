@@ -1,15 +1,11 @@
 package Simulation;
 
-import GameObjects.Actors.Enemy;
-import GameObjects.Actors.Player;
-import GameObjects.Factories.ExperimentalAbstractFactory;
-import GameObjects.Factories.ExperimentalEnemyFactory;
-import GameObjects.ObjectTypes.EnemyType;
-import GameObjects.ObjectTypes.TerrainType;
+import GameObjects.Actors.Actor;
+import GameObjects.Factories.ExperimentalFactory;
+import GameObjects.GameObject;
 import GameObjects.Pool.ObjectPool;
-import GameObjects.StaticObjects.Terrain;
 import Parsing.MapParser;
-import Parsing.ObjectDefineParser.Defines.EnemyDefinition;
+import Parsing.ObjectDefineParser.Defines.ActorDefinition;
 import Parsing.ObjectDefineParser.ObjectDefineParser;
 import Parsing.SpawnFrame;
 import Simulation.SpawnHandler.SpawnHandlerFactory;
@@ -39,49 +35,45 @@ public class GameWorld implements Disposable {
 
     private final SpawnHandlerFactory handlerFactory;
 
-    private final ObjectPool<Enemy> enemyPool;
-    private final ObjectPool<Terrain> terrainPool;
+    private final ObjectPool<Actor> actorPool;
+    private final ObjectPool<GameObject> objectPool;
 
-    private final List<Enemy> activeEnemies;
-    private final List<Terrain> activeTerrain;
-    private final Player player;
+    private final List<Actor> activeActors;
+    private final List<GameObject> activeTerrain;
+    public final Actor player;
 
     public GameWorld(
             String worldDef,
-            Player player,
-            ObjectPool<Enemy> enemyPool,
-            ObjectPool<Terrain> terrainPool,
-            List<Enemy> activeEnemies,
-            List<Terrain> activeTerrain
+            ObjectPool<Actor> actorPool,
+            ObjectPool<GameObject> objectPool,
+            List<Actor> activeActors,
+            List<GameObject> activeTerrain
     ) {
         if (!worldDef.endsWith(".wdef")) {
             throw new RuntimeException("world definition file needs ending '.wdef', got : " + worldDef);
         }
 
 
-        this.player = player;
-        this.enemyPool = enemyPool;
-        this.terrainPool = terrainPool;
-        this.activeEnemies = activeEnemies;
+        this.actorPool = actorPool;
+        this.objectPool = objectPool;
+        this.activeActors = activeActors;
         this.activeTerrain = activeTerrain;
 
-        handlerFactory = new SpawnHandlerFactory(player, enemyPool, terrainPool, activeEnemies, activeTerrain);
+
 
         MapParser mapParser = new MapParser(worldDef);
         defines = mapParser.doParseDefines();
         ObjectDefineParser objectDefineParser = new ObjectDefineParser(defines.get("OBJECT_DEFINES"));
         objectDefineParser.parseDocument();
 
-        ExperimentalAbstractFactory.empty();
-
         for (var entry : objectDefineParser.variables.entrySet()) {
-            if (entry.getValue().get() instanceof EnemyDefinition enemyDefinition) {
-                ExperimentalEnemyFactory.register(entry.getKey().substring(1), enemyDefinition);
+            //System.out.println(entry);
+            if (entry.getValue().get() instanceof ActorDefinition actorDefinition) {
+                ExperimentalFactory.registerActor(entry.getKey().substring(1), actorDefinition);
             }
         }
 
         timeFrames = mapParser.doParseTimeFrames();
-
 
         map = new TmxMapLoader().load(defines.get("MAP_PATH"));
         mapRenderer = new OrthogonalTiledMapRenderer(map, mapScale);
@@ -92,7 +84,9 @@ public class GameWorld implements Disposable {
             nextFrame = Long.MAX_VALUE;
         }
 
+        this.player = ExperimentalFactory.createActor(defines.get("PLAYER_NAME"));
 
+        handlerFactory = new SpawnHandlerFactory(player, actorPool, objectPool, activeActors, activeTerrain);
     }
     public void act(Long frame) {
         if (frame == nextFrame) {
@@ -110,10 +104,10 @@ public class GameWorld implements Disposable {
     private void setNextFrame(long frame) {
         spawnHandlers.clear();
 
-        System.out.println("Frame: " + frameIndex);
+        //System.out.println("Frame: " + frameIndex);
         for (var f : timeFrames.get(frameIndex++).getValue1()) {
             spawnHandlers.add(handlerFactory.create(f.spawnable(), f.spawnType(), f.args()));
-            System.out.println("\t" + f);
+            //System.out.println("\t" + f);
         }
 
         nextFrame = timeFrames.size() == frameIndex ? Long.MAX_VALUE : timeFrames.get(frameIndex).getValue0();

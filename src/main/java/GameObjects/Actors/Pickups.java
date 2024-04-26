@@ -1,29 +1,19 @@
 package GameObjects.Actors;
 
-import GameObjects.Actors.Stats.PickupStats;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
-import GameObjects.ObjectTypes.PickupType;
 
 public class Pickups extends GameObject {
-    final PickupStats stats;
-    public boolean isPickedUp;
+    private final Runnable pickUpAction;
 
-    public Pickups(String name, AnimationHandler animationHandler, BodyFeatures bodyFeatures, float scale, PickupStats stats) {
-        super(name, animationHandler, bodyFeatures, scale);
-        this.stats = stats;
-        isPickedUp = false;
+    public Pickups(String name, AnimationHandler animationHandler, BodyFeatures bodyFeatures, Runnable pickUpAction) {
+        super(name, animationHandler, bodyFeatures);
+        this.pickUpAction = pickUpAction;
     }
 
-    public boolean isPickedUp() {
-        return isPickedUp;
+    public void doPickupAction() {
+        pickUpAction.run();
     }
-
-    public void setPickedUp(boolean pickedUp) {
-        isPickedUp = pickedUp;
-    }
-
-
 }
 

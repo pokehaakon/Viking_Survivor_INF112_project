@@ -30,13 +30,14 @@ $OrcAnimation = Define Animation:
 
 $RavenStats = Define Stats:
     HP: 100.0                       # starting HP value
-    Speed: 1.0                      # speed
+    Speed: 70.0                     # speed
     Damage: 10.0                    # the damage the enemy inflicts
+    resistance: 0.0                 # optional: default value is 0.0
     scale: 5.0                      # optional: scale of the enemy, scales both sprite and hitbox, default value is 1.0
 
 $RavenShape = Define Shape:
     Type: Circle                    # The type of the shape, this can be 'Circle, Square or Polygon'
-    Radius: 1.0                     # The radius of the circle
+    Radius: 4.0                     # The radius of the circle
 
 $testSquare = Define Shape:
     Type: Square                    # When the type is square, we need the fields Width and Height
@@ -51,20 +52,25 @@ $testPolygon = Define Shape:        # Not Implemented!
     point: 1.0 1.0
     point: 0.0 1.0
 
+
 $RavenStructure = Define Structure:
     Filter: ENEMY PLAYER WEAPON         # space separated list of what the structure collides with,
                                         # legal values given by 'FilterTools.Category' enum
+    Category: ENEMY                     # space separated list of what the structure is
+                                        # legal values given by 'FilterTools.Category'
     Shape: $RavenShape                  # the shape of the structure
+    BodyType: DynamicBody               # Values given by the 'BodyDef.BodyType' enum
     density: 1.0                        # optional: default value is 1.0
     friction: 0                         # optional: default value is 0.0
+    isSensor: false                     # optional: default value is false
 
 
-$RAVEN = Define Enemy:              # this defines a new enemy with name 'testEnemy'
+$RAVEN = Define Actor:              # this defines a new enemy with name 'testEnemy'
     Animation: $RavenAnimation      # this field must be an Animation
     Stats: $RavenStats              # this must be a Stats.
     Structure: $RavenStructure      # this must be a Structure.
     
-$ORC = Define Enemy:                # this defines a new enemy with name 'testEnemy'
+$ORC = Define Actor:                # this defines a new enemy with name 'testEnemy'
     Animation: $OrcAnimation        # this field must be an Animation
     Stats: $RavenStats              # this must be a Stats.
     Structure: $RavenStructure      # this must be a Structure.

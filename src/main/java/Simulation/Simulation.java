@@ -1,64 +1,46 @@
 package Simulation;
 
-import GameObjects.Actors.Enemy;
-import GameObjects.Actors.Pickups;
-import GameObjects.ObjectTypes.EnemyType;
-import GameObjects.ObjectTypes.PickupType;
-import GameObjects.ObjectTypes.SwarmType;
-import GameObjects.ObjectTypes.TerrainType;
-import GameObjects.Actors.Player;
+import GameObjects.Actors.Actor;
+import GameObjects.GameObject;
 import GameObjects.Pool.ObjectPool;
-import GameObjects.StaticObjects.Terrain;
-import GameObjects.Actors.Weapon;
 import Contexts.ReleaseCandidateContext;
 import Simulation.Coordinates.SpawnCoordinates;
-import Simulation.Coordinates.SwarmCoordinates;
 import InputProcessing.KeyStates;
 import Tools.RollingSum;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 
-import static GameObjects.Actors.ActorAction.EnemyActions.*;
 import static Tools.ListTools.removeDestroyed;
 
 public class Simulation implements Runnable {
+    public static final AtomicLong EXP = new AtomicLong();
+
     private Lock renderLock;
     private KeyStates keyStates;
     private World world;
     private RollingSum updateTime, UPS;
     private boolean quit = false;
-    private List<Body> toBeKilled;
     private boolean paused = false;
     private long frame = 0;
     public final int SET_UPS = 60;
     private final ReleaseCandidateContext context;
     long lastSpawnTime;
-    long lastPickupSpawnTime;
-    private Player player;
-    private ObjectPool<Enemy> enemyPool;
-    private ObjectPool<Pickups> pickupPool;
-    private List<Enemy> enemies;
-    private List<Pickups> pickups;
+    private Actor player;
+    private ObjectPool<Actor> actorPool;
+    private ObjectPool<GameObject> objectPool;
+    private List<Actor> actors;
+    private List<GameObject> objects;
     private AtomicLong synchronizer;
-
-    //private Weapon mainWeapon;
-
-    private long lastSwarmSpawnTime;
-
-    private long lastOrbit;
 
     private float ORBIT_INTERVAL = 1000;
 
     private GameWorld gameWorld;
 
-    List<Weapon> weapons;
 
     public Simulation(ReleaseCandidateContext context) {
         this.context = context;
@@ -67,16 +49,13 @@ public class Simulation implements Runnable {
         world = context.getWorld();
         updateTime = context.getUpdateTime();
         UPS = context.getUPS();
-        toBeKilled = context.getToBoKilled();
         synchronizer = context.getSynchronizer();
         player = context.getPlayer();
-        enemyPool = context.getEnemyPool();
-        enemies = context.getDrawableEnemies();
-        weapons = context.getDrawableWeapons();
+        actorPool = context.getActorPool();
+        actors = context.getDrawableActors();
 
-        pickupPool = context.getPickupsPool();
-        pickups = context.getDrawablePickups();
-        //mainWeapon = context.getOrbitWeapon();
+        objectPool = context.getObjectPool();
+        objects = context.getDrawableObjects();
         gameWorld = context.getGameWorld();
     }
 
@@ -84,16 +63,13 @@ public class Simulation implements Runnable {
     public void run() {
 
         long dt = 1_000_000_000/SET_UPS; // sec / update * 10^9 nanosec / sec
-        long lastFrameStart = System.nanoTime();
+        long lastFrameStart;
 
 
         while (!quit) {
             while(paused) {
                 synchronized (this) {try {this.wait();} catch (InterruptedException ignored) {}}
             }
-
-
-
 
             lastFrameStart = System.nanoTime();
             long t0 = System.nanoTime();
@@ -103,29 +79,26 @@ public class Simulation implements Runnable {
 
             context.getPlayer().doAction();
 
-            for (Enemy enemy : enemies) enemy.doAction();
-            for (Weapon weapon : weapons) weapon.doAction();
-
-
+            for (Actor actor : actors) actor.doAction();
 
 
             // random spawning for now
             if (TimeUtils.millis() - lastSpawnTime > 5000) {
-                //spawnRandomEnemies(5,Arrays.asList(EnemyActions.destroyIfDefeated(player),EnemyActions.chasePlayer(player), coolDown(500)));
+                //spawnRandomEnemies(5,Arrays.asList(ActorActions.destroyIfDefeated(player),ActorActions.chasePlayer(player), coolDown(500)));
                 spawnTerrain("TerrainType:TREE");
             }
 
 
-            // If an enemy is defeated, spawn a pickup orb
-            for (Enemy enemy : enemies) {
-                if (enemy.isDestroyed()) {
-                    spawnPickups("PickupType:PICKUPORB", enemy.getBody().getPosition());
-                }
-            }
+            // If an actor is defeated, spawn a pickup orb
+//            for (Actor actor : actors) {
+//                if (actor.isDestroyed()) {
+//                    spawnPickups("PickupType:PICKUPORB", actor.getBody().getPosition());
+//                }
+//            }
 
             // If a pickup is picked up, remove it from the list of pickups
-            removePickedUpPickups();
-            removeDestroyedEnemies();
+            //removePickedUpPickups();
+            //removeDestroyedEnemies();
 
 
             doSpinSleep(lastFrameStart, dt);
@@ -138,7 +111,8 @@ public class Simulation implements Runnable {
             world.step(1/(float) 60, 10, 10);
 
 
-            removeDestroyed(enemies, enemyPool, true);
+            removeDestroyed(actors, actorPool, true);
+            removeDestroyed(objects, objectPool, true);
 
 
             renderLock.unlock();
@@ -149,7 +123,7 @@ public class Simulation implements Runnable {
 
             frame++;
 
-            if(player.HP <= 0) {
+            if(player.getHP() <= 0) {
                 context.gameOver();
                 stopSim();
             }
@@ -162,45 +136,12 @@ public class Simulation implements Runnable {
         while(lastFrameStart + dt - System.nanoTime() > 0) {}
     }
 
-    /**
-     * Despawns destroyed enemies by returning them to enemy pool and removing them from the spawned enemy list
-     */
-    private void removeDestroyedEnemies() {
-        int i = 0;
-        for (Enemy e : enemies) {
-            if (e.isDestroyed()) {
-                enemyPool.returnToPool(e);
-            } else {
-                enemies.set(i++, e);
-            }
-        }
-        enemies.subList(i, enemies.size()).clear();
-    }
-
-    private void removePickedUpPickups() {
-        int i = 0;
-        for (Pickups p : pickups) {
-            if (p.isPickedUp()) {
-                pickupPool.returnToPool(p);
-            } else {
-                pickups.set(i++, p);
-            }
-        }
-        pickups.subList(i, pickups.size()).clear();
-    }
 
     private void spawnTerrain(String TerrainName) {
-        Terrain terrain = context.getTerrainPool().get(TerrainName);
+        GameObject terrain = context.getObjectPool().get(TerrainName);
         terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
-        context.getDrawableTerrain().add(terrain);
+        context.getDrawableObjects().add(terrain);
         lastSpawnTime = TimeUtils.millis();
-    }
-
-    private void spawnPickups(String pickupName, Vector2 position) {
-        Pickups pickup = context.getPickupsPool().get(pickupName);
-        pickup.setPosition(position);
-        context.getDrawablePickups().add(pickup);
-        lastPickupSpawnTime = TimeUtils.millis();
     }
 
     public void stopSim() {

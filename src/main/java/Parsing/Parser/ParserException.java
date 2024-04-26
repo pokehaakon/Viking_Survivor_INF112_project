@@ -15,4 +15,13 @@ public class ParserException extends RuntimeException {
 
         message = msg;
     }
+
+    public ParserException(ParsingException e, GenericParser<?, ?> parser, String msg) {
+        super(msg + "\n" + e.msg + "\n"
+                + parser.stream.getLine() + " c"
+                + parser.stream.getLinePos() + "\n\n"
+                + parser.stream.getDebugInfo());
+
+        message = msg + "\n\n" + e.msg;
+    }
 }

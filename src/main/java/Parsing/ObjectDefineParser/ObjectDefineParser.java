@@ -7,6 +7,7 @@ import Parsing.Parser.TextParser;
 import Rendering.Animations.AnimationState;
 import Tools.FilterTool;
 import Tools.Tuple;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import org.javatuples.Pair;
 
 import java.util.*;
@@ -76,14 +77,16 @@ public class ObjectDefineParser extends TextParser {
     private <T> T getVarValueFromBodyCastAsT(List<Pair<String, String>> body, String fieldName, Class<T> cls) {
         String variableName = getFirst(body, e -> Objects.equals(e.getValue0().strip(), fieldName))
                 .orElseThrow(() -> new ParserException(this, "Body did not contain Field '" + fieldName + "'"))
-                .getValue1().strip();
+                .getValue1()
+                .strip();
         return lookup(variableName, cls).orElseThrow(() -> new VariableNotInScopeException(variableName, variables));
     }
 
     private String getFieldValueFromBody(List<Pair<String, String>> body, String fieldName) {
         return getFirst(body, e -> Objects.equals(e.getValue0(), fieldName))
                 .orElseThrow(() -> new ParserException(this, "Body did not contain Field '" + fieldName + "'"))
-                .getValue1();
+                .getValue1()
+                .strip();
     }
 
     private <T> T lookupAndMakeToTIfVarOrMakeToT(String maybeVar, Function<String, T> f) {
@@ -92,18 +95,30 @@ public class ObjectDefineParser extends TextParser {
         return f.apply(maybeVar);
     }
 
+    private String lookupIfVarElseValue(String maybeVar) {
+        if (isVariable(maybeVar))
+            return lookup(maybeVar, String.class).get();
+        return maybeVar;
+    }
+
     public Map<String, Variable> parseDocument() {
         try {
             while (!stream.atEOF()) {
-                //System.out.println(stream.getLine() + ", " + stream.getLinePos() + ", " + variables.size());
                 var pair = Try(() -> {
                     skipEmptyLinesAndComments();
                     return parseVariable();
                 });
-                //System.out.println("Added var: " + pair.getValue0() + ", " + pair.getValue1());
+
                 variables.put(pair.getValue0(), pair.getValue1());
+                skipEmptyLinesAndComments();
+                try {parseEOF(); break;} catch (ParsingException ignore) {}
             }
-        } catch (ParsingException ignored) {}
+        } catch (ParsingException e) {
+
+            var ex = new ParserException(e, this, "Error while parsing Object Define:");
+            ex.setStackTrace(e.getStackTrace());
+            throw ex;
+        }
 
 
         return variables;
@@ -122,7 +137,7 @@ public class ObjectDefineParser extends TextParser {
                         parseStringLiteral("Define");
                         Void(this::space);
                         return Variable.of(choose(
-                            this::parseEnemy,
+                            this::parseActor,
                             this::parseAnimation,
                             this::parseStructure,
                             this::parseStats,
@@ -134,19 +149,21 @@ public class ObjectDefineParser extends TextParser {
         });
     }
 
-    private EnemyDefinition parseEnemy() throws ParsingException {
+    private ActorDefinition parseActor() throws ParsingException {
         return Try(() -> {
-            parseStringLiteral("Enemy");
+            //System.out.println("Start trying to parse actor!");
+            parseStringLiteral("Actor");
+            //System.out.println("Parsed 'Actor'!");
             parseLiteral(':');
 
-            var body = parseDefinitionBody(EnemyDefinition.legalDefines);
+            var body = parseDefinitionBody(ActorDefinition.legalDefines);
+
 
             AnimationDefinition animationDefinition = getVarValueFromBodyCastAsT(body, "Animation", AnimationDefinition.class);
             StatsDefinition statsDefinition = getVarValueFromBodyCastAsT(body, "Stats", StatsDefinition.class);
             StructureDefinition structureDefinition = getVarValueFromBodyCastAsT(body, "Structure", StructureDefinition.class);
 
-
-            return EnemyDefinition.of(animationDefinition, statsDefinition, structureDefinition);
+            return ActorDefinition.of(animationDefinition, statsDefinition, structureDefinition);
         });
     }
 
@@ -157,17 +174,17 @@ public class ObjectDefineParser extends TextParser {
 
             var body = parseDefinitionBody(AnimationDefinition.legalDefines);
 
-            String stateString = getFirst(body, e -> Objects.equals(e.getValue0(), "State"))
-                    .orElseThrow(() -> new ParserException(this, "Body did not contain Field 'State'"))
-                    .getValue1();
+            String stateString = getFieldValueFromBody(body, "State");
+
             var splitString = stateString.strip().split("\\s+");
             if (splitString.length != 2)
                 throw new ParserException(this, "State needs two values (State, path): only " + splitString.length + " provided. " + Arrays.toString(splitString));
-            AnimationState state = AnimationState.valueOf(splitString[0]);
+            AnimationState state = lookupAndMakeToTIfVarOrMakeToT(splitString[0], AnimationState::valueOf);
             String path = lookupAndMakeToTIfVarOrMakeToT(splitString[1], s -> s);
 
             Map<AnimationState, String> stateStringMap = new HashMap<>();
             stateStringMap.put(state, path);
+
 
             var initial = getFirst(body, e -> Objects.equals(e.getValue0(), "initial"));
             if (initial.isPresent())
@@ -193,29 +210,50 @@ public class ObjectDefineParser extends TextParser {
             parseLiteral(':');
 
             var body = parseDefinitionBody(StructureDefinition.legalDefines);
-            
-            var filterString = 
-                    getFirst(body, e -> e.getValue0().equals("Filter"))
-                    .orElseThrow(() -> new ParserException(this, "Body did not contain Field 'Filter'"))
-                    .getValue1();
-            FilterTool.Category[] categories = new FilterTool.Category[filterString.strip().split("\\s+").length];
+
+            String hitsString = lookupIfVarElseValue(getFieldValueFromBody(body, "Filter"));
+            FilterTool.Category[] hits = new FilterTool.Category[hitsString.strip().split("\\s+").length];
             int i = 0;
-            for (String s : filterString.strip().split("\\s+")) {
+            for (String s : hitsString.strip().split("\\s+")) {
+                hits[i++] = FilterTool.Category.valueOf(s);
+            }
+
+            String categoriesString = lookupIfVarElseValue(getFieldValueFromBody(body, "Category"));
+            FilterTool.Category[] categories = new FilterTool.Category[categoriesString.strip().split("\\s+").length];
+            i = 0;
+            for (String s : categoriesString.strip().split("\\s+")) {
                 categories[i++] = FilterTool.Category.valueOf(s);
             }
-            var filter = FilterTool.createFilter(FilterTool.Category.ENEMY, categories);
+
+            var filter = FilterTool.createFilter(categories, hits);
+
+            var bodyType = lookupAndMakeToTIfVarOrMakeToT(
+                    getFieldValueFromBody(body, "BodyType"),
+                    BodyDef.BodyType::valueOf
+            );
 
             ShapeDefinition shapeDefinition = getVarValueFromBodyCastAsT(body, "Shape", ShapeDefinition.class);
 
-            var density = getFirst(body, e -> Objects.equals(e.getValue0(), "density"));
-            var friction = getFirst(body, e -> Objects.equals(e.getValue0(), "friction"));
-
+            var density = getFirst(body, e -> Objects.equals(e.getValue0(), "density"))
+                    .map(Pair::getValue1)
+                    .map(Float::parseFloat)
+                    .orElse(1.0f);
+            var friction = getFirst(body, e -> Objects.equals(e.getValue0(), "friction"))
+                    .map(Pair::getValue1)
+                    .map(Float::parseFloat)
+                    .orElse(0f);
+            var isSensor = getFirst(body, e -> Objects.equals(e.getValue0(), "isSensor"))
+                    .map(Pair::getValue1)
+                    .map(Boolean::parseBoolean)
+                    .orElse(false);
 
             return StructureDefinition.of(
                     filter,
                     shapeDefinition,
-                    density.map(Pair::getValue1).map(Float::parseFloat).orElse(1.0f),
-                    friction.map(Pair::getValue1).map(Float::parseFloat).orElse(0.f)
+                    density,
+                    friction,
+                    isSensor,
+                    bodyType
             );
         });
     }
@@ -226,6 +264,7 @@ public class ObjectDefineParser extends TextParser {
             parseLiteral(':');
 
             var body = parseDefinitionBody(StatsDefinition.legalDefines);
+
             float hp = lookupAndMakeToTIfVarOrMakeToT(
                     getFieldValueFromBody(body, "HP"),
                     Float::parseFloat
@@ -238,9 +277,16 @@ public class ObjectDefineParser extends TextParser {
                     getFieldValueFromBody(body, "Damage"),
                     Float::parseFloat
             );
-            float scale = getFirst(body, e -> e.getValue0().equals("scale")).map(Pair::getValue1).map(Float::parseFloat).orElse(1.0f);
+            float resistance = getFirst(body, e -> e.getValue0().equals("resistance"))
+                    .map(Pair::getValue1)
+                    .map(Float::parseFloat)
+                    .orElse(1.0f);
 
-            return StatsDefinition.of(hp, speed, damage, scale);
+            float scale = getFirst(body, e -> e.getValue0().equals("scale"))
+                    .map(Pair::getValue1)
+                    .map(Float::parseFloat)
+                    .orElse(1.0f);
+            return StatsDefinition.of(hp, speed, damage, resistance, scale);
         });
     }
 
@@ -331,6 +377,7 @@ public class ObjectDefineParser extends TextParser {
                 .stream()
                 .filter(s -> Character.isUpperCase(s.charAt(0)))
                 .collect(Collectors.toSet());
+
         var ret = many(iTry(() -> {
             skipEmptyLinesAndComments();
             parseIndent();
@@ -340,7 +387,8 @@ public class ObjectDefineParser extends TextParser {
                 throw new ParserException(this, "value of " + fieldName + " is given more than once!");
             parseLiteral(':');
             space();
-            String fieldValue = parseUntilLiteral( '\t', '\n', '#');
+            String fieldValue = parseUntilLiteral( '\t', '\n', '#').strip();
+            skipEmptyLinesAndComments();
             return Tuple.of(fieldName, fieldValue);
         }));
         if (mustHave.isEmpty()) return ret;

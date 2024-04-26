@@ -14,17 +14,15 @@ public class SpriteRender implements AnimationRender {
 
     private Sprite sprite = null;
 
-    //private boolean flip = false;
-
-    //private int flipMultiplier = 1;
     private AnimationState state;
+    private final float scale;
 
     private final Map<AnimationState, Sprite> stateAnimations = new EnumMap<>(AnimationState.class);
-    //private Map<AnimationState, String> stateAnimationsTemp;
 
-    protected SpriteRender(Map<AnimationState, String> stateAnimations) {
+    protected SpriteRender(Map<AnimationState, String> stateAnimations, float scale) {
         //stateAnimationsTemp = stateAnimations;
         getSprites(stateAnimations);
+        this.scale = scale;
     }
 
     @Override
@@ -35,7 +33,7 @@ public class SpriteRender implements AnimationRender {
         Vector2 regionRect = new Vector2(sprite.getRegionWidth(), sprite.getRegionHeight());
         float max = Math.max(regionRect.x, regionRect.y);
         max = regionRect.y;
-        regionRect.scl(1/max * object.getScale() * Main.PPM);
+        regionRect.scl(1/max * scale * Main.PPM);
         batch.draw(sprite,
                 pos.x - regionRect.x / 2, // subtracting offset
                 pos.y - regionRect.y / 2,
@@ -62,10 +60,6 @@ public class SpriteRender implements AnimationRender {
         return stateAnimations.get(state).getHeight();
     }
 
-//    @Override
-//    public void initAnimations(Map<AnimationState, String> animationMap) {
-//        getSprites(animationMap);
-//    }
 
     /**
      * IMPORTANT, ONLY LOAD IN RENDER THREAD!

@@ -1,0 +1,11 @@
+!MAP_PATH=assets/damaged_roads_map.tmx
+!OBJECT_DEFINES=ObjectDefines/world1.obj
+!PLAYER_NAME=PLAYER
+
+00:00:
+    #ORC; BOSS 100 HARD
+    #RAVEN; WAVE 10 20
+    RAVEN; CONTINUOUS size:10 maxSpawnEachFrame:1
+
+00:10:
+    ORC; SWARM size:20 type:LINE

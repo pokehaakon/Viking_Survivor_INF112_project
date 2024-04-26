@@ -8,12 +8,12 @@ import java.util.Map;
 
 public interface AnimationRender {
 
-    static AnimationRender of(AnimationType type, Map<AnimationState, String> animationMap) {
+    static AnimationRender of(AnimationType type, Map<AnimationState, String> animationMap, float scale) {
         if(type == AnimationType.GIF) {
-            return new GIFRender(animationMap);
+            return new GIFRender(animationMap, scale);
         }
         else {
-            return new SpriteRender(animationMap);
+            return new SpriteRender(animationMap, scale);
         }
     }
 

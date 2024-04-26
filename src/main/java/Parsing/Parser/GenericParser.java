@@ -118,15 +118,15 @@ public abstract class GenericParser<StreamType, ReturnType> {
      */
     @SafeVarargs
     public final <T> T choose(ThrowingSupplier<T>... parsers) throws ParsingException {
-        List<String> messanges = new ArrayList<>();
+        List<String> messages = new ArrayList<>();
         for (ThrowingSupplier<T> p : parsers) {
             try {
                 return Try(p);
             } catch (ParsingException e){
-                messanges.add(e.msg);
+                messages.add(e.msg);
             }
         }
-        return error("failed choosing: \n" + String.join(" ,", messanges));
+        return error("failed choosing: \n" + String.join(" ,", messages));
     }
 
 
@@ -252,20 +252,6 @@ public abstract class GenericParser<StreamType, ReturnType> {
         return () -> parseStringLiteral(literalStrings);
     }
 
-//    @SafeVarargs
-//    public final ReturnType parseStringLiteral(Iterable<StreamType>... strings) throws ParsingException {
-//        List<StreamType>[] arr = new List[strings.length];
-//        int i = 0;
-//        for(Iterable<StreamType> itr : strings) {
-//            arr[i++] = iterableToList(itr);
-//        }
-//        return parseStringLiteral(arr);
-//    }
-//
-//    @SafeVarargs
-//    public final ThrowingSupplier<ReturnType> iparseStringLiteral(Iterable<StreamType>... strings) {
-//        return () -> parseStringLiteral(strings);
-//    }
 
     /**
      * Parses one of the strings in 'strings' in order, fail if no string is parsed
@@ -541,6 +527,10 @@ public abstract class GenericParser<StreamType, ReturnType> {
      */
     public <T> void Void(ThrowingSupplier<T> parser) {
         try {parser.get();} catch (ParsingException ignored) {}
+    }
+
+    public void parseEOF() throws ParsingException {
+        if (!stream.atEOF()) error("Expected to parse EOF");
     }
 
 }

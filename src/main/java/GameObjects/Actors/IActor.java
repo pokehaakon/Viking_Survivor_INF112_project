@@ -1,78 +1,107 @@
 package GameObjects.Actors;
 
+import GameObjects.Actors.ActorAction.ActorAction;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.Collection;
+
 public interface IActor {
-//    /**
-//     * resets velocity vector to default conditions
-//     */
-//    void resetVelocity();
-//
-//
-//    /**
-//     * changes velocity direction
-//     * @param x
-//     * @param y
-//     */
-//    void setVelocityVector(float x, float y);
-//
-//    /**
-//     * changes velocity direction
-//     * @param v
-//     */
-//    void setVelocityVector(Vector2 v);
-//
-//    /**
-//     * moves actor according to its velocity vector and speed
-//     */
-//    void move();
-
 
     /**
-     * changes actor speed
-     * @param speedMultiplier
+     * Performs the actions added by the
+     * Actor.addAction
      */
-    void setSpeed(float speedMultiplier);
+    void doAction();
 
     /**
-     * Attacks an actor
+     * Adds the action to the actions performed by this Actor
+     * @param action the action to add
+     */
+    void addAction(ActorAction action);
+
+    /**
+     * Adds the actions to the actions performed by this Actor
+     * @param actions the actions to add
+     */
+    void addAction(ActorAction... actions);
+
+    /**
+     * Adds the actions to the actions performed by this Actor
+     * @param actions the actions to add
+     */
+    void addAction(Collection<ActorAction> actions);
+
+    /**
+     * Clears all the set actions
+     */
+    void resetActions();
+
+//    /**
+//     * Performs the die actions added by the
+//     * Actor.addDieAction
+//     */
+//    void dieAction();
+//
+//    /**
+//     * Adds an action to the die actions performed by this Actor
+//     * @param action the action to add
+//     */
+//    void addDieAction(ActorAction action);
+//
+//    /**
+//     * Adds actions to the die actions performed by this Actor
+//     * @param actions the actions to add
+//     */
+//    void addDieAction(ActorAction... actions);
+//
+//    /**
+//     * Adds actions to the die actions performed by this Actor
+//     * @param actions the actions to add
+//     */
+//    void addDieAction(Collection<ActorAction> actions);
+//
+//    /**
+//     * Clears all the set die actions
+//     */
+//    void resetDieActions();
+
+
+    void setSpeed(float speed);
+    float getSpeed();
+
+    void setHP(float hp);
+    float getHP();
+
+    void setDamage(float damage);
+    float getDamage();
+
+    void setResistance(float resistance);
+    float getResistance();
+
+    /**
+     * Called when an actor is to attack another actor
      * @param actor the actor which is attacked
-     * @param damage the damage inflicted on the actor
      */
-   void attack(Actor actor,float damage);
+   void attack(Actor actor);
+
+    /**
+     * Called when an actor gets attacked by another actor
+     * returns false if attack should be ignored
+     * @param actor the actor that attacks
+     * @return true if attack should be ignored
+     */
+   boolean attackedBy(Actor actor);
 
 
     /**
-     *
      * @return true if actor is under attack.
      */
    boolean isUnderAttack();
 
     /**
-     *
-     * @return the last time the actor was  attacked
+     * Destroyes and kills the enemy
      */
-    long getLastAttackedTime();
-
-    /**
-     * Updates the last attacked long
-     * @param newAttack new long
-     */
-    void setLastAttackedTime(long newAttack);
-
-    /**
-     *
-     * @param bool
-     */
-
-    /**
-     * Changes the underAttack boolean
-     * @param bool the new booleanw
-     */
-    void setUnderAttack(boolean bool);
-
-
-
+   void kill();
 }

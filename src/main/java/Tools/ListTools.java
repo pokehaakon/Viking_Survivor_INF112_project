@@ -1,7 +1,7 @@
 package Tools;
 
-import GameObjects.Actors.Enemy;
 import GameObjects.GameObject;
+import GameObjects.IGameObject;
 import GameObjects.Pool.ObjectPool;
 import GameObjects.Pool.SmallPool;
 

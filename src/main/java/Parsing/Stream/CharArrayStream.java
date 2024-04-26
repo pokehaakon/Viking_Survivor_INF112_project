@@ -3,6 +3,7 @@ package Parsing.Stream;
 import Parsing.Parser.ParsingException;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class CharArrayStream implements Streamable<Character> {
     private final char[] text;
@@ -39,7 +40,7 @@ public class CharArrayStream implements Streamable<Character> {
 
     @Override
     public Character next() throws ParsingException {
-        if (text.length == head) throw new ParsingException("Reached EOF");
+        if (atEOF()) throw new ParsingException("Reached EOF");
         if (currentChar == '\n') {
             lineCount++;
             colCount = 0;
@@ -47,7 +48,14 @@ public class CharArrayStream implements Streamable<Character> {
             colCount++;
         }
         var temp = currentChar;
-        currentChar = text.length != head + 1 ? text[++head] : 0;
+//        head++;
+//        if (text.length == head) {
+//            currentChar = 0;
+//        } else {
+//            currentChar = text[head];
+//        }
+        currentChar = text.length == ++head ? 0 : text[head];
+        //currentChar = text.length != head + 1 ? text[++head] : 0;
         return temp;
     }
 
@@ -85,7 +93,8 @@ public class CharArrayStream implements Streamable<Character> {
         for (int i = 0; i < colCount; i++)
             b.append(' ');
         b.append('^');
-        return b.toString();
+
+    return b.toString() + (atEOF() ? "\n: atEOF" : "");
     }
 
     @Override

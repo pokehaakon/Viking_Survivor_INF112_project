@@ -3,26 +3,24 @@ package GameObjects.Pool;
 import GameObjects.GameObject;
 import com.badlogic.gdx.physics.box2d.World;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class SmallPool<T extends GameObject> {
-
+public class SmallPool<T extends GameObject> implements IPool<T> {
     private final World world;
     private final Supplier<T> factory;
     private final Queue<T> pool;
+    private final String name;
 
-    public SmallPool(World world, Supplier<T> factory, int poolSize) {
+    public SmallPool(World world, Supplier<T> factory, int poolSize, String name) {
         if (poolSize <= 0) {
             throw new IllegalArgumentException("Pool size must be greater than zero!");
         }
 
         this.world = world;
         this.factory = factory;
+        this.name = name;
         this.pool = new ArrayDeque<>(poolSize);
 
         for (int i = 0; i<poolSize; i++) {
@@ -44,12 +42,26 @@ public class SmallPool<T extends GameObject> {
         return obj;
     }
 
-    public List<T> get(int n) {
-        List<T> ls = new ArrayList<>(n);
-        for (int i = 0; i < n; i++) {
+    public List<T> get(int num) {
+        List<T> ls = new ArrayList<>(num);
+        for (int i = 0; i < num; i++) {
             ls.add(get());
         }
         return ls;
+    }
+
+    @Override
+    public T get(String name) {
+        if (!Objects.equals(name, this.name))
+            throw new IllegalArgumentException("Tried to get a '" + name + "' from a '" + this.name +"' smallPool!");
+        return get();
+    }
+
+    @Override
+    public List<T> get(String name, int num) {
+        if (!Objects.equals(name, this.name))
+            throw new IllegalArgumentException("Tried to get a '" + name + "' from a '" + this.name +"' smallPool!");
+        return get(num);
     }
 
     public void returnToPool(T obj) {

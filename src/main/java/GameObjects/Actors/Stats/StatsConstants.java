@@ -1,7 +1,7 @@
 package GameObjects.Actors.Stats;
 
 
-public abstract class Stats {
+public abstract class StatsConstants {
 
     //player: random values
     public static final float PLAYER_START_HP = 100;
@@ -30,10 +30,19 @@ public abstract class Stats {
     public static final boolean IS_PICKED_UP = false;
 
 
+    public static class Stats {
+        public final float SPEED, HP, DAMAGE, RESISTANCE;
+        public Stats(float speed, float hp, float damage, float resistance) {
+            SPEED = speed;
+            HP = hp;
+            DAMAGE = damage;
+            RESISTANCE = resistance;
+        }
+    }
 
-
-    public static PlayerStats player() {
-        return new PlayerStats(PLAYER_START_HP, PLAYER_SPEED, PLAYER_START_DAMAGE, PLAYER_START_ARMOUR, PLAYER_START_XP);
+    public static Stats player() {
+        return new Stats(PLAYER_SPEED, PLAYER_START_HP, PLAYER_START_DAMAGE, PLAYER_START_ARMOUR);
+        //return new PlayerStats(PLAYER_START_HP, PLAYER_SPEED, PLAYER_START_DAMAGE, PLAYER_START_ARMOUR, PLAYER_START_XP);
     }
     public static EnemyStats enemy1() {
        return new EnemyStats(ENEMY1_HP, ENEMY1_SPEED, ENEMY1_DAMAGE, ENEMY1_ARMOUR, ENEMY1_KNOCKBACK_RESISTANCE);

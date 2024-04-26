@@ -1,7 +1,6 @@
 package Simulation.SpawnHandler;
 
-import GameObjects.Actors.Enemy;
-import GameObjects.ObjectTypes.EnemyType;
+import GameObjects.Actors.Actor;
 import GameObjects.Pool.ObjectPool;
 import GameObjects.Pool.SmallPool;
 import Simulation.ISpawnHandler;
@@ -10,19 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static Simulation.SpawnActions.spawnEnemy;
 import static Tools.ListTools.findPrefix;
 import static Tools.ListTools.removeDestroyed;
 
 public class ContinuousSpawnHandler implements ISpawnHandler {
-    private final SmallPool<Enemy> pool;
+    private final SmallPool<Actor> pool;
     private final int size, maxSpawnEachFrame;
-    private final List<Enemy> spawnedEnemies;
-    private final List<Enemy> activeEnemies;
-    private final Consumer<Enemy> initializer;
+    private final List<Actor> spawnedEnemies;
+    private final List<Actor> activeEnemies;
+    private final Consumer<Actor> initializer;
 
-    public ContinuousSpawnHandler(List<String> args, String enemyName, Consumer<Enemy> initializer, ObjectPool<Enemy> objectPool, List<Enemy> activeEnemies) {
-        pool = objectPool.getSmallPool(enemyName);
+    public ContinuousSpawnHandler(List<String> args, String actorName, Consumer<Actor> initializer, ObjectPool<Actor> objectPool, List<Actor> activeEnemies) {
+        pool = objectPool.getSmallPool(actorName);
         this.size = Integer.parseInt(findPrefix("size:", args));
         this.maxSpawnEachFrame = Integer.parseInt(findPrefix("maxSpawnEachFrame:", args));
         spawnedEnemies = new ArrayList<>(size);
@@ -38,14 +36,14 @@ public class ContinuousSpawnHandler implements ISpawnHandler {
         removeDestroyed(spawnedEnemies, pool, true);
         int i = 0;
         int spawned = 0;
-        Enemy enemy;
+        Actor actor;
         while (i < size) {
             if (spawnedEnemies.size() == i) spawnedEnemies.add(null);
             if (spawnedEnemies.get(i++) != null) continue;
-            enemy = pool.get();
-            spawnedEnemies.set(i - 1, enemy);
-            initializer.accept(enemy);
-            activeEnemies.add(enemy);
+            actor = pool.get();
+            spawnedEnemies.set(i - 1, actor);
+            initializer.accept(actor);
+            activeEnemies.add(actor);
             if (++spawned == maxSpawnEachFrame) break;
         }
     }

@@ -1,6 +1,5 @@
 package Parsing;
 
-import GameObjects.ObjectTypes.EnemyType;
 import Parsing.Parser.ParserException;
 import Parsing.Parser.ParsingException;
 import Parsing.Parser.TextParser;

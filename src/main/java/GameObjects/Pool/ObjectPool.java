@@ -5,16 +5,20 @@ import GameObjects.GameObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
+import javax.lang.model.type.UnknownTypeException;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 
-public class ObjectPool<T extends GameObject> {
+public class ObjectPool<T extends GameObject> implements IPool<T> {
     private final IFactory<T> factory;
-    private final Map<String, SmallPool<T>> objectPool;
+    private final Map<String, IPool<T>> objectPool;
     private final Random random;
 
     private int poolSize;
     private final World world;
+    private final Consumer<String> superFactoryUpdater;
 
     /**
      * An object pool is a hash map of object types as keys and linked list of GameObjects as values
@@ -27,24 +31,39 @@ public class ObjectPool<T extends GameObject> {
         this.world = world;
         this.factory = factory;
         this.poolSize = poolSize;
+        this.superFactoryUpdater = (key) -> {}; // no-op
         this.objectPool = new HashMap<>();
+        //this.objectPool = new HashMap<>();
+        this.random = new Random();
+
+
+        if (poolSize <= 0) {
+            throw new IllegalArgumentException("Pool size must be greater than zero!");
+        }
+    }
+
+    public ObjectPool(World world, IFactory<T> factory, int poolSize, Function<IPool<T>, Consumer<String>> superFactoryUpdaterCreator ) {
+        this.world = world;
+        this.factory = factory;
+        this.poolSize = poolSize;
+        this.objectPool = new HashMap<>();
+        superFactoryUpdater = superFactoryUpdaterCreator.apply(this);
         //this.objectPool = new HashMap<>();
         this.random = new Random();
 
         if (poolSize <= 0) {
             throw new IllegalArgumentException("Pool size must be greater than zero!");
         }
-
     }
 
-    private void createObjectPool(String name, int size) {
-        objectPool.put(name, new SmallPool<>(world, () -> factory.create(name), size));
+    public <R extends T> ObjectPool<R> createSubPool(IFactory<R> factory) {
+        var newPool = new ObjectPool<>(world, factory, poolSize, (objectPool) -> (s) -> this.objectPool.put(s, (IPool<T>) objectPool));
+        return newPool;
     }
-
 
     public T get(String name) {
         createSmallPoolIfAbsent(name);
-        return objectPool.get(name).get();
+        return objectPool.get(name).get(name);
     }
 
     /**
@@ -55,7 +74,7 @@ public class ObjectPool<T extends GameObject> {
      */
     public List<T> get(String name, int num) {
         createSmallPoolIfAbsent(name);
-        return objectPool.get(name).get(num);
+        return objectPool.get(name).get(name, num);
     }
 
     /**
@@ -67,22 +86,27 @@ public class ObjectPool<T extends GameObject> {
         objectPool.get(object.getType()).returnToPool(object);
     }
 
-    public Map<String, SmallPool<T>> getObjectPool() {
+    public Map<String, IPool<T>> getObjectPool() {
         return objectPool;
     }
 
     public SmallPool<T> getSmallPool(String name) {
         createSmallPoolIfAbsent(name);
-        return objectPool.get(name);
+        var pool = objectPool.get(name);
+        if (pool instanceof SmallPool<T> smallPool)
+            return smallPool;
+        if (pool instanceof ObjectPool<T> largePool)
+            return largePool.getSmallPool(name);
+        throw new IllegalArgumentException("The type of the sub-pool is unknown! " + pool.getClass());
     }
 
-    public void setPosition(Vector2 vector2) {
-        for (SmallPool<T> pool : objectPool.values()) {
-            for (T object : pool.getPool()) {
-                object.setPosition(vector2);
-            }
-        }
-    }
+//    public void setPosition(Vector2 vector2) {
+//        for (SmallPool<T> pool : objectPool.values()) {
+//            for (T object : pool.getPool()) {
+//                object.setPosition(vector2);
+//            }
+//        }
+//    }
 
     private void createSmallPoolIfAbsent(String name) {
         if (objectPool.containsKey(name)) return;
@@ -91,7 +115,8 @@ public class ObjectPool<T extends GameObject> {
                 new SmallPool<>(
                         world,
                         () -> factory.create(name),
-                        poolSize
+                        poolSize,
+                        name
                 )
         );
     }

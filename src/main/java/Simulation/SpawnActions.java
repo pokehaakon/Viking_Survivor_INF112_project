@@ -1,11 +1,9 @@
 package Simulation;
 
 import Contexts.ReleaseCandidateContext;
+import GameObjects.Actors.Actor;
 import Simulation.Coordinates.SwarmCoordinates;
 import GameObjects.Actors.ActorAction.ActorAction;
-import GameObjects.Actors.Enemy;
-import GameObjects.Actors.Player;
-import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.ObjectTypes.SwarmType;
 import GameObjects.Pool.ObjectPool;
 import com.badlogic.gdx.math.Vector2;
@@ -13,40 +11,42 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 
+import static Contexts.ReleaseCandidateContext.DE_SPAWN_RECT;
+import static GameObjects.Actors.ActorAction.KilledAction.destroyIfDefeated;
+import static GameObjects.Actors.ActorAction.OutOfBoundsActions.deSpawnIfOutOfBounds;
 import static Simulation.Coordinates.SpawnCoordinates.randomSpawnPoint;
-import static GameObjects.Actors.ActorAction.EnemyActions.*;
 
 public abstract class SpawnActions {
 
-    public static Enemy spawnEnemy(ObjectPool<Enemy> enemyPool, Vector2 position, String enemyName, List<ActorAction<Enemy>> actions) {
-        Enemy enemy = enemyPool.get(enemyName);
-        enemy.setPosition(position);
-        enemy.setActions(actions);
-
-        return enemy;
-    }
-
-    public static List<Enemy> spawnEnemies(int num, ObjectPool<Enemy> enemyPool, List<Vector2> positions, String enemyName, List<ActorAction<Enemy>> actions) {
-        List<Enemy> ls = new ArrayList<>(num);
-        int i = 0;
-        for(Enemy enemy : enemyPool.get(enemyName, num)) {
-            enemy.setPosition(positions.get(i++));
-            enemy.setActions(actions);
-            ls.add(enemy);
-        }
-        return ls;
-    }
-
-    public static List<Enemy> spawnSwarm(int num, ObjectPool<Enemy> enemyPool, Vector2 position, String enemyName, SwarmType swarmType, Player player, int spacing, int speedMultiplier) {
-        Vector2 center = player.getBody().getPosition();
-        Vector2 startPoint = randomSpawnPoint(center, ReleaseCandidateContext.SPAWN_RADIUS);
-
-        List<Vector2> positions = SwarmCoordinates.getSwarmCoordinates(startPoint, SwarmType.LINE, num, spacing, center);
-        List<ActorAction<Enemy>> actions = List.of(destroyIfOutOfBounds(player), destroyIfDefeated());
-
-        return spawnEnemies(num, enemyPool, positions, enemyName, actions);
-
-    }
+//    public static Actor spawnEnemy(ObjectPool<Actor> enemyPool, Vector2 position, String enemyName, List<ActorAction> actions) {
+//        Actor enemy = enemyPool.get(enemyName);
+//        enemy.setPosition(position);
+//        enemy.addAction(actions);
+//
+//        return enemy;
+//    }
+//
+//    public static List<Actor> spawnEnemies(int num, ObjectPool<Actor> enemyPool, List<Vector2> positions, String enemyName, List<ActorAction> actions) {
+//        List<Actor> ls = new ArrayList<>(num);
+//        int i = 0;
+//        for(Actor enemy : enemyPool.get(enemyName, num)) {
+//            enemy.setPosition(positions.get(i++));
+//            enemy.addAction(actions);
+//            ls.add(enemy);
+//        }
+//        return ls;
+//    }
+//
+//    public static List<Actor> spawnSwarm(int num, ObjectPool<Actor> enemyPool, Vector2 position, String enemyName, SwarmType swarmType, Actor player, int spacing, int speedMultiplier) {
+//        Vector2 center = player.getBody().getPosition();
+//        Vector2 startPoint = randomSpawnPoint(center, ReleaseCandidateContext.SPAWN_RADIUS);
+//
+//        List<Vector2> positions = SwarmCoordinates.getSwarmCoordinates(startPoint, SwarmType.LINE, num, spacing, center);
+//        List<ActorAction> actions = List.of(deSpawnIfOutOfBounds(player, DE_SPAWN_RECT), destroyIfDefeated());
+//
+//        return spawnEnemies(num, enemyPool, positions, enemyName, actions);
+//
+//    }
 
 //    public static List<Enemy> spawnRandomEnemies(ObjectPool<Enemy, EnemyType> enemyPool, Vector2 position, int num, List<ActorAction<Enemy>> actions, AnimationLibrary animationLibrary) {
 //        List<Enemy> ls = new ArrayList<>(num);
