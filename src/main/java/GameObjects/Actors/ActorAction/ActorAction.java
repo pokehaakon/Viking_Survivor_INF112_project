@@ -2,6 +2,7 @@ package GameObjects.Actors.ActorAction;
 
 import GameObjects.Actors.Actor;
 
+@FunctionalInterface
 public interface ActorAction {
 
     // this interface acts as an action object

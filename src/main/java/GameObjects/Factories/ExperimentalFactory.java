@@ -24,8 +24,8 @@ public abstract class ExperimentalFactory {
         return factories.keySet().stream().toList();
     }
     static public List<String> getRegisteredActors() {
-        System.out.println(isActor);
-        System.out.println(factories.keySet());
+        //System.out.println(isActor);
+        //System.out.println(factories.keySet());
         return isActor.stream().toList();
     }
 

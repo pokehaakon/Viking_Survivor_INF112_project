@@ -58,7 +58,7 @@ public class MapParser extends TextParser {
         return defines;
     }
 
-    public Map<String, String> parseDefines() {
+    private Map<String, String> parseDefines() {
         return mapFromPairs(many(iTry(() -> {
             many(() -> choose(this::parseEmptyLine, this::parseComment));
             parseLiteral('!');
@@ -72,7 +72,7 @@ public class MapParser extends TextParser {
             return Tuple.of(key.get(), value.get());
         })));
     }
-    public List<Pair<Long, List<SpawnFrame>>>  parseTimeFrames() {
+    private List<Pair<Long, List<SpawnFrame>>>  parseTimeFrames() {
         many(() -> choose(this::parseEmptyLine, this::parseComment));
 
         //parses frame header

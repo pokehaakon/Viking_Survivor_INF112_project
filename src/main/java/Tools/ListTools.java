@@ -2,6 +2,7 @@ package Tools;
 
 import GameObjects.GameObject;
 import GameObjects.IGameObject;
+import GameObjects.Pool.IPool;
 import GameObjects.Pool.ObjectPool;
 import GameObjects.Pool.SmallPool;
 
@@ -20,20 +21,7 @@ public abstract class ListTools {
             ls.set(j++, v);
         }
     }
-
-    public static <T extends GameObject> void removeDestroyed(List<T> ls, ObjectPool<T> pool, boolean compress) {
-        int i = 0;
-        for (var obj : ls) {
-            if (obj.isDestroyed()) {
-                pool.returnToPool(obj);
-            } else {
-                ls.set(i++, obj);
-            }
-        }
-        if (compress) ls.subList(i, ls.size()).clear();
-    }
-
-    public static <T extends GameObject> void removeDestroyed(List<T> ls, SmallPool<T> pool, boolean compress) {
+    public static <T extends GameObject> void removeDestroyed(List<T> ls, IPool<T> pool, boolean compress) {
         int i = 0;
         for (var obj : ls) {
             if (obj.isDestroyed()) {

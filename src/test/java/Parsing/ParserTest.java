@@ -1,5 +1,6 @@
 package Parsing;
 
+import GameObjects.Factories.ExperimentalFactory;
 import Parsing.Parser.ParserException;
 import Parsing.Parser.ParsingException;
 import Parsing.Parser.TextParser;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import org.javatuples.Pair;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -19,46 +21,32 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class ParserTest {
+    @AfterAll
+    static void cleanUp() {
+
+    }
 
     @BeforeAll
     static void setUpBeforeAll() {
         HeadlessApplicationConfiguration config = new HeadlessApplicationConfiguration();
         ApplicationListener listener = new ApplicationListener() {
+            @Override
+            public void create() {}
+            @Override
+            public void resize(int width, int height) {}
+            @Override
+            public void render() {}
+            @Override
+            public void pause() {}
+            @Override
+            public void resume() {}
 
             @Override
-            public void create() {
-            }
-
-            @Override
-            public void resize(int width, int height) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void render() {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void pause() {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void resume() {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void dispose() {
-                // TODO Auto-generated method stub
-
-            }};
+            public void dispose() {}
+        };
         new HeadlessApplication(listener, config);
+        ExperimentalFactory.registerActor("RAVEN", () -> null);
+        ExperimentalFactory.registerActor("ORC", () -> null);
     }
 
     public static MapParser mapParserFromString(String s) {
@@ -72,7 +60,7 @@ class ParserTest {
                 !other=this
                 """);
 
-        Map<String, String> defines = m.parseDefines();
+        Map<String, String> defines = m.doParseDefines();
 
         assertTrue(defines.containsKey("mapname"));
         assertTrue(defines.containsKey("other"));
@@ -84,7 +72,7 @@ class ParserTest {
                 !mapname=Springs
                 !other=
                 """);
-        assertThrowsExactly(ParserException.class, m::parseDefines);
+        assertThrowsExactly(ParserException.class, m::doParseDefines);
     }
 
 
@@ -101,7 +89,7 @@ class ParserTest {
         assertEquals(2, frames.size());
         frame = frames.get(0);
         //assertEquals(2, frame.spawnable().size());
-        assertEquals(EnemyType.RAVEN, frame.spawnable());
+        assertEquals("RAVEN", frame.spawnable());
         //assertEquals(EnemyType.ORC, frame.spawnable().get(1));
         assertEquals(SpawnType.BOSS, frame.spawnType());
         assertEquals(2, frame.args().size());
@@ -110,7 +98,7 @@ class ParserTest {
 
         frame = frames.get(1);
         //assertEquals(1, frame.spawnable().size());
-        assertEquals(EnemyType.RAVEN, frame.spawnable());
+        assertEquals("RAVEN", frame.spawnable());
         assertEquals(SpawnType.WAVE, frame.spawnType());
         assertEquals(2, frame.args().size());
         assertEquals("10", frame.args().get(0));
@@ -144,14 +132,14 @@ class ParserTest {
 
 
         SpawnFrame frame;
-        var spawnFramesList = m.parseTimeFrames();
+        var spawnFramesList = m.doParseTimeFrames();
         var spawnFrames = spawnFramesList.stream().collect(Collectors.toMap(Pair::getValue0, Pair::getValue1));
 
         assertTrue(spawnFrames.containsKey(60L));
         assertEquals(1, spawnFrames.get(60L).size());
         frame = spawnFrames.get(60L).get(0);
         //assertEquals(1, frame.spawnable().size());
-        assertEquals(EnemyType.RAVEN, frame.spawnable());
+        assertEquals("RAVEN", frame.spawnable());
         assertEquals(SpawnType.WAVE, frame.spawnType());
         assertEquals(2, frame.args().size());
         assertEquals("10", frame.args().get(0));
@@ -161,7 +149,7 @@ class ParserTest {
         assertEquals(1, spawnFrames.get(300L).size());
         frame = spawnFrames.get(300L).get(0);
         //assertEquals(2, frame.spawnable().size());
-        assertEquals(EnemyType.ORC, frame.spawnable());
+        assertEquals("ORC", frame.spawnable());
         //assertEquals(EnemyType.ORC, frame.spawnable().get(1));
         assertEquals(SpawnType.BOSS, frame.spawnType());
         assertEquals(2, frame.args().size());
@@ -185,8 +173,8 @@ class ParserTest {
                 """);
         //MapParser p = new MapParser("mapdefines/test.wdef");
         //p.doParse();
-        p.parseDefines();
-        p.parseTimeFrames();
+        p.doParseDefines();
+        p.doParseTimeFrames();
         var defines = p.getDefines();
 
         assertEquals(1, defines.size());

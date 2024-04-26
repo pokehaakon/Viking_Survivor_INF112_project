@@ -18,7 +18,7 @@ public class Actor extends GameObject implements IActor {
 
     protected final List<ActorAction> actions;
     protected final List<ActorAction> dieActions;
-    public boolean underAttack = false;
+    private boolean underAttack = false;
 
     private final Map<Integer, Long> hitByIDs;
 
@@ -56,6 +56,13 @@ public class Actor extends GameObject implements IActor {
         while (i < actions.size()) {
             actions.get(i++).act(this);
         }
+        for (var iter = hitByIDs.keySet().iterator(); iter.hasNext();) {
+            var key = iter.next();
+            hitByIDs.put(key, hitByIDs.get(key) - 1);
+            if (hitByIDs.get(key) > 0) continue;
+            iter.remove();
+        }
+
 
         updateDirectionState();
         updateAnimationState();
@@ -65,38 +72,6 @@ public class Actor extends GameObject implements IActor {
     public void resetActions() {
         actions.clear();
     }
-
-//    @Override
-//    public void dieAction() {
-//        int i = 0;
-//        //use while loop just in case the list changes!
-//        while (i < dieActions.size()) {
-//            dieActions.get(i++).act(this);
-//        }
-//
-//        updateDirectionState();
-//        updateAnimationState();
-//    }
-//
-//    @Override
-//    public void addDieAction(ActorAction action) {
-//        dieActions.add(action);
-//    }
-//
-//    @Override
-//    public void addDieAction(ActorAction... actions) {
-//        dieActions.addAll(List.of(actions));
-//    }
-//
-//    @Override
-//    public void addDieAction(Collection<ActorAction> actions) {
-//        dieActions.addAll(actions);
-//    }
-//
-//    @Override
-//    public void resetDieActions() {
-//        dieActions.clear();
-//    }
 
     @Override
     public void setSpeed(float speed) {this.speed = speed; }
@@ -135,7 +110,7 @@ public class Actor extends GameObject implements IActor {
 
     @Override
     public boolean isUnderAttack() {
-        return underAttack;
+        return !hitByIDs.isEmpty();
     }
 
 
