@@ -31,7 +31,7 @@ public class TerrainFactory extends Factory<Terrain, TerrainType>{
 
     public TerrainFactory() {
         register( () -> {
-            return new Terrain(
+             return new Terrain(
                     TerrainType.TREE,
                     new AnimationHandler(Map.of(AnimationState.STATIC, "tree.png"), AnimationType.SPRITE,AnimationState.STATIC),
                     defaultTerrainBodyFeatures(createCircleShape(0.1f * TREE_WIDTH / 2)),

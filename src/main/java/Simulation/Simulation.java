@@ -5,6 +5,7 @@ import GameObjects.Actors.ObjectActions.EnemyActions;
 import GameObjects.Actors.Enemy;
 import GameObjects.Actors.ObjectActions.PickupActions;
 import GameObjects.Actors.Pickups;
+import GameObjects.GameObject;
 import GameObjects.ObjectTypes.EnemyType;
 import GameObjects.ObjectTypes.PickupType;
 import GameObjects.ObjectTypes.SwarmType;
@@ -210,6 +211,19 @@ public class Simulation implements Runnable {
         }
         enemies.subList(i, enemies.size()).clear();
     }
+
+//    public <T extends GameObject<?>> void removeIfDestroyed(List<T> objects) {
+//        int i = 0;
+//        for ( T o : objects) {
+//            if (o.isDestroyed()) {
+//                o.getObjectPool().returnToPool(o);
+//            } else {
+//                enemies.set(i++, o);
+//            }
+//        }
+//        enemies.subList(i, objects.size()).clear();
+//
+//    }
 
     public void removePickedUpPickups() {
         int i = 0;

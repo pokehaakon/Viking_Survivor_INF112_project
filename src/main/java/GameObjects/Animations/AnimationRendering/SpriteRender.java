@@ -14,12 +14,13 @@ public class SpriteRender implements AnimationRender {
 
     private Sprite sprite;
 
-    private boolean flip = false;
 
-    private int flipMultiplier = 1;
+    private float rotation = 0;
 
-    private AnimationLibrary animationLibrary;
-    Map<AnimationState, Sprite> stateAnimations = new EnumMap<>(AnimationState.class);
+    private float rotationSpeed = 0;
+
+    private final AnimationLibrary  animationLibrary;
+    private final Map<AnimationState, Sprite> stateAnimations = new EnumMap<>(AnimationState.class);
 
     public SpriteRender(AnimationLibrary animationLibrary, Map<AnimationState, String> stateAnimations) {
         this.animationLibrary = animationLibrary;
@@ -33,13 +34,31 @@ public class SpriteRender implements AnimationRender {
 
     @Override
     public void draw(SpriteBatch batch, float elapsedTime, GameObject object) {
-        Vector2 pos = object.getBody().getPosition();
-        batch.draw(sprite,
-                pos.x - sprite.getWidth()/2*object.getScale(), // subtracting offset
-                pos.y - sprite.getWidth()/2*object.getScale(),
-                sprite.getWidth() * object.getScale(),
-                sprite.getHeight() * object.getScale());
+        float originX = object.getBody().getPosition().x;
+        float originY = object.getBody().getPosition().y;
 
+        // Adjust origin to center of the sprite
+        originX -= sprite.getWidth()* 0.5f;
+        originY -= sprite.getWidth() * 0.5f;
+
+        batch.draw(
+                sprite,
+                originX,
+                originY,
+                sprite.getWidth() * 0.5f,
+                sprite.getHeight() * 0.5f,
+                sprite.getWidth(),
+                sprite.getHeight(),
+                object.getScale(),
+                object.getScale(),
+                rotation
+        );
+
+        rotation += rotationSpeed;
+
+        if(rotation >= 360) {
+            rotation = 0;
+        }
     }
 
 
@@ -63,6 +82,20 @@ public class SpriteRender implements AnimationRender {
         getSprites(animationMap);
 
     }
+
+    @Override
+    public void rotate(float rotationSpeed) {
+        this.rotationSpeed = rotationSpeed;
+
+    }
+
+    @Override
+    public void stopRotation() {
+        rotation = 0;
+        rotationSpeed = 0;
+
+    }
+
     private void getSprites(Map<AnimationState,String> map) {
         for(Map.Entry<AnimationState, String> entry : map.entrySet()) {
             AnimationState state = entry.getKey();

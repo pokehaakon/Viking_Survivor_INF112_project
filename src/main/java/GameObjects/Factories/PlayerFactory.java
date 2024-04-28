@@ -31,7 +31,8 @@ public class PlayerFactory extends Factory<Player, PlayerType> {
 
         register(() -> new Player(
                 PLAYER1,
-                new AnimationHandler(Map.of(AnimationState.MOVING, PlAYER_MOVING_FILE_PATH,
+                new AnimationHandler(Map.of(
+                        AnimationState.MOVING, PlAYER_MOVING_FILE_PATH,
                         AnimationState.IDLE, PlAYER_IDLE_FILE_PATH),
                         AnimationType.GIF,AnimationState.IDLE),
                 defaultPlayerBodyFeatures(createCircleShape(0.3f * PLAYER_SCALE * PLAYER_WIDTH / 2)),

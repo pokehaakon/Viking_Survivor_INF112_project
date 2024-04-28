@@ -38,6 +38,16 @@ public interface AnimationRender {
 
     void setAnimations(Map<AnimationState,String> animationMap);
 
+    /**
+     * Rotates the animation at its axis
+     * @param rotationSpeed incrementation value for each frame
+     */
+    void rotate(float rotationSpeed);
+
+    /**
+     * Stops the animation rotation by setting its rotation speed to zero
+     */
+    void stopRotation();
 
 
 }

@@ -27,6 +27,7 @@ public class AnimationHandler {
         this.animationMap = animationMap;
         this.type = type;
 
+
         if(animationMap.containsKey(spawnState)) {
             this.animationState = spawnState;
         }
@@ -72,5 +73,19 @@ public class AnimationHandler {
         return animationRender;
     }
 
+    /**
+     * Rotates the animation on its axis
+     * @param rotationSpeed the value in which the rotation is incremented by each frame
+     */
+    public void rotate(float rotationSpeed) {
+        animationRender.rotate(rotationSpeed);
+    }
+
+    /**
+     * Stops the animation rotation
+     */
+    public void stopRotation() {
+        animationRender.stopRotation();
+    }
 
 }

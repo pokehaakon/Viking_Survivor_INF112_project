@@ -27,6 +27,7 @@ public class SmallPool<T extends GameObject<?>> {
         for (int i = 0; i<poolSize; i++) {
             T obj = factory.get();
             obj.addToWorld(world);
+            obj.setObjectPool(this);
             returnToPool(obj);
         }
     }

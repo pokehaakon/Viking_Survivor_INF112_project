@@ -5,7 +5,9 @@ import GameObjects.Actors.ObjectActions.Action;
 import GameObjects.Animations.AnimationRendering.*;
 import GameObjects.Animations.AnimationState;
 import GameObjects.Actors.DirectionState;
+import GameObjects.Pool.SmallPool;
 import Tools.BodyTool;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -17,7 +19,7 @@ import java.util.Set;
 public class GameObject<E extends Enum<E>> implements IGameObject<E> {
 
     protected Body body;
-
+    private  SmallPool<? extends GameObject<?>> objectPool;
     protected float scale;
     protected Set<Action> actions = new HashSet<>();
 
@@ -177,7 +179,17 @@ public class GameObject<E extends Enum<E>> implements IGameObject<E> {
         return(Vector2.dst(body.getPosition().x,body.getPosition().y,pos.x,pos.y) > deSpawnRadius);
     }
 
+    public void setObjectPool(SmallPool pool) {
+        objectPool = pool;
+    }
+
+    public SmallPool<?> getObjectPool() {
+        return objectPool;
+    }
 
 
+    public AnimationHandler getAnimationHandler() {
+        return animationHandler;
+    }
 
 }

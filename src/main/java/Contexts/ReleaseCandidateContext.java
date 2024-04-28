@@ -529,6 +529,8 @@ public class ReleaseCandidateContext extends Context {
 
 
 
+
+
         //      Create top XP bar:
         // XP bar style
         ProgressBar.ProgressBarStyle xpBarStyle = new ProgressBar.ProgressBarStyle();
@@ -602,7 +604,7 @@ public class ReleaseCandidateContext extends Context {
         weaponPool = new ObjectPool<>(world,new WeaponFactory(), WeaponType.values(), 20);
         pickupsPool = new ObjectPool<>(world, new PickupsFactory(), PickupType.values(), 200);
 
-        spawnOrbitingWeapons(player,4,WeaponType.AXE,150,0.1f,1000);
+        spawnOrbitingWeapons(20,player,4,WeaponType.AXE,150,0.1f,0);
         toBoKilled = new HashSet<>();
 
         world.setContactListener(new ObjectContactListener());
@@ -619,7 +621,7 @@ public class ReleaseCandidateContext extends Context {
      * @param orbitSpeed speed of weapons
      * @param orbitInterval time between each orbit loop
      */
-    private void spawnOrbitingWeapons(Player player,int numWeapons,WeaponType weaponType,float orbitRadius,float orbitSpeed,long orbitInterval){
+    private void spawnOrbitingWeapons(float rotationSpeed,Player player,int numWeapons,WeaponType weaponType,float orbitRadius,float orbitSpeed,long orbitInterval){
         float angle=0;
         List<Weapon> weapons = new ArrayList<>();
         for(int i = 0; i < numWeapons;i++) {
@@ -631,6 +633,7 @@ public class ReleaseCandidateContext extends Context {
             weapon.setOwner(player);
             weapon.setAngleToPlayer(angle);
             weapon.renderAnimations(animationLibrary);
+            weapon.getAnimationHandler().rotate(rotationSpeed);
             drawableWeapons.add(weapon);
 
             angle+=(float)((float)2*Math.PI/numWeapons);

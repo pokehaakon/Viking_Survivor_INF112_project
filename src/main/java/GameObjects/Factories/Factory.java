@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 public abstract class Factory<T extends GameObject<E>,E extends Enum<E>> implements IFactory<T,E>{
     protected final Map<Enum<E>, Supplier<T>> supplierInventory = new HashMap<>();
 
-
     @Override
     public T create(E type) {
 

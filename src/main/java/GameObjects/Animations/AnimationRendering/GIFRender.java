@@ -16,12 +16,12 @@ public class GIFRender<E extends Enum<E>> implements AnimationRender {
 
     private final Map<AnimationState, GifPair> animationMovement = new EnumMap<>(AnimationState.class);
 
-
+    float rotation = 0;
+    float rotationSpeed = 0;
 
     private GifPair currentGIF;
 
     private final AnimationLibrary animationLibrary;
-
 
 
     public GIFRender(AnimationLibrary animationLibrary, Map<AnimationState, String> animationMovement) {
@@ -41,13 +41,31 @@ public class GIFRender<E extends Enum<E>> implements AnimationRender {
         else {
             region = currentGIF.left().getKeyFrame(elapsedTime);
         }
+        float originX = object.getBody().getPosition().x;
+        float originY = object.getBody().getPosition().y;
+
+        // Adjust origin to center of the TextureRegion
+        originX -= region.getRegionWidth() * 0.5f;
+        originY -= region.getRegionHeight() * 0.5f;
+
         batch.draw(
                 region,
-                object.getBody().getPosition().x - (float) region.getRegionWidth() /2*object.getScale(),
-                object.getBody().getPosition().y - (float) region.getRegionHeight() /2*object.getScale(),
-                region.getRegionWidth() * object.getScale(),
-                region.getRegionHeight() * object.getScale()
+                originX,
+                originY,
+                region.getRegionWidth() * 0.5f,
+                region.getRegionHeight() * 0.5f,
+                region.getRegionWidth(),
+                region.getRegionHeight(),
+                object.getScale(),
+                object.getScale(),
+                rotation
         );
+
+        rotation += rotationSpeed;
+
+        if(rotation >= 360) {
+            rotation = 0;
+        }
     }
 
 
@@ -78,6 +96,20 @@ public class GIFRender<E extends Enum<E>> implements AnimationRender {
     @Override
     public void setAnimations(Map<AnimationState, String> animationMap) {
         getGifPairs(animationMap);
+
+    }
+
+    @Override
+    public void rotate(float rotationSpeed) {
+
+        this.rotationSpeed = rotationSpeed;
+
+    }
+
+    @Override
+    public void stopRotation() {
+        rotation = 0;
+        rotationSpeed = 0;
 
     }
 
