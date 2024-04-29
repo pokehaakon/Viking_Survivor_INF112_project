@@ -4,32 +4,24 @@ import GameObjects.GameObject;
 import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
+
 
 public final class SmallPool<T extends GameObject> implements IPool<T> {
     private final World world;
     private final Supplier<T> factory;
-    private final Queue<T> pool;
     private final String name;
+    private final Queue<T> pool = new ArrayDeque<>();
 
-    public SmallPool(World world, Supplier<T> factory, int poolSize, String name) {
-        if (poolSize <= 0) {
-            throw new IllegalArgumentException("Pool size must be greater than zero!");
-        }
-
+    public SmallPool(World world, Supplier<T> factory, String name) {
         this.world = world;
         this.factory = factory;
         this.name = name;
-        this.pool = new ArrayDeque<>(poolSize);
-
-        for (int i = 0; i<poolSize; i++) {
-            T obj = factory.get();
-            obj.addToWorld(world);
-            returnToPool(obj);
-        }
     }
 
+    /**
+     * See {@link #get(String)}
+     */
     public T get() {
         T obj;
         if (pool.isEmpty()) {
@@ -42,6 +34,9 @@ public final class SmallPool<T extends GameObject> implements IPool<T> {
         return obj;
     }
 
+    /**
+     * See {@link #get(String, int)}
+     */
     public List<T> get(int num) {
         List<T> ls = new ArrayList<>(num);
         for (int i = 0; i < num; i++) {
@@ -78,14 +73,4 @@ public final class SmallPool<T extends GameObject> implements IPool<T> {
 
         return this;
     }
-
-//    public int size() {
-//        return pool.size();
-//    }
-
-//    public boolean isEmpty() {
-//        return pool.isEmpty();
-//    }
-
-//    public Queue<T> getPool() {return pool;}
 }

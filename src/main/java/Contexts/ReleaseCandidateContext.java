@@ -389,7 +389,7 @@ public class ReleaseCandidateContext extends Context {
         drawableActors = new ArrayList<>();
         drawableObjects = new ArrayList<>();
 
-        objectPool = new ObjectPool<>(world, ExperimentalFactory::create, 200);
+        objectPool = new ObjectPool<>(world, ExperimentalFactory::create);
         actorPool = objectPool.createSubPool(ExperimentalFactory::createActor);
 
 
