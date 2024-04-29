@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class SmallPool<T extends GameObject> implements IPool<T> {
+public final class SmallPool<T extends GameObject> implements IPool<T> {
     private final World world;
     private final Supplier<T> factory;
     private final Queue<T> pool;
@@ -64,19 +64,28 @@ public class SmallPool<T extends GameObject> implements IPool<T> {
         return get(num);
     }
 
+    @Override
     public void returnToPool(T obj) {
         obj.getBody().setActive(false);
         obj.revive();
         pool.add(obj);
     }
 
-    public int size() {
-        return pool.size();
+    @Override
+    public SmallPool<T> getSmallPool(String name) {
+        if (!Objects.equals(name, this.name))
+            throw new IllegalArgumentException("Tried to get a '" + name + "' smallPool, but this is a '" + this.name +"' smallPool!");
+
+        return this;
     }
 
-    public boolean isEmpty() {
-        return pool.isEmpty();
-    }
+//    public int size() {
+//        return pool.size();
+//    }
 
-    public Queue<T> getPool() {return pool;}
+//    public boolean isEmpty() {
+//        return pool.isEmpty();
+//    }
+
+//    public Queue<T> getPool() {return pool;}
 }

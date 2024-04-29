@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 
-public class ObjectPool<T extends GameObject> implements IPool<T> {
+public final class ObjectPool<T extends GameObject> implements IPool<T> {
     private final IFactory<T> factory;
     private final Map<String, IPool<T>> objectPool;
     private final Random random;
@@ -56,11 +56,12 @@ public class ObjectPool<T extends GameObject> implements IPool<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <R extends T> ObjectPool<R> createSubPool(IFactory<R> factory) {
-        var newPool = new ObjectPool<>(world, factory, poolSize, (objectPool) -> (s) -> this.objectPool.put(s, (IPool<T>) objectPool));
-        return newPool;
+        return new ObjectPool<>(world, factory, poolSize, (objectPool1) -> (s) -> this.objectPool.put(s, (IPool<T>) objectPool1));
     }
 
+    @Override
     public T get(String name) {
         createSmallPoolIfAbsent(name);
         return objectPool.get(name).get(name);
@@ -72,6 +73,7 @@ public class ObjectPool<T extends GameObject> implements IPool<T> {
      * @param num number of objects to obtain
      * @return a list of GameObjects
      */
+    @Override
     public List<T> get(String name, int num) {
         createSmallPoolIfAbsent(name);
         return objectPool.get(name).get(name, num);
@@ -81,6 +83,7 @@ public class ObjectPool<T extends GameObject> implements IPool<T> {
      * Returns object to object pool, deactivates their bodies and resets its destroyed-tag. Ready to be spawned again.
      * @param object the object to return
      */
+    @Override
     public void returnToPool(T object) {
         createSmallPoolIfAbsent(object.getType());
         objectPool.get(object.getType()).returnToPool(object);
@@ -90,23 +93,11 @@ public class ObjectPool<T extends GameObject> implements IPool<T> {
         return objectPool;
     }
 
+    @Override
     public SmallPool<T> getSmallPool(String name) {
         createSmallPoolIfAbsent(name);
-        var pool = objectPool.get(name);
-        if (pool instanceof SmallPool<T> smallPool)
-            return smallPool;
-        if (pool instanceof ObjectPool<T> largePool)
-            return largePool.getSmallPool(name);
-        throw new IllegalArgumentException("The type of the sub-pool is unknown! " + pool.getClass());
+        return objectPool.get(name).getSmallPool(name);
     }
-
-//    public void setPosition(Vector2 vector2) {
-//        for (SmallPool<T> pool : objectPool.values()) {
-//            for (T object : pool.getPool()) {
-//                object.setPosition(vector2);
-//            }
-//        }
-//    }
 
     private void createSmallPoolIfAbsent(String name) {
         if (objectPool.containsKey(name)) return;
