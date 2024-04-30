@@ -10,7 +10,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 
-//Hallvards work
+/* Copyright by Johannes Borchardt */
+/* LibGdx conversion 2014 by Anton Persson */
+/* Released under Apache 2.0 */
+/* https://code.google.com/p/animated-gifs-in-android/ */
+
 public class GifDecoder {
     /**
      * File read status: No errors.
