@@ -1,6 +1,5 @@
-package GameObjects.Actors.ObjectActions;
+package GameObjects.ObjectActions;
 
-import GameObjects.Actors.ObjectActions.Action;
 import InputProcessing.KeyStates;
 
 public abstract class PlayerActions {

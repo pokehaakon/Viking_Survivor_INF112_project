@@ -1,15 +1,14 @@
 package Simulation.SpawnHandler;
 
-import GameObjects.Actors.Actor;
-import GameObjects.Pool.ObjectPool;
-import GameObjects.Pool.SmallPool;
+import GameObjects.Actor;
 import Simulation.ISpawnHandler;
+import Tools.Pool.ObjectPool;
+import Tools.Pool.SmallPool;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 import static Tools.ListTools.findPrefix;
-import static Tools.ListTools.removeDestroyed;
 
 public class WaveSpawnHandler implements ISpawnHandler {
 

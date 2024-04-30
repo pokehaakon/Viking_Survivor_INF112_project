@@ -1,7 +1,7 @@
 package Rendering.Animations.AnimationRendering;
 
-import Rendering.Animations.AnimationState;
 import GameObjects.GameObject;
+import Rendering.Animations.AnimationState;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.Map;

@@ -1,15 +1,15 @@
 package Simulation;
 
-import GameObjects.Actors.Actor;
-import GameObjects.Factories.ExperimentalFactory;
+import GameObjects.Actor;
 import GameObjects.GameObject;
-import GameObjects.Pool.ObjectPool;
+import GameObjects.IActor;
 import Parsing.MapParser;
 import Parsing.ObjectDefineParser.Defines.ActorDefinition;
 import Parsing.ObjectDefineParser.Defines.ObjectDefinition;
 import Parsing.ObjectDefineParser.ObjectDefineParser;
 import Parsing.SpawnFrame;
 import Simulation.SpawnHandler.SpawnHandlerFactory;
+import Tools.Pool.ObjectPool;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
@@ -21,8 +21,6 @@ import org.javatuples.Pair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static Tools.ListTools.removeDestroyed;
 
 public class GameWorld implements Disposable {
     private Map<String, String> defines;
@@ -68,10 +66,10 @@ public class GameWorld implements Disposable {
 
             for (var entry : objectDefineParser.variables.entrySet()) {
                 if (entry.getValue().get() instanceof ActorDefinition actorDefinition) {
-                    ExperimentalFactory.register(entry.getKey().substring(1), actorDefinition);
+                    IActor.ExperimentalFactory.register(entry.getKey().substring(1), actorDefinition);
                 }
                 if (entry.getValue().get() instanceof ObjectDefinition objectDefinition) {
-                    ExperimentalFactory.register(entry.getKey().substring(1), objectDefinition);
+                    IActor.ExperimentalFactory.register(entry.getKey().substring(1), objectDefinition);
                 }
             }
         }
@@ -88,7 +86,7 @@ public class GameWorld implements Disposable {
             nextFrame = Long.MAX_VALUE;
         }
 
-        this.player = ExperimentalFactory.createActor(defines.get("PLAYER_NAME"));
+        this.player = IActor.ExperimentalFactory.createActor(defines.get("PLAYER_NAME"));
 
         handlerFactory = new SpawnHandlerFactory(player, actorPool, objectPool, activeActors, activeObjects);
     }

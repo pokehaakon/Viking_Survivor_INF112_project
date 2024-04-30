@@ -1,8 +1,7 @@
 package Simulation.Coordinates;
 
-import GameObjects.Actors.Actor;
-import GameObjects.Actors.ObjectActions.Action;
-import GameObjects.ObjectTypes.SwarmType;
+import GameObjects.Actor;
+import GameObjects.ObjectActions.Action;
 import Tools.Tuple;
 import com.badlogic.gdx.math.Vector2;
 import org.javatuples.Pair;
@@ -11,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static GameObjects.ObjectActions.MovementActions.moveInStraightLine;
 import static Simulation.Coordinates.SpawnCoordinates.randomSpawnPoint;
-import static GameObjects.Actors.ObjectActions.MovementActions.moveInStraightLine;
 import static Tools.Tuple.zip;
 
 public abstract class SwarmCoordinates {
@@ -80,11 +79,11 @@ public abstract class SwarmCoordinates {
      * @param swarmCoordinates the start coordinates of the swarm
      * @return a Vector2 representing the swarm direction
      */
-    public static Vector2 swarmDirection(Vector2 target, SwarmType swarmType, List<Vector2> swarmCoordinates) {
+    public static Vector2 swarmDirection(Vector2 target, SpawnCoordinates.SwarmType swarmType, List<Vector2> swarmCoordinates) {
         Vector2 swarmDirection = new Vector2();
         Vector2 swarmCenter;
 
-        if(swarmType == SwarmType.LINE) {
+        if(swarmType == SpawnCoordinates.SwarmType.LINE) {
             swarmCenter = swarmCoordinates.get(swarmCoordinates.size()/2);
         }
         else {
@@ -103,8 +102,8 @@ public abstract class SwarmCoordinates {
      * @param target the position which the swarm moves towards
      * @return a list of Vector2 which represents the coordinates
      */
-     public static List<Vector2> getSwarmCoordinates(Vector2 startPoint,SwarmType swarmType, int size, float spacing, Vector2 target) {
-        if(swarmType == SwarmType.LINE) {
+     public static List<Vector2> getSwarmCoordinates(Vector2 startPoint, SpawnCoordinates.SwarmType swarmType, int size, float spacing, Vector2 target) {
+        if(swarmType == SpawnCoordinates.SwarmType.LINE) {
             return SwarmCoordinates.lineSwarm(size,spacing,startPoint, target);
         }
         else {
@@ -121,7 +120,7 @@ public abstract class SwarmCoordinates {
      * @param spacing space between actor
      * @return a List of Actor objects
      */
-    public static List<Actor> createSwarm(SwarmType swarmType, List<Actor> swarmMembers, Vector2 center, double spawnRadius, int spacing, float speedMultiplier) {
+    public static List<Actor> createSwarm(SpawnCoordinates.SwarmType swarmType, List<Actor> swarmMembers, Vector2 center, double spawnRadius, int spacing, float speedMultiplier) {
         //List<Actor> swarm = new ArrayList<>(swarmMembers);
         Vector2 startPoint = randomSpawnPoint(center, spawnRadius);
         List<Vector2> swarmCoordinates = getSwarmCoordinates(startPoint, swarmType, swarmMembers.size(), spacing, center);
@@ -137,7 +136,7 @@ public abstract class SwarmCoordinates {
         return swarmMembers;
     }
 
-    public static Pair<Supplier<Action>, Supplier<Vector2>> swarmInitializerPair(SwarmType swarmType, int size, Vector2 center, double spawnRadius, float spacing, float speedMultiplier) {
+    public static Pair<Supplier<Action>, Supplier<Vector2>> swarmInitializerPair(SpawnCoordinates.SwarmType swarmType, int size, Vector2 center, double spawnRadius, float spacing, float speedMultiplier) {
         Vector2 startPoint = randomSpawnPoint(center, spawnRadius);
         List<Vector2> swarmCoordinates = getSwarmCoordinates(startPoint, swarmType, size, spacing, center);
         Vector2 swarmDirection = SwarmCoordinates.swarmDirection(center, swarmType, swarmCoordinates);

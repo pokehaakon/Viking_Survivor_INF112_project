@@ -1,9 +1,9 @@
-package GameObjects.Actors.ObjectActions;
+package GameObjects.ObjectActions;
 
 //import GameObjects.Actors.Enemy;
 //import GameObjects.Actors.Player;
 
-import GameObjects.Actors.Actor;
+import GameObjects.Actor;
 import Simulation.Simulation;
 
 public class PickupActions {

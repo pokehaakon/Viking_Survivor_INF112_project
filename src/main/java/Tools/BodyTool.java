@@ -1,7 +1,5 @@
 package Tools;
 
-import GameObjects.BodyFeatures;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -9,7 +7,6 @@ import com.badlogic.gdx.utils.Array;
 import java.util.Iterator;
 
 import static Tools.FilterTool.createFilter;
-import static Tools.ShapeTools.createSquareShape;
 
 public abstract class BodyTool {
     private static Body createBody(World world, Vector2 pos, Filter filter, BodyDef bodyDef, FixtureDef fixtureDef) {

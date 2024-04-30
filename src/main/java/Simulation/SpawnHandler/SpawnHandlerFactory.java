@@ -1,18 +1,18 @@
 package Simulation.SpawnHandler;
 
-import GameObjects.Actors.Actor;
+import GameObjects.Actor;
 import GameObjects.GameObject;
-import GameObjects.Pool.ObjectPool;
 import Parsing.SpawnType;
 import Simulation.ISpawnHandler;
+import Tools.Pool.ObjectPool;
 
 import java.util.List;
 
 import static Contexts.ReleaseCandidateContext.DE_SPAWN_RECT;
-import static GameObjects.Actors.ActorAction.KilledAction.destroyIfDefeated;
-import static GameObjects.Actors.ActorAction.OutOfBoundsActions.deSpawnIfOutOfBounds;
+import static GameObjects.ObjectActions.KilledAction.destroyIfDefeated;
+import static GameObjects.ObjectActions.MovementActions.chaseActor;
+import static GameObjects.ObjectActions.OutOfBoundsActions.deSpawnIfOutOfBounds;
 import static Simulation.Coordinates.SpawnCoordinates.randomPointOutsideScreenRect;
-import static GameObjects.Actors.ActorAction.MovementActions.*;
 
 public class SpawnHandlerFactory {
 
@@ -42,9 +42,7 @@ public class SpawnHandlerFactory {
             case SWARM -> new SwarmSpawnHandler(
                     args,
                     actorName,
-                    e -> {
-                        e.addAction(destroyIfDefeated(), deSpawnIfOutOfBounds(player, DE_SPAWN_RECT));
-                    },
+                    e -> e.addAction(destroyIfDefeated(), deSpawnIfOutOfBounds(player, DE_SPAWN_RECT)),
                     () -> player.getBody().getPosition(),
                     actorPool,
                     activeEnemies

@@ -1,16 +1,8 @@
 package Contexts;
 
 import InputProcessing.ContextualInputProcessor;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import org.apache.maven.surefire.shared.lang3.tuple.ImmutablePair;
-import org.apache.maven.surefire.shared.lang3.tuple.Pair;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public abstract class Context implements Screen {
     private InputProcessor inputProcessor;

@@ -6,7 +6,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class GameInputProcessor implements InputProcessor {

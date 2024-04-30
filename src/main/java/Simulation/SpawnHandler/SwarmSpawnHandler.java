@@ -1,10 +1,10 @@
 package Simulation.SpawnHandler;
 
-import GameObjects.Actors.Actor;
-import GameObjects.ObjectTypes.SwarmType;
-import GameObjects.Pool.ObjectPool;
-import GameObjects.Pool.SmallPool;
+import GameObjects.Actor;
+import Simulation.Coordinates.SpawnCoordinates;
 import Simulation.ISpawnHandler;
+import Tools.Pool.ObjectPool;
+import Tools.Pool.SmallPool;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.List;
@@ -21,13 +21,13 @@ public class SwarmSpawnHandler implements ISpawnHandler {
 
     private final SmallPool<Actor> pool;
     private final int size;
-    private int delay;
     private final List<Actor> activeEnemies;
     private final Consumer<Actor> initializer;
-    private SwarmType swarmType;
+    private final SpawnCoordinates.SwarmType swarmType;
+    private final float speedMultiplier;
+    private final Supplier<Vector2> centerSupplier;
 
-    private float speedMultiplier;
-    private Supplier<Vector2> centerSupplier;
+    private int delay;
 
     public SwarmSpawnHandler(List<String> args, String actorName, Consumer<Actor> initializer, Supplier<Vector2> centerSupplier, ObjectPool<Actor> objectPool, List<Actor> activeEnemies) {
         pool = objectPool.getSmallPool(actorName);
@@ -40,7 +40,7 @@ public class SwarmSpawnHandler implements ISpawnHandler {
         this.speedMultiplier = findPrefixOptional("speedMultiplier:", args)
                 .map(Float::parseFloat)
                 .orElse(1f);
-        this.swarmType = SwarmType.valueOf(findPrefix("type:", args));
+        this.swarmType = SpawnCoordinates.SwarmType.valueOf(findPrefix("type:", args));
 
         //spawnedEnemies = 0;
         this.initializer = initializer;
@@ -53,12 +53,15 @@ public class SwarmSpawnHandler implements ISpawnHandler {
         if (delay-- != 0) return;
 
         List<Actor> enemies = pool.get(size);
-        float spacing = enemies.get(0).bodyFeatures.shape().getRadius() * 2;
+        float spacing = enemies.get(0).getBody().getFixtureList().get(0).getShape().getRadius() * 2;
         var pair = swarmInitializerPair(swarmType, size, centerSupplier.get(), Math.max(SCREEN_WIDTH, SCREEN_HEIGHT), spacing, speedMultiplier);
 
-        for (var actor :  enemies) {
+        for (Actor actor :  enemies) {
             actor.addAction(pair.getValue0().get());
             initializer.accept(actor);
+            float oldSpeed = actor.getSpeed();
+            actor.addDieAction(e -> e.setSpeed(oldSpeed));
+            actor.setSpeed(oldSpeed * speedMultiplier);
             actor.setPosition(pair.getValue1().get());
         }
 

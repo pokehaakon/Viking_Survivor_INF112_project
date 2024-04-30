@@ -1,9 +1,9 @@
 package Simulation.SpawnHandler;
 
-import GameObjects.Actors.Actor;
-import GameObjects.Pool.ObjectPool;
-import GameObjects.Pool.SmallPool;
+import GameObjects.Actor;
 import Simulation.ISpawnHandler;
+import Tools.Pool.ObjectPool;
+import Tools.Pool.SmallPool;
 
 import java.util.ArrayList;
 import java.util.List;

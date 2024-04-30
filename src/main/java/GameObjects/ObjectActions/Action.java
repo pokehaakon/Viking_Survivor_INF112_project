@@ -1,6 +1,6 @@
-package GameObjects.Actors.ObjectActions;
+package GameObjects.ObjectActions;
 
-import GameObjects.Actors.Actor;
+import GameObjects.Actor;
 
 @FunctionalInterface
 public interface Action {
@@ -9,7 +9,7 @@ public interface Action {
 
     /**
      * Executes a desired action
-     * @param actor
+     * @param actor the actor to execute the action on (usually this)
      */
     void act(Actor actor);
 }

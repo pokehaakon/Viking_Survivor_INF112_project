@@ -3,7 +3,6 @@ package Tools;
 import org.javatuples.*;
 
 import java.util.Iterator;
-import java.util.Spliterator;
 
 public abstract class Tuple {
     public static <A> Unit<A> of(A a) {

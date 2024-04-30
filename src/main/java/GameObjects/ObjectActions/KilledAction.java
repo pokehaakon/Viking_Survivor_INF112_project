@@ -1,7 +1,6 @@
-package GameObjects.Actors.ObjectActions;
+package GameObjects.ObjectActions;
 
-import GameObjects.Actors.Actor;
-import GameObjects.Actors.ObjectActions.Action;
+import GameObjects.Actor;
 
 public abstract class KilledAction {
 

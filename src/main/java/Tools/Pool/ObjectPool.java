@@ -1,43 +1,36 @@
-package GameObjects.Pool;
+package Tools.Pool;
 
-import GameObjects.Factories.IFactory;
-import GameObjects.GameObject;
-import com.badlogic.gdx.physics.box2d.World;
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public final class ObjectPool<T extends GameObject> implements IPool<T> {
-    private final IFactory<T> factory;
+public final class ObjectPool<T extends Poolable> implements IPool<T> {
+    private final Function<String, T> factory;
     private final Map<String, IPool<T>> objectPool = new HashMap<>();
-    private final World world;
     private final Consumer<String> superFactoryUpdater;
 
     /**
      * A pool of gameObjects, where the objects are either created using the given factory, are taken from a pool of
      * already created objects. We use 'returnToPool' to add the objects back into the pool.
      *
-     * @param world The world where the objects are created
      * @param factory The factory that creates the objects
      */
-    public ObjectPool(World world, IFactory<T> factory) {
-        this.world = world;
+    public ObjectPool(Function<String, T> factory) {
         this.factory = factory;
         this.superFactoryUpdater = (key) -> {}; // no-op
     }
 
     /**
-     * Same as the public constructor {@link #ObjectPool(World, IFactory)}, but where we can give a constructor function
+     * Same as the public constructor {@link #ObjectPool(Function)}, but where we can give a constructor function
      * 'superPoolUpdaterConstructor' that takes 'this' pool on construction and returns a consumer taking a String.
      * When this pool "learns" to create a new Object, it uses this function to register it with its super pool.
      *
-     * @param world The world where the objects are created
      * @param factory The factory that creates the objects
      * @param superPoolUpdaterCreator The super pool register creator function
      */
-    private ObjectPool(World world, IFactory<T> factory, Function<IPool<T>, Consumer<String>> superPoolUpdaterCreator ) {
-        this.world = world;
+    private ObjectPool(Function<String, T> factory, Function<IPool<T>, Consumer<String>> superPoolUpdaterCreator ) {
         this.factory = factory;
         superFactoryUpdater = superPoolUpdaterCreator.apply(this);
     }
@@ -50,8 +43,8 @@ public final class ObjectPool<T extends GameObject> implements IPool<T> {
      * @param <R> the type of objects of the new pool, must be sub-type of the type of this pool
      */
     @SuppressWarnings("unchecked")
-    public <R extends T> ObjectPool<R> createSubPool(IFactory<R> factory) {
-        return new ObjectPool<>(world, factory, (objectPool1) -> (s) -> this.objectPool.put(s, (IPool<T>) objectPool1));
+    public <R extends T> ObjectPool<R> createSubPool(Function<String, R> factory) {
+        return new ObjectPool<>(factory, (objectPool1) -> (s) -> this.objectPool.put(s, (IPool<T>) objectPool1));
     }
 
     @Override
@@ -78,10 +71,15 @@ public final class ObjectPool<T extends GameObject> implements IPool<T> {
      */
     @Override
     public void returnToPool(T object) {
-        createSmallPoolIfAbsent(object.getType());
-        objectPool.get(object.getType()).returnToPool(object);
+        createSmallPoolIfAbsent(object.getName());
+        objectPool.get(object.getName()).returnToPool(object);
     }
 
+    /**
+     * Get the SmallPool that can create 'name', creates a new one if it does not already exist
+     * @param name the name of the objects
+     * @return A SmallPool that contains 'name' Objects
+     */
     @Override
     public SmallPool<T> getSmallPool(String name) {
         createSmallPoolIfAbsent(name);
@@ -94,8 +92,7 @@ public final class ObjectPool<T extends GameObject> implements IPool<T> {
         objectPool.put(
                 name,
                 new SmallPool<>(
-                        world,
-                        () -> factory.create(name),
+                        () -> factory.apply(name),
                         name
                 )
         );

@@ -1,7 +1,7 @@
 
 
 $Animation = Define Animation:
-    State: MOVING knife.gif
+    State: IDLE axe.gif
 
 $Stats = Define Stats:
     HP: 0

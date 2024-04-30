@@ -1,7 +1,7 @@
 package GameObjects;
 
-import GameObjects.Actors.DirectionState;
 import Rendering.Animations.AnimationState;
+import Tools.Pool.Poolable;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -11,7 +11,7 @@ import com.badlogic.gdx.physics.box2d.World;
  * Interface for all game objects
  * (all objects rendered on the screen in the game)
  */
-public interface IGameObject {
+public interface IGameObject extends Poolable {
 
     /**
      * Sets the destroyed-tag to true
@@ -37,21 +37,9 @@ public interface IGameObject {
     boolean isDestroyed();
 
     /**
-     * Changes the sprite to draw
-     * @param texture the new sprite
-     */
-    //void setSprite(Texture texture);
-
-    /**
      * Sets the destroyed-tag to false and gives object a new ID
      */
     void revive();
-
-    /**
-     *
-     * @return the object type
-     */
-    String getType();
 
     /**
      * Changes the body position
@@ -61,15 +49,15 @@ public interface IGameObject {
 
     /**
      * Creates body and add to world
-     * @param world
+     * @param world the world in which to create the body
      */
     void addToWorld(World world);
 
     void setAnimationState(AnimationState state);
     void setAnimation(AnimationState state);
 
-    DirectionState getDirectionState();
-    void setDirectionState(DirectionState directionState);
+    boolean isMovingLeft();
+    void setMovingLeft(boolean movingLeft);
 
     /**
      * @return the ID of the object

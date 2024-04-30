@@ -1,11 +1,10 @@
 package VikingSurvivor.app;
 
-import InputProcessing.*;
 import Contexts.Context;
-//import InputProcessing.Contexts.TrainingContext;
-import Rendering.Animations.AnimationRendering.GIFS;
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.*;
+import InputProcessing.ContextualInputProcessor;
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
@@ -15,7 +14,7 @@ public class HelloWorld implements ApplicationListener {
 	private SpriteBatch batch;
     private OrthographicCamera camera;
 	private Context currentContext;
-	private Rectangle screenRect = new Rectangle(); //"used" when resizing
+	private final Rectangle screenRect = new Rectangle(); //"used" when resizing
 	private ContextualInputProcessor inProc;
 
 	@Override

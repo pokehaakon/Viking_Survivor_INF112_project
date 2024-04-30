@@ -1,10 +1,7 @@
 package Rendering.Animations.AnimationRendering;
 
-import Rendering.Animations.AnimationState;
-import GameObjects.Actors.DirectionState;
 import GameObjects.GameObject;
-import VikingSurvivor.app.Main;
-import com.badlogic.gdx.Gdx;
+import Rendering.Animations.AnimationState;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -36,9 +33,9 @@ public class GIFRender implements AnimationRender {
         float elapsedTime = (float) frame / SET_FPS;
         currentGIF = animationMovement.get(state);
         if (currentGIF == null) return;
-        TextureRegion region = object.getDirectionState() == DirectionState.RIGHT
-                ? currentGIF.right().getKeyFrame(elapsedTime)
-                : currentGIF.left().getKeyFrame(elapsedTime);
+        TextureRegion region = object.isMovingLeft()
+                ? currentGIF.left().getKeyFrame(elapsedTime)
+                : currentGIF.right().getKeyFrame(elapsedTime);
         Vector2 regionRect = new Vector2(region.getRegionWidth(), region.getRegionHeight());
         float max = Math.max(regionRect.x, regionRect.y);
         max = regionRect.y;

@@ -3,10 +3,6 @@ package Simulation.Coordinates;
 import Contexts.ReleaseCandidateContext;
 import com.badlogic.gdx.math.Vector2;
 
-import java.util.Random;
-
-import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
-
 public abstract class SpawnCoordinates extends Vector2 {
 
 
@@ -58,5 +54,9 @@ public abstract class SpawnCoordinates extends Vector2 {
 
     }
 
+    public enum SwarmType {
+        SQUARE,
+        LINE
+    }
 }
 

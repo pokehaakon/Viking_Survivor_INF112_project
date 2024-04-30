@@ -3,7 +3,6 @@ package Parsing.Stream;
 import Parsing.Parser.ParsingException;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class CharArrayStream implements Streamable<Character> {
     private final char[] text;

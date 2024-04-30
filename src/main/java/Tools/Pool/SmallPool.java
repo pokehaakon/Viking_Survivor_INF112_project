@@ -1,20 +1,15 @@
-package GameObjects.Pool;
-
-import GameObjects.GameObject;
-import com.badlogic.gdx.physics.box2d.World;
+package Tools.Pool;
 
 import java.util.*;
 import java.util.function.Supplier;
 
 
-public final class SmallPool<T extends GameObject> implements IPool<T> {
-    private final World world;
+public final class SmallPool<T extends Poolable> implements IPool<T> {
     private final Supplier<T> factory;
     private final String name;
     private final Queue<T> pool = new ArrayDeque<>();
 
-    public SmallPool(World world, Supplier<T> factory, String name) {
-        this.world = world;
+    public SmallPool(Supplier<T> factory, String name) {
         this.factory = factory;
         this.name = name;
     }
@@ -26,11 +21,10 @@ public final class SmallPool<T extends GameObject> implements IPool<T> {
         T obj;
         if (pool.isEmpty()) {
             obj = factory.get();
-            obj.addToWorld(world);
         } else {
             obj = pool.poll();
         }
-        obj.getBody().setActive(true);
+        obj.get();
         return obj;
     }
 
@@ -61,8 +55,7 @@ public final class SmallPool<T extends GameObject> implements IPool<T> {
 
     @Override
     public void returnToPool(T obj) {
-        obj.getBody().setActive(false);
-        obj.revive();
+        obj.put();
         pool.add(obj);
     }
 

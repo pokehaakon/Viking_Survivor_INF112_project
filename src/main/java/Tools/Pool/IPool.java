@@ -1,10 +1,8 @@
-package GameObjects.Pool;
-
-import GameObjects.GameObject;
+package Tools.Pool;
 
 import java.util.List;
 
-public sealed interface IPool<T extends GameObject> permits ObjectPool, SmallPool {
+public sealed interface IPool<T extends Poolable > permits ObjectPool, SmallPool {
 
     /**
      * Get an object with 'name'

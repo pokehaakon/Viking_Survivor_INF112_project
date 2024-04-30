@@ -1,25 +1,22 @@
 package GameObjects;
 
-import GameObjects.Factories.ExperimentalFactory;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
 import Rendering.Animations.AnimationState;
-import GameObjects.Actors.DirectionState;
 import Tools.BodyTool;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
-
-import java.util.Map;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
 
 public class GameObject implements IGameObject {
     private int ID;
     private Body body;
     private boolean destroyed = false;
-    private DirectionState directionState;
+    private boolean isMovingLeft;
+    private BodyFeatures bodyFeatures;
 
     protected final AnimationHandler animationHandler;
 
-    public final BodyFeatures bodyFeatures;
     public final String name;
 
     public GameObject(String name, AnimationHandler animationHandler, BodyFeatures bodyFeatures) {
@@ -27,8 +24,8 @@ public class GameObject implements IGameObject {
         this.bodyFeatures = bodyFeatures;
         this.name = name;
 
-        setDirectionState(DirectionState.RIGHT);
-        ID = ExperimentalFactory.getUID();
+        isMovingLeft = false;
+        ID = IActor.ExperimentalFactory.getUID();
     }
 
     @Override
@@ -49,11 +46,11 @@ public class GameObject implements IGameObject {
     @Override
     public void revive() {
         destroyed = false;
-        ID = ExperimentalFactory.getUID();
+        ID = IActor.ExperimentalFactory.getUID();
     }
 
     @Override
-    public String getType() {
+    public String getName() {
         return name;
     }
 
@@ -64,6 +61,8 @@ public class GameObject implements IGameObject {
 
     @Override
     public void addToWorld(World world) {
+        if (body != null)
+            throw new RuntimeException("Tried to create body for GameObject " + name + " when it already has a body");
         body = BodyTool.createBody(
                 world,
                 new Vector2(),
@@ -75,6 +74,7 @@ public class GameObject implements IGameObject {
                 bodyFeatures.isSensor(),
                 bodyFeatures.type()
         );
+        bodyFeatures = null;
         body.setUserData(this);
     }
 
@@ -94,13 +94,13 @@ public class GameObject implements IGameObject {
     }
 
     @Override
-    public DirectionState getDirectionState() {
-        return directionState;
+    public boolean isMovingLeft() {
+        return isMovingLeft;
     }
 
     @Override
-    public void setDirectionState(DirectionState directionState) {
-        this.directionState = directionState;
+    public void setMovingLeft(boolean movingLeft) {
+        this.isMovingLeft = movingLeft;
     }
 
     @Override
@@ -108,4 +108,14 @@ public class GameObject implements IGameObject {
         return ID;
     }
 
+    @Override
+    public void put() {
+        this.getBody().setActive(false);
+        this.revive();
+    }
+
+    @Override
+    public void get() {
+        this.getBody().setActive(true);
+    }
 }

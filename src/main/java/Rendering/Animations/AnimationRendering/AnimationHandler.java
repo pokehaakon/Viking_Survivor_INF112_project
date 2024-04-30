@@ -3,13 +3,12 @@ package Rendering.Animations.AnimationRendering;
 import Rendering.Animations.AnimationState;
 
 import java.util.Map;
-import java.util.Objects;
 
 public class AnimationHandler {
+    final private AnimationRender animationRender;
 
     private AnimationState animationState;
 
-    private AnimationRender animationRender;
 
 //    /**
 //     * Handles object animations

@@ -1,6 +1,6 @@
 package Simulation;
 
-import GameObjects.Actors.Actor;
+import GameObjects.Actor;
 import GameObjects.GameObject;
 import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.*;
@@ -18,8 +18,8 @@ public class ObjectContactListener implements ContactListener {
 
     /**
      * gets the category bits of the body
-     * @param body
-     * @return
+     * @param body the body to get the category bits from
+     * @return the category bits of the body
      */
     static private short categoryBits(Body body) {
         return body.getFixtureList().get(0).getFilterData().categoryBits;
@@ -27,10 +27,10 @@ public class ObjectContactListener implements ContactListener {
 
     /**
      * returns true if the category bits between b1 and b2 covers the mask
-     * @param b1
-     * @param b2
-     * @param mask
-     * @return
+     * @param b1 first body
+     * @param b2 second body
+     * @param mask the mask
+     * @return (mask1 | mask2) & mask
      */
     static private boolean XYCollision(Body b1, Body b2, short mask) {
         return ((categoryBits(b1) | categoryBits(b2)) & mask) == mask;
@@ -91,7 +91,7 @@ public class ObjectContactListener implements ContactListener {
             //System.out.println("PLAYER COLLISION");
         }
         else if (playerPickupCollision(b1, b2)) {
-            Actor player = (Actor) getObjectWithCategory(b1, b2, PLAYER);
+            //Actor player = (Actor) getObjectWithCategory(b1, b2, PLAYER);
             Actor pickup = (Actor) getObjectWithCategory(b1, b2, PICKUP);
             //TODO fix pickups
             //player.pickup(pickup);

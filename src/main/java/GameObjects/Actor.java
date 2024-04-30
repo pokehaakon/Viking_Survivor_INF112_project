@@ -1,12 +1,8 @@
-package GameObjects.Actors;
+package GameObjects;
 
-import GameObjects.Actors.Stats.StatsConstants;
+import GameObjects.ObjectActions.Action;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
-
 import Rendering.Animations.AnimationState;
-import GameObjects.Actors.ObjectActions.Action;
-import GameObjects.BodyFeatures;
-import GameObjects.GameObject;
 
 import java.util.*;
 
@@ -18,7 +14,6 @@ public class Actor extends GameObject implements IActor {
 
     protected final List<Action> actions;
     protected final List<Action> dieActions;
-    private boolean underAttack = false;
 
     private final Map<Integer, Long> hitByIDs;
 
@@ -69,8 +64,26 @@ public class Actor extends GameObject implements IActor {
     }
 
     @Override
+    public void addDieAction(Action action) {
+        actions.add(action);
+    }
+    @Override
+    public void addDieAction(Action... actions) {
+        this.actions.addAll(List.of(actions));
+    }
+    @Override
+    public void addDieAction(Collection<Action> actions) {
+        this.actions.addAll(actions);
+    }
+
+    @Override
     public void resetActions() {
         actions.clear();
+    }
+
+    @Override
+    public void resetDieActions() {
+        dieActions.clear();
     }
 
     @Override
@@ -117,7 +130,7 @@ public class Actor extends GameObject implements IActor {
     private void updateDirectionState() {
         float vx = getBody().getLinearVelocity().x;
         if (vx == 0) return;
-        setDirectionState(vx < 0 ? DirectionState.LEFT : DirectionState.RIGHT);
+        setMovingLeft(vx < 0);
     }
 
     private void updateAnimationState() {
@@ -138,7 +151,7 @@ public class Actor extends GameObject implements IActor {
             a.act(this);
         destroy();
         resetActions();
-        // resetDieActions();
+        resetDieActions();
     }
 
 

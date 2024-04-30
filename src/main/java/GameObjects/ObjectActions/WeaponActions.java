@@ -1,7 +1,6 @@
-package GameObjects.Actors.ObjectActions;
+package GameObjects.ObjectActions;
 
-import GameObjects.Actors.Actor;
-
+import GameObjects.Actor;
 import com.badlogic.gdx.math.Vector2;
 import com.google.common.util.concurrent.AtomicDouble;
 

@@ -1,14 +1,13 @@
 package Simulation;
 
-import GameObjects.Actors.Actor;
-import GameObjects.Actors.ObjectActions.WeaponActions;
-import GameObjects.GameObject;
-import GameObjects.Pool.ObjectPool;
 import Contexts.ReleaseCandidateContext;
-import Simulation.Coordinates.SpawnCoordinates;
+import GameObjects.Actor;
+import GameObjects.GameObject;
+import GameObjects.ObjectActions.WeaponActions;
 import InputProcessing.KeyStates;
+import Simulation.Coordinates.SpawnCoordinates;
+import Tools.Pool.ObjectPool;
 import Tools.RollingSum;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -20,27 +19,28 @@ import static Tools.ListTools.removeDestroyed;
 
 public class Simulation implements Runnable {
     public static final AtomicLong EXP = new AtomicLong();
+    public static final int SET_UPS = 60;
 
-    private Lock renderLock;
-    private KeyStates keyStates;
-    private World world;
-    private RollingSum updateTime, UPS;
+    private final Lock renderLock;
+    private final KeyStates keyStates;
+    private final World world;
+    private final RollingSum updateTime;
+    private final RollingSum UPS;
+    private final ReleaseCandidateContext context;
+    private final Actor player;
+    private final ObjectPool<Actor> actorPool;
+    private final ObjectPool<GameObject> objectPool;
+    private final List<Actor> actors;
+    private final List<GameObject> objects;
+    private final AtomicLong synchronizer;
+    private final GameWorld gameWorld;
+
     private boolean quit = false;
     private boolean paused = false;
     private long frame = 0;
-    public final int SET_UPS = 60;
-    private final ReleaseCandidateContext context;
-    long lastSpawnTime;
-    private Actor player;
-    private ObjectPool<Actor> actorPool;
-    private ObjectPool<GameObject> objectPool;
-    private List<Actor> actors;
-    private List<GameObject> objects;
-    private AtomicLong synchronizer;
 
-    private float ORBIT_INTERVAL = 1000;
-
-    private GameWorld gameWorld;
+    //temp
+    private long lastSpawnTime;
 
 
     public Simulation(ReleaseCandidateContext context) {

@@ -1,7 +1,5 @@
 package Parsing.Parser;
 
-import Parsing.Stream.Streamable;
-
 public class ParserException extends RuntimeException {
     public String message;
     public ParserException(GenericParser<?, ?> parser, String msg) {

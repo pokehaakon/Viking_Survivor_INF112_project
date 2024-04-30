@@ -1,25 +1,24 @@
 package Rendering.Animations.AnimationRendering;
 
-import VikingSurvivor.app.HelloWorld;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
 import java.util.function.Consumer;
 
 public abstract class Sprites {
     private static final Map<String, Sprite> spriteMap = new HashMap<>();
-    public static final String TREE_FILE_PATH = "tree.png";
-    public static final float TREE_WIDTH = 1920;
-
     private static final Queue<Runnable> todos = new ArrayDeque<>();
 
     /**
      * Returns the sprite at "fileName", if it is not loaded it waits until render loop
-     * @param fileName
-     * @param location Consumer that takes the sprite eventually.
-     * @return
+     * @param fileName the file name of the wanted sprite
+     * @param location Consumer that takes the sprite when it is eventually loaded.
+     * @return Either returns the sprite, or null if the sprite was not loaded
      */
     public static Sprite getSprite(String fileName, Consumer<Sprite> location) {
         if(!spriteMap.containsKey(fileName)) {
@@ -32,9 +31,7 @@ public abstract class Sprites {
             });
         }
         if(spriteMap.get(fileName) == null) {
-            todos.add(() -> {
-                location.accept(spriteMap.get(fileName));
-            });
+            todos.add(() -> location.accept(spriteMap.get(fileName)));
         }
         return spriteMap.get(fileName);
     }

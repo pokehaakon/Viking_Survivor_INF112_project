@@ -1,10 +1,7 @@
 package Tools;
 
 import GameObjects.GameObject;
-import GameObjects.IGameObject;
-import GameObjects.Pool.IPool;
-import GameObjects.Pool.ObjectPool;
-import GameObjects.Pool.SmallPool;
+import Tools.Pool.IPool;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,16 +1,15 @@
-package GameObjects.Actors.ObjectActions;
+package GameObjects.ObjectActions;
 
-import GameObjects.Actors.Actor;
-import GameObjects.Actors.ObjectActions.Action;
+import GameObjects.Actor;
 import com.badlogic.gdx.math.Vector2;
 
-import static Tools.FilterTool.createFilter;
 import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
 
 public abstract class MovementActions {
 
 
-    public static final double DESPAWN_RADIUS =  1.1 * SCREEN_HEIGHT;
+    //public static final double DESPAWN_RADIUS =  1.1 * SCREEN_HEIGHT;
+
     /**
      * Moves enemy in straight line according to its velocity vector and speed
      *
@@ -23,7 +22,6 @@ public abstract class MovementActions {
     /**
      * Chases an Actor by moving towards its current position
      * @param actor object to be chased
-     * @return
      */
     public static Action chaseActor(Actor actor) {
         return (e) -> {

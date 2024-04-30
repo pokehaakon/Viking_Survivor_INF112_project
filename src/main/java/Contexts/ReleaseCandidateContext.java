@@ -1,20 +1,23 @@
 package Contexts;
 
-import GameObjects.Actors.Actor;
-import GameObjects.Actors.ObjectActions.PlayerActions;
-import GameObjects.Factories.*;
-//import GameObjects.Factories.EnemyFactory;
+import GameObjects.Actor;
 import GameObjects.GameObject;
-import GameObjects.Pool.ObjectPool;
+import GameObjects.IActor;
+import GameObjects.ObjectActions.PlayerActions;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Rendering.Animations.AnimationRendering.GIFS;
 import Rendering.Animations.AnimationRendering.Sprites;
-import Simulation.Simulation;
 import Simulation.GameWorld;
+import Simulation.ObjectContactListener;
+import Simulation.Simulation;
+import Tools.Pool.ObjectPool;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -22,28 +25,25 @@ import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Box2D;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import Simulation.ObjectContactListener;
 
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 
-import static Tools.FilterTool.createFilter;
-import static Tools.ShapeTools.getBottomLeftCorrection;
-import static VikingSurvivor.app.Main.SCREEN_WIDTH;
 import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
+import static VikingSurvivor.app.Main.SCREEN_WIDTH;
 
 public class ReleaseCandidateContext extends Context {
     public static final double SPAWN_RADIUS = (double)0.7*SCREEN_WIDTH;
@@ -94,7 +94,7 @@ public class ReleaseCandidateContext extends Context {
     public ReleaseCandidateContext(String name, SpriteBatch batch, OrthographicCamera camera, ContextualInputProcessor iProc) {
         super(name, iProc);
 
-        ExperimentalFactory.empty();
+        IActor.ExperimentalFactory.empty();
 
         this.batch = batch;
         this.camera = camera;
@@ -386,9 +386,19 @@ public class ReleaseCandidateContext extends Context {
 
         drawableActors = new ArrayList<>();
         drawableObjects = new ArrayList<>();
+        Function<String, GameObject> objectFactory = s -> {
+            var obj = IActor.ExperimentalFactory.create(s);
+            obj.addToWorld(world);
+            return obj;
+        };
 
-        objectPool = new ObjectPool<>(world, ExperimentalFactory::create);
-        actorPool = objectPool.createSubPool(ExperimentalFactory::createActor);
+        Function<String, Actor> actorFactory = s -> {
+            var obj = IActor.ExperimentalFactory.createActor(s);
+            obj.addToWorld(world);
+            return obj;
+        };
+        objectPool = new ObjectPool<>(objectFactory);
+        actorPool = objectPool.createSubPool(actorFactory);
 
 
 //        player = ExperimentalFactory.createActor("PlayerType:PLAYER1");
