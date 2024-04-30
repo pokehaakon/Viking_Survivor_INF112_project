@@ -385,6 +385,7 @@ public class ReleaseCandidateContext extends Context {
         //Register using old factories
         AbstractFactory.register();
 
+       Actor player2 = ObjectFactory.create("PlayerType");
 
         drawableActors = new ArrayList<>();
         drawableObjects = new ArrayList<>();

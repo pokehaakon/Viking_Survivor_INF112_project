@@ -3,11 +3,11 @@ import GameObjects.GameObject;
 import java.util.*;
 import java.util.function.Supplier;
 
-public abstract class Factory<T extends GameObject<E>,E extends Enum<E>> implements IFactory<T,E>{
-    protected final Map<Enum<E>, Supplier<T>> supplierInventory = new HashMap<>();
+public abstract class Factory<T extends GameObject> implements IFactory<T>{
+    protected final Map<String, Supplier<T>> supplierInventory = new HashMap<>();
 
     @Override
-    public T create(E type) {
+    public T create(String type) {
 
         if(Objects.isNull(supplierInventory.get(type))) {
             throw new NullPointerException("The factory does not contain the type " + type);
@@ -15,7 +15,7 @@ public abstract class Factory<T extends GameObject<E>,E extends Enum<E>> impleme
         return supplierInventory.get(type).get();
     }
     @Override
-    public List<T> create(E type, int n) {
+    public List<T> create(String type, int n) {
         if(n <= 0) {
             throw new IllegalArgumentException("List size must be greater than zero!");
         }

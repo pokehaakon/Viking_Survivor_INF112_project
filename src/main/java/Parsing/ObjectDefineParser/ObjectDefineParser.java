@@ -167,6 +167,24 @@ public class ObjectDefineParser extends TextParser {
         });
     }
 
+    private ObjectDefinition parseObject() throws ParsingException {
+        return Try(() -> {
+            //System.out.println("Start trying to parse actor!");
+            parseStringLiteral("Object");
+            //System.out.println("Parsed 'Actor'!");
+            parseLiteral(':');
+
+            var body = parseDefinitionBody(ObjectDefinition.legalDefines);
+
+
+            AnimationDefinition animationDefinition = getVarValueFromBodyCastAsT(body, "Animation", AnimationDefinition.class);
+            StructureDefinition structureDefinition = getVarValueFromBodyCastAsT(body, "Structure", StructureDefinition.class);
+            float scale = getVarValueFromBodyCastAsT(body, "Scale", float.class);
+
+            return ObjectDefinition.of(animationDefinition, structureDefinition, scale);
+        });
+    }
+
     private AnimationDefinition parseAnimation() throws ParsingException {
         return Try(() -> {
             parseStringLiteral("Animation");

@@ -1,7 +1,6 @@
 package Simulation;
 
 import GameObjects.Actors.Actor;
-import GameObjects.Actors.Pickups;
 import GameObjects.GameObject;
 import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.*;

@@ -1,6 +1,5 @@
 package GameObjects.Factories;
 
-import GameObjects.Actors.Pickups;
 import GameObjects.Actors.Stats.PickupStats;
 import GameObjects.Actors.Stats.StatsConstants;
 import GameObjects.BodyFeatures;
@@ -16,9 +15,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Shape;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 
 import static Rendering.Animations.AnimationRendering.GIFS.*;
