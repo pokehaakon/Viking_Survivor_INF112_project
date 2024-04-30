@@ -1,8 +1,8 @@
 package GameObjects.Actors.ObjectActions;
 
-import GameObjects.Actors.Enemy;
+//import GameObjects.Actors.Enemy;
 import GameObjects.Actors.Pickups;
-import GameObjects.Actors.Player;
+//import GameObjects.Actors.Player;
 
 public class PickupActions {
 
