@@ -1,4 +1,4 @@
-package InputProcessing.Coordinates;
+package Simulation.Coordinates;
 
 import Simulation.Coordinates.SwarmCoordinates;
 import com.badlogic.gdx.math.Vector2;

@@ -2,7 +2,9 @@ package Tools;
 
 import org.javatuples.*;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 
 public abstract class Tuple {
     public static <A> Unit<A> of(A a) {
@@ -37,16 +39,17 @@ public abstract class Tuple {
     }
 
     private abstract static class ZippedIterator<A> implements Iterator<A> {
-        Iterator[] iters;
-        public ZippedIterator(Iterator... iters) {
-            this.iters = iters;
-        }
+        private Iterator[] iters;
+
+        public ZippedIterator(Iterator... iters) {this.iters = iters;}
         @Override
         public boolean hasNext() {
             for (var i : iters) {if (i.hasNext()) return false;}
             return true;
         }
+
     }
+
 
     public static <A> Iterable<Unit<A>> zip(Iterable<A> as) {
         var ai = as.iterator();
@@ -64,4 +67,5 @@ public abstract class Tuple {
             public Pair<A, B> next() {return Tuple.of(ai.next(), bi.next());}
         };
     }
+
 }
