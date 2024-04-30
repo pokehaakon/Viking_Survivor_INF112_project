@@ -25,7 +25,7 @@ public class GameObject implements IGameObject {
         this.name = name;
 
         isMovingLeft = false;
-        ID = IActor.ExperimentalFactory.getUID();
+        ID = ObjectFactory.getUID();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class GameObject implements IGameObject {
     @Override
     public void revive() {
         destroyed = false;
-        ID = IActor.ExperimentalFactory.getUID();
+        ID = ObjectFactory.getUID();
     }
 
     @Override

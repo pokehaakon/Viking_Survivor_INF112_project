@@ -2,8 +2,8 @@ package Contexts;
 
 import GameObjects.Actor;
 import GameObjects.GameObject;
-import GameObjects.IActor;
 import GameObjects.ObjectActions.PlayerActions;
+import GameObjects.ObjectFactory;
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
 import Rendering.Animations.AnimationRendering.GIFS;
@@ -94,7 +94,7 @@ public class ReleaseCandidateContext extends Context {
     public ReleaseCandidateContext(String name, SpriteBatch batch, OrthographicCamera camera, ContextualInputProcessor iProc) {
         super(name, iProc);
 
-        IActor.ExperimentalFactory.empty();
+        ObjectFactory.empty();
 
         this.batch = batch;
         this.camera = camera;
@@ -387,13 +387,13 @@ public class ReleaseCandidateContext extends Context {
         drawableActors = new ArrayList<>();
         drawableObjects = new ArrayList<>();
         Function<String, GameObject> objectFactory = s -> {
-            var obj = IActor.ExperimentalFactory.create(s);
+            var obj = ObjectFactory.create(s);
             obj.addToWorld(world);
             return obj;
         };
 
         Function<String, Actor> actorFactory = s -> {
-            var obj = IActor.ExperimentalFactory.createActor(s);
+            var obj = ObjectFactory.createActor(s);
             obj.addToWorld(world);
             return obj;
         };

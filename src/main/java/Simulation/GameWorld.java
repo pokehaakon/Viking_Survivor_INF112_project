@@ -2,7 +2,7 @@ package Simulation;
 
 import GameObjects.Actor;
 import GameObjects.GameObject;
-import GameObjects.IActor;
+import GameObjects.ObjectFactory;
 import Parsing.MapParser;
 import Parsing.ObjectDefineParser.Defines.ActorDefinition;
 import Parsing.ObjectDefineParser.Defines.ObjectDefinition;
@@ -66,10 +66,10 @@ public class GameWorld implements Disposable {
 
             for (var entry : objectDefineParser.variables.entrySet()) {
                 if (entry.getValue().get() instanceof ActorDefinition actorDefinition) {
-                    IActor.ExperimentalFactory.register(entry.getKey().substring(1), actorDefinition);
+                    ObjectFactory.register(entry.getKey().substring(1), actorDefinition);
                 }
                 if (entry.getValue().get() instanceof ObjectDefinition objectDefinition) {
-                    IActor.ExperimentalFactory.register(entry.getKey().substring(1), objectDefinition);
+                    ObjectFactory.register(entry.getKey().substring(1), objectDefinition);
                 }
             }
         }
@@ -86,7 +86,7 @@ public class GameWorld implements Disposable {
             nextFrame = Long.MAX_VALUE;
         }
 
-        this.player = IActor.ExperimentalFactory.createActor(defines.get("PLAYER_NAME"));
+        this.player = ObjectFactory.createActor(defines.get("PLAYER_NAME"));
 
         handlerFactory = new SpawnHandlerFactory(player, actorPool, objectPool, activeActors, activeObjects);
     }

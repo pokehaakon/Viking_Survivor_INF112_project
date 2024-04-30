@@ -1,7 +1,7 @@
 package Parsing;
 
 
-import GameObjects.IActor;
+import GameObjects.ObjectFactory;
 import Parsing.Parser.ParserException;
 import Parsing.Parser.ParsingException;
 import Parsing.Parser.TextParser;
@@ -138,7 +138,7 @@ public class MapParser extends TextParser {
 
             String spawnable;
             try {
-                spawnable = parseStringLiteral(IActor.ExperimentalFactory.getRegisteredActors());
+                spawnable = parseStringLiteral(ObjectFactory.getRegisteredActors());
             } catch (ParsingException e) {
                 throw new ParserException(e, this, "Could not find the SpawnType");
             }

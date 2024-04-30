@@ -1,6 +1,6 @@
 package Parsing;
 
-import GameObjects.IActor;
+import GameObjects.ObjectFactory;
 import Parsing.Parser.ParserException;
 import Parsing.Parser.ParsingException;
 import Parsing.Parser.TextParser;
@@ -45,8 +45,8 @@ class ParserTest {
             public void dispose() {}
         };
         new HeadlessApplication(listener, config);
-        IActor.ExperimentalFactory.registerActor("RAVEN", () -> null);
-        IActor.ExperimentalFactory.registerActor("ORC", () -> null);
+        ObjectFactory.registerActor("RAVEN", () -> null);
+        ObjectFactory.registerActor("ORC", () -> null);
     }
 
     public static MapParser mapParserFromString(String s) {
