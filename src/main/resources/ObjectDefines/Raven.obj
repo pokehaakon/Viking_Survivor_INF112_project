@@ -10,11 +10,11 @@ $RavenStats = Define Stats:
     Speed: 10
     Damage: 10.0
     resistance: 0.0
-    scale: 1.5
+    scale: 10
 
 $RavenShape = Define Shape:
     Type: Circle
-    Radius: 0.2
+    Radius: 3
 
 $RavenStructure = Define Structure:
     Filter: ENEMY PLAYER WEAPON

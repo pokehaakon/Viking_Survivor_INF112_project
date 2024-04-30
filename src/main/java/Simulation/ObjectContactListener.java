@@ -77,6 +77,8 @@ public class ObjectContactListener implements ContactListener {
         if (weaponEnemyCollision(b1, b2)) {
             Actor weapon = (Actor) getObjectWithCategory(b1, b2, WEAPON);
             Actor enemy = (Actor) getObjectWithCategory(b1, b2, ENEMY);
+            System.out.println(enemy.getHP());
+            System.out.println(weapon.getDamage());
             weapon.attack(enemy);
             //enemy.underAttack = true;
             //System.out.println("WEAPON COLLISION");
@@ -91,9 +93,11 @@ public class ObjectContactListener implements ContactListener {
             //System.out.println("PLAYER COLLISION");
         }
         else if (playerPickupCollision(b1, b2)) {
+            System.out.println("PICKUPCOLLISION");
             //Actor player = (Actor) getObjectWithCategory(b1, b2, PLAYER);
             Actor pickup = (Actor) getObjectWithCategory(b1, b2, PICKUP);
             //TODO fix pickups
+            pickup.doAction();
             //player.pickup(pickup);
             pickup.kill();
             pickup.destroy();

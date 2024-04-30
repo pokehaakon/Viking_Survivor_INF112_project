@@ -107,7 +107,7 @@ public class Actor extends GameObject implements IActor {
 
     @Override
     public void attack(Actor actor) {
-        if(actor.attackedBy(this)) return;
+        //if(actor.attackedBy(this)) return;
         // TODO add attack action
         actor.HP -= damage;
     }

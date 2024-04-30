@@ -3,6 +3,7 @@ package Simulation;
 import Contexts.ReleaseCandidateContext;
 import GameObjects.Actor;
 import GameObjects.GameObject;
+import GameObjects.ObjectActions.Action;
 import GameObjects.ObjectActions.WeaponActions;
 import InputProcessing.KeyStates;
 import Simulation.Coordinates.SpawnCoordinates;
@@ -11,10 +12,15 @@ import Tools.RollingSum;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 
+import static GameObjects.ObjectActions.KilledAction.destroyIfDefeated;
+import static GameObjects.ObjectActions.KilledAction.spawnPickups;
+import static GameObjects.ObjectActions.MovementActions.chaseActor;
+import static GameObjects.ObjectActions.PickupActions.giveHP;
 import static Tools.ListTools.removeDestroyed;
 
 public class Simulation implements Runnable {
@@ -42,7 +48,7 @@ public class Simulation implements Runnable {
     //temp
     private long lastSpawnTime;
 
-
+    private List<Actor> spawnedPickups;
     public Simulation(ReleaseCandidateContext context) {
         this.context = context;
         renderLock = context.getRenderLock();
@@ -58,6 +64,8 @@ public class Simulation implements Runnable {
         objectPool = context.getObjectPool();
         objects = context.getDrawableObjects();
         gameWorld = context.getGameWorld();
+
+        spawnedPickups = context.getPickup();
     }
 
     @Override
@@ -87,24 +95,18 @@ public class Simulation implements Runnable {
             if (TimeUtils.millis() - lastSpawnTime > 5000) {
                 //spawnRandomEnemies(5,Arrays.asList(ActorActions.destroyIfDefeated(player),ActorActions.chasePlayer(player), coolDown(500)));
                 spawnTerrain("TREE");
+                spawnEnemies("RAVEN",10,
+                        chaseActor(player),
+                        spawnPickups(1,"HP_PICKUP",spawnedPickups,context.getActorPool(),giveHP(player,10)),destroyIfDefeated()
+                        );
             }
 
             if (frame == 10 || frame == 10*60 || frame == 20*60) {
                 var a = actorPool.get("KNIFE");
-                a.addAction(WeaponActions.orbitActor(3, 0.02f, player, 0, 0));
+                a.addAction(WeaponActions.orbitActor(10, 0.1f, player, 0, 0));
                 actors.add(a);
             }
 
-            // If an actor is defeated, spawn a pickup orb
-//            for (Actor actor : actors) {
-//                if (actor.isDestroyed()) {
-//                    spawnPickups("PickupType:PICKUPORB", actor.getBody().getPosition());
-//                }
-//            }
-
-            // If a pickup is picked up, remove it from the list of pickups
-            //removePickedUpPickups();
-            //removeDestroyedEnemies();
 
 
             doSpinSleep(lastFrameStart, dt);
@@ -120,6 +122,7 @@ public class Simulation implements Runnable {
             removeDestroyed(actors, actorPool, true);
             removeDestroyed(objects, objectPool, true);
 
+            removeDestroyed(spawnedPickups,actorPool,true);
 
             renderLock.unlock();
             long simTimeToUpdate = System.nanoTime() - t0;
@@ -148,6 +151,15 @@ public class Simulation implements Runnable {
         terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
         context.getDrawableObjects().add(terrain);
         lastSpawnTime = TimeUtils.millis();
+    }
+
+    private void spawnEnemies(String type, int n, Action... actions) {
+        for(Actor enemy : context.getActorPool().get(type, n)) {
+            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), 200));
+            enemy.addAction(actions);
+            context.getDrawableActors().add(enemy);
+            lastSpawnTime = TimeUtils.millis();
+        }
     }
 
     public void stopSim() {

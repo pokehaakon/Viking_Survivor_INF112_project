@@ -6,13 +6,13 @@ $Animation = Define Animation:
 $Stats = Define Stats:
     HP: 1.0
     Speed: 50.0
-    Damage: 5.0
+    Damage: 50
     resistance: 0.0
-    scale: 4.0
+    scale: 15
 
 $Shape = Define Shape:
     Type: Circle
-    Radius: 0.45
+    Radius: 4
 
 $Structure = Define Structure:
     Filter: ENEMY

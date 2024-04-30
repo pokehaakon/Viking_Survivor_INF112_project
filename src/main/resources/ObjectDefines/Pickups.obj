@@ -30,7 +30,7 @@ $Stats = Define Stats:
     Speed: 0
     Damage: 0
     resistance: 0
-    scale: 0.5
+    scale: 5
 
 $HP_PICKUP = Define Actor:
     Animation: $HP_Animation

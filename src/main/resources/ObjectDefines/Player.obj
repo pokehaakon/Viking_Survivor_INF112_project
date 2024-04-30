@@ -11,14 +11,14 @@ $PlayerStats = Define Stats:
     Speed: 70
     Damage: 10.0
     resistance: 0.0
-    scale: 2.1
+    scale: 10
 
 $PlayerShape = Define Shape:
     Type: Circle
     Radius: 1.0
 
 $PlayerStructure = Define Structure:
-    Filter: ENEMY WALL
+    Filter: ENEMY WALL PICKUP
     Category: PLAYER
     Shape: $PlayerShape
     BodyType: DynamicBody

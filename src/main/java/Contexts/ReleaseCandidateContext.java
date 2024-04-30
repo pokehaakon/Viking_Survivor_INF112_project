@@ -50,7 +50,7 @@ public class ReleaseCandidateContext extends Context {
     public static final Vector2 SPAWN_RECT = new Vector2(SCREEN_WIDTH, SCREEN_HEIGHT);
     public static final Vector2 DE_SPAWN_RECT = SPAWN_RECT.cpy().scl(1.3f);
 
-
+    private List<Actor> pickup;
     private final SpriteBatch batch;
     private final OrthographicCamera camera;
     private World world;
@@ -93,6 +93,7 @@ public class ReleaseCandidateContext extends Context {
 
     public ReleaseCandidateContext(String name, SpriteBatch batch, OrthographicCamera camera, ContextualInputProcessor iProc) {
         super(name, iProc);
+        pickup = new ArrayList<>();
 
         IActor.ExperimentalFactory.empty();
 
@@ -206,7 +207,9 @@ public class ReleaseCandidateContext extends Context {
         // draw enemies
 
         int i = 0;
-
+        for(Actor p : pickup) {
+            p.draw(batch,frameCount);
+        }
         for (Actor actor : drawableActors) {
             if(i > 100) batch.flush();
             if(actor.isUnderAttack()) {
@@ -550,5 +553,9 @@ public class ReleaseCandidateContext extends Context {
     }
 
     public GameWorld getGameWorld() {return gameWorld;}
+
+    public List<Actor> getPickup() {
+        return pickup;
+    }
 
 }
