@@ -1,10 +1,11 @@
-package GameObjects.Actors.ActorAction;
+package GameObjects.Actors.ObjectActions;
 
 import GameObjects.Actors.Actor;
+import GameObjects.Actors.ObjectActions.Action;
 
 public abstract class KilledAction {
 
-    static public ActorAction doIfDefeated(ActorAction action) {
+    static public Action doIfDefeated(Action action) {
         return (e) -> {
             if(e.getHP() <= 0) {
                 action.act(e);
@@ -17,7 +18,7 @@ public abstract class KilledAction {
      * Enemy despawns when it is out of bounds or killed.
      * @return an ActorAction object
      */
-    static public ActorAction destroyIfDefeated() {
+    static public Action destroyIfDefeated() {
         return doIfDefeated(Actor::kill);
     }
 }

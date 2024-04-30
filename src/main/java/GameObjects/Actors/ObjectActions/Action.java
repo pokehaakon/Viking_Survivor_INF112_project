@@ -1,12 +1,15 @@
 package GameObjects.Actors.ObjectActions;
 
-public interface Action<T> {
+import GameObjects.Actors.Actor;
+
+@FunctionalInterface
+public interface Action {
 
     // this interface acts as an action object
 
     /**
      * Executes a desired action
-     * @param object the object which performs the action
+     * @param actor
      */
-    void act(T object);
+    void act(Actor actor);
 }

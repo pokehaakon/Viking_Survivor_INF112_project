@@ -1,0 +1,48 @@
+$xp_gif=pickupOrb.gif
+$hp_gif=HP_Pickup.gif
+#skull_gif= ###
+
+
+$HP_Animation = Define Animation:
+    State: IDLE $hp_gif
+
+$XP_Animation = Define Animation:
+    State: IDLE $xp_gif
+
+#$SKULL_Animation = Define Animation:
+#    State: IDLE $skull_gif
+
+$Shape = Define Shape:
+    Type: Circle
+    Radius: 1.0
+
+$Structure = Define Structure:
+    Filter: PLAYER
+    Category: PICKUP
+    Shape: $Shape
+    BodyType: DynamicBody
+    density: 1
+    friction: 0
+    isSensor: true
+
+$Stats = Define Stats:
+    HP: 0
+    Speed: 0
+    Damage: 0
+    resistance: 0
+    scale: 0.5
+
+$HP_PICKUP = Define Actor:
+    Animation: $HP_Animation
+    Stats: $Stats
+    Structure: $Structure
+
+$XP_PICKUP = Define Actor:
+    Animation: $XP_Animation
+    Stats: $Stats
+    Structure: $Structure
+
+#$SKULL_PICKUP = Define Actor:
+#    Animation: $SKULL_Animation
+#    Stats: $Stats
+#    Structure: $Structure

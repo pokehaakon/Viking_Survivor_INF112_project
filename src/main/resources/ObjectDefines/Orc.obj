@@ -1,0 +1,29 @@
+$ORC_GIF = orc.gif
+
+$OrcAnimation = Define Animation:
+    State: MOVING $ORC_GIF
+
+$OrcStats = Define Stats:
+    HP: 150.0
+    Speed: 50.0
+    Damage: 20.0
+    resistance: 0.0
+    scale: 7.0
+
+$OrcShape = Define Shape:
+    Type: Circle
+    Radius: 4.0
+
+$OrcStructure = Define Structure:
+    Filter: ENEMY PLAYER WEAPON
+    Category: ENEMY
+    Shape: $OrcShape
+    BodyType: DynamicBody
+    density: 2.0
+    friction: 0
+    isSensor: false
+
+$ORC = Define Actor:
+    Animation: $OrcAnimation
+    Stats: $OrcStats
+    Structure: $OrcStructure

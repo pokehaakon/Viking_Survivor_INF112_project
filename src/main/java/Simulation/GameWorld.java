@@ -6,6 +6,7 @@ import GameObjects.GameObject;
 import GameObjects.Pool.ObjectPool;
 import Parsing.MapParser;
 import Parsing.ObjectDefineParser.Defines.ActorDefinition;
+import Parsing.ObjectDefineParser.Defines.ObjectDefinition;
 import Parsing.ObjectDefineParser.ObjectDefineParser;
 import Parsing.SpawnFrame;
 import Simulation.SpawnHandler.SpawnHandlerFactory;
@@ -39,7 +40,7 @@ public class GameWorld implements Disposable {
     private final ObjectPool<GameObject> objectPool;
 
     private final List<Actor> activeActors;
-    private final List<GameObject> activeTerrain;
+    private final List<GameObject> activeObjects;
     public final Actor player;
 
     public GameWorld(
@@ -47,32 +48,35 @@ public class GameWorld implements Disposable {
             ObjectPool<Actor> actorPool,
             ObjectPool<GameObject> objectPool,
             List<Actor> activeActors,
-            List<GameObject> activeTerrain
+            List<GameObject> activeObjects
     ) {
         if (!worldDef.endsWith(".wdef")) {
             throw new RuntimeException("world definition file needs ending '.wdef', got : " + worldDef);
         }
 
-
         this.actorPool = actorPool;
         this.objectPool = objectPool;
         this.activeActors = activeActors;
-        this.activeTerrain = activeTerrain;
-
-
+        this.activeObjects = activeObjects;
 
         MapParser mapParser = new MapParser(worldDef);
-        defines = mapParser.doParseDefines();
-        ObjectDefineParser objectDefineParser = new ObjectDefineParser(defines.get("OBJECT_DEFINES"));
-        objectDefineParser.parseDocument();
 
-        for (var entry : objectDefineParser.variables.entrySet()) {
-            //System.out.println(entry);
-            if (entry.getValue().get() instanceof ActorDefinition actorDefinition) {
-                ExperimentalFactory.registerActor(entry.getKey().substring(1), actorDefinition);
+        var includes = mapParser.doParseIncludes();
+        for (String include : includes) {
+            var objectDefineParser = new ObjectDefineParser(include);
+            objectDefineParser.parseDocument();
+
+            for (var entry : objectDefineParser.variables.entrySet()) {
+                if (entry.getValue().get() instanceof ActorDefinition actorDefinition) {
+                    ExperimentalFactory.register(entry.getKey().substring(1), actorDefinition);
+                }
+                if (entry.getValue().get() instanceof ObjectDefinition objectDefinition) {
+                    ExperimentalFactory.register(entry.getKey().substring(1), objectDefinition);
+                }
             }
         }
 
+        defines = mapParser.doParseDefines();
         timeFrames = mapParser.doParseTimeFrames();
 
         map = new TmxMapLoader().load(defines.get("MAP_PATH"));
@@ -86,7 +90,7 @@ public class GameWorld implements Disposable {
 
         this.player = ExperimentalFactory.createActor(defines.get("PLAYER_NAME"));
 
-        handlerFactory = new SpawnHandlerFactory(player, actorPool, objectPool, activeActors, activeTerrain);
+        handlerFactory = new SpawnHandlerFactory(player, actorPool, objectPool, activeActors, activeObjects);
     }
     public void act(Long frame) {
         if (frame == nextFrame) {

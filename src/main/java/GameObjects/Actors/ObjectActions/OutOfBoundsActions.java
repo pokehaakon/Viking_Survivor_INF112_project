@@ -1,13 +1,14 @@
-package GameObjects.Actors.ActorAction;
+package GameObjects.Actors.ObjectActions;
 
 import GameObjects.Actors.Actor;
+import GameObjects.Actors.ObjectActions.Action;
 import com.badlogic.gdx.math.Vector2;
 
 import static Simulation.Coordinates.SpawnCoordinates.randomPointOutsideScreenRect;
 
 public abstract class OutOfBoundsActions {
 
-    static private ActorAction doIfOutOfBounds(Actor centerActor, Vector2 boundSquare, ActorAction action) {
+    static private Action doIfOutOfBounds(Actor centerActor, Vector2 boundSquare, Action action) {
         return (Actor a) -> {
             Vector2 dxdy = centerActor
                     .getBody()
@@ -26,7 +27,7 @@ public abstract class OutOfBoundsActions {
      * @param centerActor the actor in the center of the bounds (usually the player)
      * @param boundSquare vector with width and height of the square
      */
-    static public ActorAction deSpawnIfOutOfBounds(Actor centerActor, Vector2 boundSquare) {
+    static public Action deSpawnIfOutOfBounds(Actor centerActor, Vector2 boundSquare) {
         return doIfOutOfBounds(centerActor, boundSquare, Actor::kill);
     }
 
@@ -35,7 +36,7 @@ public abstract class OutOfBoundsActions {
      * @param centerActor the actor in the center of the bounds (usually the player)
      * @param boundSquare vector with width and height of the square
      */
-    static public ActorAction moveIfOutOfBounds(Actor centerActor, Vector2 boundSquare) {
+    static public Action moveIfOutOfBounds(Actor centerActor, Vector2 boundSquare) {
         return doIfOutOfBounds(
                 centerActor,
                 boundSquare,

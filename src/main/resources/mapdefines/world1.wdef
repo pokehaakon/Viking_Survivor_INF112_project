@@ -1,5 +1,13 @@
+$include ObjectDefines/Raven.obj
+$include ObjectDefines/Orc.obj
+$include ObjectDefines/Player.obj
+$include ObjectDefines/Axe.obj
+$include ObjectDefines/Knife.obj
+$include ObjectDefines/Pickups.obj
+$include ObjectDefines/Tree.obj
+$include ObjectDefines/Wolf.obj
+
 !MAP_PATH=assets/damaged_roads_map.tmx
-!OBJECT_DEFINES=ObjectDefines/world1.obj
 !PLAYER_NAME=PLAYER
 
 00:00:

@@ -33,7 +33,7 @@ public class SpriteRender implements AnimationRender {
         Vector2 regionRect = new Vector2(sprite.getRegionWidth(), sprite.getRegionHeight());
         float max = Math.max(regionRect.x, regionRect.y);
         max = regionRect.y;
-        regionRect.scl(1/max * scale * Main.PPM);
+        regionRect.scl(1/max * scale); // * Main.PPM);
         batch.draw(sprite,
                 pos.x - regionRect.x / 2, // subtracting offset
                 pos.y - regionRect.y / 2,

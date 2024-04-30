@@ -29,33 +29,37 @@ public abstract class ExperimentalFactory {
         return isActor.stream().toList();
     }
 
-    static public void registerActor(String name, ActorDefinition definition) {
-        isActor.add(name);
-        register(name, definition);
+    static public void register(String name, ObjectDefinition definition) {
+        float scale = definition.scale;
+
+        var struct = definition.structureDefinition;
+        var shape = getShapeFromShapeDefinition(struct.shapeDefinition);
+        BodyFeatures bodyFeatures = getBodyFeaturesFromStructAndShape(struct, shape);
+        AnimationHandler animationHandler = animationHandlerFromAnimationDefinition(definition.animationDefinition, scale);
+
+        Supplier<GameObject> supplier = () -> new GameObject(
+                name,
+                animationHandler,
+                bodyFeatures
+        );
+
+        factories.put(name, supplier);
     }
 
-    static private void register(String name, ActorDefinition definition) {
-        //isActor.add(name);
+    static public void register(String name, ActorDefinition definition) {
+        isActor.add(name);
         var stats = definition.statsDefinition;
         float scale = stats.scale;
 
         var struct = definition.structureDefinition;
-        var shape = getShapeFromShapeDefinition(struct.shapeDefinition, scale);
-        //System.out.println("Filter: " + struct.filter.categoryBits + ", " + struct.filter.maskBits);
-        BodyFeatures bodyFeatures = new BodyFeatures(
-                shape,
-                struct.filter,
-                struct.density,
-                struct.friction,
-                0,
-                struct.isSensor,
-                struct.bodyType
-        );
+        var shape = getShapeFromShapeDefinition(struct.shapeDefinition);
+        BodyFeatures bodyFeatures = getBodyFeaturesFromStructAndShape(struct, shape);
+
         StatsConstants.Stats actorStats = new StatsConstants.Stats(
                 stats.speed,
                 stats.hp,
                 stats.damage,
-                0
+                stats.resistance
         );
 
         AnimationHandler animationHandler = animationHandlerFromAnimationDefinition(definition.animationDefinition, scale);
@@ -70,42 +74,12 @@ public abstract class ExperimentalFactory {
         factories.put(name, supplier);
     }
 
-    static public void register(String name, ObjectDefinition definition) {
-        float scale = definition.scale;
 
-        var struct = definition.structureDefinition;
-        var shape = getShapeFromShapeDefinition(struct.shapeDefinition, scale);
-        //System.out.println("Filter: " + struct.filter.categoryBits + ", " + struct.filter.maskBits);
-        BodyFeatures bodyFeatures = new BodyFeatures(
-                shape,
-                struct.filter,
-                struct.density,
-                struct.friction,
-                0,
-                struct.isSensor,
-                struct.bodyType
-        );
-
-        AnimationHandler animationHandler = animationHandlerFromAnimationDefinition(definition.animationDefinition, scale);
-
-        Supplier<GameObject> supplier = () -> new GameObject(
-                name,
-                animationHandler,
-                bodyFeatures
-        );
-
-        factories.put(name, supplier);
-    }
 
     static public void register(String name, Supplier<GameObject> factory) {
         factories.put(name, factory);
     }
 
-    static public void registerFromOldFactory(Function<String, GameObject> oldFactory, String... names) {
-        for (String name : names) {
-            register(name, () -> oldFactory.apply(name));
-        }
-    }
 
     static public void registerActor(String name, Supplier<Actor> factory) {
         isActor.add(name);
@@ -120,12 +94,24 @@ public abstract class ExperimentalFactory {
         );
     }
 
-    static private Shape getShapeFromShapeDefinition(ShapeDefinition definition, float scale) {
+    private static BodyFeatures getBodyFeaturesFromStructAndShape(StructureDefinition struct, Shape shape) {
+        return new BodyFeatures(
+            shape,
+            struct.filter,
+            struct.density,
+            struct.friction,
+            0,
+            struct.isSensor,
+            struct.bodyType
+        );
+    }
+
+    static private Shape getShapeFromShapeDefinition(ShapeDefinition definition) {
         if (definition instanceof SquareShapeDefinition squareShapeDefinition) {
-            return ShapeTools.createSquareShape(squareShapeDefinition.width * scale, squareShapeDefinition.height * scale);
+            return ShapeTools.createSquareShape(squareShapeDefinition.width, squareShapeDefinition.height);
         }
         if (definition instanceof CircleShapeDefinition circleShapeDefinition) {
-            return ShapeTools.createCircleShape(circleShapeDefinition.radius * scale);
+            return ShapeTools.createCircleShape(circleShapeDefinition.radius);
         }
         if (definition instanceof PolygonShapeDefinition polygonShapeDefinition) {
             throw new NotImplementedException("Cannot create polygon shapes yet!");

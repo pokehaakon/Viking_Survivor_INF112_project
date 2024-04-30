@@ -1,8 +1,8 @@
-package GameObjects.Actors.ActorAction;
+package GameObjects.Actors.ObjectActions;
 
 import GameObjects.Actors.Actor;
+
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.google.common.util.concurrent.AtomicDouble;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -19,7 +19,7 @@ public abstract class WeaponActions {
      * @param orbitInterval millisecond between each orbit,
      * @return a weapon action
      */
-    public static ActorAction orbitActor(float orbitRadius, float orbitSpeed, Actor actor, double orbitInterval, float startingAngle) {
+    public static Action orbitActor(float orbitRadius, float orbitSpeed, Actor actor, double orbitInterval, float startingAngle) {
         long frameInterval = (long) (orbitInterval * SET_FPS / 1000);
         AtomicLong framesSinceLastAttack = new AtomicLong(frameInterval);
         AtomicDouble angle = new AtomicDouble(2 * Math.PI + startingAngle + 1);

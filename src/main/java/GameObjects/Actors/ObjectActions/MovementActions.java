@@ -1,6 +1,7 @@
-package GameObjects.Actors.ActorAction;
+package GameObjects.Actors.ObjectActions;
 
 import GameObjects.Actors.Actor;
+import GameObjects.Actors.ObjectActions.Action;
 import com.badlogic.gdx.math.Vector2;
 
 import static Tools.FilterTool.createFilter;
@@ -14,7 +15,7 @@ public abstract class MovementActions {
      * Moves enemy in straight line according to its velocity vector and speed
      *
      */
-    public static ActorAction moveInStraightLine(Vector2 vel) {
+    public static Action moveInStraightLine(Vector2 vel) {
         var newVel = vel.cpy();
         return e -> e.getBody().setLinearVelocity(newVel.setLength(e.getSpeed()));
     }
@@ -24,7 +25,7 @@ public abstract class MovementActions {
      * @param actor object to be chased
      * @return
      */
-    public static ActorAction chaseActor(Actor actor) {
+    public static Action chaseActor(Actor actor) {
         return (e) -> {
             var vel = e.getBody().getLinearVelocity();
             vel

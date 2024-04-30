@@ -42,7 +42,7 @@ public class GIFRender implements AnimationRender {
         Vector2 regionRect = new Vector2(region.getRegionWidth(), region.getRegionHeight());
         float max = Math.max(regionRect.x, regionRect.y);
         max = regionRect.y;
-        regionRect.scl(1/max * scale * Main.PPM);
+        regionRect.scl(1/max * scale ); //* Main.PPM);
         batch.draw(
                 region,
                 object.getBody().getPosition().x - regionRect.x / 2,

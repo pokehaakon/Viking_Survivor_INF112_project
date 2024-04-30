@@ -1,6 +1,7 @@
 package Simulation;
 
 import GameObjects.Actors.Actor;
+import GameObjects.Actors.ObjectActions.WeaponActions;
 import GameObjects.GameObject;
 import GameObjects.Pool.ObjectPool;
 import Contexts.ReleaseCandidateContext;
@@ -85,9 +86,14 @@ public class Simulation implements Runnable {
             // random spawning for now
             if (TimeUtils.millis() - lastSpawnTime > 5000) {
                 //spawnRandomEnemies(5,Arrays.asList(ActorActions.destroyIfDefeated(player),ActorActions.chasePlayer(player), coolDown(500)));
-                spawnTerrain("TerrainType:TREE");
+                spawnTerrain("TREE");
             }
 
+            if (frame == 10 || frame == 10*60 || frame == 20*60) {
+                var a = actorPool.get("KNIFE");
+                a.addAction(WeaponActions.orbitActor(3, 0.02f, player, 0, 0));
+                actors.add(a);
+            }
 
             // If an actor is defeated, spawn a pickup orb
 //            for (Actor actor : actors) {

@@ -1,9 +1,6 @@
 package GameObjects.Actors;
 
-import GameObjects.Actors.ActorAction.ActorAction;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.TimeUtils;
+import GameObjects.Actors.ObjectActions.Action;
 
 import java.util.Collection;
 
@@ -19,19 +16,19 @@ public interface IActor {
      * Adds the action to the actions performed by this Actor
      * @param action the action to add
      */
-    void addAction(ActorAction action);
+    void addAction(Action action);
 
     /**
      * Adds the actions to the actions performed by this Actor
      * @param actions the actions to add
      */
-    void addAction(ActorAction... actions);
+    void addAction(Action... actions);
 
     /**
      * Adds the actions to the actions performed by this Actor
      * @param actions the actions to add
      */
-    void addAction(Collection<ActorAction> actions);
+    void addAction(Collection<Action> actions);
 
     /**
      * Clears all the set actions

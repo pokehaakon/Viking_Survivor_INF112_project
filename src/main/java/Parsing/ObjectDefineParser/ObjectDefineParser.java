@@ -91,13 +91,13 @@ public class ObjectDefineParser extends TextParser {
 
     private <T> T lookupAndMakeToTIfVarOrMakeToT(String maybeVar, Function<String, T> f) {
         if (isVariable(maybeVar))
-            return f.apply(lookup(maybeVar, String.class).get());
+            return f.apply(lookup(maybeVar, String.class).orElseThrow(() -> new VariableNotInScopeException(maybeVar, variables)));
         return f.apply(maybeVar);
     }
 
     private String lookupIfVarElseValue(String maybeVar) {
         if (isVariable(maybeVar))
-            return lookup(maybeVar, String.class).get();
+            return lookup(maybeVar, String.class).orElseThrow(() -> new VariableNotInScopeException(maybeVar, variables));
         return maybeVar;
     }
 
@@ -138,6 +138,7 @@ public class ObjectDefineParser extends TextParser {
                         Void(this::space);
                         return Variable.of(choose(
                             this::parseActor,
+                            this::parseObject,
                             this::parseAnimation,
                             this::parseStructure,
                             this::parseStats,
@@ -179,7 +180,10 @@ public class ObjectDefineParser extends TextParser {
 
             AnimationDefinition animationDefinition = getVarValueFromBodyCastAsT(body, "Animation", AnimationDefinition.class);
             StructureDefinition structureDefinition = getVarValueFromBodyCastAsT(body, "Structure", StructureDefinition.class);
-            float scale = getVarValueFromBodyCastAsT(body, "Scale", float.class);
+            float scale =  lookupAndMakeToTIfVarOrMakeToT(
+                    getFieldValueFromBody(body, "Scale"),
+                    Float::parseFloat
+            );
 
             return ObjectDefinition.of(animationDefinition, structureDefinition, scale);
         });

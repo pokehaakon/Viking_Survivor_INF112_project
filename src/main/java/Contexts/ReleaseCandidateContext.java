@@ -1,9 +1,8 @@
 package Contexts;
 
 import GameObjects.Actors.Actor;
-import GameObjects.Actors.ActorAction.WeaponActions;
+import GameObjects.Actors.ObjectActions.PlayerActions;
 import GameObjects.Factories.*;
-import GameObjects.Actors.ActorAction.PlayerActions;
 //import GameObjects.Factories.EnemyFactory;
 import GameObjects.GameObject;
 import GameObjects.Pool.ObjectPool;
@@ -88,7 +87,7 @@ public class ReleaseCandidateContext extends Context {
 //    private OrthogonalTiledMapRenderer tiledMapRenderer;
 //    private float tiledMapScale = 4f;
 
-
+    private Vector2 previousFramePlayerSpeed = Vector2.Zero;
     private GameWorld gameWorld;
 
 
@@ -185,9 +184,11 @@ public class ReleaseCandidateContext extends Context {
 
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
-        origin.sub(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
-        camera.position.x = origin.x;
-        camera.position.y = origin.y;
+        //origin.sub(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
+        camera.position.x = origin.x + previousFramePlayerSpeed.x / sim.SET_UPS;
+        camera.position.y = origin.y + previousFramePlayerSpeed.y / sim.SET_UPS;
+
+        previousFramePlayerSpeed = player.getBody().getLinearVelocity();
 
         // Save player position for further use
         float playerPosX = origin.x;
@@ -382,10 +383,6 @@ public class ReleaseCandidateContext extends Context {
 
         //map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
 
-        //Register using old factories
-        AbstractFactory.register();
-
-       Actor player2 = ObjectFactory.create("PlayerType");
 
         drawableActors = new ArrayList<>();
         drawableObjects = new ArrayList<>();
@@ -409,7 +406,6 @@ public class ReleaseCandidateContext extends Context {
 
 
 
-        spawnOrbitingWeapons(player,4, "WeaponType:KNIFE",120,0.02f,0);
 
 
         toBoKilled = new ArrayList<>();
@@ -489,24 +485,6 @@ public class ReleaseCandidateContext extends Context {
     }
 
 
-    /**
-     * Orbits desired amount of weapons around player
-     * @param player player to orbit
-     * @param numWeapons number of weapons to orbit
-     * @param weaponName type of weapon to orbit
-     * @param orbitRadius radius of weapon to player
-     * @param orbitSpeed speed of weapons
-     * @param orbitInterval time between each orbit loop
-     */
-    private void spawnOrbitingWeapons(Actor player, int numWeapons, String weaponName, float orbitRadius, float orbitSpeed, long orbitInterval){
-        float angle=0;
-        for(Actor weapon : actorPool.get(weaponName, numWeapons)){
-            weapon.addAction(WeaponActions.orbitActor(orbitRadius, orbitSpeed, player, orbitInterval, angle));
-            drawableActors.add(weapon);
-            angle += (float)(2f * Math.PI / numWeapons);
-        }
-
-    }
     
 
     public Lock getRenderLock() {

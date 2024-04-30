@@ -1,0 +1,29 @@
+
+
+$Animation = Define Animation:
+    State: IDLE knife.gif
+
+$Stats = Define Stats:
+    HP: 1.0
+    Speed: 50.0
+    Damage: 5.0
+    resistance: 0.0
+    scale: 0.8
+
+$Shape = Define Shape:
+    Type: Circle
+    Radius: 1.0
+
+$Structure = Define Structure:
+    Filter: ENEMY
+    Category: WEAPON
+    Shape: $Shape
+    BodyType: DynamicBody
+    density: 1.0
+    friction: 0.0
+    isSensor: true
+
+$KNIFE = Define Actor:
+    Animation: $Animation
+    Stats: $Stats
+    Structure: $Structure

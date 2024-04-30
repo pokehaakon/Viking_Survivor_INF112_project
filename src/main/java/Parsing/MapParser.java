@@ -18,6 +18,7 @@ import static Tools.EnumTools.enumToStrings;
 public class MapParser extends TextParser {
     private Map<String, String> defines;
     private List<Pair<Long, List<SpawnFrame>>> timeFrames;
+    private List<String> includes;
 
     public MapParser(String filename) {
         super(filename);
@@ -32,6 +33,12 @@ public class MapParser extends TextParser {
         if (defines != null) return defines;
         defines = parseDefines();
         return defines;
+    }
+
+    public List<String> doParseIncludes() {
+        if (includes != null) return includes;
+        includes = parseIncludes();
+        return includes;
     }
 
     public List<Pair<Long, List<SpawnFrame>>> doParseTimeFrames() {
@@ -64,7 +71,7 @@ public class MapParser extends TextParser {
             parseLiteral('!');
             Optional<String> key = test(iparseUntilLiteral('=')).map(String::strip);
             parseLiteral('=');
-            Optional<String> value = test(iparseUntilLiteral('\n')).map(String::strip);
+            Optional<String> value = test(iparseUntilLiteral('\n', '#')).map(String::strip);
 
             if (key.isEmpty() && value.isEmpty()) error("");
             if (key.isEmpty() || value.isEmpty())
@@ -72,6 +79,15 @@ public class MapParser extends TextParser {
             return Tuple.of(key.get(), value.get());
         })));
     }
+
+    private List<String> parseIncludes() {
+        return many(iTry(() -> {
+            many(() -> choose(this::parseEmptyLine, this::parseComment));
+            parseStringLiteral("$include ");
+            return parseUntilLiteral('\n', '#').strip();
+        }));
+    }
+
     private List<Pair<Long, List<SpawnFrame>>>  parseTimeFrames() {
         many(() -> choose(this::parseEmptyLine, this::parseComment));
 

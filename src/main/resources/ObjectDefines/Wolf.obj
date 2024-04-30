@@ -1,0 +1,29 @@
+$Wolf_gif=wolf.gif
+
+$Animation = Define Animation:
+    State: MOVING $Wolf_gif
+
+$Stats = Define Stats:
+    HP: 150.0
+    Speed: 50.0
+    Damage: 20.0
+    resistance: 0.0
+    scale: 7.0
+
+$Shape = Define Shape:
+    Type: Circle
+    Radius: 4.0
+
+$Structure = Define Structure:
+    Filter: ENEMY PLAYER WEAPON
+    Category: ENEMY
+    Shape: $Shape
+    BodyType: DynamicBody
+    density: 2.0
+    friction: 0
+    isSensor: false
+
+$WOLF = Define Actor:
+    Animation: $Animation
+    Stats: $Stats
+    Structure: $Structure

@@ -1,21 +1,5 @@
 package Simulation;
 
-import Contexts.ReleaseCandidateContext;
-import GameObjects.Actors.Actor;
-import Simulation.Coordinates.SwarmCoordinates;
-import GameObjects.Actors.ActorAction.ActorAction;
-import GameObjects.ObjectTypes.SwarmType;
-import GameObjects.Pool.ObjectPool;
-import com.badlogic.gdx.math.Vector2;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static Contexts.ReleaseCandidateContext.DE_SPAWN_RECT;
-import static GameObjects.Actors.ActorAction.KilledAction.destroyIfDefeated;
-import static GameObjects.Actors.ActorAction.OutOfBoundsActions.deSpawnIfOutOfBounds;
-import static Simulation.Coordinates.SpawnCoordinates.randomSpawnPoint;
-
 public abstract class SpawnActions {
 
 //    public static Actor spawnEnemy(ObjectPool<Actor> enemyPool, Vector2 position, String enemyName, List<ActorAction> actions) {

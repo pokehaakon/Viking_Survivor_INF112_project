@@ -1,8 +1,7 @@
-package GameObjects.Actors.ActorAction;
+package GameObjects.Actors.ObjectActions;
 
-import GameObjects.Actors.Actor;
+import GameObjects.Actors.ObjectActions.Action;
 import InputProcessing.KeyStates;
-import com.badlogic.gdx.utils.TimeUtils;
 
 public abstract class PlayerActions {
 
@@ -12,7 +11,7 @@ public abstract class PlayerActions {
      * @return an action
      */
 
-    public static ActorAction moveToInput(KeyStates keyStates) {
+    public static Action moveToInput(KeyStates keyStates) {
         return (player) -> {
 
             var vel = player.getBody().getLinearVelocity();

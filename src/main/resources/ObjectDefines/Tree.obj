@@ -1,0 +1,20 @@
+$Animation = Define Animation:
+    State: MOVING tree.png
+
+$Shape = Define Shape:
+    Type: Circle
+    Radius: 1.0
+
+$Structure = Define Structure:
+    Filter: WALL
+    Category: ENEMY PLAYER
+    Shape: $Shape
+    BodyType: StaticBody
+    density: 1
+    friction: 1
+    isSensor: false
+
+$TREE = Define Object:
+    Animation: $Animation
+    Scale: 2.0
+    Structure: $Structure

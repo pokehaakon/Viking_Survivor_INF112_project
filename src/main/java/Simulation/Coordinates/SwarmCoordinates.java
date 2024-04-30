@@ -1,7 +1,7 @@
 package Simulation.Coordinates;
 
 import GameObjects.Actors.Actor;
-import GameObjects.Actors.ActorAction.ActorAction;
+import GameObjects.Actors.ObjectActions.Action;
 import GameObjects.ObjectTypes.SwarmType;
 import Tools.Tuple;
 import com.badlogic.gdx.math.Vector2;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import static Simulation.Coordinates.SpawnCoordinates.randomSpawnPoint;
-import static GameObjects.Actors.ActorAction.MovementActions.moveInStraightLine;
+import static GameObjects.Actors.ObjectActions.MovementActions.moveInStraightLine;
 import static Tools.Tuple.zip;
 
 public abstract class SwarmCoordinates {
@@ -137,7 +137,7 @@ public abstract class SwarmCoordinates {
         return swarmMembers;
     }
 
-    public static Pair<Supplier<ActorAction>, Supplier<Vector2>> swarmInitializerPair(SwarmType swarmType, int size, Vector2 center, double spawnRadius, float spacing, float speedMultiplier) {
+    public static Pair<Supplier<Action>, Supplier<Vector2>> swarmInitializerPair(SwarmType swarmType, int size, Vector2 center, double spawnRadius, float spacing, float speedMultiplier) {
         Vector2 startPoint = randomSpawnPoint(center, spawnRadius);
         List<Vector2> swarmCoordinates = getSwarmCoordinates(startPoint, swarmType, size, spacing, center);
         Vector2 swarmDirection = SwarmCoordinates.swarmDirection(center, swarmType, swarmCoordinates);

@@ -4,7 +4,7 @@ import GameObjects.Actors.Stats.StatsConstants;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
 
 import Rendering.Animations.AnimationState;
-import GameObjects.Actors.ActorAction.ActorAction;
+import GameObjects.Actors.ObjectActions.Action;
 import GameObjects.BodyFeatures;
 import GameObjects.GameObject;
 
@@ -16,8 +16,8 @@ public class Actor extends GameObject implements IActor {
     private float damage;
     private float resistance;
 
-    protected final List<ActorAction> actions;
-    protected final List<ActorAction> dieActions;
+    protected final List<Action> actions;
+    protected final List<Action> dieActions;
     private boolean underAttack = false;
 
     private final Map<Integer, Long> hitByIDs;
@@ -37,15 +37,15 @@ public class Actor extends GameObject implements IActor {
 
 
     @Override
-    public void addAction(ActorAction action) {
+    public void addAction(Action action) {
         actions.add(action);
     }
     @Override
-    public void addAction(ActorAction... actions) {
+    public void addAction(Action... actions) {
         this.actions.addAll(List.of(actions));
     }
     @Override
-    public void addAction(Collection<ActorAction> actions) {
+    public void addAction(Collection<Action> actions) {
         this.actions.addAll(actions);
     }
 
@@ -134,6 +134,8 @@ public class Actor extends GameObject implements IActor {
      */
     public void kill() {
         if (isDestroyed()) return;
+        for (var a : dieActions)
+            a.act(this);
         destroy();
         resetActions();
         // resetDieActions();

@@ -1,0 +1,29 @@
+
+
+$Animation = Define Animation:
+    State: MOVING knife.gif
+
+$Stats = Define Stats:
+    HP: 0
+    Speed: 100.0
+    Damage: 10.0
+    resistance: 0.0
+    scale: 1.8
+
+$Shape = Define Shape:
+    Type: Circle
+    Radius: 1.0
+
+$Structure = Define Structure:
+    Filter: ENEMY
+    Category: WEAPON
+    Shape: $Shape
+    BodyType: DynamicBody
+    density: 1
+    friction: 0
+    isSensor: true
+
+$AXE = Define Actor:
+    Animation: $Animation
+    Stats: $Stats
+    Structure: $Structure
