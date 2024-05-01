@@ -54,7 +54,7 @@ public final class ObjectPool<T extends Poolable> implements IPool<T> {
     }
 
     /**
-     * Polls GameObjects from the object pool and activate their bodies
+     * Pulls Poolables from the object pool
      * @param name desired object type
      * @param num number of objects to obtain
      * @return a list of GameObjects
@@ -66,7 +66,7 @@ public final class ObjectPool<T extends Poolable> implements IPool<T> {
     }
 
     /**
-     * Returns object to object pool, deactivates their bodies and resets its destroyed-tag. Ready to be spawned again.
+     * Returns object to object pool
      * @param object the object to return
      */
     @Override

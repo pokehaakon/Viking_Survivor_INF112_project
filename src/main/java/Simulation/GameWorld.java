@@ -34,11 +34,11 @@ public class GameWorld implements Disposable {
 
     private final SpawnHandlerFactory handlerFactory;
 
-    private final ObjectPool<Actor> actorPool;
-    private final ObjectPool<GameObject> objectPool;
-
-    private final List<Actor> activeActors;
-    private final List<GameObject> activeObjects;
+//    private final ObjectPool<Actor> actorPool;
+//    private final ObjectPool<GameObject> objectPool;
+//
+//    private final List<Actor> activeActors;
+//    private final List<GameObject> activeObjects;
     public final Actor player;
 
     public GameWorld(
@@ -52,10 +52,10 @@ public class GameWorld implements Disposable {
             throw new RuntimeException("world definition file needs ending '.wdef', got : " + worldDef);
         }
 
-        this.actorPool = actorPool;
-        this.objectPool = objectPool;
-        this.activeActors = activeActors;
-        this.activeObjects = activeObjects;
+//        this.actorPool = actorPool;
+//        this.objectPool = objectPool;
+//        this.activeActors = activeActors;
+//        this.activeObjects = activeObjects;
 
         MapParser mapParser = new MapParser(worldDef);
 

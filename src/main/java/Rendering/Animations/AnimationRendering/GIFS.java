@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.google.common.annotations.VisibleForTesting;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
@@ -74,7 +75,8 @@ public abstract class GIFS {
         gifPairMap.clear();
     }
 
-    private record GifPairImplementation(Animation<TextureRegion> left, Animation<TextureRegion> right) implements GifPair {
+    @VisibleForTesting
+    protected record GifPairImplementation(Animation<TextureRegion> left, Animation<TextureRegion> right) implements GifPair {
         static GifPair of(Animation<TextureRegion> left) {
             Object[] keyFrames = left.getKeyFrames();
             TextureRegion[] textureRegions = new TextureRegion[keyFrames.length];

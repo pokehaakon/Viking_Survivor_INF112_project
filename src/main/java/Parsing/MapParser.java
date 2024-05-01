@@ -65,6 +65,8 @@ public class MapParser extends TextParser {
         return defines;
     }
 
+    public List<String> getIncludes() {return includes;}
+
     private Map<String, String> parseDefines() {
         return mapFromPairs(many(iTry(() -> {
             many(() -> choose(this::parseEmptyLine, this::parseComment));

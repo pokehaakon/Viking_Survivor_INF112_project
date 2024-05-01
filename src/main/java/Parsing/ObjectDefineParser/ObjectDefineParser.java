@@ -55,11 +55,11 @@ public class ObjectDefineParser extends TextParser {
         parseStringLiteral("    ", "\n");
     }
 
-    private Optional<Variable> lookup(String varName) {
-        //varName = varName.replace("$", "");
-        if (variables.containsKey(varName)) return Optional.of(variables.get(varName));
-        return Optional.empty();
-    }
+//    private Optional<Variable> lookup(String varName) {
+//        //varName = varName.replace("$", "");
+//        if (variables.containsKey(varName)) return Optional.of(variables.get(varName));
+//        return Optional.empty();
+//    }
 
     private <C> Optional<C> lookup(String varName, Class<C> cls) {
         //varName = varName.replace("$", "");

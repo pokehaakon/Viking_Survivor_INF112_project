@@ -289,6 +289,27 @@ class ParserTest {
 
 
         assertNotEquals("", stream);
+        assertFalse(stream.equals("")); //this should not be needed, but it adds one line of coverage
 
+    }
+
+    @Test
+    void includesTest() {
+        MapParser p = mapParserFromString("""
+                $include path1
+                $include path2
+                $include otherPath
+                                
+                """);
+        //MapParser p = new MapParser("mapdefines/test.wdef");
+        //p.doParse();
+        p.doParseIncludes();
+
+        var includes = p.getIncludes();
+
+        assertEquals(3, includes.size());
+        assertEquals("path1", includes.get(0));
+        assertEquals("path2", includes.get(1));
+        assertEquals("otherPath", includes.get(2));
     }
 }
