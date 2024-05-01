@@ -10,6 +10,8 @@ import org.apache.maven.surefire.shared.lang3.NotImplementedException;
 import java.util.*;
 import java.util.function.Supplier;
 
+import static VikingSurvivor.app.HelloWorld.SET_FPS;
+
 public interface IActor {
 
     /**
@@ -107,5 +109,20 @@ public interface IActor {
      * Destroyes and kills the enemy
      */
    void kill();
+
+
+    /**
+     * Starts the cool down by setting the cooldown duration and setting the cooldown boolean to true
+     * @param duration cooldown duration (in milliseconds)
+     */
+   void startCoolDown(long duration);
+
+
+    /**
+     *
+     * @return true if actor is in cool down, false otherwise
+     */
+    boolean isInCoolDown();
+
 
 }

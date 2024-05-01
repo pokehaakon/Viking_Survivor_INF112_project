@@ -56,14 +56,17 @@ public abstract class KilledAction {
     public static Action coolDown(double coolDownDuration, Color color) {
         long frameInterval = (long) (coolDownDuration * SET_FPS /1000);
         AtomicLong framesSinceStart = new AtomicLong(0);
-        return (actor) -> {
-            if(!actor.isUnderAttack())return;
 
-            if(framesSinceStart.getAndIncrement() >= frameInterval) {
-                framesSinceStart.set(0);
-                actor.setUnderAttack(false);
+        return (actor) -> {
+            if (actor.isUnderAttack()) {
                 actor.getAnimationHandler().setDrawColor(color);
-                actor.getHitByIDs().clear();
+                if (framesSinceStart.getAndIncrement() >= frameInterval) {
+                    framesSinceStart.set(0);
+
+                    actor.getAnimationHandler().setDrawColor(Color.WHITE);
+                    actor.getHitByIDs().clear();
+                    //actor.getAnimationHandler().setDrawColor(Color.WHITE);
+                }
             }
         };
     }

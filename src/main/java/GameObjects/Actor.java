@@ -3,8 +3,12 @@ package GameObjects;
 import GameObjects.ObjectActions.Action;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
 import Rendering.Animations.AnimationState;
+import com.badlogic.gdx.graphics.Color;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
 public class Actor extends GameObject implements IActor {
     private float speed;
@@ -12,6 +16,9 @@ public class Actor extends GameObject implements IActor {
     private float damage;
     private float resistance;
 
+    private boolean inCoolDown = false;
+
+    private long coolDownDuration;
     private boolean isUnderAttack;
     protected final List<Action> actions;
     protected final List<Action> dieActions;
@@ -57,6 +64,15 @@ public class Actor extends GameObject implements IActor {
             hitByIDs.put(key, hitByIDs.get(key) - 1);
             if (hitByIDs.get(key) > 0) continue;
             iter.remove();
+        }
+
+        if(inCoolDown) {
+            animationHandler.setDrawColor(Color.RED);
+            coolDownDuration--;
+            if(coolDownDuration <= 0) {
+                inCoolDown = false;
+                animationHandler.setDrawColor(Color.WHITE);
+            }
         }
 
 
@@ -105,21 +121,24 @@ public class Actor extends GameObject implements IActor {
     public float getResistance() {return resistance;}
     public void setResistance(float armour) {this.resistance = armour;}
 
+    @Override
+    public void startCoolDown(long duration) {
+        coolDownDuration = (duration*SET_FPS / 1000);
+        inCoolDown = true;
+    }
 
     @Override
     public void attack(Actor actor) {
+
         actor.hitByIDs.put(this.getID(), 30L);
-        actor.setUnderAttack(true);
         actor.HP -= damage;
     }
 
-    public void setUnderAttack(boolean bool) {
-        isUnderAttack = bool;
-    }
 
-    //public void setUnderAttack(boolean bool) {
-        //isUnderAttack = bool;
-    //}
+    @Override
+    public boolean isInCoolDown() {
+        return inCoolDown;
+    }
 
     @Override
     public boolean attackedBy(Actor actor) {
@@ -133,9 +152,8 @@ public class Actor extends GameObject implements IActor {
     @Override
     public boolean isUnderAttack() {
 
-        //return !hitByIDs.isEmpty();
+        return !hitByIDs.isEmpty();
 
-        return isUnderAttack;
     }
 
 
@@ -171,6 +189,12 @@ public class Actor extends GameObject implements IActor {
         for (var a : dieActions)
             a.act(this);
         destroy();
+
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
         resetActions();
         resetDieActions();
         hitByIDs.clear();

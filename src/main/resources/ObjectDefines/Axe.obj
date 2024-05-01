@@ -8,11 +8,11 @@ $Stats = Define Stats:
     Speed: 100.0
     Damage: 10.0
     resistance: 0.0
-    scale: 1.8
+    scale: 4
 
 $Shape = Define Shape:
     Type: Circle
-    Radius: 1.0
+    Radius: 4
 
 $Structure = Define Structure:
     Filter: ENEMY

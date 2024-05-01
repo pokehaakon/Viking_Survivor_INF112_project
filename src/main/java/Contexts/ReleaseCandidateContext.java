@@ -237,11 +237,11 @@ public class ReleaseCandidateContext extends Context {
         }
 
         for(Actor enemy : drawableEnemies) {
-            if(enemy.isUnderAttack()) {
-                batch.setColor(Color.RED);
-            }
+//            if(enemy.isUnderAttack()) {
+//                batch.setColor(Color.RED);
+//            }
             enemy.draw(batch, frameCount);
-            batch.setColor(Color.WHITE);
+           // batch.setColor(Color.WHITE);
 
         }
 

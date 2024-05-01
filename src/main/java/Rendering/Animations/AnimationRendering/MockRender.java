@@ -2,6 +2,7 @@ package Rendering.Animations.AnimationRendering;
 
 import GameObjects.GameObject;
 import Rendering.Animations.AnimationState;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class MockRender implements AnimationRender {
@@ -32,6 +33,16 @@ public class MockRender implements AnimationRender {
 
     @Override
     public void rotate(float rotationSpeed){
+
+    }
+
+    @Override
+    public void stopRotation() {
+
+    }
+
+    @Override
+    public void setDrawColor(Color color) {
 
     }
 

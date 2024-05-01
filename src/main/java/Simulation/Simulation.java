@@ -10,6 +10,7 @@ import Simulation.Coordinates.SpawnCoordinates;
 import Tools.FilterTool;
 import Tools.Pool.ObjectPool;
 import Tools.RollingSum;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -112,8 +113,7 @@ public class Simulation implements Runnable {
                 spawnTerrain("TREE");
                 spawnEnemies("ORC",10,
                         chaseActor(player),
-                        spawnPickups(1,"HP_PICKUP", tempPickups,context.getActorPool(),giveHP(player,10), setOrbitSpeed(5000,0.4f)),destroyIfDefeated(),
-                        coolDown(500));
+                        spawnPickups(1,"HP_PICKUP", tempPickups,context.getActorPool(),giveHP(player,10), setOrbitSpeed(5000,0.4f)),destroyIfDefeated());
             }
 
             if (frame == 10) {

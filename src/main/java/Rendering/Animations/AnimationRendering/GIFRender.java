@@ -36,10 +36,8 @@ public class GIFRender implements AnimationRender {
 
     @Override
     public void draw(SpriteBatch batch, long frame, GameObject object) {
-        if(changeDrawColor) {
-            batch.setColor(drawColor);
-            changeDrawColor = false;
-        }
+        batch.setColor(drawColor);
+
 
         float elapsedTime = (float) frame / SET_FPS;
         currentGIF = animationMovement.get(state);
@@ -141,17 +139,9 @@ public class GIFRender implements AnimationRender {
         public void setDrawColor(Color color) {
             if(!drawColor.equals(color)) {
                 drawColor = color;
-                changeDrawColor = true;
             }
 
-
-            }
-
-
-
-
-
-
+        }
 
 
 
