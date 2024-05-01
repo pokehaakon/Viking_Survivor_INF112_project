@@ -171,6 +171,8 @@ public class Simulation implements Runnable {
 
 
     private void spawnTerrain(String TerrainName) {
+        List<Vector2> occupiedSpawns =  SpawnCoordinates.getOccupiedPositions(objects);
+        List<Vector2> availableSpawns = SpawnCoordinates.availableSpawn()
         GameObject terrain = context.getObjectPool().get(TerrainName);
         terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
         context.getDrawableObjects().add(terrain);

@@ -14,6 +14,7 @@ import static GameObjects.ObjectActions.MovementActions.moveInStraightLine;
 import static Simulation.Coordinates.SpawnCoordinates.randomSpawnPoint;
 import static Tools.Tuple.zip;
 
+
 public abstract class SwarmCoordinates {
 
     /**
@@ -145,5 +146,7 @@ public abstract class SwarmCoordinates {
 
         return Tuple.of(() -> action, iter::next);
     }
+
+
 
 }
