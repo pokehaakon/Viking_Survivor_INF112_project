@@ -1,5 +1,6 @@
 package Contexts;
 
+import GameMap.GameMap;
 import GameObjects.Actors.ActorAction.WeaponActions;
 import GameObjects.Actors.Enemy;
 import GameObjects.Actors.Pickups;
@@ -31,16 +32,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.MapObjects;
-import com.badlogic.gdx.maps.objects.PolygonMapObject;
-import com.badlogic.gdx.maps.objects.PolylineMapObject;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -63,6 +54,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.getBottomLeftCorrection;
 import static VikingSurvivor.app.Main.SCREEN_WIDTH;
+
+import Camera.TargetCamera;
 
 public class ReleaseCandidateContext extends Context {
 
@@ -148,11 +141,8 @@ public class ReleaseCandidateContext extends Context {
 
     boolean gameOver = false;
 
-    private TiledMap map;
-    private OrthogonalTiledMapRenderer tiledMapRenderer;
     private float tiledMapScale = 1f;
-
-
+    private GameMap gMap;
 
 
 
@@ -161,6 +151,7 @@ public class ReleaseCandidateContext extends Context {
 
         this.batch = batch;
         this.camera = camera;
+
 
         level = 0;
         xpAmount = 0;
@@ -272,21 +263,6 @@ public class ReleaseCandidateContext extends Context {
 
     }
 
-    private void updateCamera(Vector2 player, int viewportWidth, int viewportHeight, TiledMap map, float tiledMapScale) {
-        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
-        float mapHeight = layer.getHeight() * layer.getTileHeight() * tiledMapScale;
-        float mapWidth = layer.getWidth() * layer.getTileWidth() * tiledMapScale;
-
-        if(player.x < viewportWidth / 2) camera.position.x = viewportWidth / 2;
-        else if(player.x > mapWidth - viewportWidth / 2) camera.position.x = mapWidth - viewportWidth / 2;
-        else camera.position.x = player.x;
-
-        if(player.y < viewportHeight / 2) camera.position.y = viewportHeight / 2;
-        else if(player.y > mapHeight - viewportHeight / 2) camera.position.y = mapHeight - viewportHeight / 2;
-        else camera.position.y = player.y;
-
-        camera.update();
-    }
 
     @Override
     public void render(float delta) {
@@ -299,14 +275,11 @@ public class ReleaseCandidateContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.GREEN);
 
-        this.tiledMapRenderer = new OrthogonalTiledMapRenderer(map, tiledMapScale);
-        tiledMapRenderer.setView((OrthographicCamera) camera);
-        tiledMapRenderer.render();
-
+        gMap.renderTiledMap((OrthographicCamera) camera);
 
         debugRenderer.render(world, camera.combined);
 
-        updateCamera(player.getBody().getPosition(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), map, tiledMapScale);
+        TargetCamera.updateCamera(player.getBody().getPosition(), camera, gMap.getTiledMap(), tiledMapScale);
 
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
@@ -455,57 +428,6 @@ public class ReleaseCandidateContext extends Context {
 
     }
 
-    private Vector2 getMiddleOfMapPosition(TiledMap map, float scale) {
-        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
-        int tileWidth = layer.getTileWidth(); // width of a tile in pixels
-        int tileHeight = layer.getTileHeight(); // height of a tile in pixels
-        int mapWidth = layer.getWidth(); // width of the tilemap in tiles
-        int mapHeight = layer.getHeight(); // height of the tilemap in tiles
-
-        return new Vector2(mapWidth * tileWidth * scale / 2f, mapHeight * tileHeight * scale / 2f);
-    }
-
-    private float[] createPolyLine(PolygonMapObject polygon) {
-        for(float juice : polygon.getPolygon().getTransformedVertices()) System.out.println(juice);
-        float[] points = polygon.getPolygon().getTransformedVertices();
-        float[] newPoints = new float[points.length + 2];
-        newPoints[0] = 0.0f;
-        newPoints[1] = 0.0f;
-
-        for (int i = 0; i < points.length; i++) {
-            newPoints[i + 2] = points[i];
-        }
-        return newPoints;
-    }
-
-    private void createMapObjects(String objectLayerName, World world) {
-        MapLayer layer = map.getLayers().get(objectLayerName);
-
-        for(MapObject object : layer.getObjects()) {
-
-            // create the shape
-            ChainShape shape = new ChainShape();
-            shape.createChain(createPolyLine((PolygonMapObject) object));
-
-            BodyTool.createBody(
-                    world,
-                    new Vector2(),
-                    shape,
-                    createFilter(
-                            FilterTool.Category.WALL,
-                            new FilterTool.Category[] {
-                                    FilterTool.Category.PLAYER
-                            }
-                    ),
-                    1f,
-                    0f,
-                    0f,
-                    false,
-                    BodyDef.BodyType.StaticBody
-            );
-        }
-    }
-
     private void createWorld() {
         // sets up world
         animationLibrary = new AnimationLibrary();
@@ -513,9 +435,8 @@ public class ReleaseCandidateContext extends Context {
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
 
-        map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
-
-        createMapObjects("area", world);
+        this.gMap = new GameMap("assets/damaged_roads_map.tmx", tiledMapScale);
+        gMap.createMapBorder(world);
 
         enemyFactory = new EnemyFactory();
         drawableEnemies = new ArrayList<>();
@@ -532,7 +453,8 @@ public class ReleaseCandidateContext extends Context {
 
         player = playerFactory.create(PlayerType.PLAYER1);
         player.addToWorld(world);
-        player.setPosition(getMiddleOfMapPosition(map, tiledMapScale));
+//        player.setPosition(getMiddleOfMapPosition(map, tiledMapScale));
+        player.setPosition(gMap.getMiddleOfMapPosition());
         player.setAction(PlayerActions.moveToInput(keyStates));
         player.setAction(PlayerActions.coolDown(500));
 
