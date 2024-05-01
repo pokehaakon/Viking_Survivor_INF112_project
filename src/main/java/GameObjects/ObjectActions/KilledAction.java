@@ -2,8 +2,13 @@ package GameObjects.ObjectActions;
 
 import GameObjects.Actor;
 import Tools.Pool.ObjectPool;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
 public abstract class KilledAction {
 
@@ -39,6 +44,26 @@ public abstract class KilledAction {
             pickups.add(pickup);
 
         });
+    }
+
+    /**
+     * If the actor is under attack, set a cool down period.
+     * @param coolDownDuration in milliseconds
+     //@param color color the object during the cool down. Default is white
+     * @return an actor action object
+     */
+    public static Action coolDown(double coolDownDuration) {
+        long frameInterval = (long) (coolDownDuration * SET_FPS /1000);
+        AtomicLong framesSinceStart = new AtomicLong(0);
+        return (actor) -> {
+            if(!actor.isUnderAttack())return;
+
+            if(framesSinceStart.getAndIncrement() >= frameInterval) {
+                actor.setUnderAttack(false);
+                framesSinceStart.set(0);
+                actor.getHitByIDs().clear();
+            }
+        };
     }
 
 

@@ -9,6 +9,7 @@ import InputProcessing.KeyStates;
 import Simulation.Coordinates.SpawnCoordinates;
 import Tools.Pool.ObjectPool;
 import Tools.RollingSum;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -16,8 +17,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 
-import static GameObjects.ObjectActions.KilledAction.destroyIfDefeated;
-import static GameObjects.ObjectActions.KilledAction.spawnPickups;
+import static GameObjects.ObjectActions.KilledAction.*;
 import static GameObjects.ObjectActions.MovementActions.chaseActor;
 import static GameObjects.ObjectActions.PickupActions.giveHP;
 import static GameObjects.ObjectActions.PickupActions.setOrbitSpeed;
@@ -101,18 +101,18 @@ public class Simulation implements Runnable {
 
 
             // random spawning for now
-            if (TimeUtils.millis() - lastSpawnTime > 5000) {
+            if (TimeUtils.millis() - lastSpawnTime > 10000) {
                 //spawnRandomEnemies(5,Arrays.asList(ActorActions.destroyIfDefeated(player),ActorActions.chasePlayer(player), coolDown(500)));
                 spawnTerrain("TREE");
                 spawnEnemies("RAVEN",10,
                         chaseActor(player),
-                        spawnPickups(1,"HP_PICKUP",spawnedPickups,context.getActorPool(),giveHP(player,10), setOrbitSpeed(5000,0.4f)),destroyIfDefeated()
-                        );
+                        spawnPickups(1,"HP_PICKUP",spawnedPickups,context.getActorPool(),giveHP(player,10), setOrbitSpeed(5000,0.4f)),destroyIfDefeated(),
+                        coolDown(500));
             }
 
             if (frame == 10) {
-                var a = actorPool.get("KNIFE");
-                a.addAction(WeaponActions.throwOnClosestEnemy(player,500,actors));
+                Actor a = actorPool.get("KNIFE");
+                a.addAction(WeaponActions.throwAtClosestEnemy(player,1000,actors, new Vector2(200,200)));
                 //a.addAction(WeaponActions.orbitActor(10,  player, 0, 0));
                 actors.add(a);
             }

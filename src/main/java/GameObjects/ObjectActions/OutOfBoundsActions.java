@@ -9,13 +9,7 @@ public abstract class OutOfBoundsActions {
 
     static private Action doIfOutOfBounds(Actor centerActor, Vector2 boundSquare, Action action) {
         return (Actor a) -> {
-            Vector2 dxdy = centerActor
-                    .getBody()
-                    .getPosition()
-                    .cpy()
-                    .sub(a.getBody().getPosition());
-
-            if (Math.abs(dxdy.x) > boundSquare.x / 2 || Math.abs(dxdy.y) > boundSquare.y / 2) {
+            if(a.outOfBounds(centerActor,boundSquare)) {
                 action.act(a);
             }
         };

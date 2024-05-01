@@ -132,6 +132,7 @@ public class Actor extends GameObject implements IActor {
     }
 
 
+
     private void updateDirectionState() {
         float vx = getBody().getLinearVelocity().x;
         if (vx == 0) return;
@@ -142,6 +143,7 @@ public class Actor extends GameObject implements IActor {
     public void revive() {
         super.revive();
         HP = stats.HP;
+        isUnderAttack = false;
 
     }
 
@@ -164,6 +166,11 @@ public class Actor extends GameObject implements IActor {
         destroy();
         resetActions();
         resetDieActions();
+        hitByIDs.clear();
+    }
+
+    public Map<Integer, Long> getHitByIDs() {
+        return hitByIDs;
     }
 
 

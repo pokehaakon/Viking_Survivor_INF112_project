@@ -112,38 +112,48 @@ public abstract class WeaponActions {
         return closestEnemy;
     }
 
+    private static boolean attackedByWeapon(Actor weapon, List<Actor> actors) {
+        for(Actor actor : actors) {
+            if((actor.attackedBy(weapon))) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
-    public static Action throwOnClosestEnemy(Actor actor, double interval, List<Actor> enemies) {
+
+    public static Action throwAtClosestEnemy(Actor actor, double interval, List<Actor> enemies, Vector2 boundSquare) {
         long frameInterval = (long) (interval * SET_FPS / 1000);
-        AtomicLong framesSinceLastThrow = new AtomicLong(frameInterval);
-        AtomicDouble attack = new AtomicDouble(1);
-        return (weapon) -> {
+        AtomicLong framesSinceLastThrow = new AtomicLong(0);
 
-            if (framesSinceLastThrow.getAndIncrement() >= frameInterval && attack.get()==1 ) {
-                attack.set(0);
-                closestEnemy = getClosestEnemy(actor,enemies);
-                System.out.println(closestEnemy.getBody().getPosition());
+        return (weapon) -> {;
+            if (framesSinceLastThrow.getAndIncrement() <= 0 ) {
+                if(!weapon.getBody().isActive()) {
+                    weapon.getBody().setActive(true);
+                }
+
+                Actor closestEnemy = getClosestEnemy(actor,enemies);
                 weapon.setPosition(actor.getBody().getPosition());
+
                 var vel = weapon.getBody().getLinearVelocity();
                 vel
                         .set(closestEnemy.getBody().getPosition())
                         .sub(weapon.getBody().getWorldCenter())
-                        .setLength(actor.getSpeed()+30);
+                        .setLength(weapon.getSpeed());
+
                 weapon.getBody().setLinearVelocity(vel);
             }
 
-            if(closestEnemy.isUnderAttack() && closestEnemy.attackedBy(weapon)) {
-                System.out.println("YEAH");
-                framesSinceLastThrow.set(0);
-                attack.set(1);
-                weapon.setPosition(actor.getBody().getPosition());
 
+            if(weapon.outOfBounds(actor,boundSquare) || attackedByWeapon(weapon,enemies)) {
+                framesSinceLastThrow.set(-frameInterval);
+                weapon.setPosition(actor.getBody().getPosition());
+                weapon.getBody().setActive(false);
             }
 
-//            if(framesSinceLastThrow.getAndIncrement() >= frameInterval) {
-//                framesSinceLastThrow.set(0);
-//            }
+
+//
 
         };
     }
