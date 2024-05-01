@@ -12,14 +12,15 @@ public class Actor extends GameObject implements IActor {
     private float damage;
     private float resistance;
 
+    private boolean isUnderAttack;
     protected final List<Action> actions;
     protected final List<Action> dieActions;
 
     private final Map<Integer, Long> hitByIDs;
-
+    private StatsConstants.Stats stats;
     public Actor(String type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, StatsConstants.Stats stats) {
         super(type, animationHandler, bodyFeatures);
-
+        this.stats = stats;
         speed = stats.SPEED;
         HP = stats.HP;
         damage = stats.DAMAGE;
@@ -107,23 +108,27 @@ public class Actor extends GameObject implements IActor {
 
     @Override
     public void attack(Actor actor) {
-        //if(actor.attackedBy(this)) return;
-        // TODO add attack action
+        actor.hitByIDs.put(this.getID(), 30L);
+        actor.setUnderAttack(true);
         actor.HP -= damage;
+    }
+
+    public void setUnderAttack(boolean bool) {
+        isUnderAttack = bool;
     }
 
     @Override
     public boolean attackedBy(Actor actor) {
-        if (hitByIDs.containsKey(actor.getID())) return false;
-        hitByIDs.put(actor.getID(), 30L);
+
+        return hitByIDs.containsKey(actor.getID());
+
         // TODO change coolDowns from constant 30 to
         // something like actor.getAttackCoolDown * this.coolDownScalar
-        return true;
     }
 
     @Override
     public boolean isUnderAttack() {
-        return !hitByIDs.isEmpty();
+        return isUnderAttack;
     }
 
 
@@ -131,6 +136,13 @@ public class Actor extends GameObject implements IActor {
         float vx = getBody().getLinearVelocity().x;
         if (vx == 0) return;
         setMovingLeft(vx < 0);
+    }
+
+    @Override
+    public void revive() {
+        super.revive();
+        HP = stats.HP;
+
     }
 
     private void updateAnimationState() {

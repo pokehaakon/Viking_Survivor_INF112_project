@@ -12,7 +12,6 @@ import Tools.RollingSum;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
@@ -21,6 +20,7 @@ import static GameObjects.ObjectActions.KilledAction.destroyIfDefeated;
 import static GameObjects.ObjectActions.KilledAction.spawnPickups;
 import static GameObjects.ObjectActions.MovementActions.chaseActor;
 import static GameObjects.ObjectActions.PickupActions.giveHP;
+import static GameObjects.ObjectActions.PickupActions.setOrbitSpeed;
 import static Tools.ListTools.removeDestroyed;
 
 public class Simulation implements Runnable {
@@ -41,6 +41,7 @@ public class Simulation implements Runnable {
     private final AtomicLong synchronizer;
     private final GameWorld gameWorld;
 
+
     private boolean quit = false;
     private boolean paused = false;
     private long frame = 0;
@@ -48,7 +49,11 @@ public class Simulation implements Runnable {
     //temp
     private long lastSpawnTime;
 
+
+
     private List<Actor> spawnedPickups;
+
+    private List<Actor> drawableEnemies;
     public Simulation(ReleaseCandidateContext context) {
         this.context = context;
         renderLock = context.getRenderLock();
@@ -66,6 +71,8 @@ public class Simulation implements Runnable {
         gameWorld = context.getGameWorld();
 
         spawnedPickups = context.getPickup();
+
+        drawableEnemies = context.getDrawableEnemies();
     }
 
     @Override
@@ -90,6 +97,8 @@ public class Simulation implements Runnable {
 
             for (Actor actor : actors) actor.doAction();
 
+            for(Actor enemy:drawableEnemies) enemy.doAction();
+
 
             // random spawning for now
             if (TimeUtils.millis() - lastSpawnTime > 5000) {
@@ -97,13 +106,14 @@ public class Simulation implements Runnable {
                 spawnTerrain("TREE");
                 spawnEnemies("RAVEN",10,
                         chaseActor(player),
-                        spawnPickups(1,"HP_PICKUP",spawnedPickups,context.getActorPool(),giveHP(player,10)),destroyIfDefeated()
+                        spawnPickups(1,"HP_PICKUP",spawnedPickups,context.getActorPool(),giveHP(player,10), setOrbitSpeed(5000,0.4f)),destroyIfDefeated()
                         );
             }
 
-            if (frame == 10 || frame == 10*60 || frame == 20*60) {
+            if (frame == 10) {
                 var a = actorPool.get("KNIFE");
-                a.addAction(WeaponActions.orbitActor(10, 0.1f, player, 0, 0));
+                a.addAction(WeaponActions.throwOnClosestEnemy(player,500,actors));
+                //a.addAction(WeaponActions.orbitActor(10,  player, 0, 0));
                 actors.add(a);
             }
 
@@ -157,6 +167,7 @@ public class Simulation implements Runnable {
         for(Actor enemy : context.getActorPool().get(type, n)) {
             enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), 200));
             enemy.addAction(actions);
+            //drawableEnemies.add(enemy);
             context.getDrawableActors().add(enemy);
             lastSpawnTime = TimeUtils.millis();
         }

@@ -70,6 +70,8 @@ public class ReleaseCandidateContext extends Context {
     private long startTime;
     private Table weaponTable;
     private KeyStates keyStates;
+
+    private List<Actor> drawableEnemies;
     private final Simulation sim;
     private final Thread simThread;
     private List<GameObject> drawableObjects;
@@ -215,7 +217,9 @@ public class ReleaseCandidateContext extends Context {
             if(actor.isUnderAttack()) {
                 batch.setColor(Color.RED);
             }
-            actor.draw(batch, frameCount);
+                actor.draw(batch, frameCount);
+
+
             batch.setColor(Color.WHITE);
             i++;
         }
@@ -230,6 +234,15 @@ public class ReleaseCandidateContext extends Context {
             if(i > 100) batch.flush();
             object.draw(batch, frameCount);
             i++;
+        }
+
+        for(Actor enemy : drawableEnemies) {
+            if(enemy.isUnderAttack()) {
+                batch.setColor(Color.RED);
+            }
+            enemy.draw(batch, frameCount);
+            batch.setColor(Color.WHITE);
+
         }
 
 
@@ -386,7 +399,7 @@ public class ReleaseCandidateContext extends Context {
 
         //map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
 
-
+        drawableEnemies = new ArrayList<>();
         drawableActors = new ArrayList<>();
         drawableObjects = new ArrayList<>();
         Function<String, GameObject> objectFactory = s -> {
@@ -556,6 +569,10 @@ public class ReleaseCandidateContext extends Context {
 
     public List<Actor> getPickup() {
         return pickup;
+    }
+
+    public List<Actor> getDrawableEnemies() {
+        return drawableEnemies;
     }
 
 }

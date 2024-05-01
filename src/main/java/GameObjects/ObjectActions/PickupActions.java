@@ -16,6 +16,23 @@ public class PickupActions {
     }
 
 
+    /**
+     * Change the orbit action for a set duration. After the duration is up, the action is reset to its default
+     * @param duration the duration of the action, in milliseconds
+
+
+
+
+     * @return a pickup action
+     */
+    public static Action setOrbitSpeed(long duration, float newSpeed) {
+        return (o) -> {
+            WeaponActions.setOrbitSpeed(newSpeed, duration);
+        };
+
+    }
+
+
     public static Action giveXP(int xp) {
         return p -> Simulation.EXP.addAndGet(xp);
     }

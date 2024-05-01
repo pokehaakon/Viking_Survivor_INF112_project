@@ -12,7 +12,7 @@ public class ObjectContactListener implements ContactListener {
     static final private short weaponAndEnemyMask = FilterTool.combineMaskEnums(WEAPON, ENEMY);
     static final private short playerAndPickupMask = FilterTool.combineMaskEnums(PLAYER, PICKUP);
 
-    static private boolean isInCategory(Body body, FilterTool.Category category) {
+    static public boolean isInCategory(Body body, FilterTool.Category category) {
         return (categoryBits(body) & category.getMask()) != 0;
     }
 
@@ -50,7 +50,7 @@ public class ObjectContactListener implements ContactListener {
      * @param b2 second body
      * @return true if collision occurs between weapon and enemy, false otherwise
      */
-    static private boolean weaponEnemyCollision(Body b1, Body b2) {
+    static public boolean weaponEnemyCollision(Body b1, Body b2) {
         return XYCollision(b1, b2, weaponAndEnemyMask);
     }
 
@@ -77,8 +77,7 @@ public class ObjectContactListener implements ContactListener {
         if (weaponEnemyCollision(b1, b2)) {
             Actor weapon = (Actor) getObjectWithCategory(b1, b2, WEAPON);
             Actor enemy = (Actor) getObjectWithCategory(b1, b2, ENEMY);
-            System.out.println(enemy.getHP());
-            System.out.println(weapon.getDamage());
+            System.out.println("WEAPON COLLLLL");
             weapon.attack(enemy);
             //enemy.underAttack = true;
             //System.out.println("WEAPON COLLISION");

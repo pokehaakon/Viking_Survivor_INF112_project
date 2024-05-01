@@ -49,4 +49,12 @@ public abstract class OutOfBoundsActions {
         );
     }
 
+    public static Action newPositionIfOutOfBounds(Vector2 pos,Actor centerActor, Vector2 boundSquare) {
+        return doIfOutOfBounds(
+                centerActor,
+                boundSquare,
+                (a) -> a.setPosition(pos)
+        );
+    }
+
 }
