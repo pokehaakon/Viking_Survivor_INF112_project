@@ -1,6 +1,7 @@
 package Rendering.Animations.AnimationRendering;
 
 import Rendering.Animations.AnimationState;
+import com.badlogic.gdx.graphics.Color;
 
 import java.util.Map;
 
@@ -54,9 +55,14 @@ public class AnimationHandler {
     }
 
     public void rotate(float rotationSpeed) {
-
         animationRender.rotate(rotationSpeed);
+    }
 
+    public void stopRotation() {
+        animationRender.stopRotation();
+    }
+    public void setDrawColor(Color color) {
+        animationRender.setDrawColor(color);
     }
     public AnimationState getAnimationState() {
         return animationState;

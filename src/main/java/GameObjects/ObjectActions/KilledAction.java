@@ -53,7 +53,7 @@ public abstract class KilledAction {
      //@param color color the object during the cool down. Default is white
      * @return an actor action object
      */
-    public static Action coolDown(double coolDownDuration) {
+    public static Action coolDown(double coolDownDuration, Color color) {
         long frameInterval = (long) (coolDownDuration * SET_FPS /1000);
         AtomicLong framesSinceStart = new AtomicLong(0);
         return (actor) -> {
@@ -62,6 +62,7 @@ public abstract class KilledAction {
             if(framesSinceStart.getAndIncrement() >= frameInterval) {
                 framesSinceStart.set(0);
                 actor.setUnderAttack(false);
+                actor.getAnimationHandler().setDrawColor(color);
                 actor.getHitByIDs().clear();
             }
         };

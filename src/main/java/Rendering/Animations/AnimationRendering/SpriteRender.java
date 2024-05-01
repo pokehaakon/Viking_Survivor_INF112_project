@@ -2,6 +2,7 @@ package Rendering.Animations.AnimationRendering;
 
 import GameObjects.GameObject;
 import Rendering.Animations.AnimationState;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -57,6 +58,16 @@ public class SpriteRender implements AnimationRender {
 
     @Override
     public void rotate(float rotationSpeed) {
+
+    }
+
+    @Override
+    public void stopRotation() {
+
+    }
+
+    @Override
+    public void setDrawColor(Color color) {
 
     }
 

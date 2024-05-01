@@ -23,6 +23,10 @@ public class GIFRender implements AnimationRender {
     private AnimationState state;
     private final float scale;
 
+    private boolean changeDrawColor = false;
+
+    private Color drawColor = Color.WHITE;
+
     protected GIFRender(Map<AnimationState, String> animationMovement, float scale) {
         //animationMovementTemp = animationMovement;
         getGifPairs(animationMovement);
@@ -32,6 +36,11 @@ public class GIFRender implements AnimationRender {
 
     @Override
     public void draw(SpriteBatch batch, long frame, GameObject object) {
+        if(changeDrawColor) {
+            batch.setColor(drawColor);
+            changeDrawColor = false;
+        }
+
         float elapsedTime = (float) frame / SET_FPS;
         currentGIF = animationMovement.get(state);
         if (currentGIF == null) return;
@@ -121,18 +130,22 @@ public class GIFRender implements AnimationRender {
 
         }
 
-//        @Override
-//        public void stopRotation() {
-//            rotation = 0;
-//            rotationSpeed = 0;
-//
-//        }
+        @Override
+        public void stopRotation() {
+            rotation = 0;
+            rotationSpeed = 0;
 
-//        @Override
-//        public void setDrawColor(Color color) {
-//            if(!drawColor.equals(color)) {
-//                drawColor = color;
-//            }
+        }
+
+        @Override
+        public void setDrawColor(Color color) {
+            if(!drawColor.equals(color)) {
+                drawColor = color;
+                changeDrawColor = true;
+            }
+
+
+            }
 
 
 
