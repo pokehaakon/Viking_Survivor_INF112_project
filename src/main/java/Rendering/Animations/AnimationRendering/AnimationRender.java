@@ -51,4 +51,6 @@ public interface AnimationRender {
      */
     float getHeight(AnimationState state);
 
+    void rotate(float rotationSpeed);
+
 }

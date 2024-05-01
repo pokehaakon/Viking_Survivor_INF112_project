@@ -118,8 +118,9 @@ public class Simulation implements Runnable {
 
             if (frame == 10) {
                 Actor a = actorPool.get("KNIFE");
-                a.addAction(WeaponActions.fireAtClosestEnemy(player,1000,actors, new Vector2(200,200)));
-                //a.addAction(WeaponActions.orbitActor(10,  player, 0, 0));
+                a.getAnimationHandler().rotate(20f);
+                //a.addAction(WeaponActions.fireAtClosestEnemy(player,1000,actors, new Vector2(200,200)));
+                a.addAction(WeaponActions.orbitActor(10,  player, 0, 0));
                 actors.add(a);
             }
 

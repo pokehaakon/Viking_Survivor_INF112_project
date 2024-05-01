@@ -2,6 +2,7 @@ package Rendering.Animations.AnimationRendering;
 
 import GameObjects.GameObject;
 import Rendering.Animations.AnimationState;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -17,7 +18,8 @@ public class GIFRender implements AnimationRender {
     private final Map<AnimationState, GifPair> animationMovement = new EnumMap<>(AnimationState.class);
 //    private Map<AnimationState, String> animationMovementTemp;
     private GifPair currentGIF;
-
+    private float rotation = 0;
+    private float rotationSpeed = 0;
     private AnimationState state;
     private final float scale;
 
@@ -40,14 +42,44 @@ public class GIFRender implements AnimationRender {
         float max = Math.max(regionRect.x, regionRect.y);
         max = regionRect.y;
         regionRect.scl(1/max * scale ); //* Main.PPM);
+
+        float originX = object.getBody().getPosition().x;
+        float originY = object.getBody().getPosition().y;
+
+        // Adjust origin to center of the TextureRegion
+        originX -= region.getRegionWidth() * 0.5f;
+        originY -= region.getRegionHeight() * 0.5f;
+
         batch.draw(
                 region,
-                object.getBody().getPosition().x - regionRect.x / 2,
-                object.getBody().getPosition().y - regionRect.y / 2,
+                object.getBody().getPosition().x - regionRect.x/2,
+                object.getBody().getPosition().y -regionRect.y/2,
+                regionRect.x/2,
+                regionRect.y/2,
                 regionRect.x,
-                regionRect.y
+                regionRect.y,
+                1,
+                1,
+                rotation
         );
+        rotation += rotationSpeed;
+
+        if(rotation >= 360) {
+            rotation = 0;
+        }
     }
+
+//        Vector2 regionRect = new Vector2(region.getRegionWidth(), region.getRegionHeight());
+//        float max = Math.max(regionRect.x, regionRect.y);
+//        max = regionRect.y;
+//        regionRect.scl(1/max * scale ); //* Main.PPM);
+//        batch.draw(
+//                region,
+//                object.getBody().getPosition().x - regionRect.x / 2,
+//                object.getBody().getPosition().y - regionRect.y / 2,
+//                regionRect.x,
+//                regionRect.y
+//        );
 
     @Override
     public void setAnimation(AnimationState state) {
@@ -96,6 +128,34 @@ public class GIFRender implements AnimationRender {
         
         currentGIF = animationMovement.get(lastentry.getKey());
     }
+
+
+
+        @Override
+        public void rotate(float rotationSpeed) {
+
+            this.rotationSpeed = rotationSpeed;
+
+        }
+
+//        @Override
+//        public void stopRotation() {
+//            rotation = 0;
+//            rotationSpeed = 0;
+//
+//        }
+
+//        @Override
+//        public void setDrawColor(Color color) {
+//            if(!drawColor.equals(color)) {
+//                drawColor = color;
+//            }
+
+
+
+
+
+
 
 
 

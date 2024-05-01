@@ -15,7 +15,7 @@ $PlayerStats = Define Stats:
 
 $PlayerShape = Define Shape:
     Type: Circle
-    Radius: 1.0
+    Radius: 3.0
 
 $PlayerStructure = Define Structure:
     Filter: ENEMY WALL PICKUP

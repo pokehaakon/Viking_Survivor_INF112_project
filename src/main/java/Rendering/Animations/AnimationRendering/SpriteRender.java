@@ -55,6 +55,11 @@ public class SpriteRender implements AnimationRender {
         return stateAnimations.get(state).getHeight();
     }
 
+    @Override
+    public void rotate(float rotationSpeed) {
+
+    }
+
 
     /**
      * IMPORTANT, THIS ONLY LOADS IN RENDER THREAD!

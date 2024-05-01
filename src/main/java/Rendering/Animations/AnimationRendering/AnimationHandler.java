@@ -53,6 +53,11 @@ public class AnimationHandler {
 
     }
 
+    public void rotate(float rotationSpeed) {
+
+        animationRender.rotate(rotationSpeed);
+
+    }
     public AnimationState getAnimationState() {
         return animationState;
     }

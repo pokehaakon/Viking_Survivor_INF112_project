@@ -30,6 +30,11 @@ public class MockRender implements AnimationRender {
         return 1f;
     }
 
+    @Override
+    public void rotate(float rotationSpeed){
+
+    }
+
 //    @Override
 //    public void initAnimations(Map<AnimationState, String> animationMap) {
 //
