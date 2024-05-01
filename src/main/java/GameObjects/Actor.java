@@ -37,6 +37,9 @@ public class Actor extends GameObject implements IActor {
         hitByIDs = new HashMap<>();
     }
 
+    public List<Action> getActions() {
+        return actions;
+    }
 
     @Override
     public void addAction(Action action) {

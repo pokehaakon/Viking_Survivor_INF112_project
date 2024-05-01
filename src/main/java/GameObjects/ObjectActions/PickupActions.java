@@ -5,8 +5,6 @@ package GameObjects.ObjectActions;
 
 import GameObjects.Actor;
 import Simulation.Simulation;
-import com.badlogic.gdx.math.Vector2;
-import Simulation.ObjectContactListener;
 
 
 public class PickupActions {
@@ -33,12 +31,14 @@ public class PickupActions {
 
      * @return a pickup action
      */
-    public static Action setOrbitSpeed(long duration, float newSpeed) {
+    public static Action setWeaponSpeed(long duration, float speedMultiplier) {
         return (o) -> {
-            WeaponActions.setOrbitSpeed(newSpeed, duration);
+            WeaponActions.setSpeed(duration, speedMultiplier);
         };
 
     }
+
+
 
 
     public static Action giveXP(int xp) {

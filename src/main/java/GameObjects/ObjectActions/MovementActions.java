@@ -34,6 +34,17 @@ public abstract class MovementActions {
 
         };
     }
+    public static Action chaseActorCustomSpeed(Actor actor, float speed) {
+        return (e) -> {
+            var vel = e.getBody().getLinearVelocity();
+            vel
+                    .set(actor.getBody().getPosition())
+                    .sub(e.getBody().getWorldCenter())
+                    .setLength(speed);
+            e.getBody().setLinearVelocity(vel);
+
+        };
+    }
 
 
 //    public static ActorAction coolDown(long coolDownDuration) {
