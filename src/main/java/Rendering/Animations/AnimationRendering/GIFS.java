@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.google.common.annotations.VisibleForTesting;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
@@ -26,13 +27,13 @@ public abstract class GIFS {
 //
 //    public static final String WOLF_FILE_PATH = "wolf.gif";
 //    public static final float PLAYER_WIDTH = 600,RAVEN_WIDTH = 600, WOLF_WIDTH = 600, ORC_WIDTH = 600, PICKUP_ORB_WIDTH = 600, KNIFE_WIDT = 600;
-    public static final String PLAYER_MOVING_FILE_PATH = "vikingleft-crop.gif";
-
-    public static final String PLAYER_IDLE_FILE_PATH = "viking_idle_left-crop.gif";
-
-    public static final String PICK_UP_ORB_FILE_PATH= "pickupOrb.gif";
-
-    public static final String KNIFE_FILE_PATH= "knife.gif";
+//    public static final String PLAYER_MOVING_FILE_PATH = "vikingleft-crop.gif";
+//
+//    public static final String PLAYER_IDLE_FILE_PATH = "viking_idle_left-crop.gif";
+//
+//    public static final String PICK_UP_ORB_FILE_PATH= "pickupOrb.gif";
+//
+//    public static final String KNIFE_FILE_PATH= "knife.gif";
 
 
 //    // scale
@@ -74,7 +75,8 @@ public abstract class GIFS {
         gifPairMap.clear();
     }
 
-    private record GifPairImplementation(Animation<TextureRegion> left, Animation<TextureRegion> right) implements GifPair {
+    @VisibleForTesting
+    protected record GifPairImplementation(Animation<TextureRegion> left, Animation<TextureRegion> right) implements GifPair {
         static GifPair of(Animation<TextureRegion> left) {
             Object[] keyFrames = left.getKeyFrames();
             TextureRegion[] textureRegions = new TextureRegion[keyFrames.length];

@@ -1,8 +1,8 @@
 package InputProcessing;
 
+import Tools.Tuple;
 import com.badlogic.gdx.Input;
-import org.apache.maven.surefire.shared.lang3.tuple.ImmutablePair;
-import org.apache.maven.surefire.shared.lang3.tuple.Pair;
+import org.javatuples.Pair;
 
 import java.util.*;
 
@@ -26,11 +26,11 @@ public class KeyStates {
     public KeyStates() {
         //TODO load key binds from config?
         List<Pair<Integer, GameKey>> keyBinds = new ArrayList<>();
-        keyBinds.add(new ImmutablePair<>(Input.Keys.W, GameKey.UP));
-        keyBinds.add(new ImmutablePair<>(Input.Keys.A, GameKey.LEFT));
-        keyBinds.add(new ImmutablePair<>(Input.Keys.S, GameKey.DOWN));
-        keyBinds.add(new ImmutablePair<>(Input.Keys.D, GameKey.RIGHT));
-        keyBinds.add(new ImmutablePair<>(Input.Keys.ESCAPE, GameKey.QUIT));
+        keyBinds.add(Tuple.of(Input.Keys.W, GameKey.UP));
+        keyBinds.add(Tuple.of(Input.Keys.A, GameKey.LEFT));
+        keyBinds.add(Tuple.of(Input.Keys.S, GameKey.DOWN));
+        keyBinds.add(Tuple.of(Input.Keys.D, GameKey.RIGHT));
+        keyBinds.add(Tuple.of(Input.Keys.ESCAPE, GameKey.QUIT));
 
         build(keyBinds);
     }
@@ -40,15 +40,15 @@ public class KeyStates {
         ikeyBindsMap = new EnumMap<>(GameKey.class);
         Set<GameKey> values = new HashSet<>();
         for (Pair<Integer, GameKey> p : keyBinds) {
-            if (keyBindsMap.get(p.getLeft()) != null) {
+            if (keyBindsMap.get(p.getValue0()) != null) {
                 throw new RuntimeException("not all input keys are unique!");
             }
-            if (values.contains(p.getRight())) {
+            if (values.contains(p.getValue1())) {
                 throw new RuntimeException("several keys bound to same key");
             }
-            values.add(p.getRight());
-            keyBindsMap.put(p.getLeft(), p.getRight());
-            ikeyBindsMap.put(p.getRight(), p.getLeft());
+            values.add(p.getValue1());
+            keyBindsMap.put(p.getValue0(), p.getValue1());
+            ikeyBindsMap.put(p.getValue1(), p.getValue0());
         }
 
         stateOfKey = new EnumMap<>(GameKey.class);

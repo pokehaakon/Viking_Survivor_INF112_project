@@ -74,3 +74,9 @@ $ORC = Define Actor:                # this defines a new enemy with name 'testEn
     Animation: $OrcAnimation        # this field must be an Animation
     Stats: $RavenStats              # this must be a Stats.
     Structure: $RavenStructure      # this must be a Structure.
+
+
+$TREE = Define Object:              # this is how we define GameObjects
+    Animation: $RavenAnimation      # this defines the animation
+    Structure: $RavenStructure      # this defines the structure
+    Scale: 2.0                      # as objects do not get a scale from stats, it is needed here
