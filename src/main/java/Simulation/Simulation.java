@@ -6,18 +6,18 @@ import GameObjects.GameObject;
 import GameObjects.ObjectActions.Action;
 import GameObjects.ObjectActions.WeaponActions;
 import InputProcessing.KeyStates;
+import Rendering.Animations.AnimationRendering.SoundManager;
 import Simulation.Coordinates.SpawnCoordinates;
 import Tools.FilterTool;
 import Tools.Pool.ObjectPool;
 import Tools.RollingSum;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
+
 
 import static GameObjects.ObjectActions.KilledAction.*;
 import static GameObjects.ObjectActions.MovementActions.chaseActor;
@@ -99,6 +99,7 @@ public class Simulation implements Runnable {
             context.getPlayer().doAction();
 
             for (Actor actor : actors) {
+
                 if(isInCategory(actor.getBody(), FilterTool.Category.PICKUP)) {
                     continue;
                 }
@@ -174,7 +175,6 @@ public class Simulation implements Runnable {
         for(Actor enemy : context.getActorPool().get(type, n)) {
             enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), 200));
             enemy.addAction(actions);
-            //drawableEnemies.add(enemy);
             context.getDrawableActors().add(enemy);
             lastSpawnTime = TimeUtils.millis();
         }

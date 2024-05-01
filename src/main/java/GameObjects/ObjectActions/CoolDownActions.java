@@ -14,14 +14,25 @@ public abstract class CoolDownActions {
         };
     }
 
-    public static Action changeColorInCoolDown(Color color) {
-        return (a) -> {
-            if(!a.isInCoolDown()) return;
-
-
-            a.getAnimationHandler().setDrawColor(color);
-
-        };
-    }
+//    public static Action changeColorInCoolDown(Color color) {
+//        if(inCoolDown) {
+//            coolDownDuration--;
+//            if(coolDownDuration <= 0) {
+//                inCoolDown = false;
+//                animationHandler.setDrawColor(Color.WHITE);
+//
+//            }
+//        }
+//        return (a) -> {
+//            if(!a.isInCoolDown()) {
+//                return;
+//            }
+//
+//            a.getAnimationHandler().setDrawColor(Color.RED);
+//
+//
+//
+//        };
+//    }
 
 }

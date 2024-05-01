@@ -2,6 +2,7 @@ package Simulation;
 
 import GameObjects.Actor;
 import GameObjects.GameObject;
+import Rendering.Animations.AnimationRendering.SoundManager;
 import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -70,7 +71,6 @@ public class ObjectContactListener implements ContactListener {
 
     @Override
     public void beginContact(Contact contact) {
-
         Body b1 = contact.getFixtureA().getBody();
         Body b2 = contact.getFixtureB().getBody();
 
@@ -80,6 +80,7 @@ public class ObjectContactListener implements ContactListener {
             System.out.println("WEAPON COLLLLL");
             weapon.attack(enemy);
             enemy.startCoolDown(500);
+            SoundManager.playSoundEffect(SoundManager.ATTACK_SOUND);
 
             //enemy.underAttack = true;
             //System.out.println("WEAPON COLLISION");

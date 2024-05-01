@@ -213,14 +213,14 @@ public class ReleaseCandidateContext extends Context {
             p.draw(batch,frameCount);
         }
         for (Actor actor : drawableActors) {
-            if(i > 100) batch.flush();
-            if(actor.isUnderAttack()) {
+            //if(i > 100) batch.flush();
+
+            if(actor.isInCoolDown()) {
+                System.out.println("COOLDOWN");
                 batch.setColor(Color.RED);
             }
-                actor.draw(batch, frameCount);
-
-
-            batch.setColor(Color.WHITE);
+            actor.draw(batch, frameCount);
+            //batch.setColor(Color.WHITE);
             i++;
         }
 
@@ -236,14 +236,7 @@ public class ReleaseCandidateContext extends Context {
             i++;
         }
 
-        for(Actor enemy : drawableEnemies) {
-//            if(enemy.isUnderAttack()) {
-//                batch.setColor(Color.RED);
-//            }
-            enemy.draw(batch, frameCount);
-           // batch.setColor(Color.WHITE);
 
-        }
 
 
         if(!gameOver) {

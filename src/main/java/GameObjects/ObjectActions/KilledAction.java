@@ -3,7 +3,6 @@ package GameObjects.ObjectActions;
 import GameObjects.Actor;
 import Tools.Pool.ObjectPool;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -49,22 +48,22 @@ public abstract class KilledAction {
 
     /**
      * If the actor is under attack, set a cool down period.
-     * @param coolDownDuration in milliseconds
+     //* @param coolDownDuration in milliseconds
      //@param color color the object during the cool down. Default is white
      * @return an actor action object
      */
-    public static Action coolDown(double coolDownDuration, Color color) {
-        long frameInterval = (long) (coolDownDuration * SET_FPS /1000);
-        AtomicLong framesSinceStart = new AtomicLong(0);
+    public static Action coolDown( long duration, Color color) {
 
+        AtomicLong framesSinceStart = new AtomicLong(0);
+        long frameInterval = (duration * SET_FPS /1000);
         return (actor) -> {
-            if (actor.isUnderAttack()) {
+            if (actor.isInCoolDown()) {
                 actor.getAnimationHandler().setDrawColor(color);
                 if (framesSinceStart.getAndIncrement() >= frameInterval) {
                     framesSinceStart.set(0);
-
+                    actor.stopCoolDown();
                     actor.getAnimationHandler().setDrawColor(Color.WHITE);
-                    actor.getHitByIDs().clear();
+
                     //actor.getAnimationHandler().setDrawColor(Color.WHITE);
                 }
             }

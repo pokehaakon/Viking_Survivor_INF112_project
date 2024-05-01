@@ -6,7 +6,6 @@ import Rendering.Animations.AnimationState;
 import com.badlogic.gdx.graphics.Color;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
@@ -16,10 +15,10 @@ public class Actor extends GameObject implements IActor {
     private float damage;
     private float resistance;
 
+
     private boolean inCoolDown = false;
 
     private long coolDownDuration;
-    private boolean isUnderAttack;
     protected final List<Action> actions;
     protected final List<Action> dieActions;
 
@@ -67,17 +66,23 @@ public class Actor extends GameObject implements IActor {
         }
 
         if(inCoolDown) {
-            animationHandler.setDrawColor(Color.RED);
             coolDownDuration--;
             if(coolDownDuration <= 0) {
+                //animationHandler.setDrawColor(Color.WHITE);
                 inCoolDown = false;
-                animationHandler.setDrawColor(Color.WHITE);
             }
         }
 
 
         updateDirectionState();
         updateAnimationState();
+    }
+
+    public void stopCoolDown() {
+        inCoolDown = false;
+    }
+    public long getCoolDownDuration() {
+        return coolDownDuration;
     }
 
     @Override
@@ -123,13 +128,13 @@ public class Actor extends GameObject implements IActor {
 
     @Override
     public void startCoolDown(long duration) {
-        coolDownDuration = (duration*SET_FPS / 1000);
+        coolDownDuration = duration*SET_FPS / 1000;
         inCoolDown = true;
     }
 
+
     @Override
     public void attack(Actor actor) {
-
         actor.hitByIDs.put(this.getID(), 30L);
         actor.HP -= damage;
     }
@@ -168,7 +173,7 @@ public class Actor extends GameObject implements IActor {
     public void revive() {
         super.revive();
         HP = stats.HP;
-        isUnderAttack = false;
+
 
     }
 
@@ -203,6 +208,5 @@ public class Actor extends GameObject implements IActor {
     public Map<Integer, Long> getHitByIDs() {
         return hitByIDs;
     }
-
 
 }
