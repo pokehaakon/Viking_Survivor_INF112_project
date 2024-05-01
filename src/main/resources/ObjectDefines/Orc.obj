@@ -5,7 +5,7 @@ $OrcAnimation = Define Animation:
 
 $OrcStats = Define Stats:
     HP: 150.0
-    Speed: 50.0
+    Speed: 20.0
     Damage: 20.0
     resistance: 0.0
     scale: 7.0

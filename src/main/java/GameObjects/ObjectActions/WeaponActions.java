@@ -18,21 +18,19 @@ public abstract class WeaponActions {
     public static final float DEFAULT_ORBIT_SPEED = 0.1f;
     private static float ORBIT_SPEED = DEFAULT_ORBIT_SPEED;
 
-    private static Actor closestEnemy;
-    private static boolean countDown = false;
+    private static boolean alterWeaponSpeed = false;
 
     private static AtomicLong framesLeft;
     public static void setOrbitSpeed(float newSpeed,double duration) {
         ORBIT_SPEED = newSpeed;
         framesLeft = new AtomicLong((long) (duration*SET_FPS/1000));
 
-        countDown = true;
+        alterWeaponSpeed = true;
     }
 
-    private static void startCountDown(AtomicLong framesLeft) {
-        System.out.println(framesLeft.get());
+    private static void startSpeedChangeCountDown(AtomicLong framesLeft) {
         if(framesLeft.getAndDecrement() <= 0) {
-            countDown = false;
+            alterWeaponSpeed = false;
             ORBIT_SPEED = DEFAULT_ORBIT_SPEED;
         }
     }
@@ -54,8 +52,8 @@ public abstract class WeaponActions {
         AtomicDouble angle = new AtomicDouble(2 * Math.PI + startingAngle + 1);
 
         return weapon -> {
-            if(countDown) {
-                startCountDown(framesLeft);
+            if(alterWeaponSpeed) {
+                startSpeedChangeCountDown(framesLeft);
             }
 
             if (framesSinceLastAttack.getAndIncrement() >= frameInterval && !weapon.getBody().isActive()) {
@@ -123,7 +121,7 @@ public abstract class WeaponActions {
 
 
 
-    public static Action throwAtClosestEnemy(Actor actor, double interval, List<Actor> enemies, Vector2 boundSquare) {
+    public static Action fireAtClosestEnemy(Actor actor, double interval, List<Actor> enemies, Vector2 boundSquare) {
         long frameInterval = (long) (interval * SET_FPS / 1000);
         AtomicLong framesSinceLastThrow = new AtomicLong(0);
 

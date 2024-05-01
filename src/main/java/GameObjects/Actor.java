@@ -117,6 +117,10 @@ public class Actor extends GameObject implements IActor {
         isUnderAttack = bool;
     }
 
+    //public void setUnderAttack(boolean bool) {
+        //isUnderAttack = bool;
+    //}
+
     @Override
     public boolean attackedBy(Actor actor) {
 
@@ -128,6 +132,9 @@ public class Actor extends GameObject implements IActor {
 
     @Override
     public boolean isUnderAttack() {
+
+        //return !hitByIDs.isEmpty();
+
         return isUnderAttack;
     }
 

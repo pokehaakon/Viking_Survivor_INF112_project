@@ -41,6 +41,7 @@ public abstract class KilledAction {
             Actor pickup = pool.get(type);
             pickup.setPosition(actor.getBody().getPosition());
             pickup.addAction(pickupActions);
+
             pickups.add(pickup);
 
         });
@@ -59,8 +60,8 @@ public abstract class KilledAction {
             if(!actor.isUnderAttack())return;
 
             if(framesSinceStart.getAndIncrement() >= frameInterval) {
-                actor.setUnderAttack(false);
                 framesSinceStart.set(0);
+                actor.setUnderAttack(false);
                 actor.getHitByIDs().clear();
             }
         };

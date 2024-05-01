@@ -14,7 +14,7 @@ $XP_Animation = Define Animation:
 
 $Shape = Define Shape:
     Type: Circle
-    Radius: 1.0
+    Radius: 3.0
 
 $Structure = Define Structure:
     Filter: PLAYER
