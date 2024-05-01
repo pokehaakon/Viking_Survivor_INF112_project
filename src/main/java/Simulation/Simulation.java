@@ -117,7 +117,7 @@ public class Simulation implements Runnable {
                 actors.add(pickup);
 
                 //spawnRandomEnemies(5,Arrays.asList(ActorActions.destroyIfDefeated(player),ActorActions.chasePlayer(player), coolDown(500)));
-                spawnTerrain("TREE");
+                spawnTerrain("TREE", 5);
                 spawnEnemies("ORC",10,
                         chaseActor(player),
                         spawnPickups(1,"HP_PICKUP", tempPickups,context.getActorPool(),giveHP(player,10), setWeaponSpeed(5000,10)),destroyIfDefeated());
@@ -170,12 +170,19 @@ public class Simulation implements Runnable {
     }
 
 
-    private void spawnTerrain(String TerrainName) {
+    private void spawnTerrain(String TerrainName, int num) {
         List<Vector2> occupiedSpawns =  SpawnCoordinates.getOccupiedPositions(objects);
-        List<Vector2> availableSpawns = SpawnCoordinates.availableSpawn()
-        GameObject terrain = context.getObjectPool().get(TerrainName);
-        terrain.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), ReleaseCandidateContext.SPAWN_RADIUS));
-        context.getDrawableObjects().add(terrain);
+        List<Vector2> availableSpawns = SpawnCoordinates.fixedSpawnPoints(num, new Vector2(200,200),200,player.getBody().getPosition(),occupiedSpawns);
+
+        for(Vector2 spawn: availableSpawns) {
+            GameObject terrain = objectPool.get(TerrainName);
+            terrain.setPosition(spawn);;
+
+            objects.add(terrain);
+
+        }
+
+
         lastSpawnTime = TimeUtils.millis();
     }
 

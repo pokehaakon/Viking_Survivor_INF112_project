@@ -16,5 +16,5 @@ $Structure = Define Structure:
 
 $TREE = Define Object:
     Animation: $Animation
-    Scale: 2.0
+    Scale: 20
     Structure: $Structure

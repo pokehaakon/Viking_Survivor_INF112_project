@@ -63,24 +63,23 @@ public abstract class SpawnCoordinates extends Vector2 {
      * Generates a list of spawn points, forming a square around the screen. If the number of desired spawn points exceeds
      * the number of available spawn points, then the method simply returns the available spawn points.
      * @param n number of spawn points to generate
-     * @param distX distance between center and line of points on left and right side of screen
-     * @param distY distance between center and line of points on top and bottom of screen
+
      * @param distanceBetweenPoints minimum distance between the spawn points
      * @param center player's position
      * @param occupiedSpawns list of Vector2 positions, which is the occupied spawns
      * @return a list of Vector2 objects
      */
-    public static List<Vector2> fixedSpawnPoints(int n, float distX, float distY, float distanceBetweenPoints, Vector2 center, List<Vector2> occupiedSpawns) {
+    public static List<Vector2> fixedSpawnPoints(int n, Vector2 boundedSquare, float distanceBetweenPoints, Vector2 center, List<Vector2> occupiedSpawns) {
         List<Vector2> spawnPoints = new ArrayList<>();
 
-        float startX = center.x - distX;
-        float startY = center.y - distY;
-        float endX = center.x + distX;
-        float endY = center.y + distY;
+        float startX = center.x - boundedSquare.x;
+        float startY = center.y - boundedSquare.y;
+        float endX = center.x + boundedSquare.x;
+        float endY = center.y + boundedSquare.y;
 
 
-        int numPointsX = (int) Math.ceil((2*distX)/ distanceBetweenPoints) +1 ;
-        int numPointsY = (int) Math.ceil((2*distY) / distanceBetweenPoints) +1;
+        int numPointsX = (int) Math.ceil((2*boundedSquare.x)/ distanceBetweenPoints) +1 ;
+        int numPointsY = (int) Math.ceil((2*boundedSquare.y) / distanceBetweenPoints) +1;
 
         // adding points to top and bottom
         for(int i = 0; i < numPointsX; i++) {
