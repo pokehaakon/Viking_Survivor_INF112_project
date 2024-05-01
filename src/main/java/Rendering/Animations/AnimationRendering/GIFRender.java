@@ -43,12 +43,6 @@ public class GIFRender implements AnimationRender {
         max = regionRect.y;
         regionRect.scl(1/max * scale ); //* Main.PPM);
 
-        float originX = object.getBody().getPosition().x;
-        float originY = object.getBody().getPosition().y;
-
-        // Adjust origin to center of the TextureRegion
-        originX -= region.getRegionWidth() * 0.5f;
-        originY -= region.getRegionHeight() * 0.5f;
 
         batch.draw(
                 region,
@@ -69,17 +63,6 @@ public class GIFRender implements AnimationRender {
         }
     }
 
-//        Vector2 regionRect = new Vector2(region.getRegionWidth(), region.getRegionHeight());
-//        float max = Math.max(regionRect.x, regionRect.y);
-//        max = regionRect.y;
-//        regionRect.scl(1/max * scale ); //* Main.PPM);
-//        batch.draw(
-//                region,
-//                object.getBody().getPosition().x - regionRect.x / 2,
-//                object.getBody().getPosition().y - regionRect.y / 2,
-//                regionRect.x,
-//                regionRect.y
-//        );
 
     @Override
     public void setAnimation(AnimationState state) {
