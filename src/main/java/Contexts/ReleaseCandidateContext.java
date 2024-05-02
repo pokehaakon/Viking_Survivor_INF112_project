@@ -1,5 +1,6 @@
 package Contexts;
 
+import GameMap.GameMap;
 import GameObjects.Actor;
 import GameObjects.GameObject;
 import GameObjects.ObjectActions.PlayerActions;
@@ -21,9 +22,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.objects.PolygonMapObject;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2D;
@@ -44,6 +42,8 @@ import java.util.function.Function;
 
 import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
 import static VikingSurvivor.app.Main.SCREEN_WIDTH;
+
+import Camera.TargetCamera;
 
 public class ReleaseCandidateContext extends Context {
     public static final double SPAWN_RADIUS = (double)0.7*SCREEN_WIDTH;
@@ -85,9 +85,8 @@ public class ReleaseCandidateContext extends Context {
     private AtomicLong synchronizer;
     boolean gameOver = false;
 
-//    private TiledMap map;
-//    private OrthogonalTiledMapRenderer tiledMapRenderer;
-//    private float tiledMapScale = 4f;
+    private float tiledMapScale = 1f;
+    private GameMap gMap;
 
     private Vector2 previousFramePlayerSpeed = Vector2.Zero;
     private GameWorld gameWorld;
@@ -175,15 +174,12 @@ public class ReleaseCandidateContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.GREEN);
 
-//        this.tiledMapRenderer = new OrthogonalTiledMapRenderer(map, tiledMapScale);
-//        tiledMapRenderer.setView((OrthographicCamera) camera);
-//        tiledMapRenderer.render();
+        gMap.renderTiledMap((OrthographicCamera) camera);
 
         gameWorld.render(camera, delta);
         debugRenderer.render(world, camera.combined);
 
-        //updateCamera(player.getBody().getPosition(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), map, tiledMapScale);
-
+        TargetCamera.updateCamera(player.getBody().getPosition(), camera, gMap.getTiledMap(), tiledMapScale);
 
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
@@ -325,57 +321,6 @@ public class ReleaseCandidateContext extends Context {
 
     }
 
-    private Vector2 getMiddleOfMapPosition(TiledMap map, float scale) {
-        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
-        int tileWidth = layer.getTileWidth(); // width of a tile in pixels
-        int tileHeight = layer.getTileHeight(); // height of a tile in pixels
-        int mapWidth = layer.getWidth(); // width of the tilemap in tiles
-        int mapHeight = layer.getHeight(); // height of the tilemap in tiles
-
-        return new Vector2(mapWidth * tileWidth * scale / 2f, mapHeight * tileHeight * scale / 2f);
-    }
-
-    private float[] createPolyLine(PolygonMapObject polygon) {
-        for(float juice : polygon.getPolygon().getTransformedVertices()) System.out.println(juice);
-        float[] points = polygon.getPolygon().getTransformedVertices();
-        float[] newPoints = new float[points.length + 2];
-        newPoints[0] = 0.0f;
-        newPoints[1] = 0.0f;
-
-        for (int i = 0; i < points.length; i++) {
-            newPoints[i + 2] = points[i];
-        }
-        return newPoints;
-    }
-
-//    private void createMapObjects(String objectLayerName, World world) {
-//        MapLayer layer = map.getLayers().get(objectLayerName);
-//
-//        for(MapObject object : layer.getObjects()) {
-//
-//            // create the shape
-//            ChainShape shape = new ChainShape();
-//            shape.createChain(createPolyLine((PolygonMapObject) object));
-//
-//            BodyTool.createBody(
-//                    world,
-//                    new Vector2(),
-//                    shape,
-//                    createFilter(
-//                            FilterTool.Category.WALL,
-//                            new FilterTool.Category[] {
-//                                    FilterTool.Category.PLAYER
-//                            }
-//                    ),
-//                    1f,
-//                    0f,
-//                    0f,
-//                    false,
-//                    BodyDef.BodyType.StaticBody
-//            );
-//        }
-//    }
-
     private void createWorld() {
         // sets up world
         //animationLibrary = new AnimationLibrary();
@@ -383,8 +328,10 @@ public class ReleaseCandidateContext extends Context {
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
 
-        //map = new TmxMapLoader().load("assets/damaged_roads_map.tmx");
+        this.gMap = new GameMap("assets/damaged_roads_map.tmx", tiledMapScale);
+        gMap.createMapBorder(world);
 
+        enemyFactory = new EnemyFactory();
         drawableEnemies = new ArrayList<>();
         drawableActors = new ArrayList<>();
         drawableObjects = new ArrayList<>();
@@ -408,8 +355,12 @@ public class ReleaseCandidateContext extends Context {
 
         player = gameWorld.player;
         player.addToWorld(world);
+//        player.setPosition(getMiddleOfMapPosition(map, tiledMapScale));
+        player.setPosition(gMap.getMiddleOfMapPosition());
+        player.setAction(PlayerActions.moveToInput(keyStates));
+        player.setAction(PlayerActions.coolDown(500));
         //player.setPosition(getMiddleOfMapPosition(map, tiledMapScale));
-        player.setPosition(new Vector2());
+//        player.setPosition(new Vector2());
         player.addAction(PlayerActions.moveToInput(keyStates));
 
 
@@ -497,7 +448,7 @@ public class ReleaseCandidateContext extends Context {
     }
 
 
-    
+
 
     public Lock getRenderLock() {
         return renderLock;

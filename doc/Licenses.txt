@@ -1,0 +1,13 @@
+Resources made by Eilif (Pixilart):
+    assets/...
+    cross_road_damaged.png
+    edge_road_damaged.png
+    vertical_road_damaged.png
+    pillars_damaged.png
+    road_ending_north.png
+    road_ending_vertical.png
+    T-road_damaged.png
+    grass.png
+    rock_2_64px.png
+    rock_2_128px.png
+    rock_final_128px.png
