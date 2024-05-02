@@ -39,6 +39,10 @@ public class ContextualInputProcessor implements InputProcessor {
         currentContext.resume();
     }
 
+    public void removeContext(String c) {
+        contextFactory.deleteContext(c);
+    }
+
     @Override
     public boolean keyDown(int keycode) {
         return currentInputProcessor.keyDown(keycode);

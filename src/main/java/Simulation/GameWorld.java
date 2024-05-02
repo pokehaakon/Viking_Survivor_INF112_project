@@ -87,6 +87,7 @@ public class GameWorld implements Disposable {
         }
 
         this.player = ObjectFactory.createActor(defines.get("PLAYER_NAME"));
+        activeActors.add(player);
 
         handlerFactory = new SpawnHandlerFactory(player, actorPool, objectPool, activeActors, activeObjects);
     }

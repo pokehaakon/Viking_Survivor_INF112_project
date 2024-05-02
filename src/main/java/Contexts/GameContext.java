@@ -184,9 +184,6 @@ public class GameContext extends Context {
 
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
-        //origin.sub(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
-//        camera.position.x = origin.x + previousFramePlayerSpeed.x / Simulation.SET_UPS;
-//        camera.position.y = origin.y + previousFramePlayerSpeed.y / Simulation.SET_UPS;
         previousFramePlayerSpeed.scl(1f/Simulation.SET_UPS);
         Vector2 correctedOrigin = origin.cpy().add(previousFramePlayerSpeed);
 
@@ -196,12 +193,6 @@ public class GameContext extends Context {
         // Save player position for further use
         float playerPosX = origin.x;
         float playerPosY = origin.y;
-
-//        //center camera at player
-//        camera.position.x = playerPosX;
-//        camera.position.y = playerPosY;
-//        camera.position.z = 0;
-//        camera.update(true);
 
         batch.begin();
 
@@ -216,12 +207,15 @@ public class GameContext extends Context {
             if(i > 100) batch.flush();
             if(actor.isInCoolDown()) {
                 batch.setColor(Color.RED);
+
             }
             actor.draw(batch, frameCount);
             batch.setColor(Color.WHITE);
 
             i++;
         }
+
+
 
         for(GameObject object : drawableObjects) {
             if(i > 100) batch.flush();
@@ -263,14 +257,9 @@ public class GameContext extends Context {
         //batch.setColor(Color.WHITE);
 
 
-
-        if(player.isUnderAttack()) {
-            batch.setColor(Color.RED);
-        }
-
-        if(!gameOver) {
-            player.draw(batch, frameCount);
-        }
+//        if(!gameOver) {
+//            player.draw(batch, frameCount);
+//        }
 
         batch.setColor(Color.WHITE);
         if(!gameOver) {
@@ -291,7 +280,15 @@ public class GameContext extends Context {
         FrameTime.add(System.nanoTime() - renderStartTime);
 
 
-
+        if(gameOver) {
+            try {
+                Thread.sleep(1000 * 3);
+            } catch (InterruptedException e) {
+                //throw new RuntimeException(e);
+            }
+            sim.stopSim();
+            getContextualInputProcessor().setContext("MAINMENU");
+        }
     }
 
 

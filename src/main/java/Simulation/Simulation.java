@@ -96,7 +96,6 @@ public class Simulation implements Runnable {
             if (keyStates.getState(KeyStates.GameKey.QUIT)) stopSim();
 
 
-            context.getPlayer().doAction();
             int actorLength = actors.size();
             for(int i = 0; i < actorLength;i++) {
                 Actor actor = actors.get(i);
