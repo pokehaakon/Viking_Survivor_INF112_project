@@ -23,19 +23,14 @@ public class PickupActions {
 
 
     /**
-     * Change the orbit action for a set duration. After the duration is up, the action is reset to its default
+     * Change the weapon speed. After the duration is up, the speed is reset to its default
      * @param duration the duration of the action, in milliseconds
-
-
-
-
      * @return a pickup action
      */
     public static Action setWeaponSpeed(long duration, float speedMultiplier) {
         return (o) -> {
             WeaponActions.setSpeed(duration, speedMultiplier);
         };
-
     }
 
 
