@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
@@ -73,7 +74,7 @@ public class Simulation implements Runnable {
         objects = context.getDrawableObjects();
         gameWorld = context.getGameWorld();
 
-        tempPickups = context.getPickup();
+        tempPickups = new ArrayList<>();
 
         drawableEnemies = context.getDrawableEnemies();
     }

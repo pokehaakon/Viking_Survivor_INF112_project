@@ -209,9 +209,9 @@ public class ReleaseCandidateContext extends Context {
         // draw enemies
 
         int i = 0;
-        for(Actor p : pickup) {
-            p.draw(batch,frameCount);
-        }
+//        for(Actor p : pickup) {
+//            p.draw(batch,frameCount);
+//        }
         for (Actor actor : drawableActors) {
             if(i > 100) batch.flush();
             if(actor.isInCoolDown()) {
@@ -553,9 +553,6 @@ public class ReleaseCandidateContext extends Context {
 
     public GameWorld getGameWorld() {return gameWorld;}
 
-    public List<Actor> getPickup() {
-        return pickup;
-    }
 
     public List<Actor> getDrawableEnemies() {
         return drawableEnemies;
