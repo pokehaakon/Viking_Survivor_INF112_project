@@ -1,0 +1,292 @@
+@startuml
+package GameObjects {
+
+    interface IGameObject extends .Pool.Poolable {
+        +void destroy()
+        +void draw(SpriteBatch batch, long frame)
+        +Body getBody()
+        +boolean isDestroyed()
+        +void revive()
+        +void setPosition(Vector2 pos)
+        +void addToWorld(World world)
+        +void setAnimationState(AnimationState state)
+        +void setAnimation(AnimationState state)
+        +boolean isMovingLeft()
+        +void setMovingLeft(boolean movingLeft)
+        +int getID()
+    }
+
+    class GameObject implements IGameObject {
+        -int ID
+        +String name
+
+        +boolean outOfBounds(Actor centerActor, Vector2 boundSquare)
+        +Vector2 getPosition()
+        +AnimationHandler getAnimationHandler()
+    }
+
+    interface IActor {
+        +void doAction()
+        +void addAction()
+        +void addDieAction()
+        +void attack()
+        +boolean attackedBy()
+        +void kill()
+    }
+
+    class Actor extends GameObject implements IActor {
+        -float speed
+        -float HP
+        -float damage
+        -float resistance
+        -boolean startTempChange
+        -boolean startCountDown
+        -Map<Integer, Long> hitByIDs
+    }
+
+    interface Action {
+        +void act()
+    }
+
+}
+
+
+package AnimationRendering {
+    interface AnimationRender {
+        +void draw
+        +void setAnimation
+        +float getWidth
+        +float getHeight
+        +void rotate
+        +void stopRotation
+
+        +AnimationRender of(AnimationType type, Map<AnimationState, String> animationMap, float scale)
+    }
+
+    class GIFRender implements AnimationRender {
+        -Map<AnimationState, String> animations
+        +draw()
+    }
+
+    class SpriteRender implements AnimationRender {
+        -Map<AnimationState, String> animations
+        +void draw()
+    }
+
+    class AnimationHandler {
+        -AnimationRender animationRender;
+        -AnimationState animationState;
+
+        +void rotate(float rotationSpeed)
+        +AnimationState getAnimationState()+
+        +void setAnimationState(AnimationState animationState)
+        +AnimationRender getAnimationRenderer()
+
+    }
+}
+package Contexts{
+    interface Screen {}
+
+    abstract class Context implements Screen {
+        - InputProcessor inputProcessor
+        - ContextualInputProcessor iProc
+        - String contextName
+
+        # ContextualInputProcessor getContextualInputProcessor()
+        # void setInputProcessor(InputProcessor inputProcessor)
+        + InputProcessor getInputProcessor()
+        + String getContextName()
+    }
+
+    class ContextFactory {
+        -Map<String, Context> createdContexts
+        -ContextualInputProcessor iProc
+
+        + Context getContext(String contextName)
+        + void deleteContext(String contextName)
+        - Context spawnContext(String contextName)
+    }
+
+    class MainMenuContext extends Context{}
+
+    class GameContext extends Context {
+        - ObjectPool<GameObject> objectPool;
+        - List<GameObject> drawableObjects
+        - List<Actor> drawableActors
+        - Simulation simulation
+        - Thread simThread
+
+        + void render()
+        - void createWorld()
+        - InputProcessor createInputProcessor()
+    }
+
+    interface InputProcessor{}
+
+    class ContextualInputProcessor implements InputProcessor{
+        - Context currentContext;
+        - InputProcessor currentInputProcessor;
+        - ContextFactory contextFactory;
+        + void setContext()
+        + Context getCurrentContext()
+
+    }
+}
+
+
+package Simulation {
+    class Simulation implements Runnable {
+        -World world
+        -GameWorld gameWorld
+
+        + void run()
+        - void pause()
+        - void stopSim()
+    }
+
+    class GameWorld {
+        - GameMap map
+        - List<ISpawnHandler> spawnHandlers
+        - List<Pair<Long, List<SpawnFrame>>> timeFrames
+
+        - void actThisFrame(long frame)
+        - void setNextFrame(long frame)
+        + act(long frame)
+        + render(Camera camera, float delta)
+    }
+
+    package ISpawnHandler {
+        interface ISpawnHandler {
+            + void act(long frame)
+        }
+
+        class SpawnHandlerFactory {
+            + ISpawnHandler create(String actorName, SpawnType spawnType, List<String> args)
+        }
+
+        class WaveSpawnHandler implements ISpawnHandler {}
+        class SwarmSpawnHandler implements ISpawnHandler {}
+        class ContinuousSpawnHandler implements ISpawnHandler {}
+    }
+
+}
+
+package Parsing {
+    package Stream {
+        interface Streamable<T> {
+            + Streamable<T> copy()
+            + T getCurrent()
+            + T next()
+            + boolean atEOF()
+            + void reset()
+            + int getLine()
+            + int getLinePos()
+            + String getDebugInfo()
+        }
+
+        class CharArrayStream implements Streamable<Character> {
+            - char[] text
+            - int head
+        }
+    }
+
+    abstract class GenericParser<StreamType, ReturnType> {
+        - Function<List<StreamType>, ReturnType> wrapper
+        - Function<String, List<StreamType>> stringToList
+        + Streamable<StreamType> stream
+
+        - ReturnType wrap(StreamType... cs)
+        - ReturnType wrap(List<StreamType> ls)
+
+        + ReturnType next()
+        + void reset()
+        + <T> T Try()
+        + <T> T choose()
+        + ReturnType parseUntilLiteral()
+        + ReturnType parseLiteral()
+        + ReturnType parseStringLiteral()
+        + <T> List<T> many()
+        + <T> List<T> some()
+        + ReturnType parseLiteralFromFunction()
+        + ReturnType parseStringFromFunction()
+        + <T> T strip()
+        + <T> T undo()
+        + <T> T orElse()
+        + <T> T error()
+        + <T> Optional<T> test()
+        + <T> void shouldError()
+        + <T> void Void()
+        + void parseEOF()
+    }
+
+    class TextParser extends GenericParser<Character, String> {
+        + String letter()
+        + String letters()
+        + String number()
+        + String numbers()
+        + String space()
+        + String skipLine()
+        + String parseEmptyLine()
+        + String parseNewLineLiteral()
+    }
+
+    class MapParser extends TextParser {
+        - Map<String, String> defines
+        - List<Pair<Long, List<SpawnFrame>>> timeFrames
+        - List<String> includes
+
+        + Map<String, String> doParseDefines()
+        + List<String> doParseIncludes()
+        + List<Pair<Long, List<SpawnFrame>>> doParseTimeFrames()
+        - Map<String, String> parseDefines()
+        - List<String> parseIncludes()
+        - List<Pair<Long, List<SpawnFrame>>>  parseTimeFrames()
+        - List<SpawnFrame> parseFrameBody()
+    }
+
+
+    class ObjectDefineParser extends TextParser {
+        + Map<String, Variable> variables
+
+        + Map<String, Variable> parseDocument()
+        - Pair<String, Variable> parseVariable()
+        - ActorDefinition parseActor()
+        - ObjectDefinition parseObject()
+        - AnimationDefinition parseAnimation()
+        - StructureDefinition parseStructure()
+        - StatsDefinition parseStats()
+        - ShapeDefinition parseShape()
+        - List<Pair<String, String>> parseDefinitionBody(Set<String> legalDefines)
+    }
+
+}
+
+package Pool {
+    interface Poolable {
+        + void put()
+        + void get()
+        + String getName()
+    }
+
+    interface IPool<T extends Poolable> {
+        + T get(String name)
+        + List<T> get(String name, int num)
+        + void returnToPool(T object)
+        + SmallPool<T> getSmallPool(String name)
+    }
+
+    class ObjectPool implements IPool<T> {
+        - Function<String, T> factory
+        - Map<String, IPool<T>> objectPool
+
+        + <R extends T> ObjectPool<R> createSubPool(Function<String, R> factory)
+    }
+
+    class SmallPool implements IPool<T> {
+        - Supplier<T> factory
+        - String name
+        - Queue<T> pool
+    }
+}
+
+@enduml

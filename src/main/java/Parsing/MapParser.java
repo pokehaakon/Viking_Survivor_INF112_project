@@ -6,6 +6,7 @@ import Parsing.Parser.ParserException;
 import Parsing.Parser.ParsingException;
 import Parsing.Parser.TextParser;
 import Tools.Tuple;
+import com.google.common.annotations.VisibleForTesting;
 import org.javatuples.Pair;
 
 import java.util.List;
@@ -127,6 +128,7 @@ public class MapParser extends TextParser {
         return pairs;
     }
 
+    @VisibleForTesting
     public List<SpawnFrame> parseFrameBody() throws ParsingException {
         return some(() -> {
             many(ichoose(this::parseEmptyLine, this::parseComment));
