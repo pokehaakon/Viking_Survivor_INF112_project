@@ -109,7 +109,7 @@ public abstract class WeaponActions {
      */
     public static Actor getClosestActor(Actor referenceActor, List<Actor> actors, FilterTool.Category category) {
         Vector2 actorPosition = referenceActor.getBody().getPosition();
-        Actor closestEnemy = null;
+        Actor closestActor = null;
         float closestDistance = Integer.MAX_VALUE;
         for(Actor actor : actors) {
             if(isInCategory(actor.getBody(), category)) {
@@ -118,13 +118,12 @@ public abstract class WeaponActions {
                         actor.getBody().getPosition().x, actor.getBody().getPosition().y);
 
                 if(newDistance < closestDistance) {
-                    closestEnemy = actor;
+                    closestActor = actor;
                     closestDistance = newDistance;
                 }
             }
         }
-
-        return closestEnemy;
+        return closestActor;
     }
 
     /**

@@ -129,6 +129,10 @@ public class GameObject implements IGameObject {
         return (Math.abs(dxdy.x) > boundSquare.x / 2 || Math.abs(dxdy.y) > boundSquare.y / 2);
     }
 
+    public Vector2 getPosition() {
+        return body.getPosition();
+    }
+
     public AnimationHandler getAnimationHandler() {
         return animationHandler;
     }

@@ -39,7 +39,6 @@ public class Actor extends GameObject implements IActor {
     }
 
 
-
     @Override
     public void addAction(Action action) {
         actions.add(action);
