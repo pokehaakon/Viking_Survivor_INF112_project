@@ -231,6 +231,7 @@ public class Actor extends GameObject implements IActor {
     /**
      * Resets the actor and calls GameObject::destroy
      */
+    @Override
     public void kill() {
         if (isDestroyed()) return;
         for (var a : dieActions)

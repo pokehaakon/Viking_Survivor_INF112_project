@@ -121,19 +121,19 @@ public class GIFRender implements AnimationRender {
 
 
 
-        @Override
-        public void rotate(float rotationSpeed) {
+    @Override
+    public void rotate(float rotationSpeed) {
 
-            this.rotationSpeed = rotationSpeed;
+        this.rotationSpeed = rotationSpeed;
 
-        }
+    }
 
-        @Override
-        public void stopRotation() {
-            rotation = 0;
-            rotationSpeed = 0;
+    @Override
+    public void stopRotation() {
+        rotation = 0;
+        rotationSpeed = 0;
 
-        }
+    }
 
 
 
