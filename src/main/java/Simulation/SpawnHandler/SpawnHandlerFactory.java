@@ -10,9 +10,11 @@ import Simulation.ISpawnHandler;
 import Tools.FilterTool;
 import Tools.Pool.ObjectPool;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static Contexts.GameContext.DE_SPAWN_RECT;
+import static Contexts.GameContext.SPAWN_RECT;
 import static GameObjects.ObjectActions.KilledAction.destroyIfDefeated;
 import static GameObjects.ObjectActions.KilledAction.spawnPickupsIfKilled;
 import static GameObjects.ObjectActions.MovementActions.chaseActor;
@@ -55,7 +57,7 @@ public class SpawnHandlerFactory {
                                 FilterTool.Category.WEAPON,
                                 5000,
                                 activeActors,
-                                WeaponActions.orbitActor(0.4f,10,  player, 0, 0)
+                                WeaponActions.orbitActor(0.2f,10,  player, 0, 0)
                         )
             )
         );
@@ -73,7 +75,29 @@ public class SpawnHandlerFactory {
                     activeActors
             );
 
-            case BOSS -> null; //TODO
+            case BOSS -> new WaveSpawnHandler(
+                    args,
+                    actorName,
+                    e -> {
+                        e.addAction(chaseActor(player), destroyIfDefeated());
+                        e.setPosition(randomPointOutsideScreenRect(player.getBody().getPosition()));
+
+                        for(int i = 0; i<6; i++) {
+                            Actor weapon = actorPool.get("WEAPON_RAVEN");
+                            weapon.getAnimationHandler().rotate(2f);
+
+                            weapon.addAction(WeaponActions.fireAtClosestActor(FilterTool.Category.PLAYER,e.getSpeed()+weapon.getSpeed(), e, i+50, activeActors, SPAWN_RECT)
+                                    );
+                            activeActors.add(weapon);
+
+                        }
+
+
+                    },
+                    actorPool,
+                    activeActors
+            );
+
             case WAVE -> new WaveSpawnHandler(
                     args,
                     actorName,

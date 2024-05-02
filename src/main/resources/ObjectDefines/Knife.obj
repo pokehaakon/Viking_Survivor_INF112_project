@@ -6,7 +6,7 @@ $Animation = Define Animation:
 
 $Stats = Define Stats:
     HP: 1.0
-    Speed: 50.0
+    Speed: 20.0
     Damage: 5
     resistance: 0.0
     scale: 15

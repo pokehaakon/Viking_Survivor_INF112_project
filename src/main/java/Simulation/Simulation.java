@@ -3,8 +3,6 @@ package Simulation;
 import Contexts.GameContext;
 import GameObjects.Actor;
 import GameObjects.GameObject;
-import GameObjects.ObjectActions.Action;
-import GameObjects.ObjectActions.PickupActions;
 import GameObjects.ObjectActions.WeaponActions;
 import InputProcessing.KeyStates;
 import Simulation.Coordinates.SpawnCoordinates;
@@ -23,7 +21,6 @@ import java.util.concurrent.locks.Lock;
 
 import static Contexts.GameContext.DE_SPAWN_RECT;
 import static Contexts.GameContext.SPAWN_RECT;
-import static Simulation.ObjectContactListener.isInCategory;
 import static Tools.ListTools.removeDestroyed;
 
 public class Simulation implements Runnable {
@@ -105,12 +102,7 @@ public class Simulation implements Runnable {
                 actor.doAction();
             }
 
-            for(GameObject obj : objects) {
-                if(obj.outOfBounds(player, DE_SPAWN_RECT)) {
-                    //System.out.println("DESTROY");
-                    obj.destroy();
-                }
-            }
+
 
             //gameWorld.act(frame);
 
@@ -134,12 +126,19 @@ public class Simulation implements Runnable {
             }
 
             if (frame == 10) {
-                Actor a = actorPool.get("AXE");
-                a.getAnimationHandler().rotate(20f);
-                //TODO why isnt the weapon showing???
-                a.addAction(WeaponActions.fireAtClosestEnemy(player.getSpeed()+a.getSpeed(), player, 1000, actors, new Vector2(200,200)));
+                Actor weapon = actorPool.get("KNIFE");
+                weapon.getAnimationHandler().rotate(5f);
+
+                weapon.addAction(WeaponActions.fireAtClosestActor(FilterTool.Category.ENEMY,player.getSpeed()+weapon.getSpeed(), player, 100, actors, SPAWN_RECT));
                 //a.addAction(WeaponActions.orbitActor(0.1f,10,  player, 1000, 0));
-                actors.add(a);
+                actors.add(weapon);
+
+//                Actor a = actorPool.get("KNIFE");
+//                a.getAnimationHandler().rotate(5f);
+//                //TODO why isnt the weapon showing???
+//                a.addAction(WeaponActions.fireAtClosestActor(FilterTool.Category.ENEMY,player.getSpeed()+a.getSpeed(), player, 200, actors, SPAWN_RECT));
+//                //a.addAction(WeaponActions.orbitActor(0.1f,10,  player, 1000, 0));
+//                actors.add(a);
             }
 
 
