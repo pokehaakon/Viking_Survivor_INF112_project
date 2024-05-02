@@ -50,14 +50,14 @@ public class SpawnHandlerFactory {
 
     public ISpawnHandler create(String actorName, SpawnType spawnType, List<String> args) {
         //TODO do this better :)
-        List<Action> dropActions = List.of(spawnPickupsIfKilled(0.2f,"HP_PICKUP", activeActors, actorPool, giveHP(player,10)),
+        List<Action> dropActions = List.of(spawnPickupsIfKilled(0.1f,"HP_PICKUP", activeActors, actorPool, giveHP(player,10,1000)),
                 spawnPickupsIfKilled(0.4f,"XP_PICKUP", activeActors, actorPool, giveXP(10)),
                 spawnPickupsIfKilled(0.1f,"SKULL_PICKUP", activeActors,actorPool,
                         PickupActions.startTemporaryActionChange(
                                 FilterTool.Category.WEAPON,
                                 5000,
                                 activeActors,
-                                WeaponActions.orbitActor(0.2f,10,  player, 0, 0)
+                                WeaponActions.orbitActor(0.4f,10,  player, 0, 0)
                         )
             )
         );
@@ -84,9 +84,9 @@ public class SpawnHandlerFactory {
 
                         for(int i = 0; i<6; i++) {
                             Actor weapon = actorPool.get("WEAPON_RAVEN");
-                            weapon.getAnimationHandler().rotate(2f);
+                            weapon.getAnimationHandler().rotate(10f);
 
-                            weapon.addAction(WeaponActions.fireAtClosestActor(FilterTool.Category.PLAYER,e.getSpeed()+weapon.getSpeed(), e, 200*i, activeActors, SPAWN_RECT)
+                            weapon.addAction(WeaponActions.fireAtClosestActor(FilterTool.Category.PLAYER,e.getSpeed()+weapon.getSpeed(), e, 400*i, activeActors, SPAWN_RECT)
                                     );
                             activeActors.add(weapon);
 

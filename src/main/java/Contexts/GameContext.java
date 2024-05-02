@@ -83,7 +83,7 @@ public class GameContext extends Context {
     private List<Body> toBoKilled;
     private AtomicLong synchronizer;
     boolean gameOver = false;
-    
+
     private GameMap gMap;
 
     private Vector2 previousFramePlayerSpeed = Vector2.Zero;
@@ -179,7 +179,7 @@ public class GameContext extends Context {
 
 
         gameWorld.render(camera, delta);
-        debugRenderer.render(world, camera.combined);
+        //debugRenderer.render(world, camera.combined);
 
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
