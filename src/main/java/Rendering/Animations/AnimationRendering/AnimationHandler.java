@@ -54,15 +54,19 @@ public class AnimationHandler {
 
     }
 
+    /**
+     * Rotates animation at its axis
+     * @param rotationSpeed the angle incrementation of the rotation
+     */
     public void rotate(float rotationSpeed) {
         animationRender.rotate(rotationSpeed);
     }
 
+    /**
+     * Stops rotation by setting the rotation speed  to 0
+     */
     public void stopRotation() {
         animationRender.stopRotation();
-    }
-    public void setDrawColor(Color color) {
-        animationRender.setDrawColor(color);
     }
     public AnimationState getAnimationState() {
         return animationState;

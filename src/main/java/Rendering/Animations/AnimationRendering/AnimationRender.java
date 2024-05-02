@@ -56,6 +56,4 @@ public interface AnimationRender {
 
     void stopRotation();
 
-
-    void setDrawColor(Color color);
 }

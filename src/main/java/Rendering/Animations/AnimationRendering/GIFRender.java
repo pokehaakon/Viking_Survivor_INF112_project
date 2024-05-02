@@ -135,13 +135,6 @@ public class GIFRender implements AnimationRender {
 
         }
 
-        @Override
-        public void setDrawColor(Color color) {
-//            if(!drawColor.equals(color)) {
-//                drawColor = color;
-//            }
-
-        }
 
 
 

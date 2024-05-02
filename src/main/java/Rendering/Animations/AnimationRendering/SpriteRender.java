@@ -66,11 +66,6 @@ public class SpriteRender implements AnimationRender {
 
     }
 
-    @Override
-    public void setDrawColor(Color color) {
-
-    }
-
 
     /**
      * IMPORTANT, THIS ONLY LOADS IN RENDER THREAD!
