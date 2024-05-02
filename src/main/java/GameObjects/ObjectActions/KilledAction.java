@@ -40,16 +40,17 @@ public abstract class KilledAction {
             ObjectPool<Actor> pool,
             Action... pickupActions) {
 
-        return doIfDefeated((actor) -> {
+        return (actor) -> {
             if(Math.random() <= prob) {
                 Actor pickup = pool.get(type);
                 pickup.setPosition(actor.getBody().getPosition());
-                pickup.addAction(pickupActions);
+                pickup.addDieAction(pickupActions);
+                //pickup.addAction(pickupActions);
 
                 pickups.add(pickup);
             }
 
-        });
+        };
     }
 
 

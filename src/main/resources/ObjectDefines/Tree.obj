@@ -1,13 +1,13 @@
 $Animation = Define Animation:
-    State: MOVING tree.png
+    State: IDLE tree.png
 
 $Shape = Define Shape:
     Type: Circle
-    Radius: 1.0
+    Radius: 7.0
 
 $Structure = Define Structure:
-    Filter: WALL
-    Category: ENEMY PLAYER
+    Filter: ENEMY PLAYER
+    Category: WALL
     Shape: $Shape
     BodyType: StaticBody
     density: 1

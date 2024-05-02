@@ -1,6 +1,6 @@
 package Simulation;
 
-import Contexts.ReleaseCandidateContext;
+import Contexts.GameContext;
 import GameObjects.Actor;
 import GameObjects.GameObject;
 import GameObjects.ObjectActions.Action;
@@ -21,9 +21,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 
 
-import static GameObjects.ObjectActions.KilledAction.*;
-import static GameObjects.ObjectActions.MovementActions.chaseActor;
-import static GameObjects.ObjectActions.PickupActions.*;
+import static Contexts.GameContext.DE_SPAWN_RECT;
+import static Contexts.GameContext.SPAWN_RECT;
 import static Simulation.ObjectContactListener.isInCategory;
 import static Tools.ListTools.removeDestroyed;
 
@@ -36,7 +35,7 @@ public class Simulation implements Runnable {
     private final World world;
     private final RollingSum updateTime;
     private final RollingSum UPS;
-    private final ReleaseCandidateContext context;
+    private final GameContext context;
     private final Actor player;
     private final ObjectPool<Actor> actorPool;
     private final ObjectPool<GameObject> objectPool;
@@ -58,7 +57,7 @@ public class Simulation implements Runnable {
     private List<Actor> tempPickups;
 
     private List<Actor> drawableEnemies;
-    public Simulation(ReleaseCandidateContext context) {
+    public Simulation(GameContext context) {
         this.context = context;
         renderLock = context.getRenderLock();
         keyStates = context.getKeyStates();
@@ -98,40 +97,49 @@ public class Simulation implements Runnable {
 
 
             context.getPlayer().doAction();
-
-            for (Actor actor : actors) {
-
-                //
-                if(isInCategory(actor.getBody(), FilterTool.Category.PICKUP)) {
-                    continue;
-                }
+            int actorLength = actors.size();
+            for(int i = 0; i < actorLength;i++) {
+                Actor actor = actors.get(i);
+//                if(isInCategory(actor.getBody(), FilterTool.Category.PICKUP)) {
+//                    continue;
+//                }
                 actor.doAction();
             }
 
+            for(GameObject obj : objects) {
+                if(obj.outOfBounds(player, DE_SPAWN_RECT)) {
+                    //System.out.println("DESTROY");
+                    obj.destroy();
+                }
+            }
 
+            //gameWorld.act(frame);
 
             // random spawning for now
-            if (TimeUtils.millis() - lastSpawnTime > 10000) {
-                Actor pickup = actorPool.get("XP_PICKUP");
-                //pickup.addAction(giveHP(player,10), setWeaponSpeed(10000,10));
-                pickup.addAction(PickupActions.startTemporaryActionChange(FilterTool.Category.WEAPON,5000,actors,WeaponActions.orbitActor(0.4f,10,  player, 0, 0)));
+            if (TimeUtils.millis() - lastSpawnTime > 1000) {
+//                Actor pickup = actorPool.get("SKULL_PICKUP");
+//                //pickup.addAction(giveHP(player,10), setWeaponSpeed(10000,10));
+//                pickup.addAction(PickupActions.startTemporaryActionChange(FilterTool.Category.WEAPON,5000,actors,WeaponActions.orbitActor(0.4f,10,  player, 0, 0)));
                 //pickup.addAction(changeAction(actors,FilterTool.Category.WEAPON,WeaponActions.fireAtClosestEnemy(50,player,1000,actors, new Vector2(200,200))));
-                pickup.setPosition(new Vector2(player.getBody().getPosition().x+50,player.getBody().getPosition().y +20));
-                actors.add(pickup);
+                //pickup.setPosition(new Vector2(player.getBody().getPosition().x+50,player.getBody().getPosition().y +20));
+                //actors.add(pickup);
 
                 //spawnRandomEnemies(5,Arrays.asList(ActorActions.destroyIfDefeated(player),ActorActions.chasePlayer(player), coolDown(500)));
-                spawnTerrain("TREE", 5);
-                spawnEnemies("ORC",10,
-                        chaseActor(player),
-                        spawnPickupsIfKilled(1,"HP_PICKUP", tempPickups,context.getActorPool(),giveHP(player,10)),destroyIfDefeated());
+                spawnTerrain("TREE", 5, SPAWN_RECT,50);
+                spawnTerrain("ROCK_1",5, SPAWN_RECT,50);
+                spawnTerrain("ROCK_2",5, SPAWN_RECT, 50);
+//                spawnEnemies("ORC",10,
+//                        chaseActor(player),
+//                        spawnPickupsIfKilled(1,"HP_PICKUP", tempPickups,context.getActorPool(),giveHP(player,10)),destroyIfDefeated()
+//                );
             }
 
             if (frame == 10) {
-                Actor a = actorPool.get("KNIFE");
+                Actor a = actorPool.get("AXE");
                 a.getAnimationHandler().rotate(20f);
                 //TODO why isnt the weapon showing???
-                a.addAction(WeaponActions.fireAtClosestEnemy(50,player,1000,actors, new Vector2(200,200)));
-                //a.addAction(WeaponActions.orbitActor(0.1f,10,  player, 0, 0));
+                a.addAction(WeaponActions.fireAtClosestEnemy(player.getSpeed()+a.getSpeed(), player, 1000, actors, new Vector2(200,200)));
+                //a.addAction(WeaponActions.orbitActor(0.1f,10,  player, 1000, 0));
                 actors.add(a);
             }
 
@@ -175,9 +183,9 @@ public class Simulation implements Runnable {
     }
 
 
-    private void spawnTerrain(String TerrainName, int num) {
+    private void spawnTerrain(String TerrainName, int num, Vector2 boundedSqure, float distanceBetween) {
         List<Vector2> occupiedSpawns =  SpawnCoordinates.getOccupiedPositions(objects);
-        List<Vector2> availableSpawns = SpawnCoordinates.fixedSpawnPoints(num, new Vector2(200,200),200,player.getBody().getPosition(),occupiedSpawns);
+        List<Vector2> availableSpawns = SpawnCoordinates.fixedSpawnPoints(num, boundedSqure,distanceBetween,player.getBody().getPosition(),occupiedSpawns);
 
         for(Vector2 spawn: availableSpawns) {
             GameObject terrain = objectPool.get(TerrainName);
@@ -191,14 +199,7 @@ public class Simulation implements Runnable {
         lastSpawnTime = TimeUtils.millis();
     }
 
-    private void spawnEnemies(String type, int n, Action... actions) {
-        for(Actor enemy : context.getActorPool().get(type, n)) {
-            enemy.setPosition(SpawnCoordinates.randomSpawnPoint(player.getBody().getPosition(), 200));
-            enemy.addAction(actions);
-            context.getDrawableActors().add(enemy);
-            lastSpawnTime = TimeUtils.millis();
-        }
-    }
+
 
     public void stopSim() {
         quit = true;

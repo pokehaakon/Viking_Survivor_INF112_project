@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 
+import static GameObjects.ObjectActions.MovementActions.chaseActor;
 import static GameObjects.ObjectActions.MovementActions.chaseActorCustomSpeed;
 import static Simulation.ObjectContactListener.isInCategory;
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
@@ -35,7 +36,7 @@ public abstract class WeaponActions {
         return weapon -> {
             //doPotentialActionChange(weapon);
 
-            if (framesSinceLastAttack.getAndIncrement() >= frameInterval && !weapon.getBody().isActive()) {
+            if (!weapon.getBody().isActive() && framesSinceLastAttack.getAndIncrement() >= frameInterval) {
                 //start weapon again, (cooldown over)
 
                 framesSinceLastAttack.set(0);
@@ -124,17 +125,19 @@ public abstract class WeaponActions {
     public static Action fireAtClosestEnemy(float speed,Actor actor, double interval, List<Actor> actors, Vector2 boundSquare) {
         long frameInterval = (long) (interval * SET_FPS / 1000);
         AtomicLong framesSinceLastThrow = new AtomicLong(0);
-        AtomicDouble projSpeed = new AtomicDouble(speed);
+        //AtomicDouble projSpeed = new AtomicDouble(speed);
 
         return (weapon) -> {
+            Actor closestEnemy = getClosestActor(actor,actors, FilterTool.Category.ENEMY);
+            if (closestEnemy == null) return;
 
             if (framesSinceLastThrow.getAndIncrement() <= 0 ) {
                 if(!weapon.getBody().isActive()) {
                     weapon.getBody().setActive(true);
                 }
-                Actor closestEnemy = getClosestActor(actor,actors, FilterTool.Category.ENEMY);
+
                 weapon.setPosition(actor.getBody().getPosition());
-                chaseActorCustomSpeed(closestEnemy,(float)projSpeed.get()).act(weapon);
+                chaseActor(closestEnemy).act(weapon);
             }
 
             if(weapon.outOfBounds(actor,boundSquare) || attackedByWeapon(weapon,actors)){

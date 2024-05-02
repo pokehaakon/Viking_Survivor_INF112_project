@@ -4,15 +4,15 @@ $OrcAnimation = Define Animation:
     State: MOVING $ORC_GIF
 
 $OrcStats = Define Stats:
-    HP: 150.0
+    HP: 30.0
     Speed: 20.0
-    Damage: 20.0
+    Damage: 15.0
     resistance: 0.0
-    scale: 7.0
+    scale: 17.0
 
 $OrcShape = Define Shape:
     Type: Circle
-    Radius: 4.0
+    Radius: 3.5
 
 $OrcStructure = Define Structure:
     Filter: ENEMY PLAYER WEAPON

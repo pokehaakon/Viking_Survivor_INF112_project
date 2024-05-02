@@ -1,6 +1,6 @@
 package Simulation.Coordinates;
 
-import Contexts.ReleaseCandidateContext;
+import Contexts.GameContext;
 import GameObjects.GameObject;
 import com.badlogic.gdx.math.Vector2;
 
@@ -34,8 +34,8 @@ public abstract class SpawnCoordinates extends Vector2 {
 
     public static Vector2 randomPointOutsideScreenRect(Vector2 center) {
         //Vector2 V = ReleaseCandidateContext.SPAWN_RECT.cpy().add(ReleaseCandidateContext.DE_SPAWN_RECT).scl(0.5f);
-        float W = ReleaseCandidateContext.SPAWN_RECT.x + ReleaseCandidateContext.DE_SPAWN_RECT.x;
-        float H = ReleaseCandidateContext.SPAWN_RECT.y + ReleaseCandidateContext.DE_SPAWN_RECT.y;
+        float W = GameContext.SPAWN_RECT.x + GameContext.DE_SPAWN_RECT.x;
+        float H = GameContext.SPAWN_RECT.y + GameContext.DE_SPAWN_RECT.y;
 
 
         float len = (float) Math.random() * (W + H);

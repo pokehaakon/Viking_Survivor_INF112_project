@@ -1,5 +1,6 @@
 package Simulation;
 
+import GameMap.GameMap;
 import GameObjects.Actor;
 import GameObjects.GameObject;
 import GameObjects.ObjectFactory;
@@ -23,11 +24,10 @@ import java.util.List;
 import java.util.Map;
 
 public class GameWorld implements Disposable {
+    private final float mapScale = 0.25f;
     private Map<String, String> defines;
     private List<Pair<Long, List<SpawnFrame>>> timeFrames;
-    private TiledMapRenderer mapRenderer;
-    private final TiledMap map;
-    private final float mapScale = 4f;
+    private GameMap map;
     private long nextFrame;
     private int frameIndex = 0;
     private final List<ISpawnHandler> spawnHandlers = new ArrayList<>();
@@ -77,8 +77,8 @@ public class GameWorld implements Disposable {
         defines = mapParser.doParseDefines();
         timeFrames = mapParser.doParseTimeFrames();
 
-        map = new TmxMapLoader().load(defines.get("MAP_PATH"));
-        mapRenderer = new OrthogonalTiledMapRenderer(map, mapScale);
+        map = new GameMap(defines.get("MAP_PATH"), mapScale);
+        //map.createMapBorder(world);
 
         if (timeFrames != null) {
             nextFrame = timeFrames.get(0).getValue0();
@@ -116,12 +116,17 @@ public class GameWorld implements Disposable {
     }
 
     public void render(OrthographicCamera camera, float delta) {
-        mapRenderer.setView(camera);
-        mapRenderer.render();
+        map.renderTiledMap(camera);
+//        mapRenderer.setView(camera);
+//        mapRenderer.render();
     }
 
     @Override
     public void dispose() {
         map.dispose();
+    }
+
+    public GameMap getGameMap() {
+        return map;
     }
 }

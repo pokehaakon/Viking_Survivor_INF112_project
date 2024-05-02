@@ -86,6 +86,7 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
+
         if (amountY > 0 && zoom < 2) {
             zoom *= 1.25f;
         }

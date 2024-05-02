@@ -1,0 +1,39 @@
+$include ObjectDefines/Raven.obj
+$include ObjectDefines/Boss_Raven.obj
+$include ObjectDefines/Orc.obj
+$include ObjectDefines/Player.obj
+$include ObjectDefines/Axe.obj
+$include ObjectDefines/Knife.obj
+$include ObjectDefines/Pickups.obj
+$include ObjectDefines/Tree.obj
+$include ObjectDefines/Wolf.obj
+$include ObjectDefines/Rock.obj
+
+
+!MAP_PATH=assets/damaged_roads_map.tmx
+!PLAYER_NAME=PLAYER
+
+00:03:
+    #ORC; SWARM size:15 type:LINE delay:1 speedMultiplier:10
+    RAVEN; CONTINUOUS size:20 maxSpawnEachFrame:1
+    #BOSS_RAVEN; WAVE size:1 maxSpawnEachFrame:1
+
+    #RAVEN; WAVE 10 20
+    #RAVEN; SWARM size:20 type:LINE
+
+
+00:20:
+    RAVEN; CONTINUOUS size:5 maxSpawnEachFrame:1
+    WOLF; CONTINUOUS size:10 maxSpawnEachFrame:1
+
+00:40:
+    ORC; CONTINUOUS size:15 maxSpawnEachFrame:1
+    RAVEN; SWARM size:15 type:LINE delay:10
+    RAVEN; SWARM size:15 type:LINE delay:20
+    RAVEN; SWARM size:15 type:LINE delay:30
+
+01:30:
+    BOSS_RAVEN; WAVE size:1 maxSpawnEachFrame:1
+
+
+

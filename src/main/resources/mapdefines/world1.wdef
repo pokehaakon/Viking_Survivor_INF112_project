@@ -14,6 +14,8 @@ $include ObjectDefines/Wolf.obj
     #ORC; BOSS 100 HARD
     #RAVEN; WAVE 10 20
     RAVEN; CONTINUOUS size:10 maxSpawnEachFrame:1
+    RAVEN; SWARM size:20 type:LINE
+
 
 00:10:
     ORC; SWARM size:20 type:LINE

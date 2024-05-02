@@ -2,17 +2,18 @@
 
 $Animation = Define Animation:
     State: IDLE axe.gif
+    state: MOVING axe.gif
 
 $Stats = Define Stats:
     HP: 0
     Speed: 100.0
     Damage: 10.0
     resistance: 0.0
-    scale: 4
+    scale: 15
 
 $Shape = Define Shape:
     Type: Circle
-    Radius: 4
+    Radius: 2
 
 
 $Structure = Define Structure:

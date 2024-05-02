@@ -1,5 +1,6 @@
 package Contexts;
 
+import Camera.TargetCamera;
 import GameMap.GameMap;
 import GameObjects.Actor;
 import GameObjects.GameObject;
@@ -43,11 +44,10 @@ import java.util.function.Function;
 import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
 import static VikingSurvivor.app.Main.SCREEN_WIDTH;
 
-import Camera.TargetCamera;
-
-public class ReleaseCandidateContext extends Context {
-    public static final double SPAWN_RADIUS = (double)0.7*SCREEN_WIDTH;
-    public static final Vector2 SPAWN_RECT = new Vector2(SCREEN_WIDTH, SCREEN_HEIGHT);
+public class GameContext extends Context {
+    static public float zoomLevel = 0.07f;
+    public static final double SPAWN_RADIUS = 0.7*SCREEN_WIDTH * zoomLevel;
+    public static final Vector2 SPAWN_RECT = (new Vector2(SCREEN_WIDTH, SCREEN_HEIGHT)).scl(zoomLevel * 1.05f);
     public static final Vector2 DE_SPAWN_RECT = SPAWN_RECT.cpy().scl(1.3f);
 
     private List<Actor> pickup;
@@ -76,7 +76,6 @@ public class ReleaseCandidateContext extends Context {
     private final Thread simThread;
     private List<GameObject> drawableObjects;
     private List<Actor> drawableActors;
-    private float zoomLevel = 1f;
     private long frameCount = 0;
     private static boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
     private Box2DDebugRenderer debugRenderer;
@@ -85,14 +84,14 @@ public class ReleaseCandidateContext extends Context {
     private AtomicLong synchronizer;
     boolean gameOver = false;
 
-    private float tiledMapScale = 1f;
+    //private float tiledMapScale = 1f / 16;
     private GameMap gMap;
 
     private Vector2 previousFramePlayerSpeed = Vector2.Zero;
     private GameWorld gameWorld;
 
 
-    public ReleaseCandidateContext(String name, SpriteBatch batch, OrthographicCamera camera, ContextualInputProcessor iProc) {
+    public GameContext(String name, SpriteBatch batch, OrthographicCamera camera, ContextualInputProcessor iProc) {
         super(name, iProc);
         pickup = new ArrayList<>();
 
@@ -100,8 +99,12 @@ public class ReleaseCandidateContext extends Context {
 
         this.batch = batch;
         this.camera = camera;
+        camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
+        camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
 
         level = 0;
+
+
 
         this.keyStates = new KeyStates();
         this.setInputProcessor(
@@ -144,21 +147,21 @@ public class ReleaseCandidateContext extends Context {
 
     }
 
-    private void updateCamera(Vector2 player, int viewportWidth, int viewportHeight, TiledMap map, float tiledMapScale) {
-        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
-        float mapHeight = layer.getHeight() * layer.getTileHeight() * tiledMapScale;
-        float mapWidth = layer.getWidth() * layer.getTileWidth() * tiledMapScale;
-
-        if(player.x < viewportWidth / 2f) camera.position.x = viewportWidth / 2f;
-        else if(player.x > mapWidth - viewportWidth / 2f) camera.position.x = mapWidth - viewportWidth / 2f;
-        else camera.position.x = player.x;
-
-        if(player.y < viewportHeight / 2f) camera.position.y = viewportHeight / 2f;
-        else if(player.y > mapHeight - viewportHeight / 2f) camera.position.y = mapHeight - viewportHeight / 2f;
-        else camera.position.y = player.y;
-
-        camera.update();
-    }
+//    private void updateCamera(Vector2 player, int viewportWidth, int viewportHeight, TiledMap map, float tiledMapScale) {
+//        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
+//        float mapHeight = layer.getHeight() * layer.getTileHeight() * tiledMapScale;
+//        float mapWidth = layer.getWidth() * layer.getTileWidth() * tiledMapScale;
+//
+//        if(player.x < viewportWidth / 2f) camera.position.x = viewportWidth / 2f;
+//        else if(player.x > mapWidth - viewportWidth / 2f) camera.position.x = mapWidth - viewportWidth / 2f;
+//        else camera.position.x = player.x;
+//
+//        if(player.y < viewportHeight / 2f) camera.position.y = viewportHeight / 2f;
+//        else if(player.y > mapHeight - viewportHeight / 2f) camera.position.y = mapHeight - viewportHeight / 2f;
+//        else camera.position.y = player.y;
+//
+//        camera.update();
+//    }
 
     @Override
     public void render(float delta) {
@@ -174,19 +177,20 @@ public class ReleaseCandidateContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.GREEN);
 
-        gMap.renderTiledMap((OrthographicCamera) camera);
+        //gMap.renderTiledMap((OrthographicCamera) camera);
 
         gameWorld.render(camera, delta);
         debugRenderer.render(world, camera.combined);
 
-        TargetCamera.updateCamera(player.getBody().getPosition(), camera, gMap.getTiledMap(), tiledMapScale);
-
         Vector2 origin;
         origin = player.getBody().getPosition().cpy();
         //origin.sub(getBottomLeftCorrection(player.getBody().getFixtureList().get(0).getShape()));
-        camera.position.x = origin.x + previousFramePlayerSpeed.x / sim.SET_UPS;
-        camera.position.y = origin.y + previousFramePlayerSpeed.y / sim.SET_UPS;
+//        camera.position.x = origin.x + previousFramePlayerSpeed.x / Simulation.SET_UPS;
+//        camera.position.y = origin.y + previousFramePlayerSpeed.y / Simulation.SET_UPS;
+        previousFramePlayerSpeed.scl(1f/Simulation.SET_UPS);
+        Vector2 correctedOrigin = origin.cpy().add(previousFramePlayerSpeed);
 
+        TargetCamera.updateCamera(correctedOrigin, camera, gMap);
         previousFramePlayerSpeed = player.getBody().getLinearVelocity();
 
         // Save player position for further use
@@ -293,7 +297,10 @@ public class ReleaseCandidateContext extends Context {
 
     @Override
     public void resize(int width, int height) {
-
+        System.out.println(width + ", " + height);
+        camera.viewportHeight = height * zoomLevel;
+        camera.viewportWidth = width * zoomLevel;
+        camera.update();
     }
 
     @Override
@@ -328,10 +335,9 @@ public class ReleaseCandidateContext extends Context {
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
 
-        this.gMap = new GameMap("assets/damaged_roads_map.tmx", tiledMapScale);
-        gMap.createMapBorder(world);
 
-        enemyFactory = new EnemyFactory();
+
+        //enemyFactory = new EnemyFactory();
         drawableEnemies = new ArrayList<>();
         drawableActors = new ArrayList<>();
         drawableObjects = new ArrayList<>();
@@ -351,14 +357,16 @@ public class ReleaseCandidateContext extends Context {
 
 
 //        player = ExperimentalFactory.createActor("PlayerType:PLAYER1");
-        gameWorld = new GameWorld("mapdefines/world1.wdef", actorPool, objectPool, drawableActors, drawableObjects);
+        gameWorld = new GameWorld("mapdefines/demo.wdef", actorPool, objectPool, drawableActors, drawableObjects);
+        gMap = gameWorld.getGameMap();
+        gMap.createMapBorder(world);
 
         player = gameWorld.player;
         player.addToWorld(world);
 //        player.setPosition(getMiddleOfMapPosition(map, tiledMapScale));
-        player.setPosition(gMap.getMiddleOfMapPosition());
-        player.setAction(PlayerActions.moveToInput(keyStates));
-        player.setAction(PlayerActions.coolDown(500));
+        player.setPosition(gMap.getMiddleOfMapPosition()); //TODO fix this!
+//        player.setAction(PlayerActions.moveToInput(keyStates));
+//        player.setAction(PlayerActions.coolDown(500));
         //player.setPosition(getMiddleOfMapPosition(map, tiledMapScale));
 //        player.setPosition(new Vector2());
         player.addAction(PlayerActions.moveToInput(keyStates));

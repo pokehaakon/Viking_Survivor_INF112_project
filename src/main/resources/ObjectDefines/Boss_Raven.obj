@@ -6,15 +6,15 @@ $RavenAnimation = Define Animation:
     initial: MOVING
 
 $RavenStats = Define Stats:
-    HP: 10.0
+    HP: 200.0
     Speed: 10
-    Damage: 5.0
+    Damage: 15.0
     resistance: 0.0
-    scale: 10
+    scale: 40
 
 $RavenShape = Define Shape:
     Type: Circle
-    Radius: 2
+    Radius: 7
 
 $RavenStructure = Define Structure:
     Filter: ENEMY PLAYER WEAPON
@@ -25,7 +25,7 @@ $RavenStructure = Define Structure:
     friction: 0
     isSensor: false
 
-$RAVEN = Define Actor:
+$BOSS_RAVEN = Define Actor:
     Animation: $RavenAnimation
     Stats: $RavenStats
     Structure: $RavenStructure

@@ -14,7 +14,7 @@ $SKULL_Animation = Define Animation:
 
 $Shape = Define Shape:
     Type: Circle
-    Radius: 3.0
+    Radius: 1.0
 
 $Structure = Define Structure:
     Filter: PLAYER
@@ -25,24 +25,38 @@ $Structure = Define Structure:
     friction: 0
     isSensor: true
 
-$Stats = Define Stats:
+$SKULL_Stats = Define Stats:
     HP: 0
     Speed: 0
     Damage: 0
     resistance: 0
-    scale: 5
+    scale: 7
+
+$XP_Stats = Define Stats:
+    HP: 0
+    Speed: 0
+    Damage: 0
+    resistance: 0
+    scale: 11
+
+$HP_Stats = Define Stats:
+    HP: 0
+    Speed: 0
+    Damage: 0
+    resistance: 0
+    scale: 15
 
 $HP_PICKUP = Define Actor:
     Animation: $HP_Animation
-    Stats: $Stats
+    Stats: $HP_Stats
     Structure: $Structure
 
 $XP_PICKUP = Define Actor:
     Animation: $XP_Animation
-    Stats: $Stats
+    Stats: $XP_Stats
     Structure: $Structure
 
 $SKULL_PICKUP = Define Actor:
     Animation: $SKULL_Animation
-    Stats: $Stats
+    Stats: $SKULL_Stats
     Structure: $Structure

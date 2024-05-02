@@ -134,15 +134,15 @@ public class Actor extends GameObject implements IActor {
 
     @Override
     public void addDieAction(Action action) {
-        actions.add(action);
+        dieActions.add(action);
     }
     @Override
     public void addDieAction(Action... actions) {
-        this.actions.addAll(List.of(actions));
+        this.dieActions.addAll(List.of(actions));
     }
     @Override
     public void addDieAction(Collection<Action> actions) {
-        this.actions.addAll(actions);
+        this.dieActions.addAll(actions);
     }
 
     @Override
@@ -221,7 +221,7 @@ public class Actor extends GameObject implements IActor {
         super.revive();
         HP = stats.HP;
 
-
+        hitByIDs.clear();
     }
 
     private void updateAnimationState() {
@@ -241,7 +241,6 @@ public class Actor extends GameObject implements IActor {
         for (var a : dieActions)
             a.act(this);
         destroy();
-
     }
 
     @Override
@@ -249,7 +248,7 @@ public class Actor extends GameObject implements IActor {
         super.destroy();
         resetActions();
         resetDieActions();
-        hitByIDs.clear();
+        //hitByIDs.clear();
         inCoolDown = false;
     }
 

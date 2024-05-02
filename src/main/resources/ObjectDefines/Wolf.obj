@@ -4,15 +4,15 @@ $Animation = Define Animation:
     State: MOVING $Wolf_gif
 
 $Stats = Define Stats:
-    HP: 150.0
+    HP: 25.0
     Speed: 50.0
-    Damage: 20.0
+    Damage: 10.0
     resistance: 0.0
-    scale: 7.0
+    scale: 14.0
 
 $Shape = Define Shape:
     Type: Circle
-    Radius: 4.0
+    Radius: 3.5
 
 $Structure = Define Structure:
     Filter: ENEMY PLAYER WEAPON

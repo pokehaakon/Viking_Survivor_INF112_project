@@ -67,6 +67,7 @@ public class HelloWorld implements ApplicationListener {
 
 		screenRect.width = width;
 		screenRect.height = height;
+		currentContext.resize(width, height);
 	}
 
 	@Override

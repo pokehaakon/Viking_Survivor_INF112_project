@@ -80,7 +80,8 @@ public class GameObject implements IGameObject {
 
     @Override
     public void draw(SpriteBatch batch, long frame) {
-       animationHandler.getAnimationRenderer().draw(batch, frame,this);
+        if (!body.isActive()) return;
+        animationHandler.getAnimationRenderer().draw(batch, frame,this);
     }
 
     @Override
@@ -124,7 +125,7 @@ public class GameObject implements IGameObject {
                 .getBody()
                 .getPosition()
                 .cpy()
-                .sub(body.getPosition());
+                .sub(centerActor.getPosition());
 
         return (Math.abs(dxdy.x) > boundSquare.x / 2 || Math.abs(dxdy.y) > boundSquare.y / 2);
     }

@@ -1,0 +1,28 @@
+$Animation_1 = Define Animation:
+    State: IDLE rock_1.png
+
+$Animation_2 = Define Animation:
+    State: IDLE rock_2.png
+
+$Shape = Define Shape:
+    Type: Circle
+    Radius: 7.0
+
+$Structure = Define Structure:
+    Filter: ENEMY PLAYER
+    Category: WALL
+    Shape: $Shape
+    BodyType: StaticBody
+    density: 1
+    friction: 1
+    isSensor: false
+
+$ROCK_1 = Define Object:
+    Animation: $Animation_1
+    Scale: 20
+    Structure: $Structure
+
+$ROCK_2 = Define Object:
+    Animation: $Animation_2
+    Scale: 20
+    Structure: $Structure

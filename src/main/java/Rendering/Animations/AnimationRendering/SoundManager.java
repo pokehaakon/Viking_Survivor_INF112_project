@@ -19,7 +19,6 @@ public abstract class SoundManager {
     static{
         soundEffects.put(ATTACK_SOUND, Gdx.audio.newSound(Gdx.files.internal(ATTACK_SOUND)));
 
-
     }
 
 
@@ -30,6 +29,7 @@ public abstract class SoundManager {
             throw new IllegalArgumentException("Can't find the sound name");
         }
         Sound sound = soundEffects.get(soundName);
+
         if(Objects.isNull(sound)) {
             throw new NullPointerException("Can not play when sound is null!");
         }

@@ -61,14 +61,14 @@ public class GameMap {
     }
 
     private float[] createPolyLine(PolygonMapObject polygon) {
-        for(float juice : polygon.getPolygon().getTransformedVertices()) System.out.println(juice);
+        //for(float juice : polygon.getPolygon().getTransformedVertices()) System.out.println(juice);
         float[] points = polygon.getPolygon().getTransformedVertices();
         float[] newPoints = new float[points.length + 2];
         newPoints[0] = 0.0f;
         newPoints[1] = 0.0f;
 
         for (int i = 0; i < points.length; i++) {
-            newPoints[i + 2] = points[i];
+            newPoints[i + 2] = points[i] * scale;
         }
         return newPoints;
     }
@@ -103,5 +103,12 @@ public class GameMap {
                     BodyDef.BodyType.StaticBody
             );
         }
+    }
+
+    public float getScale() {
+        return scale;
+    }
+    public void dispose() {
+        getTiledMap().dispose();
     }
 }
