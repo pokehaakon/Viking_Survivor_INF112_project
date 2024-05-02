@@ -148,6 +148,7 @@ public class Simulation implements Runnable {
             removeDestroyed(objects, objectPool, true);
 
             actors.addAll(tempPickups);
+            tempPickups.clear();
 
             renderLock.unlock();
             long simTimeToUpdate = System.nanoTime() - t0;
