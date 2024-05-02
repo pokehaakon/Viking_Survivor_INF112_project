@@ -17,6 +17,9 @@ public abstract class ListTools {
             if (v == null) continue;
             ls.set(j++, v);
         }
+        for (;j < ls.size(); j++) {
+            ls.set(j, null);
+        }
     }
     public static <T extends GameObject> void removeDestroyed(List<T> ls, IPool<T> pool, boolean compress) {
         int i = 0;

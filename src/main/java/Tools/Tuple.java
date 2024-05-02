@@ -44,7 +44,7 @@ public abstract class Tuple {
         public ZippedIterator(Iterator... iters) {this.iters = iters;}
         @Override
         public boolean hasNext() {
-            for (var i : iters) {if (i.hasNext()) return false;}
+            for (var itr : iters) {if (!itr.hasNext()) return false;}
             return true;
         }
 
