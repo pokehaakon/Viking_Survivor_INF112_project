@@ -7,24 +7,25 @@ import Tools.FilterTool;
 import com.badlogic.gdx.physics.box2d.*;
 
 import static Tools.FilterTool.Category.*;
+import static Tools.FilterTool.categoryBits;
 
 public class ObjectContactListener implements ContactListener {
     static final private short playerAndEnemyMask = FilterTool.combineMaskEnums(PLAYER, ENEMY);
     static final private short weaponAndEnemyMask = FilterTool.combineMaskEnums(WEAPON, ENEMY);
     static final private short playerAndPickupMask = FilterTool.combineMaskEnums(PLAYER, PICKUP);
 
-    static public boolean isInCategory(Body body, FilterTool.Category category) {
-        return (categoryBits(body) & category.getMask()) != 0;
-    }
-
-    /**
-     * gets the category bits of the body
-     * @param body the body to get the category bits from
-     * @return the category bits of the body
-     */
-    static private short categoryBits(Body body) {
-        return body.getFixtureList().get(0).getFilterData().categoryBits;
-    }
+//    static public boolean isInCategory(Body body, FilterTool.Category category) {
+//        return (categoryBits(body) & category.getMask()) != 0;
+//    }
+//
+//    /**
+//     * gets the category bits of the body
+//     * @param body the body to get the category bits from
+//     * @return the category bits of the body
+//     */
+//    static private short categoryBits(Body body) {
+//        return body.getFixtureList().get(0).getFilterData().categoryBits;
+//    }
 
     /**
      * returns true if the category bits between b1 and b2 covers the mask
@@ -51,7 +52,7 @@ public class ObjectContactListener implements ContactListener {
      * @param b2 second body
      * @return true if collision occurs between weapon and enemy, false otherwise
      */
-    static public boolean weaponEnemyCollision(Body b1, Body b2) {
+    static private boolean weaponEnemyCollision(Body b1, Body b2) {
         return XYCollision(b1, b2, weaponAndEnemyMask);
     }
 

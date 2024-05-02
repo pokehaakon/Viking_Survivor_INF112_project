@@ -15,7 +15,7 @@ $Shape = Define Shape:
     Radius: 3.5
 
 $Structure = Define Structure:
-    Filter: ENEMY PLAYER WEAPON
+    Filter: ENEMY PLAYER WEAPON WALL
     Category: ENEMY
     Shape: $Shape
     BodyType: DynamicBody

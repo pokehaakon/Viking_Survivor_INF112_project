@@ -3,12 +3,12 @@ package GameObjects;
 import GameObjects.ObjectActions.Action;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
 import Rendering.Animations.AnimationState;
-import com.badlogic.gdx.graphics.Color;
+import Tools.FilterTool;
+
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
-//import static GameObjects.ObjectActions.WeaponActions.doPotentialActionChange;
+import static Tools.FilterTool.isInCategory;
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
 public class Actor extends GameObject implements IActor {
@@ -82,9 +82,13 @@ public class Actor extends GameObject implements IActor {
         // cool down feature
         inCoolDown = (inCoolDown && --coolDownDuration > 0);
 
+        if(isInCategory(getBody(), FilterTool.Category.WEAPON)) {
+            System.out.println(originalActions.size());
+        }
         doPotentialActionChange();
         updateDirectionState();
         updateAnimationState();
+
     }
 
     public void stopCoolDown() {
@@ -92,8 +96,9 @@ public class Actor extends GameObject implements IActor {
     }
 
     public void setTemporaryActionChange(float duration, Action... actions) {
+
         tempActions.addAll(List.of(actions));
-        // convert to frames
+        //convert to frames
         framesLeftOfChange = duration*SET_FPS/1000;
         startTempChange = true;
     }
@@ -106,16 +111,14 @@ public class Actor extends GameObject implements IActor {
 
         // stores original actions and adds temp actions
         if(startTempChange) {
-            originalActions.addAll(actions);
+            if (originalActions.size() < actions.size()) {
+                originalActions.addAll(actions);
+            }
             resetActions();
             addAction(tempActions);
             tempActions.clear();
             startTempChange = false;
             startCountDown = true;
-        }
-
-        if(startCountDown) {
-            System.out.println(framesLeftOfChange);
         }
 
         // adds original actions back again
@@ -128,9 +131,6 @@ public class Actor extends GameObject implements IActor {
 
     }
 
-    public void setTemporaryChange(long duration, Action... actions) {
-
-    }
 
     @Override
     public void addDieAction(Action action) {
@@ -248,7 +248,6 @@ public class Actor extends GameObject implements IActor {
         super.destroy();
         resetActions();
         resetDieActions();
-        //hitByIDs.clear();
         inCoolDown = false;
     }
 

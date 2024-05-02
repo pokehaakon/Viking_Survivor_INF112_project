@@ -10,17 +10,15 @@ import Tools.FilterTool;
 import java.util.List;
 import java.util.logging.Filter;
 
-import static Simulation.ObjectContactListener.isInCategory;
+import static Tools.FilterTool.isInCategory;
 
 
 public class PickupActions {
 
 
-
-
-    public static Action giveHP(Actor player, float hp) {
+    public static Action giveHP(Actor player, float hp, float maxHP) {
         return p ->{
-            float newHP = Math.min(player.getHP() + hp, 100);
+            float newHP = Math.min(player.getHP() + hp, maxHP);
             player.setHP(newHP);
         };
     }

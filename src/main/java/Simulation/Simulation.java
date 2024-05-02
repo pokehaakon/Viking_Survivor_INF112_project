@@ -3,6 +3,7 @@ package Simulation;
 import Contexts.GameContext;
 import GameObjects.Actor;
 import GameObjects.GameObject;
+import GameObjects.ObjectActions.PickupActions;
 import GameObjects.ObjectActions.WeaponActions;
 import InputProcessing.KeyStates;
 import Simulation.Coordinates.SpawnCoordinates;
@@ -15,18 +16,19 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 
 
-import static Contexts.GameContext.DE_SPAWN_RECT;
 import static Contexts.GameContext.SPAWN_RECT;
 import static Tools.ListTools.removeDestroyed;
+import static com.badlogic.gdx.scenes.scene2d.ui.Table.Debug.actor;
 
 public class Simulation implements Runnable {
     public static final AtomicLong EXP = new AtomicLong();
     public static final int SET_UPS = 60;
-
+    Random random;
     private final Lock renderLock;
     private final KeyStates keyStates;
     private final World world;
@@ -71,7 +73,7 @@ public class Simulation implements Runnable {
         gameWorld = context.getGameWorld();
 
         tempPickups = new ArrayList<>();
-
+        random = new Random();
         drawableEnemies = context.getDrawableEnemies();
     }
 
@@ -116,29 +118,21 @@ public class Simulation implements Runnable {
                 //actors.add(pickup);
 
                 //spawnRandomEnemies(5,Arrays.asList(ActorActions.destroyIfDefeated(player),ActorActions.chasePlayer(player), coolDown(500)));
-                spawnTerrain("TREE", 5, SPAWN_RECT,50);
-                spawnTerrain("ROCK_1",5, SPAWN_RECT,50);
-                spawnTerrain("ROCK_2",5, SPAWN_RECT, 50);
+                spawnTerrain("TREE", 3);
+                spawnTerrain("ROCK_1",3);
+                spawnTerrain("ROCK_2",5);
 //                spawnEnemies("ORC",10,
 //                        chaseActor(player),
 //                        spawnPickupsIfKilled(1,"HP_PICKUP", tempPickups,context.getActorPool(),giveHP(player,10)),destroyIfDefeated()
 //                );
             }
 
-            if (frame == 10) {
+            if (frame == 0) {
                 Actor weapon = actorPool.get("KNIFE");
-                weapon.getAnimationHandler().rotate(5f);
-
-                weapon.addAction(WeaponActions.fireAtClosestActor(FilterTool.Category.ENEMY,player.getSpeed()+weapon.getSpeed(), player, 100, actors, SPAWN_RECT));
-                //a.addAction(WeaponActions.orbitActor(0.1f,10,  player, 1000, 0));
+                weapon.getAnimationHandler().rotate(25f);
+                weapon.addAction(WeaponActions.fireAtClosestActor(FilterTool.Category.ENEMY, player.getSpeed() + weapon.getSpeed(), player, 100, actors, SPAWN_RECT));
                 actors.add(weapon);
 
-//                Actor a = actorPool.get("KNIFE");
-//                a.getAnimationHandler().rotate(5f);
-//                //TODO why isnt the weapon showing???
-//                a.addAction(WeaponActions.fireAtClosestActor(FilterTool.Category.ENEMY,player.getSpeed()+a.getSpeed(), player, 200, actors, SPAWN_RECT));
-//                //a.addAction(WeaponActions.orbitActor(0.1f,10,  player, 1000, 0));
-//                actors.add(a);
             }
 
 
@@ -181,9 +175,11 @@ public class Simulation implements Runnable {
     }
 
 
-    private void spawnTerrain(String TerrainName, int num, Vector2 boundedSqure, float distanceBetween) {
+    private void spawnTerrain(String TerrainName, int num) {
+        List<Float> distances = List.of(30f,60f,90f);
+        float randomDistance = distances.get(random.nextInt(distances.size()));
         List<Vector2> occupiedSpawns =  SpawnCoordinates.getOccupiedPositions(objects);
-        List<Vector2> availableSpawns = SpawnCoordinates.fixedSpawnPoints(num, boundedSqure,distanceBetween,player.getBody().getPosition(),occupiedSpawns);
+        List<Vector2> availableSpawns = SpawnCoordinates.fixedSpawnPoints(num, GameContext.SPAWN_RECT,randomDistance,player.getBody().getPosition(),occupiedSpawns);
 
         for(Vector2 spawn: availableSpawns) {
             GameObject terrain = objectPool.get(TerrainName);

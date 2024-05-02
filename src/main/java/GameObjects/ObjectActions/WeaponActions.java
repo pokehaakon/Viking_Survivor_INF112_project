@@ -11,7 +11,8 @@ import java.util.logging.Filter;
 
 
 import static GameObjects.ObjectActions.MovementActions.chaseActorCustomSpeed;
-import static Simulation.ObjectContactListener.isInCategory;
+
+import static Tools.FilterTool.isInCategory;
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
 public abstract class WeaponActions {
@@ -80,6 +81,7 @@ public abstract class WeaponActions {
         Vector2 actorPosition = referenceActor.getBody().getPosition();
         Actor closestActor = null;
         float closestDistance = Integer.MAX_VALUE;
+
         for(Actor actor : actors) {
             if(isInCategory(actor.getBody(), category)) {
                 float newDistance = Vector2.dst(
@@ -113,6 +115,7 @@ public abstract class WeaponActions {
 
     /**
      * Fires at closest enemy. If weapon hits enemy or is out of bounds, the weapon returns to owners position
+     * @param category the object category you wish to fire at
      * @param speed weapon speed
      * @param actor the actor which fires the weapon
      * @param interval duration between weapon returns to player's position and a new shot is taken
@@ -123,7 +126,6 @@ public abstract class WeaponActions {
     public static Action fireAtClosestActor(FilterTool.Category category,float speed, Actor actor, double interval, List<Actor> actors, Vector2 boundSquare) {
         long frameInterval = (long) (interval * SET_FPS / 1000);
         AtomicLong framesSinceLastThrow = new AtomicLong((long)interval);
-        //AtomicDouble projSpeed = new AtomicDouble(speed);
 
 
         return (weapon) -> {

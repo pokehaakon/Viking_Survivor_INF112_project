@@ -1,6 +1,7 @@
 package Tools;
 
 
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Filter;
 
 public abstract class FilterTool {
@@ -85,5 +86,18 @@ public abstract class FilterTool {
         filter.groupIndex = groupIndex;
 
         return filter;
+    }
+
+    static public boolean isInCategory(Body body, FilterTool.Category category) {
+        return (categoryBits(body) & category.getMask()) != 0;
+    }
+
+    /**
+     * gets the category bits of the body
+     * @param body the body to get the category bits from
+     * @return the category bits of the body
+     */
+    public static short categoryBits(Body body) {
+        return body.getFixtureList().get(0).getFilterData().categoryBits;
     }
 }
