@@ -86,7 +86,7 @@ public class SpawnHandlerFactory {
                             Actor weapon = actorPool.get("WEAPON_RAVEN");
                             weapon.getAnimationHandler().rotate(2f);
 
-                            weapon.addAction(WeaponActions.fireAtClosestActor(FilterTool.Category.PLAYER,e.getSpeed()+weapon.getSpeed(), e, 2*i+200, activeActors, SPAWN_RECT)
+                            weapon.addAction(WeaponActions.fireAtClosestActor(FilterTool.Category.PLAYER,e.getSpeed()+weapon.getSpeed(), e, 200*i, activeActors, SPAWN_RECT)
                                     );
                             activeActors.add(weapon);
 
