@@ -2,12 +2,8 @@ package GameObjects.ObjectActions;
 
 import GameObjects.Actor;
 import Tools.Pool.ObjectPool;
-import com.badlogic.gdx.graphics.Color;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-
-import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
 public abstract class KilledAction {
 
@@ -28,7 +24,16 @@ public abstract class KilledAction {
         return doIfDefeated(Actor::kill);
     }
 
-    public static Action spawnPickups(
+    /**
+     * When actor is killed, it has a certain probability of spawning a desired pickup
+     * @param prob probability of spawning pickup
+     * @param type pickup type
+     * @param pickups list of pickups
+     * @param pool actor pool
+     * @param pickupActions the desired pickup actions
+     * @return an action object
+     */
+    public static Action spawnPickupsIfKilled(
             double prob,
             String type,
             List<Actor> pickups,
@@ -36,39 +41,18 @@ public abstract class KilledAction {
             Action... pickupActions) {
 
         return doIfDefeated((actor) -> {
+            if(Math.random() <= prob) {
+                Actor pickup = pool.get(type);
+                pickup.setPosition(actor.getBody().getPosition());
+                pickup.addAction(pickupActions);
 
-            Actor pickup = pool.get(type);
-            pickup.setPosition(actor.getBody().getPosition());
-            pickup.addAction(pickupActions);
-
-            pickups.add(pickup);
+                pickups.add(pickup);
+            }
 
         });
     }
 
-    /**
-     * If the actor is under attack, set a cool down period.
-     //* @param coolDownDuration in milliseconds
-     //@param color color the object during the cool down. Default is white
-     * @return an actor action object
-     */
-    public static Action coolDown( long duration, Color color) {
 
-        AtomicLong framesSinceStart = new AtomicLong(0);
-        long frameInterval = (duration * SET_FPS /1000);
-        return (actor) -> {
-            if (actor.isInCoolDown()) {
-                actor.getAnimationHandler().setDrawColor(color);
-                if (framesSinceStart.getAndIncrement() >= frameInterval) {
-                    framesSinceStart.set(0);
-                    actor.stopCoolDown();
-                    actor.getAnimationHandler().setDrawColor(Color.WHITE);
-
-                    //actor.getAnimationHandler().setDrawColor(Color.WHITE);
-                }
-            }
-        };
-    }
 
 
 }

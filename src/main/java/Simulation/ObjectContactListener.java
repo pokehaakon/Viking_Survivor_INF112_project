@@ -77,7 +77,7 @@ public class ObjectContactListener implements ContactListener {
         if (weaponEnemyCollision(b1, b2)) {
             Actor weapon = (Actor) getObjectWithCategory(b1, b2, WEAPON);
             Actor enemy = (Actor) getObjectWithCategory(b1, b2, ENEMY);
-            System.out.println("WEAPON COLLLLL");
+
             weapon.attack(enemy);
             enemy.startCoolDown(500);
             SoundManager.playSoundEffect(SoundManager.ATTACK_SOUND);

@@ -7,6 +7,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Filter;
 
 
 import static GameObjects.ObjectActions.MovementActions.chaseActorCustomSpeed;
@@ -16,13 +17,15 @@ import static VikingSurvivor.app.HelloWorld.SET_FPS;
 public abstract class WeaponActions {
 
 
-    public static final float DEFAULT_ORBIT_SPEED = 0.1f;
-    private static float ORBIT_SPEED = DEFAULT_ORBIT_SPEED;
-
     private static boolean alterWeaponSpeed = false;
     private static float speedMultiplier = 1;
-    //private static float speed;
     private static AtomicLong framesLeftOfChange = new AtomicLong(0);
+
+    /**
+     * Sets the weapon speed
+     * @param duration the duration of change (in milliseconds)
+     * @param multiplier the speed multiplier
+     */
     public static void setSpeed(double duration, float multiplier) {
         System.out.println(multiplier);
         speedMultiplier = multiplier;
@@ -47,17 +50,12 @@ public abstract class WeaponActions {
         AtomicLong framesSinceLastAttack = new AtomicLong(frameInterval);
         AtomicDouble angle = new AtomicDouble(2 * Math.PI + startingAngle + 1);
 
-        float multip = 10;
-        //long framesLeftOfChange = (long) (changeDuration*SET_FPS/1000);
         AtomicDouble orbSpeed = new AtomicDouble(orbitSpeed);
-        //AtomicLong temporaryChange = new AtomicLong(framesLeftOfChange);
 
         return weapon -> {
 
             if(alterWeaponSpeed) {
-                //System.out.println(speedMultiplier.get());
                 orbSpeed.set(orbitSpeed*(float)speedMultiplier);
-                //System.out.println(orbSpeed.get());
                 if(framesLeftOfChange.getAndDecrement() <= 0) {
                     orbSpeed.set(orbitSpeed);
                     alterWeaponSpeed = false;
@@ -97,35 +95,44 @@ public abstract class WeaponActions {
                 //System.out.println("Full round");
                 weapon.getBody().setActive(false);
             }
-
-            //System.out.println(speed.get());
             angle.addAndGet((float)orbSpeed.get());
 
         };
     }
 
-    private static Actor getClosestEnemy(Actor actor, List<Actor> actors) {
-        Vector2 actorPosition = actor.getBody().getPosition();
+    /**
+     * Finds the closest actor  by iteration through the list of actors
+     * @param referenceActor the reference point
+     * @param actors list of actors to iterate through. It filters the actors using the Category.Filter
+     * @param category the category of actors to find
+     * @return the closest actor
+     */
+    public static Actor getClosestActor(Actor referenceActor, List<Actor> actors, FilterTool.Category category) {
+        Vector2 actorPosition = referenceActor.getBody().getPosition();
         Actor closestEnemy = null;
         float closestDistance = Integer.MAX_VALUE;
-        for(Actor enemy : actors) {
-            if(isInCategory(enemy.getBody(), FilterTool.Category.ENEMY)) {
+        for(Actor actor : actors) {
+            if(isInCategory(actor.getBody(), category)) {
                 float newDistance = Vector2.dst(
                         actorPosition.x,actorPosition.y,
-                        enemy.getBody().getPosition().x, enemy.getBody().getPosition().y);
+                        actor.getBody().getPosition().x, actor.getBody().getPosition().y);
 
                 if(newDistance < closestDistance) {
-                    closestEnemy = enemy;
+                    closestEnemy = actor;
                     closestDistance = newDistance;
                 }
-
             }
-
         }
 
         return closestEnemy;
     }
 
+    /**
+     * Checks if an actor is attacked by the weapon. Useful for the fireAtClosestEnemy action
+     * @param weapon the weapon in question
+     * @param actors list of actors to iterate through
+     * @return true if an enemy is attacked by the weapon, false otherwise
+     */
     private static boolean attackedByWeapon(Actor weapon, List<Actor> actors) {
         for(Actor actor : actors) {
             if((actor.attackedBy(weapon))) {
@@ -136,15 +143,22 @@ public abstract class WeaponActions {
     }
 
 
-
-    public static Action fireAtClosestEnemy(float speed,Actor actor, double interval, List<Actor> enemies, Vector2 boundSquare) {
+    /**
+     * Fires at closest enemy. If weapon hits enemy or is out of bounds, the weapon returns to owners position
+     * @param speed weapon speed
+     * @param actor the actor which fires the weapon
+     * @param interval duration between weapon returns to player's position and a new shot is taken
+     * @param actors the list of actors to iterate through
+     * @param boundSquare sets when the weapon is out of bounds
+     * @return a weapon action
+     */
+    public static Action fireAtClosestEnemy(float speed,Actor actor, double interval, List<Actor> actors, Vector2 boundSquare) {
         long frameInterval = (long) (interval * SET_FPS / 1000);
         AtomicLong framesSinceLastThrow = new AtomicLong(0);
         AtomicDouble projSpeed = new AtomicDouble(speed);
 
         return (weapon) -> {
             if(alterWeaponSpeed) {
-                System.out.println("CRAZYYY");
                 projSpeed.set(speed*speedMultiplier);
                 if(framesLeftOfChange.getAndDecrement() <= 0) {
                     projSpeed.set(speed);
@@ -156,13 +170,14 @@ public abstract class WeaponActions {
                 if(!weapon.getBody().isActive()) {
                     weapon.getBody().setActive(true);
                 }
-                Actor closestEnemy = getClosestEnemy(actor,enemies);
+                Actor closestEnemy = getClosestActor(actor,actors, FilterTool.Category.ENEMY);
                 weapon.setPosition(actor.getBody().getPosition());
                 chaseActorCustomSpeed(closestEnemy,(float)projSpeed.get()).act(weapon);
 
             }
 
-            if(weapon.outOfBounds(actor,boundSquare) || attackedByWeapon(weapon,enemies)){
+
+            if(weapon.outOfBounds(actor,boundSquare) || attackedByWeapon(weapon,actors)){
                 framesSinceLastThrow.set(alterWeaponSpeed ? 0 : -frameInterval);
 
                 weapon.setPosition(actor.getBody().getPosition());

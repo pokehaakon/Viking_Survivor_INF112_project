@@ -41,10 +41,6 @@ public class MockRender implements AnimationRender {
 
     }
 
-    @Override
-    public void setDrawColor(Color color) {
-
-    }
 
 //    @Override
 //    public void initAnimations(Map<AnimationState, String> animationMap) {

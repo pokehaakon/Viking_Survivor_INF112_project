@@ -23,6 +23,7 @@ public class Actor extends GameObject implements IActor {
     protected final List<Action> dieActions;
 
     private final Map<Integer, Long> hitByIDs;
+
     private StatsConstants.Stats stats;
     public Actor(String type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, StatsConstants.Stats stats) {
         super(type, animationHandler, bodyFeatures);
@@ -37,9 +38,7 @@ public class Actor extends GameObject implements IActor {
         hitByIDs = new HashMap<>();
     }
 
-    public List<Action> getActions() {
-        return actions;
-    }
+
 
     @Override
     public void addAction(Action action) {
@@ -79,9 +78,7 @@ public class Actor extends GameObject implements IActor {
     public void stopCoolDown() {
         inCoolDown = false;
     }
-    public long getCoolDownDuration() {
-        return coolDownDuration;
-    }
+
 
     @Override
     public void addDieAction(Action action) {

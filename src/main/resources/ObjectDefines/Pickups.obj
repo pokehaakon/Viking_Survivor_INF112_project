@@ -1,6 +1,6 @@
 $xp_gif=pickupOrb.gif
 $hp_gif=HP_Pickup.gif
-#skull_gif= ###
+$skull_gif=scull.gif
 
 
 $HP_Animation = Define Animation:
@@ -9,8 +9,8 @@ $HP_Animation = Define Animation:
 $XP_Animation = Define Animation:
     State: IDLE $xp_gif
 
-#$SKULL_Animation = Define Animation:
-#    State: IDLE $skull_gif
+$SKULL_Animation = Define Animation:
+    State: IDLE $skull_gif
 
 $Shape = Define Shape:
     Type: Circle
@@ -42,7 +42,7 @@ $XP_PICKUP = Define Actor:
     Stats: $Stats
     Structure: $Structure
 
-#$SKULL_PICKUP = Define Actor:
-#    Animation: $SKULL_Animation
-#    Stats: $Stats
-#    Structure: $Structure
+$SKULL_PICKUP = Define Actor:
+    Animation: $SKULL_Animation
+    Stats: $Stats
+    Structure: $Structure

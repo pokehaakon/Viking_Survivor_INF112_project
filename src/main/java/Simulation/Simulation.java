@@ -23,7 +23,6 @@ import static GameObjects.ObjectActions.KilledAction.*;
 import static GameObjects.ObjectActions.MovementActions.chaseActor;
 import static GameObjects.ObjectActions.PickupActions.giveHP;
 import static GameObjects.ObjectActions.PickupActions.setWeaponSpeed;
-import static GameObjects.ObjectActions.WeaponActions.setSpeed;
 import static Simulation.ObjectContactListener.isInCategory;
 import static Tools.ListTools.removeDestroyed;
 
@@ -101,6 +100,7 @@ public class Simulation implements Runnable {
 
             for (Actor actor : actors) {
 
+                //
                 if(isInCategory(actor.getBody(), FilterTool.Category.PICKUP)) {
                     continue;
                 }
@@ -120,12 +120,13 @@ public class Simulation implements Runnable {
                 spawnTerrain("TREE", 5);
                 spawnEnemies("ORC",10,
                         chaseActor(player),
-                        spawnPickups(1,"HP_PICKUP", tempPickups,context.getActorPool(),giveHP(player,10), setWeaponSpeed(5000,10)),destroyIfDefeated());
+                        spawnPickupsIfKilled(1,"HP_PICKUP", tempPickups,context.getActorPool(),giveHP(player,10), setWeaponSpeed(5000,10)),destroyIfDefeated());
             }
 
             if (frame == 10) {
                 Actor a = actorPool.get("KNIFE");
                 a.getAnimationHandler().rotate(20f);
+                //TODO why isnt the weapon showing???
                 //a.addAction(WeaponActions.fireAtClosestEnemy(50,player,1000,actors, new Vector2(200,200)));
                 a.addAction(WeaponActions.orbitActor(0.1f,10,  player, 0, 0));
                 actors.add(a);

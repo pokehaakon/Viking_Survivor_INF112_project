@@ -19,6 +19,7 @@ public abstract class SoundManager {
     static{
         soundEffects.put(ATTACK_SOUND, Gdx.audio.newSound(Gdx.files.internal(ATTACK_SOUND)));
 
+
     }
 
 
