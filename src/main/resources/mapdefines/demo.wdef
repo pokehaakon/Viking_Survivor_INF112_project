@@ -14,7 +14,7 @@ $include ObjectDefines/Rock.obj
 !PLAYER_NAME=PLAYER
 
 00:03:
-
+    BOSS_RAVEN; BOSS size:1 maxSpawnEachFrame:1
 
     #ORC; SWARM size:15 type:LINE delay:1 speedMultiplier:10
     RAVEN; CONTINUOUS size:20 maxSpawnEachFrame:1
