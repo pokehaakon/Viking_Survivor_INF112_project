@@ -82,16 +82,13 @@ public class ObjectContactListener implements ContactListener {
             enemy.startCoolDown(500);
             SoundManager.playSoundEffect(SoundManager.ATTACK_SOUND);
 
-            //enemy.underAttack = true;
-            //System.out.println("WEAPON COLLISION");
-
         } else if (playerEnemyCollision(b1, b2)) {
             Actor player = (Actor) getObjectWithCategory(b1, b2, PLAYER);
             Actor enemy = (Actor) getObjectWithCategory(b1, b2, ENEMY);
 
             if (!player.isInCoolDown()) {
                 enemy.attack(player);
-                player.startCoolDown(500);
+                player.startCoolDown(1000);
                 //System.out.println("PLAYER COLLISION");
             }
         }

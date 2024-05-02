@@ -68,13 +68,8 @@ public class Actor extends GameObject implements IActor {
             iter.remove();
         }
 
-        if(inCoolDown) {
-            coolDownDuration--;
-            if(coolDownDuration <= 0) {
-                //animationHandler.setDrawColor(Color.WHITE);
-                inCoolDown = false;
-            }
-        }
+        // cool down feature
+        inCoolDown = (inCoolDown && --coolDownDuration > 0);
 
 
         updateDirectionState();
@@ -206,6 +201,7 @@ public class Actor extends GameObject implements IActor {
         resetActions();
         resetDieActions();
         hitByIDs.clear();
+        inCoolDown = false;
     }
 
     public Map<Integer, Long> getHitByIDs() {

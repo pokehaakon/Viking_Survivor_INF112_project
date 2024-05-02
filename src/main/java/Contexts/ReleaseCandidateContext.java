@@ -213,22 +213,15 @@ public class ReleaseCandidateContext extends Context {
             p.draw(batch,frameCount);
         }
         for (Actor actor : drawableActors) {
-            //if(i > 100) batch.flush();
-
+            if(i > 100) batch.flush();
             if(actor.isInCoolDown()) {
-                System.out.println("COOLDOWN");
                 batch.setColor(Color.RED);
             }
             actor.draw(batch, frameCount);
-            //batch.setColor(Color.WHITE);
+            batch.setColor(Color.WHITE);
+
             i++;
         }
-
-//        for(Weapon weapon : drawableWeapons) {
-//            if(weapon.getBody().isActive()) {
-//                weapon.draw(batch, frameCount);
-//            }
-//        }
 
         for(GameObject object : drawableObjects) {
             if(i > 100) batch.flush();

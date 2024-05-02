@@ -25,7 +25,7 @@ public class GIFRender implements AnimationRender {
 
     private boolean changeDrawColor = false;
 
-    private Color drawColor = Color.WHITE;
+    //private Color drawColor = Color.WHITE;
 
     protected GIFRender(Map<AnimationState, String> animationMovement, float scale) {
         //animationMovementTemp = animationMovement;
@@ -36,7 +36,7 @@ public class GIFRender implements AnimationRender {
 
     @Override
     public void draw(SpriteBatch batch, long frame, GameObject object) {
-        batch.setColor(drawColor);
+       // batch.setColor(drawColor);
 
 
         float elapsedTime = (float) frame / SET_FPS;
@@ -137,9 +137,9 @@ public class GIFRender implements AnimationRender {
 
         @Override
         public void setDrawColor(Color color) {
-            if(!drawColor.equals(color)) {
-                drawColor = color;
-            }
+//            if(!drawColor.equals(color)) {
+//                drawColor = color;
+//            }
 
         }
 
