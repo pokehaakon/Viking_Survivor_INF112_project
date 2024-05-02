@@ -5,6 +5,8 @@ $RavenAnimation = Define Animation:
     state: IDLE $RAVEN_GIF
     initial: MOVING
 
+
+
 $RavenStats = Define Stats:
     HP: 10.0
     Speed: 10
@@ -25,7 +27,28 @@ $RavenStructure = Define Structure:
     friction: 0
     isSensor: false
 
+$Weapon_RavenStructure = Define Structure:
+    Filter: ENEMY PLAYER
+    Category: ENEMY
+    Shape: $RavenShape
+    BodyType: DynamicBody
+    density: 1.0
+    friction: 0
+    isSensor: true
+$Weapon_RavenStats = Define Stats:
+    HP: 10.0
+    Speed: 100
+    Damage: 5.0
+    resistance: 0.0
+    scale: 10
+
+
 $RAVEN = Define Actor:
     Animation: $RavenAnimation
     Stats: $RavenStats
     Structure: $RavenStructure
+
+$WEAPON_RAVEN = Define Actor:
+    Animation: $RavenAnimation
+    Stats: $Weapon_RavenStats
+    Structure: $Weapon_RavenStructure

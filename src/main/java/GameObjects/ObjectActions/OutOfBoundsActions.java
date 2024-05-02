@@ -21,7 +21,7 @@ public abstract class OutOfBoundsActions {
      * @param boundSquare vector with width and height of the square
      */
     static public Action deSpawnIfOutOfBounds(Actor centerActor, Vector2 boundSquare) {
-        return doIfOutOfBounds(centerActor, boundSquare, Actor::kill);
+        return doIfOutOfBounds(centerActor, boundSquare, Actor::destroy);
     }
 
     /**

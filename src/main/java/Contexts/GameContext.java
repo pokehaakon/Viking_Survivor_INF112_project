@@ -83,8 +83,7 @@ public class GameContext extends Context {
     private List<Body> toBoKilled;
     private AtomicLong synchronizer;
     boolean gameOver = false;
-
-    //private float tiledMapScale = 1f / 16;
+    
     private GameMap gMap;
 
     private Vector2 previousFramePlayerSpeed = Vector2.Zero;
@@ -177,7 +176,7 @@ public class GameContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.GREEN);
 
-        //gMap.renderTiledMap((OrthographicCamera) camera);
+
 
         gameWorld.render(camera, delta);
         debugRenderer.render(world, camera.combined);
@@ -197,12 +196,8 @@ public class GameContext extends Context {
         batch.begin();
 
 
-        // draw enemies
-
         int i = 0;
-//        for(Actor p : pickup) {
-//            p.draw(batch,frameCount);
-//        }
+
         for (Actor actor : drawableActors) {
             if(i > 100) batch.flush();
             if(actor.isInCoolDown()) {
@@ -254,12 +249,7 @@ public class GameContext extends Context {
             weaponTable.setPosition(playerPosX -295,playerPosY +455);
             weaponTable.draw(batch, 1);
         }
-        //batch.setColor(Color.WHITE);
 
-
-//        if(!gameOver) {
-//            player.draw(batch, frameCount);
-//        }
 
         batch.setColor(Color.WHITE);
         if(!gameOver) {
@@ -327,15 +317,12 @@ public class GameContext extends Context {
 
     private void createWorld() {
         // sets up world
-        //animationLibrary = new AnimationLibrary();
+
         debugRenderer = new Box2DDebugRenderer();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
 
 
-
-        //enemyFactory = new EnemyFactory();
-        drawableEnemies = new ArrayList<>();
         drawableActors = new ArrayList<>();
         drawableObjects = new ArrayList<>();
         Function<String, GameObject> objectFactory = s -> {
@@ -353,7 +340,7 @@ public class GameContext extends Context {
         actorPool = objectPool.createSubPool(actorFactory);
 
 
-//        player = ExperimentalFactory.createActor("PlayerType:PLAYER1");
+
         gameWorld = new GameWorld("mapdefines/demo.wdef", actorPool, objectPool, drawableActors, drawableObjects);
         gMap = gameWorld.getGameMap();
         gMap.createMapBorder(world);
@@ -362,10 +349,7 @@ public class GameContext extends Context {
         player.addToWorld(world);
 //        player.setPosition(getMiddleOfMapPosition(map, tiledMapScale));
         player.setPosition(gMap.getMiddleOfMapPosition()); //TODO fix this!
-//        player.setAction(PlayerActions.moveToInput(keyStates));
-//        player.setAction(PlayerActions.coolDown(500));
-        //player.setPosition(getMiddleOfMapPosition(map, tiledMapScale));
-//        player.setPosition(new Vector2());
+
         player.addAction(PlayerActions.moveToInput(keyStates));
 
 

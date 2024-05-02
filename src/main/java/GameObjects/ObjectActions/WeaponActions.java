@@ -5,13 +5,11 @@ import Tools.FilterTool;
 import com.badlogic.gdx.math.Vector2;
 import com.google.common.util.concurrent.AtomicDouble;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Filter;
 
 
-import static GameObjects.ObjectActions.MovementActions.chaseActor;
 import static GameObjects.ObjectActions.MovementActions.chaseActorCustomSpeed;
 import static Simulation.ObjectContactListener.isInCategory;
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
@@ -66,7 +64,7 @@ public abstract class WeaponActions {
                 //System.out.println("Full round");
                 weapon.getBody().setActive(false);
             }
-            angle.addAndGet((float)orbitSpeed);
+            angle.addAndGet(orbitSpeed);
 
         };
     }
@@ -122,14 +120,19 @@ public abstract class WeaponActions {
      * @param boundSquare sets when the weapon is out of bounds
      * @return a weapon action
      */
-    public static Action fireAtClosestEnemy(float speed,Actor actor, double interval, List<Actor> actors, Vector2 boundSquare) {
+    public static Action fireAtClosestActor(FilterTool.Category category,float speed, Actor actor, double interval, List<Actor> actors, Vector2 boundSquare) {
         long frameInterval = (long) (interval * SET_FPS / 1000);
-        AtomicLong framesSinceLastThrow = new AtomicLong(0);
+        AtomicLong framesSinceLastThrow = new AtomicLong((long)interval);
         //AtomicDouble projSpeed = new AtomicDouble(speed);
 
+
         return (weapon) -> {
-            Actor closestEnemy = getClosestActor(actor,actors, FilterTool.Category.ENEMY);
+            Actor closestEnemy = getClosestActor(actor,actors, category);
             if (closestEnemy == null) return;
+
+            if(!actors.contains(actor)) {
+                weapon.destroy();
+            }
 
             if (framesSinceLastThrow.getAndIncrement() <= 0 ) {
                 if(!weapon.getBody().isActive()) {
@@ -137,10 +140,10 @@ public abstract class WeaponActions {
                 }
 
                 weapon.setPosition(actor.getBody().getPosition());
-                chaseActor(closestEnemy).act(weapon);
+                chaseActorCustomSpeed(closestEnemy, speed).act(weapon);
             }
 
-            if(weapon.outOfBounds(actor,boundSquare) || attackedByWeapon(weapon,actors)){
+            if(weapon.outOfBounds(actor,boundSquare) || attackedByWeapon(weapon,actors) || weapon.getHP() <= 0){
                 framesSinceLastThrow.set(-frameInterval);
                 weapon.setPosition(actor.getBody().getPosition());
                 weapon.getBody().setActive(false);

@@ -121,11 +121,11 @@ public class GameObject implements IGameObject {
     }
 
     public boolean outOfBounds(Actor centerActor, Vector2 boundSquare) {
-        Vector2 dxdy = centerActor
-                .getBody()
+        Vector2 dxdy =
+                centerActor
                 .getPosition()
                 .cpy()
-                .sub(centerActor.getPosition());
+                .sub(body.getPosition());
 
         return (Math.abs(dxdy.x) > boundSquare.x / 2 || Math.abs(dxdy.y) > boundSquare.y / 2);
     }
