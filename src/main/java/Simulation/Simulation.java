@@ -23,6 +23,8 @@ import java.util.concurrent.locks.Lock;
 
 import static Contexts.GameContext.SPAWN_RECT;
 import static Tools.ListTools.removeDestroyed;
+import static Tools.RollingSum.millisToFrames;
+import static VikingSurvivor.app.HelloWorld.SET_FPS;
 import static com.badlogic.gdx.scenes.scene2d.ui.Table.Debug.actor;
 
 public class Simulation implements Runnable {
@@ -43,19 +45,17 @@ public class Simulation implements Runnable {
     private final AtomicLong synchronizer;
     private final GameWorld gameWorld;
 
+    private static final List<Float> DISTANCES_BETWEEN_TERRAIN = List.of(30f,60f,90f);
 
     private boolean quit = false;
     private boolean paused = false;
     private long frame = 0;
 
-    //temp
-    private long lastSpawnTime;
+
+    private final static float TERRAIN_SPAWN_FRAME_INTERVAL = (float) ((1000) * SET_FPS) / 1000;
+    private float LAST_TERRAIN_SPAWN_FRAME;
 
 
-
-    private List<Actor> tempPickups;
-
-    private List<Actor> drawableEnemies;
     public Simulation(GameContext context) {
         this.context = context;
         renderLock = context.getRenderLock();
@@ -72,9 +72,7 @@ public class Simulation implements Runnable {
         objects = context.getDrawableObjects();
         gameWorld = context.getGameWorld();
 
-        tempPickups = new ArrayList<>();
         random = new Random();
-        drawableEnemies = context.getDrawableEnemies();
     }
 
     @Override
@@ -95,44 +93,37 @@ public class Simulation implements Runnable {
             if (keyStates.getState(KeyStates.GameKey.QUIT)) stopSim();
 
 
-            int actorLength = actors.size();
-            for(int i = 0; i < actorLength;i++) {
+
+            for(int i = 0; i < actors.size();i++) {
                 Actor actor = actors.get(i);
-//                if(isInCategory(actor.getBody(), FilterTool.Category.PICKUP)) {
-//                    continue;
-//                }
                 actor.doAction();
             }
 
 
 
-            //gameWorld.act(frame);
 
-            // random spawning for now
-            if (TimeUtils.millis() - lastSpawnTime > 1000) {
-//                Actor pickup = actorPool.get("SKULL_PICKUP");
-//                //pickup.addAction(giveHP(player,10), setWeaponSpeed(10000,10));
-//                pickup.addAction(PickupActions.startTemporaryActionChange(FilterTool.Category.WEAPON,5000,actors,WeaponActions.orbitActor(0.4f,10,  player, 0, 0)));
-                //pickup.addAction(changeAction(actors,FilterTool.Category.WEAPON,WeaponActions.fireAtClosestEnemy(50,player,1000,actors, new Vector2(200,200))));
-                //pickup.setPosition(new Vector2(player.getBody().getPosition().x+50,player.getBody().getPosition().y +20));
-                //actors.add(pickup);
-
-                //spawnRandomEnemies(5,Arrays.asList(ActorActions.destroyIfDefeated(player),ActorActions.chasePlayer(player), coolDown(500)));
-                spawnTerrain("TREE", 3);
-                spawnTerrain("ROCK_1",3);
-                spawnTerrain("ROCK_2",5);
-//                spawnEnemies("ORC",10,
-//                        chaseActor(player),
-//                        spawnPickupsIfKilled(1,"HP_PICKUP", tempPickups,context.getActorPool(),giveHP(player,10)),destroyIfDefeated()
-//                );
+            // terrain spawn
+            if (frame - LAST_TERRAIN_SPAWN_FRAME >= TERRAIN_SPAWN_FRAME_INTERVAL) {
+                spawnTerrain("TREE", 3, DISTANCES_BETWEEN_TERRAIN);
+                spawnTerrain("ROCK_1",3, DISTANCES_BETWEEN_TERRAIN);
+                spawnTerrain("ROCK_2",5, DISTANCES_BETWEEN_TERRAIN);
+                LAST_TERRAIN_SPAWN_FRAME = frame;
             }
 
+            // spawn weapon
             if (frame == 0) {
                 Actor weapon = actorPool.get("KNIFE");
                 weapon.getAnimationHandler().rotate(25f);
-                weapon.addAction(WeaponActions.fireAtClosestActor(FilterTool.Category.ENEMY, player.getSpeed() + weapon.getSpeed(), player, 100, actors, SPAWN_RECT));
-                actors.add(weapon);
+                weapon.addAction(
+                        WeaponActions.fireAtClosestActor(
+                                FilterTool.Category.ENEMY,
+                                player.getSpeed() + weapon.getSpeed(),
+                                player,
+                                millisToFrames(100,SET_FPS),
+                                actors,
+                                SPAWN_RECT));
 
+                actors.add(weapon);
             }
 
 
@@ -150,8 +141,6 @@ public class Simulation implements Runnable {
             removeDestroyed(actors, actorPool, true);
             removeDestroyed(objects, objectPool, true);
 
-            actors.addAll(tempPickups);
-            tempPickups.clear();
 
             renderLock.unlock();
             long simTimeToUpdate = System.nanoTime() - t0;
@@ -175,22 +164,20 @@ public class Simulation implements Runnable {
     }
 
 
-    private void spawnTerrain(String TerrainName, int num) {
-        List<Float> distances = List.of(30f,60f,90f);
-        float randomDistance = distances.get(random.nextInt(distances.size()));
+    private void spawnTerrain(String terrainName, int num, List<Float> distancesBetweenSpawn) {
+
+        float randomDistance = distancesBetweenSpawn.get(random.nextInt(distancesBetweenSpawn.size()));
         List<Vector2> occupiedSpawns =  SpawnCoordinates.getOccupiedPositions(objects);
         List<Vector2> availableSpawns = SpawnCoordinates.fixedSpawnPoints(num, GameContext.SPAWN_RECT,randomDistance,player.getBody().getPosition(),occupiedSpawns);
 
         for(Vector2 spawn: availableSpawns) {
-            GameObject terrain = objectPool.get(TerrainName);
+            GameObject terrain = objectPool.get(terrainName);
             terrain.setPosition(spawn);;
 
             objects.add(terrain);
 
         }
 
-
-        lastSpawnTime = TimeUtils.millis();
     }
 
 

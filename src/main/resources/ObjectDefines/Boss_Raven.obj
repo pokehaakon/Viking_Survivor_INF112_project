@@ -17,7 +17,7 @@ $RavenShape = Define Shape:
     Radius: 7
 
 $RavenStructure = Define Structure:
-    Filter: PLAYER WEAPON WALL
+    Filter: PLAYER WEAPON
     Category: ENEMY
     Shape: $RavenShape
     BodyType: DynamicBody

@@ -24,18 +24,18 @@ public abstract class WeaponActions {
      * @param orbitRadius in meters
 
      * @param actor the player to orbit
-     * @param orbitInterval millisecond between each orbit,
+     * @param orbitInterval frames between each orbit
      * @return a weapon action
      */
-    public static Action orbitActor(float orbitSpeed,float orbitRadius, Actor actor, double orbitInterval, float startingAngle) {
-        long frameInterval = (long) (orbitInterval * SET_FPS / 1000);
-        AtomicLong framesSinceLastAttack = new AtomicLong(frameInterval);
+    public static Action orbitActor(float orbitSpeed,float orbitRadius, Actor actor, float orbitInterval, float startingAngle) {
+        //long frameInterval = (long) (orbitInterval * SET_FPS / 1000);
+        AtomicLong framesSinceLastAttack = new AtomicLong((long)orbitInterval);
         AtomicDouble angle = new AtomicDouble(2 * Math.PI + startingAngle + 1);
 
         return weapon -> {
             //doPotentialActionChange(weapon);
 
-            if (!weapon.getBody().isActive() && framesSinceLastAttack.getAndIncrement() >= frameInterval) {
+            if (!weapon.getBody().isActive() && framesSinceLastAttack.getAndIncrement() >= orbitInterval) {
                 //start weapon again, (cooldown over)
 
                 framesSinceLastAttack.set(0);
@@ -118,13 +118,13 @@ public abstract class WeaponActions {
      * @param category the object category you wish to fire at
      * @param speed weapon speed
      * @param actor the actor which fires the weapon
-     * @param interval duration between weapon returns to player's position and a new shot is taken
+     * @param interval number of frames between weapon returns to player's position and a new shot is taken
      * @param actors the list of actors to iterate through
      * @param boundSquare sets when the weapon is out of bounds
      * @return a weapon action
      */
-    public static Action fireAtClosestActor(FilterTool.Category category,float speed, Actor actor, double interval, List<Actor> actors, Vector2 boundSquare) {
-        long frameInterval = (long) (interval * SET_FPS / 1000);
+    public static Action fireAtClosestActor(FilterTool.Category category,float speed, Actor actor, float interval, List<Actor> actors, Vector2 boundSquare) {
+        //long frameInterval = (long) (interval * SET_FPS / 1000);
         AtomicLong framesSinceLastThrow = new AtomicLong((long)interval);
 
 
@@ -146,7 +146,7 @@ public abstract class WeaponActions {
             }
 
             if(weapon.outOfBounds(actor,boundSquare) || attackedByWeapon(weapon,actors) || weapon.getHP() <= 0){
-                framesSinceLastThrow.set(-frameInterval);
+                framesSinceLastThrow.set(-(long)interval);
                 weapon.setPosition(actor.getBody().getPosition());
                 weapon.getBody().setActive(false);
             }

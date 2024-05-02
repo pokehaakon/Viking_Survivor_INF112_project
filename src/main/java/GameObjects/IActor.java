@@ -125,4 +125,14 @@ public interface IActor {
     boolean isInCoolDown();
 
 
+    /**
+     * Sets new actions for a set amount of frames. When the duration is complete,
+     * the actor gets its original actions back
+     * @param duration number of frames for the change to last
+     * @param actions the new temporary actions
+     */
+    void setTemporaryActionChange(float duration, Action... actions);
+
+
+
 }

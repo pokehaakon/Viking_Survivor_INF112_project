@@ -25,7 +25,7 @@ public class PickupActions {
 
 
 
-    public static Action startTemporaryActionChange(FilterTool.Category category,long duration, List<Actor> actors, Action... actions) {
+    public static Action startTemporaryActionChange(FilterTool.Category category,float duration, List<Actor> actors, Action... actions) {
         return (pickup) -> {
             for(Actor actor: actors) {
                 if(isInCategory(actor.getBody(), category)) {

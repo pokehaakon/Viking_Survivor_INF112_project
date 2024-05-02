@@ -91,15 +91,11 @@ public class Actor extends GameObject implements IActor {
 
     }
 
-    public void stopCoolDown() {
-        inCoolDown = false;
-    }
 
+    @Override
     public void setTemporaryActionChange(float duration, Action... actions) {
-
         tempActions.addAll(List.of(actions));
-        //convert to frames
-        framesLeftOfChange = duration*SET_FPS/1000;
+        framesLeftOfChange = duration;
         startTempChange = true;
     }
 
@@ -107,7 +103,6 @@ public class Actor extends GameObject implements IActor {
      * Starts a potential action change if necessary
      */
     private void doPotentialActionChange() {
-
 
         // stores original actions and adds temp actions
         if(startTempChange) {
@@ -121,7 +116,7 @@ public class Actor extends GameObject implements IActor {
             startCountDown = true;
         }
 
-        // adds original actions back again
+        // adds original actions back again when countdown is complete
         if(startCountDown && framesLeftOfChange-- <= 0) {;
             resetActions();
             addAction(originalActions);

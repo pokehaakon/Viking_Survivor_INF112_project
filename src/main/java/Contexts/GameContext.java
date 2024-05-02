@@ -198,6 +198,12 @@ public class GameContext extends Context {
 
         int i = 0;
 
+        for(GameObject object : drawableObjects) {
+            if(i > 100) batch.flush();
+            object.draw(batch, frameCount);
+            i++;
+        }
+
         for (Actor actor : drawableActors) {
             if(i > 100) batch.flush();
             if(actor.isInCoolDown()) {
@@ -212,11 +218,6 @@ public class GameContext extends Context {
 
 
 
-        for(GameObject object : drawableObjects) {
-            if(i > 100) batch.flush();
-            object.draw(batch, frameCount);
-            i++;
-        }
 
 
 

@@ -22,6 +22,8 @@ import static GameObjects.ObjectActions.OutOfBoundsActions.deSpawnIfOutOfBounds;
 import static GameObjects.ObjectActions.PickupActions.giveHP;
 import static GameObjects.ObjectActions.PickupActions.giveXP;
 import static Simulation.Coordinates.SpawnCoordinates.randomPointOutsideScreenRect;
+import static Tools.RollingSum.millisToFrames;
+import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
 public class SpawnHandlerFactory {
 
@@ -55,7 +57,7 @@ public class SpawnHandlerFactory {
                 spawnPickupsIfKilled(0.1f,"SKULL_PICKUP", activeActors,actorPool,
                         PickupActions.startTemporaryActionChange(
                                 FilterTool.Category.WEAPON,
-                                5000,
+                                (millisToFrames(5000,SET_FPS)),
                                 activeActors,
                                 WeaponActions.orbitActor(0.4f,10,  player, 0, 0)
                         )
@@ -80,13 +82,19 @@ public class SpawnHandlerFactory {
                     actorName,
                     e -> {
                         e.addAction(chaseActor(player), destroyIfDefeated());
-                        e.setPosition(randomPointOutsideScreenRect(player.getBody().getPosition()));
+                        e.setPosition(randomPointOutsideScreenRect(player.getPosition()));
 
-                        for(int i = 0; i<6; i++) {
+                        for(int i = 0; i < 6; i++) {
                             Actor weapon = actorPool.get("WEAPON_RAVEN");
-                            weapon.getAnimationHandler().rotate(10f);
+                            //weapon.getAnimationHandler().rotate(10f);
 
-                            weapon.addAction(WeaponActions.fireAtClosestActor(FilterTool.Category.PLAYER,e.getSpeed()+weapon.getSpeed(), e, 400*i, activeActors, SPAWN_RECT)
+                            weapon.addAction(
+                                    WeaponActions.fireAtClosestActor(
+                                            FilterTool.Category.PLAYER,
+                                            e.getSpeed()+weapon.getSpeed(),
+                                            e, millisToFrames(400*i, SET_FPS),
+                                            activeActors,
+                                            SPAWN_RECT)
                                     );
                             activeActors.add(weapon);
 
