@@ -6,7 +6,9 @@ import Rendering.Animations.AnimationState;
 import com.badlogic.gdx.graphics.Color;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
+//import static GameObjects.ObjectActions.WeaponActions.doPotentialActionChange;
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
 public class Actor extends GameObject implements IActor {
@@ -15,10 +17,18 @@ public class Actor extends GameObject implements IActor {
     private float damage;
     private float resistance;
 
+    private boolean startTempChange = false;
+    private boolean startCountDown = false;
 
+    //used to store the original actions if action change
+    private List<Action> originalActions = new ArrayList<>();
+
+    // stores the temporary actions
+    private List<Action> tempActions = new ArrayList<>();
+    private float framesLeftOfChange;
     private boolean inCoolDown = false;
 
-    private long coolDownDuration;
+    private float coolDownDuration;
     protected final List<Action> actions;
     protected final List<Action> dieActions;
 
@@ -38,7 +48,9 @@ public class Actor extends GameObject implements IActor {
         hitByIDs = new HashMap<>();
     }
 
-
+    public List<Action> getActions() {
+        return actions;
+    }
     @Override
     public void addAction(Action action) {
         actions.add(action);
@@ -51,6 +63,7 @@ public class Actor extends GameObject implements IActor {
     public void addAction(Collection<Action> actions) {
         this.actions.addAll(actions);
     }
+
 
     @Override
     public void doAction(){
@@ -69,7 +82,7 @@ public class Actor extends GameObject implements IActor {
         // cool down feature
         inCoolDown = (inCoolDown && --coolDownDuration > 0);
 
-
+        doPotentialActionChange();
         updateDirectionState();
         updateAnimationState();
     }
@@ -78,6 +91,46 @@ public class Actor extends GameObject implements IActor {
         inCoolDown = false;
     }
 
+    public void setTemporaryActionChange(float duration, Action... actions) {
+        tempActions.addAll(List.of(actions));
+        // convert to frames
+        framesLeftOfChange = duration*SET_FPS/1000;
+        startTempChange = true;
+    }
+
+    /**
+     * Starts a potential action change if necessary
+     */
+    private void doPotentialActionChange() {
+
+
+        // stores original actions and adds temp actions
+        if(startTempChange) {
+            originalActions.addAll(actions);
+            resetActions();
+            addAction(tempActions);
+            tempActions.clear();
+            startTempChange = false;
+            startCountDown = true;
+        }
+
+        if(startCountDown) {
+            System.out.println(framesLeftOfChange);
+        }
+
+        // adds original actions back again
+        if(startCountDown && framesLeftOfChange-- <= 0) {;
+            resetActions();
+            addAction(originalActions);
+            originalActions.clear();
+            startCountDown = false;
+        }
+
+    }
+
+    public void setTemporaryChange(long duration, Action... actions) {
+
+    }
 
     @Override
     public void addDieAction(Action action) {

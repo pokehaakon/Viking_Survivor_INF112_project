@@ -5,9 +5,10 @@ import Tools.FilterTool;
 import com.badlogic.gdx.math.Vector2;
 import com.google.common.util.concurrent.AtomicDouble;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Filter;
 
 
 import static GameObjects.ObjectActions.MovementActions.chaseActorCustomSpeed;
@@ -15,25 +16,6 @@ import static Simulation.ObjectContactListener.isInCategory;
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
 public abstract class WeaponActions {
-
-
-    private static boolean alterWeaponSpeed = false;
-    private static float speedMultiplier = 1;
-    private static AtomicLong framesLeftOfChange = new AtomicLong(0);
-
-    /**
-     * Sets the weapon speed
-     * @param duration the duration of change (in milliseconds)
-     * @param multiplier the speed multiplier
-     */
-    public static void setSpeed(double duration, float multiplier) {
-        System.out.println(multiplier);
-        speedMultiplier = multiplier;
-        framesLeftOfChange = new AtomicLong((long)duration*SET_FPS/1000);
-        alterWeaponSpeed = true;
-    }
-
-
 
 
 
@@ -50,23 +32,11 @@ public abstract class WeaponActions {
         AtomicLong framesSinceLastAttack = new AtomicLong(frameInterval);
         AtomicDouble angle = new AtomicDouble(2 * Math.PI + startingAngle + 1);
 
-        AtomicDouble orbSpeed = new AtomicDouble(orbitSpeed);
-
         return weapon -> {
-
-            if(alterWeaponSpeed) {
-                orbSpeed.set(orbitSpeed*(float)speedMultiplier);
-                if(framesLeftOfChange.getAndDecrement() <= 0) {
-                    orbSpeed.set(orbitSpeed);
-                    alterWeaponSpeed = false;
-                }
-            }
+            //doPotentialActionChange(weapon);
 
             if (framesSinceLastAttack.getAndIncrement() >= frameInterval && !weapon.getBody().isActive()) {
                 //start weapon again, (cooldown over)
-                if(alterWeaponSpeed) {
-                    framesSinceLastAttack.set(frameInterval);
-                }
 
                 framesSinceLastAttack.set(0);
 
@@ -95,7 +65,7 @@ public abstract class WeaponActions {
                 //System.out.println("Full round");
                 weapon.getBody().setActive(false);
             }
-            angle.addAndGet((float)orbSpeed.get());
+            angle.addAndGet((float)orbitSpeed);
 
         };
     }
@@ -157,13 +127,6 @@ public abstract class WeaponActions {
         AtomicDouble projSpeed = new AtomicDouble(speed);
 
         return (weapon) -> {
-            if(alterWeaponSpeed) {
-                projSpeed.set(speed*speedMultiplier);
-                if(framesLeftOfChange.getAndDecrement() <= 0) {
-                    projSpeed.set(speed);
-                    alterWeaponSpeed = false;
-                }
-            }
 
             if (framesSinceLastThrow.getAndIncrement() <= 0 ) {
                 if(!weapon.getBody().isActive()) {
@@ -172,13 +135,10 @@ public abstract class WeaponActions {
                 Actor closestEnemy = getClosestActor(actor,actors, FilterTool.Category.ENEMY);
                 weapon.setPosition(actor.getBody().getPosition());
                 chaseActorCustomSpeed(closestEnemy,(float)projSpeed.get()).act(weapon);
-
             }
 
-
             if(weapon.outOfBounds(actor,boundSquare) || attackedByWeapon(weapon,actors)){
-                framesSinceLastThrow.set(alterWeaponSpeed ? 0 : -frameInterval);
-
+                framesSinceLastThrow.set(-frameInterval);
                 weapon.setPosition(actor.getBody().getPosition());
                 weapon.getBody().setActive(false);
             }

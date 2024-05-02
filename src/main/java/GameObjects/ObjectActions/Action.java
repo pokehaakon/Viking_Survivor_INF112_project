@@ -12,4 +12,5 @@ public interface Action {
      * @param actor the actor to execute the action on (usually this)
      */
     void act(Actor actor);
+
 }

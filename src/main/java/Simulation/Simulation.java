@@ -4,6 +4,7 @@ import Contexts.ReleaseCandidateContext;
 import GameObjects.Actor;
 import GameObjects.GameObject;
 import GameObjects.ObjectActions.Action;
+import GameObjects.ObjectActions.PickupActions;
 import GameObjects.ObjectActions.WeaponActions;
 import InputProcessing.KeyStates;
 import Simulation.Coordinates.SpawnCoordinates;
@@ -22,8 +23,7 @@ import java.util.concurrent.locks.Lock;
 
 import static GameObjects.ObjectActions.KilledAction.*;
 import static GameObjects.ObjectActions.MovementActions.chaseActor;
-import static GameObjects.ObjectActions.PickupActions.giveHP;
-import static GameObjects.ObjectActions.PickupActions.setWeaponSpeed;
+import static GameObjects.ObjectActions.PickupActions.*;
 import static Simulation.ObjectContactListener.isInCategory;
 import static Tools.ListTools.removeDestroyed;
 
@@ -113,7 +113,9 @@ public class Simulation implements Runnable {
             // random spawning for now
             if (TimeUtils.millis() - lastSpawnTime > 10000) {
                 Actor pickup = actorPool.get("XP_PICKUP");
-                pickup.addAction(giveHP(player,10), setWeaponSpeed(10000,10));
+                //pickup.addAction(giveHP(player,10), setWeaponSpeed(10000,10));
+                pickup.addAction(PickupActions.startTemporaryActionChange(FilterTool.Category.WEAPON,5000,actors,WeaponActions.orbitActor(0.4f,10,  player, 0, 0)));
+                //pickup.addAction(changeAction(actors,FilterTool.Category.WEAPON,WeaponActions.fireAtClosestEnemy(50,player,1000,actors, new Vector2(200,200))));
                 pickup.setPosition(new Vector2(player.getBody().getPosition().x+50,player.getBody().getPosition().y +20));
                 actors.add(pickup);
 
@@ -121,15 +123,15 @@ public class Simulation implements Runnable {
                 spawnTerrain("TREE", 5);
                 spawnEnemies("ORC",10,
                         chaseActor(player),
-                        spawnPickupsIfKilled(1,"HP_PICKUP", tempPickups,context.getActorPool(),giveHP(player,10), setWeaponSpeed(5000,10)),destroyIfDefeated());
+                        spawnPickupsIfKilled(1,"HP_PICKUP", tempPickups,context.getActorPool(),giveHP(player,10)),destroyIfDefeated());
             }
 
             if (frame == 10) {
                 Actor a = actorPool.get("KNIFE");
                 a.getAnimationHandler().rotate(20f);
                 //TODO why isnt the weapon showing???
-                //a.addAction(WeaponActions.fireAtClosestEnemy(50,player,1000,actors, new Vector2(200,200)));
-                a.addAction(WeaponActions.orbitActor(0.1f,10,  player, 0, 0));
+                a.addAction(WeaponActions.fireAtClosestEnemy(50,player,1000,actors, new Vector2(200,200)));
+                //a.addAction(WeaponActions.orbitActor(0.1f,10,  player, 0, 0));
                 actors.add(a);
             }
 

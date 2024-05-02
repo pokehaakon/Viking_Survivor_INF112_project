@@ -5,6 +5,12 @@ package GameObjects.ObjectActions;
 
 import GameObjects.Actor;
 import Simulation.Simulation;
+import Tools.FilterTool;
+
+import java.util.List;
+import java.util.logging.Filter;
+
+import static Simulation.ObjectContactListener.isInCategory;
 
 
 public class PickupActions {
@@ -21,15 +27,25 @@ public class PickupActions {
 
 
 
+    public static Action startTemporaryActionChange(FilterTool.Category category,long duration, List<Actor> actors, Action... actions) {
+        return (pickup) -> {
+            for(Actor actor: actors) {
+                if(isInCategory(actor.getBody(), category)) {
+                    actor.setTemporaryActionChange(duration,actions);
 
-    /**
-     * Change the weapon speed. After the duration is up, the speed is reset to its default
-     * @param duration the duration of the action, in milliseconds
-     * @return a pickup action
-     */
-    public static Action setWeaponSpeed(long duration, float speedMultiplier) {
-        return (o) -> {
-            WeaponActions.setSpeed(duration, speedMultiplier);
+                }
+            }
+        };
+    }
+
+    public static Action changeAction(List<Actor> actors, FilterTool.Category category,Action... actions) {
+        return (pickup) -> {
+            for(Actor actor : actors) {
+                if(isInCategory(actor.getBody(),category)) {
+                    actor.resetActions();
+                    actor.addAction(actions);
+                }
+            }
         };
     }
 
