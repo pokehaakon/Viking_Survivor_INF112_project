@@ -4,43 +4,58 @@
 **ProsjektRapport**
 
 Teamroller:
+
 Det er ikke skjedd en endring i komposisjonen.
+
 Team lead har vært god på å sette opp møtested og møtetid, men avgjørelser anngående selve prosjektet har blitt tatt av andre.
+
 Tech lead har laget meste av koden og logikken til prosjektet, noe som har ført til at medlemmer har hatt noe problemer med å skrive kode som samsvarer med logikken.
-teamet har to fullstack-devs som har bidratt noe ulikt, og teamet skulle gjerne sett til at teammedlemmer med like roller bidrar likt
-Graphics designer har stått som hovedansvarlig ovenfor sprites
+
+Teamet har to fullstack-devs som har bidratt noe ulikt, og teamet skulle gjerne sett til at teammedlemmer med like roller bidrar likt.
+
+Graphics designer har stått som hovedansvarlig ovenfor sprites.
+
 UX designer har laget main menu.
 
-prosjektmetodikk:
-teamet er enig om at prosjektet har blitt litt for komplisert, og det har vært vanskelig å kunne bidra med kode.
+Prosjektmetodikk:
+
+Teamet er enig om at prosjektet har blitt litt for komplisert, og det har vært vanskelig å kunne bidra med kode.
+
 Hadde vi gjort dette fra begynnelsen av, ville teamet ha avklart et kompleksitetsnivå hvor alle kan delta forholdsvis likt.
 
-gruppedynamikk:
-dynamikken er ubalansert, da det er medlemmer med ulik ekspertise og ulik interesse for prosjektet. På den ene siden er det noen
+Gruppedynamikk:
+
+Dynamikken er ubalansert, da det er medlemmer med ulik ekspertise og ulik interesse for prosjektet. På den ene siden er det noen
 medlemmer som viser stor entusiasme ovenfor prosjektet, mens på den andre siden, har vi medlemmer som ikke virker interessert i gruppen i det hele tatt.
-uenigheter i gruppen er koderelatert, og oppstår ofte.
 
-kommunikasjon:
-kommunikasjon fungerer noe bedre enn tidligere, men fremdeles veldig dårlig.
-lite tilbakemelding på discord-serveren, uklarhet om hva de andre holder på med før det er ferdig implementert.
+Uenigheter i gruppen er koderelatert, og oppstår ofte.
 
-prosjektstruktur:
+Kommunikasjon:
+
+Kommunikasjon fungerer noe bedre enn tidligere, men fremdeles veldig dårlig.
+
+Lite tilbakemelding på discord-serveren, uklarhet om hva de andre holder på med før det er ferdig implementert.
+
+Prosjektstruktur:
+
 til nå har vi klart å:
 - møte ukentlig
 - skrive referat under hvert møte
 - planlegge og fordele arbeidsoppgaver
 - løse uenigheter
 
-commits:
-det er ofte mye som blir commitet på de fysiske gruppetimene av en person, da tech lead hjelper å setter sammen og fikser bugs/errors på samme maskin.
+Commits:
 
-retrospekt:
-hva har gruppen gjort bra?
+Det er ofte mye som blir commitet på de fysiske gruppetimene av en person, da tech lead hjelper å setter sammen og fikser bugs/errors på samme maskin.
+
+Retrospekt:
+
+Hva har gruppen gjort bra?
 - klart å lage et spill, hvor hvert medlem har bidratt med noe.
 - skapt et positivt arbeidsmiljø
 - laget ukentlig slagplan (endog dårlig oppfølging)
 
-gjort annerledes:
+Gjort annerledes:
 - partial milestones som teamet kunne nådd
 - holdt koden til en kompleksitetsnivå som alle forstår
 - fordele oppgaver inn i mindre biter, og bedre oppfølging av oppgavene
@@ -49,6 +64,7 @@ gjort annerledes:
 # møtereferat
 ## 18.04
 Tilstede: Hallvard, Ingmar, Eilif, Andreas, Haakon
+
 Under møtet ble det diskutert hva som må gjenstår før produktet er ferdig.
 - pickup items?
 - map object spawn
@@ -60,7 +76,8 @@ Under møtet ble det diskutert hva som må gjenstår før produktet er ferdig.
 Oppgaver ble fordelt til neste gang
 ## 25.04
 Tilstede: Hallvard, Eilif, Andreas, Haakon
-under møtet ble det diskutert hvordan teamet ligger ann i forhold til kravene for det ferdige produktet.
+
+Under møtet ble det diskutert hvordan teamet ligger ann i forhold til kravene for det ferdige produktet.
 - lyd
 - levelup
 - keybindings
@@ -69,6 +86,7 @@ under møtet ble det diskutert hvordan teamet ligger ann i forhold til kravene f
 - sources
 ## 30.04
 Tilstede: Hallvard, Eilif, Ingmar, Haakon
+
 Under møtet ble det diskutert krav som ikke er ferdigimplementert
 - soundeffect
 - flere tester
@@ -79,7 +97,8 @@ Under møtet ble det diskutert krav som ikke er ferdigimplementert
 - map spawn timer
 ## 02.05
 Tilstede: Hallvard, Eilif, Ingmar, Haakon, Andreas
-under møtet ble kode satt sammen, slik at prosjektet skal likne et sluttresultat.
+
+Under møtet ble kode satt sammen, slik at prosjektet skal likne et sluttresultat.
 
 
 **Krav og spesifikasjon**
