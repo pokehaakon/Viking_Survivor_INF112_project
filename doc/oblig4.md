@@ -39,6 +39,7 @@ hva har gruppen gjort bra?
 - klart å lage et spill, hvor hvert medlem har bidratt med noe.
 - skapt et positivt arbeidsmiljø
 - laget ukentlig slagplan (endog dårlig oppfølging)
+
 gjort annerledes:
 - partial milestones som teamet kunne nådd
 - holdt koden til en kompleksitetsnivå som alle forstår
