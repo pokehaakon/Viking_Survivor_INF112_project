@@ -26,10 +26,6 @@ public class ObjectDefineParser extends TextParser {
         if(!filename.endsWith(".obj")) throw new IllegalArgumentException(filename + " must end with '.obj'");
     }
 
-//    public ObjectDefineParser(char[] text) {
-//        super(text);
-//    }
-
     /**
      * Parses everything between a '#' and newline
      * @return the string of the comment
@@ -54,12 +50,6 @@ public class ObjectDefineParser extends TextParser {
     private void parseIndent() throws ParsingException {
         parseStringLiteral("    ", "\n");
     }
-
-//    private Optional<Variable> lookup(String varName) {
-//        //varName = varName.replace("$", "");
-//        if (variables.containsKey(varName)) return Optional.of(variables.get(varName));
-//        return Optional.empty();
-//    }
 
     private <C> Optional<C> lookup(String varName, Class<C> cls) {
         //varName = varName.replace("$", "");

@@ -3,12 +3,7 @@ package GameObjects.ObjectActions;
 import GameObjects.Actor;
 import com.badlogic.gdx.math.Vector2;
 
-import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
-
 public abstract class MovementActions {
-
-
-    //public static final double DESPAWN_RADIUS =  1.1 * SCREEN_HEIGHT;
 
     /**
      * Moves enemy in straight line according to its velocity vector and speed

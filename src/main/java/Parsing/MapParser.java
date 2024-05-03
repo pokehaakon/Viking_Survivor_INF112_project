@@ -48,16 +48,6 @@ public class MapParser extends TextParser {
         return timeFrames;
     }
 
-//    public void doParse() {
-//        if (defines != null) return;
-//        parseMapText();
-//    }
-
-//    private void parseMapText() {
-//        defines = parseDefines();
-//        timeFrames = parseTimeFrames();
-//    }
-
     public List<Pair<Long, List<SpawnFrame>>> getTimeFrames() {
         return timeFrames;
     }
@@ -110,8 +100,6 @@ public class MapParser extends TextParser {
                         return frameNum;
                     }
             );
-            //Void(this::parseComment);
-            //Void(this::parseEmptyLine);
 
             List<SpawnFrame> body = parseFrameBody();
             return Tuple.of(frame, body);
@@ -146,18 +134,6 @@ public class MapParser extends TextParser {
             } catch (ParsingException e) {
                 throw new ParserException(e, this, "Could not find the SpawnType");
             }
-//            String spawnable = test(iparseStringLiteral(ExperimentalFactory.getRegistered()))
-//                    .orElseThrow(() -> new ParserException(this, "Could not find the SpawnType"));
-
-//            List<EnemyType> spawnable = some(() -> {
-//                shouldError(iundo(iparseLiteral(';')));
-//
-//                Optional<String> enemyString = test(iparseStringLiteral(enumToStrings(EnemyType.class)));
-//                if(enemyString.isEmpty())
-//                    throw new ParserException(this, "Could not find the EnemyType", this.stream);
-//                space();
-//                return enemyString.map(EnemyType::valueOf).get();
-//            });
 
             shouldError(iparseLiteral('\n'));
             parseLiteral(';');

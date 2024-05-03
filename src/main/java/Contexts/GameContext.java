@@ -91,8 +91,8 @@ public class GameContext extends Context {
     private final Table weaponTable;
 
 
-    public GameContext(String name, SpriteBatch batch, OrthographicCamera camera, ContextualInputProcessor iProc) {
-        super(name, iProc);
+    public GameContext(SpriteBatch batch, OrthographicCamera camera, ContextualInputProcessor iProc) {
+        super(iProc);
 
         ObjectFactory.empty();
 

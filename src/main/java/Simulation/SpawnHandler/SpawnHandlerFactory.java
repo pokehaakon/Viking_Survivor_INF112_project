@@ -1,7 +1,6 @@
 package Simulation.SpawnHandler;
 
 import GameObjects.Actor;
-import GameObjects.GameObject;
 import GameObjects.ObjectActions.Action;
 import GameObjects.ObjectActions.PickupActions;
 import GameObjects.ObjectActions.WeaponActions;
@@ -10,7 +9,6 @@ import Simulation.ISpawnHandler;
 import Tools.FilterTool;
 import Tools.Pool.ObjectPool;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static Contexts.GameContext.DE_SPAWN_RECT;
@@ -27,10 +25,7 @@ import static VikingSurvivor.app.HelloWorld.millisToFrames;
 public class SpawnHandlerFactory {
 
     private final ObjectPool<Actor> actorPool;
-//    private final ObjectPool<GameObject> terrainPool;
-
     private final List<Actor> activeActors;
-//    private final List<GameObject> activeTerrain;
     private final Actor player;
 
     public SpawnHandlerFactory(Actor player,
@@ -81,7 +76,6 @@ public class SpawnHandlerFactory {
 
                         for(int i = 0; i < 6; i++) {
                             Actor weapon = actorPool.get("WEAPON_RAVEN");
-                            //weapon.getAnimationHandler().rotate(10f);
 
                             weapon.addAction(
                                     WeaponActions.fireAtClosestActor(

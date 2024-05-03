@@ -1,14 +1,11 @@
 package GameObjects.ObjectActions;
 
-//import GameObjects.Actors.Enemy;
-//import GameObjects.Actors.Player;
 
 import GameObjects.Actor;
 import Simulation.Simulation;
 import Tools.FilterTool;
 
 import java.util.List;
-import java.util.logging.Filter;
 
 import static Tools.FilterTool.isInCategory;
 
@@ -23,8 +20,6 @@ public class PickupActions {
         };
     }
 
-
-
     public static Action startTemporaryActionChange(FilterTool.Category category,int frameDuration, List<Actor> actors, Action... actions) {
         return (pickup) -> {
             for(Actor actor: actors) {
@@ -35,9 +30,6 @@ public class PickupActions {
             }
         };
     }
-
-
-
 
 
     public static Action giveXP(int xp) {

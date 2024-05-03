@@ -1,9 +1,8 @@
 package GameObjects.ObjectActions;
 
-import GameObjects.Actor;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
+import Tools.ExcludeFromGeneratedCoverage;
 
+@ExcludeFromGeneratedCoverage(reason = "not used")
 public abstract class CoolDownActions {
 
     static private Action doIfInCoolDown(Action action) {
@@ -13,26 +12,5 @@ public abstract class CoolDownActions {
             }
         };
     }
-
-//    public static Action changeColorInCoolDown(Color color) {
-//        if(inCoolDown) {
-//            coolDownDuration--;
-//            if(coolDownDuration <= 0) {
-//                inCoolDown = false;
-//                animationHandler.setDrawColor(Color.WHITE);
-//
-//            }
-//        }
-//        return (a) -> {
-//            if(!a.isInCoolDown()) {
-//                return;
-//            }
-//
-//            a.getAnimationHandler().setDrawColor(Color.RED);
-//
-//
-//
-//        };
-//    }
 
 }

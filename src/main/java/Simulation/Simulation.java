@@ -38,21 +38,6 @@ public class Simulation implements Runnable {
 
     public Simulation(GameContext context) {
         this.context = context;
-//        renderLock = context.getRenderLock();
-//        keyStates = context.getKeyStates();
-//        world = context.getWorld();
-//        updateTime = context.getUpdateTime();
-//        UPS = context.getUPS();
-//        synchronizer = context.getSynchronizer();
-//        player = context.getPlayer();
-//        actorPool = context.getActorPool();
-//        actors = context.getActors();
-//
-//        objectPool = context.objectPool;
-//        objects = context.objects;
-//
-//        gameWorld = context.gameWorld;
-
     }
 
     @Override
@@ -174,11 +159,6 @@ public class Simulation implements Runnable {
     public void unpause() {
         paused = false;
     }
-
-//    public long getFrameNumber() {
-//        return frame;
-//    }
-//    public boolean isPaused() {return paused;}
 }
 
 

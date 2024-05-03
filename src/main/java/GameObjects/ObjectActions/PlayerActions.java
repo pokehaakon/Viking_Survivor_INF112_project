@@ -24,16 +24,4 @@ public abstract class PlayerActions {
             player.getBody().setLinearVelocity(vel);
         };
     }
-
-//    public static ActorAction<Player> coolDown(long coolDownDuration) {
-//        return (p) -> {
-//            if (!p.isUnderAttack()) return;
-//            if (TimeUtils.millis() - p.getLastAttackedTime() > coolDownDuration) {
-//                p.setUnderAttack(false);
-//            }
-//
-//        };
-//    }
-
-
 }

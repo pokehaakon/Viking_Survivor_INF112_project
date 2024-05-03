@@ -3,7 +3,6 @@ package Rendering.Animations.AnimationRendering;
 import GameObjects.GameObject;
 import Rendering.Animations.AnimationState;
 import Tools.ExcludeFromGeneratedCoverage;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 @ExcludeFromGeneratedCoverage
@@ -43,9 +42,4 @@ public class MockRender implements AnimationRender {
 
     }
 
-
-//    @Override
-//    public void initAnimations(Map<AnimationState, String> animationMap) {
-//
-//    }
 }

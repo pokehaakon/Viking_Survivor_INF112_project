@@ -1,12 +1,10 @@
 package Camera;
 
 import GameMap.GameMap;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.Camera;
 
-import static Contexts.GameContext.zoomLevel;
 
 public class TargetCamera {
 

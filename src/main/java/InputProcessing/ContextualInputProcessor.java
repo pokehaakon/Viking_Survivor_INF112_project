@@ -3,8 +3,6 @@ package InputProcessing;
 import Contexts.Context;
 import Contexts.ContextFactory;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.function.Function;
 
@@ -18,10 +16,6 @@ public class ContextualInputProcessor implements InputProcessor {
     public ContextualInputProcessor(Function<ContextualInputProcessor, ContextFactory> factoryFactory) {
         contextFactory = factoryFactory.apply(this);
     }
-
-//    public ContextFactory getContextFactory() {
-//        return contextFactory;
-//    }
 
     public Context getCurrentContext() {
         return currentContext;

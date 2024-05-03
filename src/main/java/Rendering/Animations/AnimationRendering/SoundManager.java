@@ -6,7 +6,6 @@ import com.badlogic.gdx.audio.Sound;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * Store the game sounds

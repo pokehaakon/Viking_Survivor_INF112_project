@@ -1,10 +1,10 @@
 package Tools;
 
 public class RollingSum {
-    private long[] elements;
+    private final long[] elements;
+    private final int length;
     private int head;
     private int n;
-    private int length;
 
     private long sum;
 

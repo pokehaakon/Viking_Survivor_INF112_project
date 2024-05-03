@@ -3,7 +3,6 @@ package Rendering.Animations.AnimationRendering;
 import GameObjects.GameObject;
 import Rendering.Animations.AnimationState;
 import Tools.ExcludeFromGeneratedCoverage;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -19,7 +18,6 @@ public class SpriteRender implements AnimationRender {
     private AnimationState state;
 
     protected SpriteRender(Map<AnimationState, String> stateAnimations, float scale) {
-        //stateAnimationsTemp = stateAnimations;
         getSprites(stateAnimations);
         this.scale = scale;
     }
@@ -45,7 +43,6 @@ public class SpriteRender implements AnimationRender {
     @Override
     public void setAnimation(AnimationState state) {
         this.state = state;
-        //sprite = stateAnimations.get(state);
     }
 
     @Override

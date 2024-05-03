@@ -1,16 +1,9 @@
 package GameObjects;
 
 import GameObjects.ObjectActions.Action;
-import Parsing.ObjectDefineParser.Defines.*;
-import Rendering.Animations.AnimationRendering.AnimationHandler;
-import Tools.ShapeTools;
-import com.badlogic.gdx.physics.box2d.Shape;
-import org.apache.maven.surefire.shared.lang3.NotImplementedException;
 
 import java.util.*;
-import java.util.function.Supplier;
 
-import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
 public interface IActor {
 
@@ -43,12 +36,6 @@ public interface IActor {
      */
     void resetActions();
 
-//    /**
-//     * Performs the die actions added by the
-//     * Actor.addDieAction
-//     */
-//    void dieAction();
-//
     /**
      * Adds an action to the die actions performed by this Actor
      * @param action the action to add
@@ -106,14 +93,14 @@ public interface IActor {
    boolean isUnderAttack();
 
     /**
-     * Destroyes and kills the enemy
+     * Destroys and kills the enemy
      */
    void kill();
 
 
     /**
      * Starts the cool down by setting the cooldown duration and setting the cooldown boolean to true
-     * @param duration cooldown duration (in frames
+     * @param frameDuration cooldown duration (in frames
      */
    void startCoolDown(int frameDuration);
 

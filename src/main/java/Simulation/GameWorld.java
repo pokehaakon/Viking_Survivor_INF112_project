@@ -2,7 +2,6 @@ package Simulation;
 
 import GameMap.GameMap;
 import GameObjects.Actor;
-import GameObjects.GameObject;
 import GameObjects.ObjectFactory;
 import Parsing.MapParser;
 import Parsing.ObjectDefineParser.Defines.ActorDefinition;
@@ -13,10 +12,6 @@ import Simulation.SpawnHandler.SpawnHandlerFactory;
 import Tools.ExcludeFromGeneratedCoverage;
 import Tools.Pool.ObjectPool;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.Disposable;
 import org.javatuples.Pair;
 

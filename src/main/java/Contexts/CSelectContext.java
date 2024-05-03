@@ -20,7 +20,7 @@ class CSelectContext extends Context{
     private Image backgroundImage;
 
     public CSelectContext(String name, SpriteBatch batch, ContextualInputProcessor iProc) {
-        super(name, iProc);
+        super(iProc);
         this.batch = batch;
 
         // Starts game
@@ -50,6 +50,7 @@ class CSelectContext extends Context{
     public void show() {
 
     }
+
     @ExcludeFromGeneratedCoverage
     @Override
     public void render(float delta) {

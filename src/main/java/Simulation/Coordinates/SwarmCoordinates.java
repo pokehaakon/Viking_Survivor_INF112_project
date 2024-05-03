@@ -2,6 +2,7 @@ package Simulation.Coordinates;
 
 import GameObjects.Actor;
 import GameObjects.ObjectActions.Action;
+import Tools.ExcludeFromGeneratedCoverage;
 import Tools.Tuple;
 import com.badlogic.gdx.math.Vector2;
 import org.javatuples.Pair;
@@ -121,6 +122,7 @@ public abstract class SwarmCoordinates {
      * @param spacing space between actor
      * @return a List of Actor objects
      */
+    @ExcludeFromGeneratedCoverage(reason = "not used")
     public static List<Actor> createSwarm(SpawnCoordinates.SwarmType swarmType, List<Actor> swarmMembers, Vector2 center, double spawnRadius, int spacing, float speedMultiplier) {
         //List<Actor> swarm = new ArrayList<>(swarmMembers);
         Vector2 startPoint = randomSpawnPoint(center, spawnRadius);
@@ -137,7 +139,7 @@ public abstract class SwarmCoordinates {
         return swarmMembers;
     }
 
-    public static Pair<Supplier<Action>, Supplier<Vector2>> swarmInitializerPair(SpawnCoordinates.SwarmType swarmType, int size, Vector2 center, double spawnRadius, float spacing, float speedMultiplier) {
+    public static Pair<Supplier<Action>, Supplier<Vector2>> swarmInitializerPair(SpawnCoordinates.SwarmType swarmType, int size, Vector2 center, double spawnRadius, float spacing) {
         Vector2 startPoint = randomSpawnPoint(center, spawnRadius);
         List<Vector2> swarmCoordinates = getSwarmCoordinates(startPoint, swarmType, size, spacing, center);
         Vector2 swarmDirection = SwarmCoordinates.swarmDirection(center, swarmType, swarmCoordinates);

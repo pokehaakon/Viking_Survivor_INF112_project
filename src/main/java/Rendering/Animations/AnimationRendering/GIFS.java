@@ -3,10 +3,8 @@ package Rendering.Animations.AnimationRendering;
 import Tools.ExcludeFromGeneratedCoverage;
 import Tools.GifDecoder;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.google.common.annotations.VisibleForTesting;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
@@ -25,18 +23,14 @@ public abstract class GIFS {
 
     public static GifPair getGIF(String path, Consumer<GifPair> location) {
         if(!gifPairMap.containsKey(path)) {
-            var file = Gdx.files.internal(path);
             gifPairMap.put(path, null);
             todos.add(() -> {
-                var t = new Texture(file);
                 gifPairMap.put(path, GifPairImplementation.of(path));
                 location.accept(gifPairMap.get(path));
             });
         }
         if(gifPairMap.get(path) == null) {
-            todos.add(() -> {
-                location.accept(gifPairMap.get(path));
-            });
+            todos.add(() -> location.accept(gifPairMap.get(path)));
         }
         return gifPairMap.get(path);
     }

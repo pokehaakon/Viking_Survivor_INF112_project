@@ -42,11 +42,6 @@ public abstract class Sprites {
         while (!todos.isEmpty())
             todos.poll().run();
     }
-//    public static void initialize() {
-//        var t = new Texture(Gdx.files.internal(TREE_FILE_PATH));
-//        spriteMap.put(TREE_FILE_PATH, new Sprite(t));
-//        t.dispose();
-//    }
 
     /**
      * Clears the 'spriteMap'

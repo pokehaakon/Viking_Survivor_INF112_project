@@ -1,14 +1,14 @@
 package Contexts;
 
+import InputProcessing.DefaultInputProcessor;
 import InputProcessing.KeyStates;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 
 import java.util.function.Function;
 
-public class GameInputProcessor implements InputProcessor {
+public class GameInputProcessor extends DefaultInputProcessor {
     final private Context context;
     final private Camera camera;
     final private KeyStates keyStates;
@@ -44,43 +44,14 @@ public class GameInputProcessor implements InputProcessor {
     }
 
     @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        //ignore pointer for now...
-        return switch (button) {
-            case Input.Buttons.MIDDLE -> {
-                zoom = 1f;
-                zoomHandler.apply(zoom);
-                camera.viewportHeight = Gdx.graphics.getHeight() * zoom;
-                camera.viewportWidth = Gdx.graphics.getWidth() * zoom;
-                yield true;
-            }
-            default -> false;
-        };
-
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
+        if (button == Input.Buttons.MIDDLE) {
+            zoom = 1f;
+            zoomHandler.apply(zoom);
+            camera.viewportHeight = Gdx.graphics.getHeight() * zoom;
+            camera.viewportWidth = Gdx.graphics.getWidth() * zoom;
+            return true;
+        }
         return false;
     }
 
