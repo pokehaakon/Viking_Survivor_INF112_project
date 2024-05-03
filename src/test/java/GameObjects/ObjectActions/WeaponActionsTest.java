@@ -4,6 +4,7 @@ import GameObjects.*;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
 import Tools.FilterTool;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,14 +13,14 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 
-import static GameObjects.ObjectActions.WeaponActions.fireAtClosestActor;
-import static GameObjects.ObjectActions.WeaponActions.getClosestActor;
+import static GameObjects.ObjectActions.WeaponActions.*;
 import static GameObjects.TestTools.createTestActorCustomFilterCategory;
 import static Tools.FilterTool.createFilter;
 import static Tools.ShapeTools.createCircleShape;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class WeaponActionsTest {
     static Actor testPlayer;
@@ -71,11 +72,6 @@ class WeaponActionsTest {
 
         actors = List.of(enemy1, enemy2, testPlayer,weapon);
 
-    }
-
-
-    @Test
-    void orbitActor() {
     }
 
     @Test
@@ -173,5 +169,32 @@ class WeaponActionsTest {
         assertEquals(testPlayer.getPosition(),weapon.getPosition());
     }
 
+    @Test
+    void testOrbitActor() {
+        Actor player = mock(GameObjects.Actor.class);
+        Body playerBody = mock(Body.class);
+        Vector2 playerPos = Vector2.Zero;
 
+        when(player.getBody()).thenReturn(playerBody);
+        when(playerBody.getPosition()).thenReturn(playerPos);
+
+        Actor weapon = mock(GameObjects.Actor.class);
+        Body weaponBody = mock(Body.class);
+        Vector2 weaponPos = Vector2.Zero;
+
+        when(weapon.getBody()).thenReturn(weaponBody);
+        when(weaponBody.getPosition()).thenReturn(weaponPos);
+        when(weaponBody.isActive()).thenReturn(false);
+
+
+        Action orbit = orbitActor(1, 2, player, 1, 2);
+        orbit.act(weapon);
+        when(weaponBody.isActive()).thenReturn(true);
+        int i = 0;
+        while (i++ < 30)
+            orbit.act(weapon);
+
+        assertEquals(Vector2.Zero, playerPos);
     }
+
+}
