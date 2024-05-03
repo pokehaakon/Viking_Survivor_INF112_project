@@ -29,7 +29,6 @@ import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -60,7 +59,7 @@ public class GameContext extends Context {
     public final BitmapFont font;
     public final Simulation sim;
     public final Thread simThread;
-    public final int level;
+    public float level;
     public final KeyStates keyStates;
     public final Box2DDebugRenderer debugRenderer;
     public final AtomicLong synchronizer;
@@ -86,9 +85,9 @@ public class GameContext extends Context {
     public final ObjectPool<GameObject> objectPool;
 
     private final ProgressBar xpBar;
+    private final ProgressBar hpBar;
     private final Label levelLabel;
     private final Label timerLabel;
-    private final Table weaponTable;
 
 
     @ExcludeFromGeneratedCoverage(reason = "functionality covered elsewhere")
@@ -102,7 +101,7 @@ public class GameContext extends Context {
         camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
         camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
 
-        level = 0;
+        level = 1;
 
         this.keyStates = new KeyStates();
         this.setInputProcessor(
@@ -132,6 +131,9 @@ public class GameContext extends Context {
 
         font = new BitmapFont();
         font.setColor(Color.RED);
+        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        font.getData().setScale(0.1f);
+
         renderLock = new ReentrantLock(true);
         synchronizer = new AtomicLong();
 
@@ -171,8 +173,7 @@ public class GameContext extends Context {
             world.setContactListener(new ObjectContactListener());
         }
 
-        //setupHUD
-
+        // Setup HUD
         {
             //      Create top XP bar:
             // XP bar style
@@ -183,61 +184,74 @@ public class GameContext extends Context {
             xbBarPixMap.setColor(Color.BLACK);
             xbBarPixMap.fill();
             xpBarStyle.background = new TextureRegionDrawable(new TextureRegion(new Texture(xbBarPixMap)));
-            xpBarStyle.background.setMinHeight(20);
+            xpBarStyle.background.setMinHeight(2);
 
             // Set XP bar "knob" (XP amount visualiser)
             xbBarPixMap.setColor(Color.CYAN);
             xbBarPixMap.fill();
-            TextureRegionDrawable barKnobDrawable = new TextureRegionDrawable(new TextureRegion(new Texture(xbBarPixMap)));
+            TextureRegionDrawable xpBarKnobDrawable = new TextureRegionDrawable(new TextureRegion(new Texture(xbBarPixMap)));
             xbBarPixMap.dispose();
-            xpBarStyle.knob = barKnobDrawable;
-            xpBarStyle.knob.setMinHeight(20);
+            xpBarStyle.knob = xpBarKnobDrawable;
+            xpBarStyle.knobBefore = xpBarKnobDrawable;
+            xpBarStyle.knob.setMinHeight(2);
 
-            xpBar = new ProgressBar(0, 100, 1, false, xpBarStyle);
+            xpBar = new ProgressBar(0, 100 * level, 1, false, xpBarStyle);
             xpBar.setValue(0);
-            xpBar.setPosition(0, Gdx.graphics.getHeight() - xpBar.getHeight());
-            xpBar.setWidth(Gdx.graphics.getWidth());
+            xpBar.setPosition(camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - 2);
+            xpBar.setWidth(camera.viewportWidth);
+
+            //      Create HP bar:
+            // HP bar style
+            ProgressBar.ProgressBarStyle hpBarStyle = new ProgressBar.ProgressBarStyle();
+
+            // Set HP bar background
+            Pixmap hpBarPixMap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+            hpBarPixMap.setColor(Color.BLACK);
+            hpBarPixMap.fill();
+            hpBarStyle.background = new TextureRegionDrawable(new TextureRegion(new Texture(hpBarPixMap)));
+            hpBarStyle.background.setMinHeight(1);
+
+            // Set HP bar "knob" (HP amount visualiser)
+            hpBarPixMap.setColor(Color.RED);
+            hpBarPixMap.fill();
+            TextureRegionDrawable hpBarKnobDrawable = new TextureRegionDrawable(new TextureRegion(new Texture(hpBarPixMap)));
+            hpBarPixMap.dispose();
+            hpBarStyle.knob = hpBarKnobDrawable;
+            hpBarStyle.knobBefore = hpBarKnobDrawable;
+            hpBarStyle.knob.setMinHeight(1);
+
+            hpBar = new ProgressBar(0, player.getHP(), 1, false, hpBarStyle);
+            hpBar.setValue(player.getHP());
+            hpBar.setPosition(camera.position.x, camera.position.y);
+            hpBar.setWidth(10);
 
             //      Create level counter
             Skin lvlSkin = new Skin();
             BitmapFont lvlFont = new BitmapFont();
-            font.setColor(Color.WHITE);
-            lvlSkin.add("default", font, BitmapFont.class);
+            lvlFont.setColor(Color.WHITE);
+            lvlFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+            lvlFont.getData().setScale(1/8f);
 
+            lvlSkin.add("default", lvlFont, BitmapFont.class);
             Label.LabelStyle lvlLabelStyle = new Label.LabelStyle();
-            lvlLabelStyle.font = lvlSkin.getFont("default");
+            lvlLabelStyle.font = lvlFont;
             lvlSkin.add("default", lvlLabelStyle, Label.LabelStyle.class);
 
-            levelLabel = new Label("Level: "+ level, lvlSkin);
+            levelLabel = new Label("Level: "+ (int) level, lvlSkin);
 
             // Clock
             Skin tmSkin = new Skin();
             BitmapFont tmFont = new BitmapFont();
             tmFont.setColor(Color.WHITE);
-            tmFont.getData().setScale(3);
+            tmFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+            tmFont.getData().setScale(0.33f);
             tmSkin.add("default", tmFont, BitmapFont.class);
 
             Label.LabelStyle tmLabelStyle = new Label.LabelStyle();
             tmLabelStyle.font = tmSkin.getFont("default");
             tmSkin.add("default", tmLabelStyle, Label.LabelStyle.class);
 
-            timerLabel = new Label("00:00", tmSkin);
-
-
-            // Weapon table
-            weaponTable = new Table();
-            weaponTable.setFillParent(true);
-
-            Pixmap wptPixmap = new Pixmap(64, 64, Pixmap.Format.RGBA8888);
-            wptPixmap.setColor(Color.GRAY);
-            wptPixmap.fill();
-            Drawable emptySlot = new TextureRegionDrawable(new TextureRegion(new Texture(wptPixmap)));
-            wptPixmap.dispose();
-
-            for (int i= 0; i < 7; i++) {
-                Image weaponSlot = new Image(emptySlot);
-                weaponTable.add(weaponSlot).size(40).pad(10);
-            }
+            timerLabel = new Label("00 : 00", tmSkin);
         }
 
         sim = new Simulation(this);
@@ -284,33 +298,43 @@ public class GameContext extends Context {
 
 
         if(!gameOver) {
-            // XP bar and level
+            //      XP bar and level
+            long xpAmount = Simulation.EXP.get();
+
+            // Level up
+            if (xpAmount >= level * 100) {
+                xpAmount -= (long) (level * 100);
+                Simulation.EXP.set(xpAmount);
+                level += 1;
+                xpBar.setRange(0, level * 100);
+                levelLabel.setText("Level: " + (int) level);
+                player.setDamage(player.getDamage() + 2);
+            }
+            xpBar.setValue(xpAmount);
+
+            xpBar.setPosition(camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - 2);
+            levelLabel.setPosition(camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - 2);
             xpBar.draw(batch, 1);
             levelLabel.draw(batch, 1);
-            xpBar.setPosition(origin.x -512, origin.y +495);
-            levelLabel.setPosition(origin.x -512, origin.y +495);
+
+            // HP bar
+            hpBar.setValue(player.getHP());
+
+            hpBar.setPosition(origin.x - 4, origin.y - 8);
+            hpBar.draw(batch, 1);
 
             // Clock
-
             int elapsedSeconds = (int) (frameCount / SET_FPS);
 
             int minutes = elapsedSeconds / 60;
             int seconds = elapsedSeconds % 60;
             timerLabel.setText(String.format("%02d:%02d", minutes, seconds));
-
+            timerLabel.setPosition(camera.position.x - 5, camera.position.y + 27);
             timerLabel.draw(batch, 1);
-            timerLabel.setPosition(origin.x -55, origin.y +430);
-
-            // Weapon table
-            weaponTable.setPosition(origin.x -295, origin.y +455);
-            weaponTable.draw(batch, 1);
         }
 
 
         batch.setColor(Color.WHITE);
-        if(!gameOver) {
-            font.draw(batch, "Player HP: " + player.getHP(), origin.x +400, origin.y +470);
-        }
 
         if (SHOW_DEBUG_RENDER_INFO) {
             debugRenderer.render(world, camera.combined);
@@ -323,8 +347,8 @@ public class GameContext extends Context {
         }
 
         if(gameOver) {
-            font.getData().setScale(5,5);
-            font.draw(batch, "GAME OVER", origin.x -200, origin.y);
+            font.getData().setScale(2);
+            font.draw(batch, "GAME OVER",  camera.position.x, camera.position.y);
         }
         batch.end();
 
