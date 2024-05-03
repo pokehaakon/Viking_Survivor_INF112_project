@@ -8,10 +8,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
+/**
+ * Store the game sounds
+ */
 public abstract class SoundManager {
 
     public static final String ATTACK_SOUND ="Knife Stab Sound Effect [FREE USE].mp3";
-
 
     private static final Map<String, Sound> soundEffects = new HashMap<>();
     private static final Map<String, Sound> music = new HashMap<>();
@@ -22,7 +24,10 @@ public abstract class SoundManager {
     }
 
 
-
+    /**
+     * Gets the sound from its storage and calls sound.play()
+     * @param soundName name of the sound
+     */
     public static void playSoundEffect(String soundName) {
 
         if(!soundEffects.containsKey(soundName)) {

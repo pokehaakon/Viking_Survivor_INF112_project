@@ -97,6 +97,8 @@ public class Simulation implements Runnable {
             for(int i = 0; i < actors.size();i++) {
                 Actor actor = actors.get(i);
                 actor.doAction();
+                actor.updateDirectionState();
+                actor.updateAnimationState();
             }
 
 

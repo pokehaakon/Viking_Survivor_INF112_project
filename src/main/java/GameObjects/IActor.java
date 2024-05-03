@@ -113,9 +113,9 @@ public interface IActor {
 
     /**
      * Starts the cool down by setting the cooldown duration and setting the cooldown boolean to true
-     * @param duration cooldown duration (in milliseconds)
+     * @param duration cooldown duration (in frames
      */
-   void startCoolDown(long duration);
+   void startCoolDown(int frameDuration);
 
 
     /**
@@ -128,10 +128,10 @@ public interface IActor {
     /**
      * Sets new actions for a set amount of frames. When the duration is complete,
      * the actor gets its original actions back
-     * @param duration number of frames for the change to last
+     * @param frameDuration number of frames for the change to last
      * @param actions the new temporary actions
      */
-    void setTemporaryActionChange(float duration, Action... actions);
+    void setTemporaryActionChange(int frameDuration, Action... actions);
 
 
 

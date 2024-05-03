@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class HelloWorld implements ApplicationListener {
 	public static final int SET_FPS = 60;
-	public static float millisToFrames(float millis) {return (millis / 1000 * SET_FPS);}
+	public static int millisToFrames(float millis) {return (int) (millis / 1000 * SET_FPS);}
 	private SpriteBatch batch;
     private OrthographicCamera camera;
 	private Context currentContext;

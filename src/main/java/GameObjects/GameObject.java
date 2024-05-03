@@ -109,6 +109,11 @@ public class GameObject implements IGameObject {
         return ID;
     }
 
+    public void setID(int newID){
+        ID = newID;
+
+    }
+
     @Override
     public void put() {
         this.getBody().setActive(false);
@@ -120,9 +125,10 @@ public class GameObject implements IGameObject {
         this.getBody().setActive(true);
     }
 
-    public boolean outOfBounds(Actor centerActor, Vector2 boundSquare) {
+    @Override
+    public boolean outOfBounds(GameObject centerObject, Vector2 boundSquare) {
         Vector2 dxdy =
-                centerActor
+                centerObject
                 .getPosition()
                 .cpy()
                 .sub(body.getPosition());
@@ -130,10 +136,12 @@ public class GameObject implements IGameObject {
         return (Math.abs(dxdy.x) > boundSquare.x / 2 || Math.abs(dxdy.y) > boundSquare.y / 2);
     }
 
+    @Override
     public Vector2 getPosition() {
         return body.getPosition();
     }
 
+    @Override
     public AnimationHandler getAnimationHandler() {
         return animationHandler;
     }

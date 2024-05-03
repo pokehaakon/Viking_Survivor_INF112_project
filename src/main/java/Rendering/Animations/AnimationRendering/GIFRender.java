@@ -36,8 +36,6 @@ public class GIFRender implements AnimationRender {
 
     @Override
     public void draw(SpriteBatch batch, long frame, GameObject object) {
-       // batch.setColor(drawColor);
-
 
         float elapsedTime = (float) frame / SET_FPS;
         currentGIF = animationMovement.get(state);
@@ -94,10 +92,6 @@ public class GIFRender implements AnimationRender {
         return region.getRegionHeight();
     }
 
-//    @Override
-//    public void initAnimations(Map<AnimationState, String> animationMap) {
-//        getGifPairs(animationMap);
-//    }
 
     private void getGifPairs(Map<AnimationState, String> map) {
         //animationMovement.clear(); //?
