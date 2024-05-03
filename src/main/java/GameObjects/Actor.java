@@ -193,7 +193,6 @@ public class Actor extends GameObject implements IActor {
     }
 
 
-
     public void updateDirectionState() {
         float vx = getBody().getLinearVelocity().x;
         if (vx == 0) return;
@@ -207,6 +206,7 @@ public class Actor extends GameObject implements IActor {
 
         hitByIDs.clear();
     }
+
 
     public void updateAnimationState() {
         var newState = getBody().getLinearVelocity().len() == 0.0f ? AnimationState.IDLE : AnimationState.MOVING;

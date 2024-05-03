@@ -51,9 +51,15 @@ public interface AnimationRender {
      */
     float getHeight(AnimationState state);
 
+    /**
+     * Rotates animation at its axis
+     * @param rotationSpeed
+     */
     void rotate(float rotationSpeed);
 
-
+    /**
+     * Stops rotation by setting rotationspeed to zero
+     */
     void stopRotation();
 
 }
