@@ -102,9 +102,9 @@ public abstract class WeaponActions {
      * @param actors list of actors to iterate through
      * @return true if an enemy is attacked by the weapon, false otherwise
      */
-    private static boolean attackedByWeapon(Actor weapon, List<Actor> actors, Actor referenceActor) {
+    private static boolean attackedByWeapon(Actor weapon, List<Actor> actors) {
         for(Actor actor : actors) {
-            if((actor.attackedBy(weapon)) && !weapon.getPosition().equals(referenceActor.getPosition())) {
+            if(actor.attackedBy(weapon)) {
                 return true;
             }
         }
@@ -141,7 +141,7 @@ public abstract class WeaponActions {
                 chaseActorCustomSpeed(closestEnemy, speed).act(weapon);
             }
 
-            if (weapon.outOfBounds(actor, boundSquare) || attackedByWeapon(weapon, actors, actor) || weapon.getHP() <= 0) {
+            if (weapon.outOfBounds(actor, boundSquare) || attackedByWeapon(weapon, actors) || weapon.getHP() <= 0) {
                 framesSinceLastThrow.set(-frameInterval);
                 weapon.setPosition(actor.getBody().getPosition());
                 weapon.getBody().setActive(false);
