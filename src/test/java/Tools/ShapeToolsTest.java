@@ -1,15 +1,14 @@
 package Tools;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2D;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static Tools.ShapeTools.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 public class ShapeToolsTest {
     @BeforeAll
@@ -37,6 +36,9 @@ public class ShapeToolsTest {
 
         circle.dispose();
         square.dispose();
+
+        Shape mockChain = mock(ChainShape.class);
+        assertThrowsExactly(RuntimeException.class, () -> getBottomLeftCorrection(mockChain));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package VikingSurvivor.app;
 
 import Contexts.Context;
+import Contexts.ContextFactory;
 import InputProcessing.ContextualInputProcessor;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -27,7 +28,7 @@ public class HelloWorld implements ApplicationListener {
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		batch.setProjectionMatrix(camera.combined);
 
-		inProc = new ContextualInputProcessor(batch, camera);
+		inProc = new ContextualInputProcessor(inProc -> new ContextFactory(batch, camera, inProc));
 		inProc.setContext("MAINMENU"); //set starting context
 		//inProc.setContext("Training");
 
