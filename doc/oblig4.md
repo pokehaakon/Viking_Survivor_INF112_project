@@ -49,33 +49,33 @@ gjort annerledes:
 ## 18.04
 Tilstede: Hallvard, Ingmar, Eilif, Andreas, Haakon
 Under møtet ble det diskutert hva som må gjenstår før produktet er ferdig.
--pickup items?
--map object spawn
--leveling
+- pickup items?
+- map object spawn
+- leveling
     - enemy xp
     - player levelup
--implementere ppm
--factory uten hardcoding
+- implementere ppm
+- factory uten hardcoding
 Oppgaver ble fordelt til neste gang
 ## 25.04
 Tilstede: Hallvard, Eilif, Andreas, Haakon
 under møtet ble det diskutert hvordan teamet ligger ann i forhold til kravene for det ferdige produktet.
--lyd
--levelup
--keybindings
--tests
--javadoc
--sources
+- lyd
+- levelup
+- keybindings
+- tests
+- javadoc
+- sources
 ## 30.04
 Tilstede: Hallvard, Eilif, Ingmar, Haakon
 Under møtet ble det diskutert krav som ikke er ferdigimplementert
--soundeffect
--flere tester
--javadoc
--sources
--player levelup scaling -> høyere lvl = høyere dmg
--pickups
--map spawn timer
+- soundeffect
+- flere tester
+- javadoc
+- sources
+- player levelup scaling -> høyere lvl = høyere dmg
+- pickups
+- map spawn timer
 ## 02.05
 Tilstede: Hallvard, Eilif, Ingmar, Haakon, Andreas
 under møtet ble kode satt sammen, slik at prosjektet skal likne et sluttresultat.
