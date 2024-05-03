@@ -123,10 +123,9 @@ public abstract class WeaponActions {
      * @return a weapon action
      */
     public static Action fireAtClosestActor(FilterTool.Category category,float speed, Actor actor, int frameInterval, List<Actor> actors, Vector2 boundSquare) {
-        AtomicLong framesSinceLastThrow = new AtomicLong(0);
+        AtomicLong framesSinceLastThrow = new AtomicLong(frameInterval);
 
         return (weapon) -> {
-
             Actor closestEnemy = getClosestActor(actor, actors, category);
             if (closestEnemy == null) return;
 
@@ -134,24 +133,20 @@ public abstract class WeaponActions {
                 weapon.destroy();
             }
 
-            if (framesSinceLastThrow.getAndIncrement() < frameInterval) {
-                weapon.getBody().setActive(false);
-                weapon.setPosition(actor.getBody().getPosition());
-
-            } else {
+            if (framesSinceLastThrow.getAndIncrement() <= 0) {
                 if (!weapon.getBody().isActive()) {
                     weapon.getBody().setActive(true);
                 }
-                if(weapon.getPosition().equals(actor.getPosition())) {
-                    chaseActorCustomSpeed(closestEnemy, speed).act(weapon);
-                }
-
+                weapon.setPosition(actor.getBody().getPosition());
+                chaseActorCustomSpeed(closestEnemy, speed).act(weapon);
             }
+
             if (weapon.outOfBounds(actor, boundSquare) || attackedByWeapon(weapon, actors, actor) || weapon.getHP() <= 0) {
-                framesSinceLastThrow.set(0);
+                framesSinceLastThrow.set(-frameInterval);
+                weapon.setPosition(actor.getBody().getPosition());
+                weapon.getBody().setActive(false);
             }
         };
-
     }
 
 

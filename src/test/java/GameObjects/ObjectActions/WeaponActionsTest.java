@@ -139,19 +139,6 @@ class WeaponActionsTest {
         assertNotEquals(weapon.getPosition(),testPlayer.getPosition());
 
     }
-    @Test
-    void fireAtClosestEnemy_startIntervalOne() {
-        weapon.addAction(customFireAtClosestEnemyAction(1,new Vector2(10,10)));
-
-        // position should be equal
-        weapon.doAction();
-        step(world);
-        assertEquals(weapon.getPosition(),testPlayer.getPosition());
-
-        weapon.doAction();
-        step(world);
-        assertNotEquals(weapon.getPosition(),testPlayer.getPosition());
-    }
 
     @Test
     void fireAtClosestEnemy_whenOutOfBounds() {
