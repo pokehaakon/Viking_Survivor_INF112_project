@@ -9,7 +9,6 @@ import Tools.FilterTool;
 import java.util.*;
 
 import static Tools.FilterTool.isInCategory;
-import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
 public class Actor extends GameObject implements IActor {
     private float speed;
@@ -18,17 +17,15 @@ public class Actor extends GameObject implements IActor {
     private float resistance;
 
     private boolean startTempChange = false;
-    private boolean startCountDown = false;
+    private boolean temporaryActionCountDown = false;
 
     //used to store the original actions if action change
     private List<Action> originalActions = new ArrayList<>();
 
-    // stores the temporary actions
-    private List<Action> tempActions = new ArrayList<>();
-    private float framesLeftOfChange;
+    private int framesLeftOfActionChange;
     private boolean inCoolDown = false;
 
-    private float coolDownDuration;
+    private int framesLeftOfCoolDown;
     protected final List<Action> actions;
     protected final List<Action> dieActions;
 
@@ -48,9 +45,9 @@ public class Actor extends GameObject implements IActor {
         hitByIDs = new HashMap<>();
     }
 
-    public List<Action> getActions() {
+   public List<Action> getActions() {
         return actions;
-    }
+   }
     @Override
     public void addAction(Action action) {
         actions.add(action);
@@ -80,48 +77,35 @@ public class Actor extends GameObject implements IActor {
         }
 
         // cool down feature
-        inCoolDown = (inCoolDown && --coolDownDuration > 0);
+        inCoolDown = (inCoolDown && --framesLeftOfCoolDown >= 0);
 
-        if(isInCategory(getBody(), FilterTool.Category.WEAPON)) {
-            System.out.println(originalActions.size());
-        }
-        doPotentialActionChange();
-        updateDirectionState();
-        updateAnimationState();
+        if(temporaryActionCountDown) doTemporaryActionChange();
 
     }
 
 
     @Override
-    public void setTemporaryActionChange(float duration, Action... actions) {
-        tempActions.addAll(List.of(actions));
-        framesLeftOfChange = duration;
-        startTempChange = true;
+    public void setTemporaryActionChange(int frameDuration, Action... tempActions) {
+        if(frameDuration <= 0) {
+            throw new IllegalArgumentException("Duration must be a positive number of frames");
+        }
+        if(originalActions.isEmpty()) originalActions.addAll(actions);
+
+        resetActions();
+        addAction(tempActions);
+        temporaryActionCountDown = true;
+        framesLeftOfActionChange = frameDuration;
     }
 
     /**
-     * Starts a potential action change if necessary
+     * Starts a temporary action change. Stores the original action in its own list.
      */
-    private void doPotentialActionChange() {
-
-        // stores original actions and adds temp actions
-        if(startTempChange) {
-            if (originalActions.size() < actions.size()) {
-                originalActions.addAll(actions);
-            }
-            resetActions();
-            addAction(tempActions);
-            tempActions.clear();
-            startTempChange = false;
-            startCountDown = true;
-        }
-
-        // adds original actions back again when countdown is complete
-        if(startCountDown && framesLeftOfChange-- <= 0) {;
+    private void doTemporaryActionChange() {
+        if(framesLeftOfActionChange-- <= 0) {;
             resetActions();
             addAction(originalActions);
             originalActions.clear();
-            startCountDown = false;
+            temporaryActionCountDown = false;
         }
 
     }
@@ -169,9 +153,12 @@ public class Actor extends GameObject implements IActor {
     public void setResistance(float armour) {this.resistance = armour;}
 
     @Override
-    public void startCoolDown(long duration) {
-        coolDownDuration = duration*SET_FPS / 1000;
+    public void startCoolDown(int frameDuration) {
+        if(frameDuration <= 0) {
+            throw new IllegalArgumentException("Frame duration must be a positive number of frames");
+        }
         inCoolDown = true;
+        framesLeftOfCoolDown = frameDuration;
     }
 
 
@@ -180,6 +167,8 @@ public class Actor extends GameObject implements IActor {
         actor.hitByIDs.put(this.getID(), 30L);
         actor.HP -= damage;
     }
+
+
 
 
     @Override
@@ -192,8 +181,6 @@ public class Actor extends GameObject implements IActor {
 
         return hitByIDs.containsKey(actor.getID());
 
-        // TODO change coolDowns from constant 30 to
-        // something like actor.getAttackCoolDown * this.coolDownScalar
     }
 
     @Override
@@ -205,7 +192,7 @@ public class Actor extends GameObject implements IActor {
 
 
 
-    private void updateDirectionState() {
+    public void updateDirectionState() {
         float vx = getBody().getLinearVelocity().x;
         if (vx == 0) return;
         setMovingLeft(vx < 0);
@@ -219,7 +206,7 @@ public class Actor extends GameObject implements IActor {
         hitByIDs.clear();
     }
 
-    private void updateAnimationState() {
+    public void updateAnimationState() {
         var newState = getBody().getLinearVelocity().len() == 0.0f ? AnimationState.IDLE : AnimationState.MOVING;
 
         if(animationHandler.getAnimationState() != newState) {

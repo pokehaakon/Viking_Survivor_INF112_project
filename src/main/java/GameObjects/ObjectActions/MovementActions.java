@@ -47,14 +47,6 @@ public abstract class MovementActions {
     }
 
 
-//    public static ActorAction coolDown(long coolDownDuration) {
-//        return (e) -> {
-//            if(e.isUnderAttack()) {
-//                if(TimeUtils.millis() - e.getLastAttackedTime() > coolDownDuration) {
-//                    e.setUnderAttack(false);
-//                }
-//            }
-//        };
-//    }
+
 
 }

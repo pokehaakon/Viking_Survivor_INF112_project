@@ -8,6 +8,8 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import static Tools.FilterTool.Category.*;
 import static Tools.FilterTool.categoryBits;
+import static Tools.RollingSum.millisToFrames;
+import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
 public class ObjectContactListener implements ContactListener {
     static final private short playerAndEnemyMask = FilterTool.combineMaskEnums(PLAYER, ENEMY);
@@ -80,7 +82,7 @@ public class ObjectContactListener implements ContactListener {
             Actor enemy = (Actor) getObjectWithCategory(b1, b2, ENEMY);
 
             weapon.attack(enemy);
-            enemy.startCoolDown(500);
+            enemy.startCoolDown(millisToFrames(500, SET_FPS));
             SoundManager.playSoundEffect(SoundManager.ATTACK_SOUND);
 
         } else if (playerEnemyCollision(b1, b2)) {
@@ -89,7 +91,7 @@ public class ObjectContactListener implements ContactListener {
 
             if (!player.isInCoolDown()) {
                 enemy.attack(player);
-                player.startCoolDown(1000);
+                player.startCoolDown(millisToFrames(1000,SET_FPS));
                 //System.out.println("PLAYER COLLISION");
             }
         }

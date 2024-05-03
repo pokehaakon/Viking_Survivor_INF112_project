@@ -24,18 +24,17 @@ public abstract class WeaponActions {
      * @param orbitRadius in meters
 
      * @param actor the player to orbit
-     * @param orbitInterval frames between each orbit
+     * @param orbitFrameInterval frames between each orbit
      * @return a weapon action
      */
-    public static Action orbitActor(float orbitSpeed,float orbitRadius, Actor actor, float orbitInterval, float startingAngle) {
-        //long frameInterval = (long) (orbitInterval * SET_FPS / 1000);
-        AtomicLong framesSinceLastAttack = new AtomicLong((long)orbitInterval);
+    public static Action orbitActor(float orbitSpeed,float orbitRadius, Actor actor, int orbitFrameInterval, float startingAngle) {
+        AtomicLong framesSinceLastAttack = new AtomicLong((long)orbitFrameInterval);
         AtomicDouble angle = new AtomicDouble(2 * Math.PI + startingAngle + 1);
 
         return weapon -> {
             //doPotentialActionChange(weapon);
 
-            if (!weapon.getBody().isActive() && framesSinceLastAttack.getAndIncrement() >= orbitInterval) {
+            if (!weapon.getBody().isActive() && framesSinceLastAttack.getAndIncrement() >= orbitFrameInterval) {
                 //start weapon again, (cooldown over)
 
                 framesSinceLastAttack.set(0);
@@ -103,9 +102,9 @@ public abstract class WeaponActions {
      * @param actors list of actors to iterate through
      * @return true if an enemy is attacked by the weapon, false otherwise
      */
-    private static boolean attackedByWeapon(Actor weapon, List<Actor> actors) {
+    private static boolean attackedByWeapon(Actor weapon, List<Actor> actors, Actor referenceActor) {
         for(Actor actor : actors) {
-            if((actor.attackedBy(weapon))) {
+            if((actor.attackedBy(weapon)) && !weapon.getPosition().equals(referenceActor.getPosition())) {
                 return true;
             }
         }
@@ -118,41 +117,43 @@ public abstract class WeaponActions {
      * @param category the object category you wish to fire at
      * @param speed weapon speed
      * @param actor the actor which fires the weapon
-     * @param interval number of frames between weapon returns to player's position and a new shot is taken
+     * @param frameInterval number of frames between weapon returns to player's position and a new shot is taken
      * @param actors the list of actors to iterate through
      * @param boundSquare sets when the weapon is out of bounds
      * @return a weapon action
      */
-    public static Action fireAtClosestActor(FilterTool.Category category,float speed, Actor actor, float interval, List<Actor> actors, Vector2 boundSquare) {
-        //long frameInterval = (long) (interval * SET_FPS / 1000);
-        AtomicLong framesSinceLastThrow = new AtomicLong((long)interval);
-
+    public static Action fireAtClosestActor(FilterTool.Category category,float speed, Actor actor, int frameInterval, List<Actor> actors, Vector2 boundSquare) {
+        AtomicLong framesSinceLastThrow = new AtomicLong(0);
 
         return (weapon) -> {
-            Actor closestEnemy = getClosestActor(actor,actors, category);
+
+            Actor closestEnemy = getClosestActor(actor, actors, category);
             if (closestEnemy == null) return;
 
-            if(!actors.contains(actor)) {
+            if (!actors.contains(actor)) {
                 weapon.destroy();
             }
 
-            if (framesSinceLastThrow.getAndIncrement() <= 0 ) {
-                if(!weapon.getBody().isActive()) {
+            if (framesSinceLastThrow.getAndIncrement() < frameInterval) {
+                weapon.getBody().setActive(false);
+                weapon.setPosition(actor.getBody().getPosition());
+
+            } else {
+                if (!weapon.getBody().isActive()) {
                     weapon.getBody().setActive(true);
                 }
+                if(weapon.getPosition().equals(actor.getPosition())) {
+                    chaseActorCustomSpeed(closestEnemy, speed).act(weapon);
+                }
 
-                weapon.setPosition(actor.getBody().getPosition());
-                chaseActorCustomSpeed(closestEnemy, speed).act(weapon);
             }
-
-            if(weapon.outOfBounds(actor,boundSquare) || attackedByWeapon(weapon,actors) || weapon.getHP() <= 0){
-                framesSinceLastThrow.set(-(long)interval);
-                weapon.setPosition(actor.getBody().getPosition());
-                weapon.getBody().setActive(false);
+            if (weapon.outOfBounds(actor, boundSquare) || attackedByWeapon(weapon, actors, actor) || weapon.getHP() <= 0) {
+                framesSinceLastThrow.set(0);
             }
-
         };
+
     }
+
 
 
 
