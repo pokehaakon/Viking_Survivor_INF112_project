@@ -1,6 +1,7 @@
 package GameMap;
 
 import Tools.BodyTool;
+import Tools.ExcludeFromGeneratedCoverage;
 import Tools.FilterTool;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapLayer;
@@ -32,6 +33,7 @@ public class GameMap {
      * method for rendering the TiledMap
      * @param cam OrthographicCamera object
      */
+    @ExcludeFromGeneratedCoverage
     public void renderTiledMap(OrthographicCamera cam) {
         TiledMapRenderer mapRenderer = new OrthogonalTiledMapRenderer(map, scale);
         mapRenderer.setView(cam);

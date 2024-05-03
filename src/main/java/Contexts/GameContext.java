@@ -13,6 +13,7 @@ import Rendering.Animations.AnimationRendering.Sprites;
 import Simulation.GameWorld;
 import Simulation.ObjectContactListener;
 import Simulation.Simulation;
+import Tools.ExcludeFromGeneratedCoverage;
 import Tools.Pool.ObjectPool;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
@@ -34,10 +35,12 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
 import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
@@ -49,7 +52,7 @@ public class GameContext extends Context {
     static public final Vector2 SPAWN_RECT = (new Vector2(SCREEN_WIDTH, SCREEN_HEIGHT)).scl(zoomLevel * 1.05f);
     static public final Vector2 DE_SPAWN_RECT = SPAWN_RECT.cpy().scl(1.3f);
 
-    private static final boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
+    public static boolean SHOW_DEBUG_RENDER_INFO = false;
 
     public final SpriteBatch batch;
     public final Lock renderLock;
@@ -87,8 +90,9 @@ public class GameContext extends Context {
     private final Label timerLabel;
     private final Table weaponTable;
 
-    public GameContext(String name, SpriteBatch batch, OrthographicCamera camera, ContextualInputProcessor iProc) {
-        super(name, iProc);
+
+    public GameContext(SpriteBatch batch, OrthographicCamera camera, ContextualInputProcessor iProc) {
+        super(iProc);
 
         ObjectFactory.empty();
 
@@ -98,8 +102,6 @@ public class GameContext extends Context {
         camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
 
         level = 0;
-
-
 
         this.keyStates = new KeyStates();
         this.setInputProcessor(
@@ -116,13 +118,17 @@ public class GameContext extends Context {
 
         //setupDebug
         {
-            debugRenderer = new Box2DDebugRenderer();
+            if (SHOW_DEBUG_RENDER_INFO)
+                debugRenderer = new Box2DDebugRenderer();
+            else
+                debugRenderer = null;
 
             UpdateTime = new RollingSum(60*3);
             FrameTime = new RollingSum(60*3);
             FPS = new RollingSum(60 * 3);
             UPS = new RollingSum(60 * 3);
         }
+
         font = new BitmapFont();
         font.setColor(Color.RED);
         renderLock = new ReentrantLock(true);
@@ -152,7 +158,7 @@ public class GameContext extends Context {
             actorPool = objectPool.createSubPool(actorFactory);
 
 
-            gameWorld = new GameWorld("mapdefines/demo.wdef", actorPool, objectPool, actors, objects);
+            gameWorld = new GameWorld("mapdefines/demo.wdef", actorPool, actors);
             gMap = gameWorld.getGameMap();
             gMap.createMapBorder(world);
 
@@ -165,8 +171,8 @@ public class GameContext extends Context {
         }
 
         //setupHUD
-        {
 
+        {
             //      Create top XP bar:
             // XP bar style
             ProgressBar.ProgressBarStyle xpBarStyle = new ProgressBar.ProgressBarStyle();
@@ -237,29 +243,9 @@ public class GameContext extends Context {
         simThread = new Thread(sim);
         simThread.start();
 
-        //spawnRandomEnemies(1, EnemyActions.chasePlayer(player));
     }
 
-
-
-
-
-//    private void updateCamera(Vector2 player, int viewportWidth, int viewportHeight, TiledMap map, float tiledMapScale) {
-//        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
-//        float mapHeight = layer.getHeight() * layer.getTileHeight() * tiledMapScale;
-//        float mapWidth = layer.getWidth() * layer.getTileWidth() * tiledMapScale;
-//
-//        if(player.x < viewportWidth / 2f) camera.position.x = viewportWidth / 2f;
-//        else if(player.x > mapWidth - viewportWidth / 2f) camera.position.x = mapWidth - viewportWidth / 2f;
-//        else camera.position.x = player.x;
-//
-//        if(player.y < viewportHeight / 2f) camera.position.y = viewportHeight / 2f;
-//        else if(player.y > mapHeight - viewportHeight / 2f) camera.position.y = mapHeight - viewportHeight / 2f;
-//        else camera.position.y = player.y;
-//
-//        camera.update();
-//    }
-
+    @ExcludeFromGeneratedCoverage
     @Override
     public void render(float delta) {
 
@@ -270,7 +256,6 @@ public class GameContext extends Context {
 
         previousFrameStart = System.nanoTime();
 
-        //while (0 != synchronizer.get()){continue;}
 
         //lock ensures that the simulation does not step!
         renderLock.lock();
@@ -278,7 +263,7 @@ public class GameContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.GREEN);
 
-        gameWorld.render(camera, delta);
+        gameWorld.render(camera);
 
         Vector2 origin = player.getBody().getPosition().cpy().add(previousFramePlayerSpeed);
 
@@ -289,20 +274,12 @@ public class GameContext extends Context {
 
         batch.begin();
 
-        int i = 1;
-        for(GameObject object : objects) {
-            if(i++ % 100 == 0) batch.flush();
-            object.draw(batch, frameCount);
-        }
+        AtomicInteger i = new AtomicInteger(1);
 
-        for (Actor actor : actors) {
-            if(i++ % 100 == 0) batch.flush();
-            if(actor.isInCoolDown()) {
-                batch.setColor(Color.RED);
-            }
-            actor.draw(batch, frameCount);
-            batch.setColor(Color.WHITE);
-        }
+        Stream.concat(objects.stream(), actors.stream()).forEach(obj -> {
+            if(i.getAndIncrement() % 100 == 0) batch.flush();
+            obj.draw(batch, frameCount);
+        });
 
 
         if(!gameOver) {

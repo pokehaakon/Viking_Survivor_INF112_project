@@ -6,11 +6,9 @@ import com.badlogic.gdx.Screen;
 
 public abstract class Context implements Screen {
     private InputProcessor inputProcessor;
-    final private String contextName;
     final private ContextualInputProcessor iProc;
 
-    public Context(String name, ContextualInputProcessor iProc) {
-        contextName = name;
+    public Context(ContextualInputProcessor iProc) {
         this.iProc = iProc;
     }
 
@@ -21,13 +19,4 @@ public abstract class Context implements Screen {
     public InputProcessor getInputProcessor() {
         return inputProcessor;
     }
-
-    /**
-     *
-     * @return Name of the context
-     */
-    public String getContextName() {
-        return contextName;
-    }
-
 }

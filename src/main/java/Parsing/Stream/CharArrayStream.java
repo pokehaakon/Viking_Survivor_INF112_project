@@ -51,14 +51,7 @@ public class CharArrayStream implements Streamable<Character> {
             colCount++;
         }
         var temp = currentChar;
-//        head++;
-//        if (text.length == head) {
-//            currentChar = 0;
-//        } else {
-//            currentChar = text[head];
-//        }
         currentChar = text.length == ++head ? 0 : text[head];
-        //currentChar = text.length != head + 1 ? text[++head] : 0;
         return temp;
     }
 
@@ -93,8 +86,7 @@ public class CharArrayStream implements Streamable<Character> {
             b.append(text[i]);
         }
         b.append('\n');
-        for (int i = 0; i < colCount; i++)
-            b.append(' ');
+        b.append(" ".repeat(Math.max(0, colCount)));
         b.append('^');
 
     return b + (atEOF() ? "\n: atEOF" : "") + "\n in file: " + name;

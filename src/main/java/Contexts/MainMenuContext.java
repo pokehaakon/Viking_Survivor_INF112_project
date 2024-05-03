@@ -1,6 +1,8 @@
 package Contexts;
 
 import InputProcessing.ContextualInputProcessor;
+import InputProcessing.DefaultInputProcessor;
+import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -29,8 +31,9 @@ class MainMenuContext extends Context{
     private Texture mmTexture;
     private Image backgroundImage;
 
+    @ExcludeFromGeneratedCoverage
     public MainMenuContext(String name, SpriteBatch batch, ContextualInputProcessor iProc) {
-        super(name, iProc);
+        super(iProc);
         this.batch = batch;
 
 
@@ -112,7 +115,7 @@ class MainMenuContext extends Context{
 
     private InputProcessor createInputProcessor() {
         Context me = this;
-        return new InputProcessor() {
+        return new DefaultInputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
 
@@ -122,30 +125,6 @@ class MainMenuContext extends Context{
                     default -> false;
                 };
             }
-
-            @Override
-            public boolean keyUp(int keycode) {return false;}
-
-            @Override
-            public boolean keyTyped(char character) {return false;}
-
-            @Override
-            public boolean touchDown(int screenX, int screenY, int pointer, int button) {return false;}
-
-            @Override
-            public boolean touchUp(int screenX, int screenY, int pointer, int button) {return false;}
-
-            @Override
-            public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {return false;}
-
-            @Override
-            public boolean touchDragged(int screenX, int screenY, int pointer) {return false;}
-
-            @Override
-            public boolean mouseMoved(int screenX, int screenY) {return false;}
-
-            @Override
-            public boolean scrolled(float amountX, float amountY) {return false;}
         };
     }
 
@@ -154,6 +133,7 @@ class MainMenuContext extends Context{
 
     }
 
+    @ExcludeFromGeneratedCoverage
     @Override
     public void render(float delta) {
         batch.begin();

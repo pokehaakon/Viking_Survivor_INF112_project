@@ -38,21 +38,6 @@ public class Simulation implements Runnable {
 
     public Simulation(GameContext context) {
         this.context = context;
-//        renderLock = context.getRenderLock();
-//        keyStates = context.getKeyStates();
-//        world = context.getWorld();
-//        updateTime = context.getUpdateTime();
-//        UPS = context.getUPS();
-//        synchronizer = context.getSynchronizer();
-//        player = context.getPlayer();
-//        actorPool = context.getActorPool();
-//        actors = context.getActors();
-//
-//        objectPool = context.objectPool;
-//        objects = context.objects;
-//
-//        gameWorld = context.gameWorld;
-
     }
 
     @Override
@@ -111,8 +96,7 @@ public class Simulation implements Runnable {
             doSpinSleep(lastFrameStart, DELTA_TIME_FRAME);
             context.UPS.add(System.nanoTime() - lastFrameStart);
 
-            //while (frame > context.synchronizer.get()){continue;}
-            while (1 != context.synchronizer.get()){continue;}
+            while (frame > context.synchronizer.get()){continue;}
             context.renderLock.lock();
 
             context.gameWorld.act(frame);
@@ -123,7 +107,7 @@ public class Simulation implements Runnable {
             removeDestroyed(context.actors, context.actorPool, true);
             removeDestroyed(context.objects, context.objectPool, true);
 
-            context.synchronizer.decrementAndGet();
+            //context.synchronizer.decrementAndGet();
             context.renderLock.unlock();
             long simTimeToUpdate = System.nanoTime() - t0;
 
@@ -175,11 +159,6 @@ public class Simulation implements Runnable {
     public void unpause() {
         paused = false;
     }
-
-//    public long getFrameNumber() {
-//        return frame;
-//    }
-//    public boolean isPaused() {return paused;}
 }
 
 

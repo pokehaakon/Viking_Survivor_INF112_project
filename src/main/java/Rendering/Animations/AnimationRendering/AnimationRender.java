@@ -2,7 +2,6 @@ package Rendering.Animations.AnimationRendering;
 
 import GameObjects.GameObject;
 import Rendering.Animations.AnimationState;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.Map;
@@ -33,11 +32,6 @@ public interface AnimationRender {
      */
     void setAnimation(AnimationState state);
 
-//    /**
-//     * Initializes the animations for the renderer
-//     * @param animationMap map for what to draw for each 'AnimationState'
-//     */
-//    void initAnimations(Map<AnimationState, String> animationMap);
 
     /**
      * @param state
@@ -51,9 +45,15 @@ public interface AnimationRender {
      */
     float getHeight(AnimationState state);
 
+    /**
+     * Rotates animation at its axis
+     * @param rotationSpeed
+     */
     void rotate(float rotationSpeed);
 
-
+    /**
+     * Stops rotation by setting rotationspeed to zero
+     */
     void stopRotation();
 
 }

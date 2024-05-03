@@ -1,7 +1,9 @@
 package Contexts;
 
 import InputProcessing.ContextualInputProcessor;
+import InputProcessing.DefaultInputProcessor;
 import InputProcessing.KeyStates;
+import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -24,7 +26,7 @@ class PauseContext extends Context {
 
     // Might get deleted and replaced with a screen that covers MVP and pauses game, similar to Lvl up
     public PauseContext(String name, SpriteBatch batch, ContextualInputProcessor iProc) {
-        super(name, iProc);
+        super(iProc);
         this.batch = batch;
 
         this.stage = new Stage();
@@ -52,7 +54,7 @@ class PauseContext extends Context {
     public void show() {
 
     }
-
+    @ExcludeFromGeneratedCoverage
     @Override
     public void render(float delta) {
         batch.begin();
@@ -67,7 +69,7 @@ class PauseContext extends Context {
     private InputProcessor createInputProcessor() {
         Context me = this;
         keyStates = new KeyStates();
-        return new InputProcessor() {
+        return new DefaultInputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
                 return switch (keycode) {
@@ -75,46 +77,6 @@ class PauseContext extends Context {
                     case Input.Keys.P -> {me.getContextualInputProcessor().setContext("MVP"); yield true;}
                     default -> false;
                 };
-            }
-
-            @Override
-            public boolean keyUp(int keycode) {
-                return false;
-            }
-
-            @Override
-            public boolean keyTyped(char character) {
-                return false;
-            }
-
-            @Override
-            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                return false;
-            }
-
-            @Override
-            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-                return false;
-            }
-
-            @Override
-            public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
-                return false;
-            }
-
-            @Override
-            public boolean touchDragged(int screenX, int screenY, int pointer) {
-                return false;
-            }
-
-            @Override
-            public boolean mouseMoved(int screenX, int screenY) {
-                return false;
-            }
-
-            @Override
-            public boolean scrolled(float amountX, float amountY) {
-                return false;
             }
         };
     }

@@ -1,6 +1,7 @@
 package Contexts;
 
 import InputProcessing.ContextualInputProcessor;
+import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -19,7 +20,7 @@ class CSelectContext extends Context{
     private Image backgroundImage;
 
     public CSelectContext(String name, SpriteBatch batch, ContextualInputProcessor iProc) {
-        super(name, iProc);
+        super(iProc);
         this.batch = batch;
 
         // Starts game
@@ -50,6 +51,7 @@ class CSelectContext extends Context{
 
     }
 
+    @ExcludeFromGeneratedCoverage
     @Override
     public void render(float delta) {
         batch.begin();

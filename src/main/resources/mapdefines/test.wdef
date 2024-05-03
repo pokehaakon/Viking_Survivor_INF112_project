@@ -1,5 +1,7 @@
+$include ObjectDefines/test.obj
+
 !MAP_PATH=assets/damaged_roads_map.tmx
-!OBJECT_DEFINES=ObjectDefines/test.obj
+!PLAYER_NAME=RAVEN
 
 00:00:
     #ORC; BOSS 100 HARD
@@ -8,3 +10,4 @@
 
 00:10:
     ORC; SWARM size:20 type:LINE
+    ORC; WAVE size:20 maxSpawnEachFrame:1

@@ -7,13 +7,11 @@ import com.google.common.util.concurrent.AtomicDouble;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Filter;
 
 
 import static GameObjects.ObjectActions.MovementActions.chaseActorCustomSpeed;
 
 import static Tools.FilterTool.isInCategory;
-import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
 public abstract class WeaponActions {
 
@@ -28,7 +26,7 @@ public abstract class WeaponActions {
      * @return a weapon action
      */
     public static Action orbitActor(float orbitSpeed,float orbitRadius, Actor actor, int orbitFrameInterval, float startingAngle) {
-        AtomicLong framesSinceLastAttack = new AtomicLong((long)orbitFrameInterval);
+        AtomicLong framesSinceLastAttack = new AtomicLong(orbitFrameInterval);
         AtomicDouble angle = new AtomicDouble(2 * Math.PI + startingAngle + 1);
 
         return weapon -> {
@@ -46,7 +44,6 @@ public abstract class WeaponActions {
 
             if (!weapon.getBody().isActive()) return; //weapon is on cooldown
 
-            //weapon.getBody().setActive(true);
 
             Vector2 newPos = actor.getBody().getPosition().cpy()
                     .sub(weapon.getBody().getPosition())

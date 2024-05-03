@@ -13,40 +13,18 @@ class ObjectDefineParserTest {
     static void setUpBeforeAll() {
         HeadlessApplicationConfiguration config = new HeadlessApplicationConfiguration();
         ApplicationListener listener = new ApplicationListener() {
-
             @Override
-            public void create() {
-            }
-
+            public void create() {}
             @Override
-            public void resize(int width, int height) {
-                // TODO Auto-generated method stub
-
-            }
-
+            public void resize(int width, int height) {}
             @Override
-            public void render() {
-                // TODO Auto-generated method stub
-
-            }
-
+            public void render() {}
             @Override
-            public void pause() {
-                // TODO Auto-generated method stub
-
-            }
-
+            public void pause() {}
             @Override
-            public void resume() {
-                // TODO Auto-generated method stub
-
-            }
-
+            public void resume() {}
             @Override
-            public void dispose() {
-                // TODO Auto-generated method stub
-
-            }};
+            public void dispose() {}};
         new HeadlessApplication(listener, config);
     }
 

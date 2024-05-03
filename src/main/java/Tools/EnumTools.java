@@ -16,16 +16,6 @@ public abstract class EnumTools {
         return strings;
     }
 
-//    public static String[] stringValues() {
-//        int len = EnemyType.values().length;
-//        String[] strings = new String[len];
-//        int i = 0;
-//        for (EnemyType e : EnemyType.values()) {
-//            strings[i++] = e.toString();
-//        }
-//        return strings;
-//    }
-
     public abstract static class HashMapTool {
 
         public static <V, K> Map<V, K> mapFromPairs(List<Pair<V, K>> pairs) {

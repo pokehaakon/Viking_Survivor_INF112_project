@@ -8,7 +8,6 @@ import java.util.*;
 
 public class KeyStates {
     private Map<Integer, GameKey> keyBindsMap;
-    private Map<GameKey, Integer> ikeyBindsMap;
     private Map<GameKey, Boolean> stateOfKey;
 
     /**
@@ -37,7 +36,6 @@ public class KeyStates {
 
     private void build(List<Pair<Integer, GameKey>> keyBinds) {
         keyBindsMap = new HashMap<>();
-        ikeyBindsMap = new EnumMap<>(GameKey.class);
         Set<GameKey> values = new HashSet<>();
         for (Pair<Integer, GameKey> p : keyBinds) {
             if (keyBindsMap.get(p.getValue0()) != null) {
@@ -48,7 +46,6 @@ public class KeyStates {
             }
             values.add(p.getValue1());
             keyBindsMap.put(p.getValue0(), p.getValue1());
-            ikeyBindsMap.put(p.getValue1(), p.getValue0());
         }
 
         stateOfKey = new EnumMap<>(GameKey.class);
@@ -60,7 +57,6 @@ public class KeyStates {
     }
 
     /**
-     *
      * @param gk
      * @return the boolean state of the GameKey gk
      */

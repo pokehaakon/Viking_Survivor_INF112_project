@@ -2,7 +2,7 @@ package Rendering.Animations.AnimationRendering;
 
 import GameObjects.GameObject;
 import Rendering.Animations.AnimationState;
-import com.badlogic.gdx.graphics.Color;
+import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.EnumMap;
 import java.util.Map;
 
+@ExcludeFromGeneratedCoverage
 public class SpriteRender implements AnimationRender {
     private final float scale;
     private final Map<AnimationState, Sprite> stateAnimations = new EnumMap<>(AnimationState.class);
@@ -17,7 +18,6 @@ public class SpriteRender implements AnimationRender {
     private AnimationState state;
 
     protected SpriteRender(Map<AnimationState, String> stateAnimations, float scale) {
-        //stateAnimationsTemp = stateAnimations;
         getSprites(stateAnimations);
         this.scale = scale;
     }
@@ -43,7 +43,6 @@ public class SpriteRender implements AnimationRender {
     @Override
     public void setAnimation(AnimationState state) {
         this.state = state;
-        //sprite = stateAnimations.get(state);
     }
 
     @Override

@@ -16,8 +16,6 @@ import static Simulation.Coordinates.SwarmCoordinates.swarmInitializerPair;
 import static Tools.ListTools.findPrefix;
 import static Tools.ListTools.findPrefixOptional;
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
-import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
-import static VikingSurvivor.app.Main.SCREEN_WIDTH;
 
 public class SwarmSpawnHandler implements ISpawnHandler {
 
@@ -55,7 +53,7 @@ public class SwarmSpawnHandler implements ISpawnHandler {
 
         List<Actor> enemies = pool.get(size);
         float spacing = enemies.get(0).getBody().getFixtureList().get(0).getShape().getRadius() * 2;
-        var pair = swarmInitializerPair(swarmType, size, centerSupplier.get(), Math.min(SPAWN_RECT.x, SPAWN_RECT.y), spacing, speedMultiplier);
+        var pair = swarmInitializerPair(swarmType, size, centerSupplier.get(), Math.min(SPAWN_RECT.x, SPAWN_RECT.y), spacing);
 
         for (Actor actor :  enemies) {
             actor.addAction(pair.getValue0().get());

@@ -2,7 +2,6 @@ package Simulation;
 
 import GameMap.GameMap;
 import GameObjects.Actor;
-import GameObjects.GameObject;
 import GameObjects.ObjectFactory;
 import Parsing.MapParser;
 import Parsing.ObjectDefineParser.Defines.ActorDefinition;
@@ -10,12 +9,9 @@ import Parsing.ObjectDefineParser.Defines.ObjectDefinition;
 import Parsing.ObjectDefineParser.ObjectDefineParser;
 import Parsing.SpawnFrame;
 import Simulation.SpawnHandler.SpawnHandlerFactory;
+import Tools.ExcludeFromGeneratedCoverage;
 import Tools.Pool.ObjectPool;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.Disposable;
 import org.javatuples.Pair;
 
@@ -24,38 +20,24 @@ import java.util.List;
 import java.util.Map;
 
 public class GameWorld implements Disposable {
-    private final float mapScale = 0.25f;
-    private Map<String, String> defines;
-    private List<Pair<Long, List<SpawnFrame>>> timeFrames;
-    private GameMap map;
+    private static final float mapScale = 0.25f;
+    private final List<Pair<Long, List<SpawnFrame>>> timeFrames;
+    private final GameMap map;
     private long nextFrame;
     private int frameIndex = 0;
     private final List<ISpawnHandler> spawnHandlers = new ArrayList<>();
 
     private final SpawnHandlerFactory handlerFactory;
-
-//    private final ObjectPool<Actor> actorPool;
-//    private final ObjectPool<GameObject> objectPool;
-//
-//    private final List<Actor> activeActors;
-//    private final List<GameObject> activeObjects;
     public final Actor player;
 
     public GameWorld(
             String worldDef,
             ObjectPool<Actor> actorPool,
-            ObjectPool<GameObject> objectPool,
-            List<Actor> activeActors,
-            List<GameObject> activeObjects
+            List<Actor> activeActors
     ) {
         if (!worldDef.endsWith(".wdef")) {
             throw new RuntimeException("world definition file needs ending '.wdef', got : " + worldDef);
         }
-
-//        this.actorPool = actorPool;
-//        this.objectPool = objectPool;
-//        this.activeActors = activeActors;
-//        this.activeObjects = activeObjects;
 
         MapParser mapParser = new MapParser(worldDef);
 
@@ -74,11 +56,10 @@ public class GameWorld implements Disposable {
             }
         }
 
-        defines = mapParser.doParseDefines();
+        Map<String, String> defines = mapParser.doParseDefines();
         timeFrames = mapParser.doParseTimeFrames();
 
         map = new GameMap(defines.get("MAP_PATH"), mapScale);
-        //map.createMapBorder(world);
 
         if (timeFrames != null) {
             nextFrame = timeFrames.get(0).getValue0();
@@ -89,11 +70,11 @@ public class GameWorld implements Disposable {
         this.player = ObjectFactory.createActor(defines.get("PLAYER_NAME"));
         activeActors.add(player);
 
-        handlerFactory = new SpawnHandlerFactory(player, actorPool, objectPool, activeActors, activeObjects);
+        handlerFactory = new SpawnHandlerFactory(player, actorPool, activeActors);
     }
     public void act(Long frame) {
         if (frame == nextFrame) {
-            setNextFrame(frame);
+            setNextFrame();
         }
         actThisFrame(frame);
     }
@@ -104,22 +85,19 @@ public class GameWorld implements Disposable {
         }
     }
 
-    private void setNextFrame(long frame) {
+    private void setNextFrame() {
         spawnHandlers.clear();
 
-        //System.out.println("Frame: " + frameIndex);
         for (var f : timeFrames.get(frameIndex++).getValue1()) {
             spawnHandlers.add(handlerFactory.create(f.spawnable(), f.spawnType(), f.args()));
-            //System.out.println("\t" + f);
         }
 
         nextFrame = timeFrames.size() == frameIndex ? Long.MAX_VALUE : timeFrames.get(frameIndex).getValue0();
     }
 
-    public void render(OrthographicCamera camera, float delta) {
+    @ExcludeFromGeneratedCoverage
+    public void render(OrthographicCamera camera) {
         map.renderTiledMap(camera);
-//        mapRenderer.setView(camera);
-//        mapRenderer.render();
     }
 
     @Override

@@ -2,9 +2,7 @@ package Tools;
 
 import org.javatuples.*;
 
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.stream.Collectors;
 
 public abstract class Tuple {
     public static <A> Unit<A> of(A a) {
@@ -39,7 +37,7 @@ public abstract class Tuple {
     }
 
     private abstract static class ZippedIterator<A> implements Iterator<A> {
-        private Iterator[] iters;
+        private final Iterator[] iters;
 
         public ZippedIterator(Iterator... iters) {this.iters = iters;}
         @Override

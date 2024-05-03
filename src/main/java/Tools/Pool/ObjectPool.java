@@ -36,11 +36,11 @@ public final class ObjectPool<T extends Poolable> implements IPool<T> {
     }
 
     /**
-     * Creates a new sub-pool of this pool, with another factory. This pool will be able to create/give all of the
+     * Creates a new sub-pool of this pool, with another factory. This pool will be able to create/give all the
      * object the new pool is able to create.
      * @param factory the factory for the new sub-pool
      * @return the new sub-pool
-     * @param <R> the type of objects of the new pool, must be sub-type of the type of this pool
+     * @param <R> the type of objects of the new pool, must be subtype of the type of this pool
      */
     @SuppressWarnings("unchecked")
     public <R extends T> ObjectPool<R> createSubPool(Function<String, R> factory) {

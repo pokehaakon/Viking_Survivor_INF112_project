@@ -3,12 +3,13 @@ package GameObjects;
 import GameObjects.ObjectActions.Action;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
 import Rendering.Animations.AnimationState;
-import Tools.FilterTool;
+import Tools.ExcludeFromGeneratedCoverage;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 
 import java.util.*;
 
-import static Tools.FilterTool.isInCategory;
 
 public class Actor extends GameObject implements IActor {
     private float speed;
@@ -16,11 +17,10 @@ public class Actor extends GameObject implements IActor {
     private float damage;
     private float resistance;
 
-    private boolean startTempChange = false;
     private boolean temporaryActionCountDown = false;
 
     //used to store the original actions if action change
-    private List<Action> originalActions = new ArrayList<>();
+    private final List<Action> originalActions = new ArrayList<>();
 
     private int framesLeftOfActionChange;
     private boolean inCoolDown = false;
@@ -30,8 +30,8 @@ public class Actor extends GameObject implements IActor {
     protected final List<Action> dieActions;
 
     private final Map<Integer, Long> hitByIDs;
+    private final StatsConstants.Stats stats;
 
-    private StatsConstants.Stats stats;
     public Actor(String type, AnimationHandler animationHandler, BodyFeatures bodyFeatures, StatsConstants.Stats stats) {
         super(type, animationHandler, bodyFeatures);
         this.stats = stats;
@@ -101,7 +101,7 @@ public class Actor extends GameObject implements IActor {
      * Starts a temporary action change. Stores the original action in its own list.
      */
     private void doTemporaryActionChange() {
-        if(framesLeftOfActionChange-- <= 0) {;
+        if(framesLeftOfActionChange-- <= 0) {
             resetActions();
             addAction(originalActions);
             originalActions.clear();
@@ -191,7 +191,9 @@ public class Actor extends GameObject implements IActor {
     }
 
 
-
+    /**
+     * updates the boolean movingLeft
+     */
     public void updateDirectionState() {
         float vx = getBody().getLinearVelocity().x;
         if (vx == 0) return;
@@ -206,6 +208,9 @@ public class Actor extends GameObject implements IActor {
         hitByIDs.clear();
     }
 
+    /**
+     * Updates the animation if needed
+     */
     public void updateAnimationState() {
         var newState = getBody().getLinearVelocity().len() == 0.0f ? AnimationState.IDLE : AnimationState.MOVING;
 
@@ -234,6 +239,15 @@ public class Actor extends GameObject implements IActor {
         inCoolDown = false;
     }
 
+    @ExcludeFromGeneratedCoverage
+    @Override
+    public void draw(SpriteBatch batch, long frame) {
+        if(isInCoolDown()) {batch.setColor(Color.RED);}
+        super.draw(batch, frame);
+        if(isInCoolDown()) {batch.setColor(Color.WHITE);}
+    }
+
+    @ExcludeFromGeneratedCoverage(reason = "not used")
     public Map<Integer, Long> getHitByIDs() {
         return hitByIDs;
     }

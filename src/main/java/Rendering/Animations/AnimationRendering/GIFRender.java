@@ -2,7 +2,7 @@ package Rendering.Animations.AnimationRendering;
 
 import GameObjects.GameObject;
 import Rendering.Animations.AnimationState;
-import com.badlogic.gdx.graphics.Color;
+import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -12,23 +12,18 @@ import java.util.Map;
 
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
-
+@ExcludeFromGeneratedCoverage
 public class GIFRender implements AnimationRender {
 
     private final Map<AnimationState, GifPair> animationMovement = new EnumMap<>(AnimationState.class);
-//    private Map<AnimationState, String> animationMovementTemp;
     private GifPair currentGIF;
     private float rotation = 0;
     private float rotationSpeed = 0;
     private AnimationState state;
     private final float scale;
 
-    private boolean changeDrawColor = false;
-
-    //private Color drawColor = Color.WHITE;
 
     protected GIFRender(Map<AnimationState, String> animationMovement, float scale) {
-        //animationMovementTemp = animationMovement;
         getGifPairs(animationMovement);
         this.scale = scale;
     }
@@ -44,9 +39,7 @@ public class GIFRender implements AnimationRender {
                 ? currentGIF.left().getKeyFrame(elapsedTime)
                 : currentGIF.right().getKeyFrame(elapsedTime);
         Vector2 regionRect = new Vector2(region.getRegionWidth(), region.getRegionHeight());
-        float max = Math.max(regionRect.x, regionRect.y);
-        max = regionRect.y;
-        regionRect.scl(1/max * scale ); //* Main.PPM);
+        regionRect.scl(1/regionRect.y * scale ); //* Main.PPM);
 
 
         batch.draw(

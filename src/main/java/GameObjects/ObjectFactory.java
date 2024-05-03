@@ -2,6 +2,7 @@ package GameObjects;
 
 import Parsing.ObjectDefineParser.Defines.*;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
+import Tools.ExcludeFromGeneratedCoverage;
 import Tools.ShapeTools;
 import com.badlogic.gdx.physics.box2d.Shape;
 import org.apache.maven.surefire.shared.lang3.NotImplementedException;
@@ -20,8 +21,6 @@ public abstract class ObjectFactory {
     }
 
     static public List<String> getRegisteredActors() {
-        //System.out.println(isActor);
-        //System.out.println(factories.keySet());
         return isActor.stream().toList();
     }
 
@@ -69,7 +68,7 @@ public abstract class ObjectFactory {
         factories.put(name, supplier);
     }
 
-
+    @ExcludeFromGeneratedCoverage(reason = "not used")
     static public void register(String name, Supplier<GameObject> factory) {
         factories.put(name, factory);
     }

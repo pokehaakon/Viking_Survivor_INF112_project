@@ -1,6 +1,7 @@
 package GameObjects.ObjectActions;
 
 import GameObjects.Actor;
+import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.math.Vector2;
 
 import static Simulation.Coordinates.SpawnCoordinates.randomPointOutsideScreenRect;
@@ -29,6 +30,7 @@ public abstract class OutOfBoundsActions {
      * @param centerActor the actor in the center of the bounds (usually the player)
      * @param boundSquare vector with width and height of the square
      */
+    @ExcludeFromGeneratedCoverage(reason = "not used")
     static public Action moveIfOutOfBounds(Actor centerActor, Vector2 boundSquare) {
         return doIfOutOfBounds(
                 centerActor,
@@ -43,6 +45,7 @@ public abstract class OutOfBoundsActions {
         );
     }
 
+    @ExcludeFromGeneratedCoverage(reason = "not used")
     public static Action newPositionIfOutOfBounds(Vector2 pos,Actor centerActor, Vector2 boundSquare) {
         return doIfOutOfBounds(
                 centerActor,

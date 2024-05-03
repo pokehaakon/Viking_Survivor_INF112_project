@@ -15,6 +15,7 @@ import java.util.Vector;
 /* Released under Apache 2.0 */
 /* https://code.google.com/p/animated-gifs-in-android/ */
 
+@ExcludeFromGeneratedCoverage(reason = "not ours")
 public class GifDecoder {
     /**
      * File read status: No errors.

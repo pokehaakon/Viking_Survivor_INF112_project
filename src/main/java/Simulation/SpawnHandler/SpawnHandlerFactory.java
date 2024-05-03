@@ -1,7 +1,6 @@
 package Simulation.SpawnHandler;
 
 import GameObjects.Actor;
-import GameObjects.GameObject;
 import GameObjects.ObjectActions.Action;
 import GameObjects.ObjectActions.PickupActions;
 import GameObjects.ObjectActions.WeaponActions;
@@ -10,7 +9,6 @@ import Simulation.ISpawnHandler;
 import Tools.FilterTool;
 import Tools.Pool.ObjectPool;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static Contexts.GameContext.DE_SPAWN_RECT;
@@ -22,30 +20,22 @@ import static GameObjects.ObjectActions.OutOfBoundsActions.deSpawnIfOutOfBounds;
 import static GameObjects.ObjectActions.PickupActions.giveHP;
 import static GameObjects.ObjectActions.PickupActions.giveXP;
 import static Simulation.Coordinates.SpawnCoordinates.randomPointOutsideScreenRect;
-import static VikingSurvivor.app.HelloWorld.SET_FPS;
 import static VikingSurvivor.app.HelloWorld.millisToFrames;
 
 public class SpawnHandlerFactory {
 
     private final ObjectPool<Actor> actorPool;
-    private final ObjectPool<GameObject> terrainPool;
-
     private final List<Actor> activeActors;
-    private final List<GameObject> activeTerrain;
     private final Actor player;
 
     public SpawnHandlerFactory(Actor player,
                                ObjectPool<Actor> actorPool,
-                               ObjectPool<GameObject> terrainPool,
-                               List<Actor> activeActors,
-                               List<GameObject> activeTerrain
+                               List<Actor> activeActors
         ) {
 
         this.player = player;
         this.actorPool = actorPool;
-        this.terrainPool = terrainPool;
         this.activeActors = activeActors;
-        this.activeTerrain = activeTerrain;
     }
 
 
@@ -86,7 +76,6 @@ public class SpawnHandlerFactory {
 
                         for(int i = 0; i < 6; i++) {
                             Actor weapon = actorPool.get("WEAPON_RAVEN");
-                            //weapon.getAnimationHandler().rotate(10f);
 
                             weapon.addAction(
                                     WeaponActions.fireAtClosestActor(
@@ -119,7 +108,7 @@ public class SpawnHandlerFactory {
             );
             case CONTINUOUS -> new ContinuousSpawnHandler(
                 args,
-                    actorName,
+                actorName,
                 e -> {
                     e.addAction(chaseActor(player), destroyIfDefeated(), deSpawnIfOutOfBounds(player, DE_SPAWN_RECT));
                     e.addDieAction(dropActions);
