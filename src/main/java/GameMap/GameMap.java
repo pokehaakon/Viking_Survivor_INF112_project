@@ -107,9 +107,17 @@ public class GameMap {
         }
     }
 
+    /**
+     * gets the scale of the map
+     * @return mapscale
+     */
     public float getScale() {
         return scale;
     }
+
+    /**
+     * disposes the tiledMap
+     */
     public void dispose() {
         getTiledMap().dispose();
     }
