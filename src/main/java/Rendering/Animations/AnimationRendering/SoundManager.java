@@ -13,6 +13,8 @@ import java.util.function.Function;
  */
 public abstract class SoundManager {
 
+
+    // source: https://www.youtube.com/watch?v=AjJEhMtqDzE (free of use)
     public static final String ATTACK_SOUND ="Knife Stab Sound Effect [FREE USE].mp3";
 
     private static final Map<String, Sound> soundEffects = new HashMap<>();
