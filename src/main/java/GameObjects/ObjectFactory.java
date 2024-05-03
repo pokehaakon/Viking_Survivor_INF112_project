@@ -26,12 +26,11 @@ public abstract class ObjectFactory {
     }
 
     static public void register(String name, ObjectDefinition definition) {
-        float scale = definition.scale;
 
         var struct = definition.structureDefinition;
         var shape = getShapeFromShapeDefinition(struct.shapeDefinition);
         BodyFeatures bodyFeatures = getBodyFeaturesFromStructAndShape(struct, shape);
-        AnimationHandler animationHandler = animationHandlerFromAnimationDefinition(definition.animationDefinition, scale);
+        AnimationHandler animationHandler = animationHandlerFromAnimationDefinition(definition.animationDefinition);
 
         Supplier<GameObject> supplier = () -> new GameObject(
                 name,
@@ -45,7 +44,7 @@ public abstract class ObjectFactory {
     static public void register(String name, ActorDefinition definition) {
         isActor.add(name);
         var stats = definition.statsDefinition;
-        float scale = stats.scale;
+        //float scale = stats.scale;
 
         var struct = definition.structureDefinition;
         var shape = getShapeFromShapeDefinition(struct.shapeDefinition);
@@ -58,7 +57,7 @@ public abstract class ObjectFactory {
                 stats.resistance
         );
 
-        AnimationHandler animationHandler = animationHandlerFromAnimationDefinition(definition.animationDefinition, scale);
+        AnimationHandler animationHandler = animationHandlerFromAnimationDefinition(definition.animationDefinition);
 
         Supplier<GameObject> supplier = () -> new Actor(
                 name,
@@ -81,11 +80,11 @@ public abstract class ObjectFactory {
         factories.put(name, factory::get);
     }
 
-    static private AnimationHandler animationHandlerFromAnimationDefinition(AnimationDefinition definition, float scale) {
+    static private AnimationHandler animationHandlerFromAnimationDefinition(AnimationDefinition definition) {
         return new AnimationHandler(
                 definition.stateStringMap,
                 definition.initial,
-                scale
+                definition.scale
         );
     }
 

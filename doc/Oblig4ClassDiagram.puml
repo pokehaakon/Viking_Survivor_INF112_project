@@ -65,7 +65,7 @@ package AnimationRendering {
 
     class GIFRender implements AnimationRender {
         -Map<AnimationState, String> animations
-        +draw()
+        +void draw()
     }
 
     class SpriteRender implements AnimationRender {
@@ -78,7 +78,7 @@ package AnimationRendering {
         -AnimationState animationState;
 
         +void rotate(float rotationSpeed)
-        +AnimationState getAnimationState()+
+        +AnimationState getAnimationState()
         +void setAnimationState(AnimationState animationState)
         +AnimationRender getAnimationRenderer()
 

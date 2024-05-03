@@ -49,8 +49,8 @@ class ParserTest {
         ObjectFactory.registerActor("ORC", () -> null);
     }
 
-    public static MapParser mapParserFromString(String s) {
-        return new MapParser(s.toCharArray());
+    public static MapParser mapParserFromString(String s, String name) {
+        return new MapParser(s.toCharArray(), name);
     }
 
     @Test
@@ -58,7 +58,7 @@ class ParserTest {
         MapParser m = mapParserFromString("""
                 !mapname=Springs
                 !other=this
-                """);
+                """, "parseDefines");
 
         Map<String, String> defines = m.doParseDefines();
 
@@ -71,7 +71,7 @@ class ParserTest {
         m = mapParserFromString("""
                 !mapname=Springs
                 !other=
-                """);
+                """, "parseDefines");
         assertThrowsExactly(ParserException.class, m::doParseDefines);
     }
 
@@ -81,7 +81,7 @@ class ParserTest {
         MapParser m = mapParserFromString("""
                     RAVEN; BOSS 100 HARD
                     RAVEN; WAVE 10 20 #this should be ignored
-                """);
+                """, "parseFrameBody");
 
         List<SpawnFrame> frames = m.parseFrameBody();
         SpawnFrame frame;
@@ -108,14 +108,14 @@ class ParserTest {
         m = mapParserFromString("""
                     ENEMY1 ENEMY2; BOSS 100 HARD
                     ENEMY1; Wave 10 20 #this should be ignored
-                """);
+                """, "parseFrameBody");
         assertThrowsExactly(ParserException.class, m::parseFrameBody);
 
         //test error handling in incorrect EnemyType 'notEnemy'
         m = mapParserFromString("""
                     ENEMY1 notEnemy; BOSS 100 HARD
                     ENEMY1; Wave 10 20 #this should be ignored
-                """);
+                """, "parseFrameBody");
         assertThrowsExactly(ParserException.class, m::parseFrameBody);
 
     }
@@ -128,7 +128,7 @@ class ParserTest {
                     RAVEN; WAVE 10 20
                 300f:
                     ORC; BOSS 100 HARD
-                """);
+                """, "parseTimeFrames");
 
 
         SpawnFrame frame;
@@ -170,7 +170,7 @@ class ParserTest {
                 00:10:
                     ORC; WAVE size:20 maxSpawnEachFrame:1
                                 
-                """);
+                """, "parseTimeFrames");
         //MapParser p = new MapParser("mapdefines/test.wdef");
         //p.doParse();
         p.doParseDefines();
@@ -189,7 +189,7 @@ class ParserTest {
 
     @Test
     void testTextParser() throws ParsingException {
-        TextParser parser = new TextParser("aab112".toCharArray());
+        TextParser parser = new TextParser("aab112".toCharArray(), "testTextParser");
 
         assertEquals("a", parser.letter());
         assertEquals("ab", parser.letters());
@@ -200,20 +200,20 @@ class ParserTest {
         assertThrowsExactly(ParsingException.class, parser::number);
 
 
-        parser = new TextParser("\t\t  abc".toCharArray());
+        parser = new TextParser("\t\t  abc".toCharArray(), "testTextParser");
         assertEquals("\t\t  ", parser.space());
 
 
-        parser = new TextParser("\t\t \nabc\n".toCharArray());
+        parser = new TextParser("\t\t \nabc\n".toCharArray(), "testTextParser");
         assertEquals("\t\t \n", parser.skipLine());
         assertThrowsExactly(ParsingException.class, parser::skipLine);
 
-        parser = new TextParser("\n\ra".toCharArray());
+        parser = new TextParser("\n\ra".toCharArray(), "testTextParser");
         assertEquals("\n", parser.parseNewLineLiteral());
         assertEquals("\r", parser.parseNewLineLiteral());
         assertThrowsExactly(ParsingException.class, parser::parseNewLineLiteral);
 
-        parser = new TextParser("\t\t \n".toCharArray());
+        parser = new TextParser("\t\t \n".toCharArray(), "testTextParser");
         assertEquals("\t\t \n", parser.parseEmptyLine());
         assertThrowsExactly(ParsingException.class, parser::parseEmptyLine);
     }
@@ -221,7 +221,7 @@ class ParserTest {
 
     @Test
     void testGenericParser() throws ParsingException {
-        TextParser parser1 = new TextParser("parsed".toCharArray());
+        TextParser parser1 = new TextParser("parsed".toCharArray(), "testGenericParser");
 
         assertThrowsExactly(ParsingException.class, () -> parser1.error(""));
         assertThrowsExactly(ParsingException.class, () -> parser1.shouldError(() -> null));
@@ -230,7 +230,7 @@ class ParserTest {
         assertEquals("default", parser1.iorElse(parser1.iparseStringLiteral("parsed"), "default").get());
 
 
-        TextParser parser2 = new TextParser("undo".toCharArray());
+        TextParser parser2 = new TextParser("undo".toCharArray(), "testGenericParser");
         assertThrowsExactly(ParsingException.class, () -> parser2.undo(() -> {
                 parser2.parseLiteral('u');
                 parser2.error("");
@@ -240,7 +240,7 @@ class ParserTest {
         assertEquals("undo", parser2.parseStringLiteral("undo"));
 
 
-        TextParser parser3 = new TextParser("___stripped___next".toCharArray());
+        TextParser parser3 = new TextParser("___stripped___next".toCharArray(), "testGenericParser");
         assertEquals("stripped", parser3.istrip(parser3.iparseStringLiteral("stripped"), '_').get());
         assertEquals("next", parser3.parseStringLiteral("next"));
 
@@ -266,7 +266,7 @@ class ParserTest {
 
     @Test
     void charStreamTest() {
-        CharArrayStream stream = new CharArrayStream("this is a stream\nwith multiple\nlines");
+        CharArrayStream stream = new CharArrayStream("this is a stream\nwith multiple\nlines", "charStreamTest");
         assertEquals(0, stream.getLine());
         assertEquals(0, stream.getLinePos());
 
@@ -284,7 +284,7 @@ class ParserTest {
 
         assertDoesNotThrow(stream::next);
 
-        assertEquals("with multiple\n ^", stream.getDebugInfo());
+        assertEquals("with multiple\n ^\n in file: charStreamTest", stream.getDebugInfo());
         assertEquals('i', stream.getCurrent());
 
 
@@ -300,7 +300,7 @@ class ParserTest {
                 $include path2
                 $include otherPath
                                 
-                """);
+                """, "includesTest");
         //MapParser p = new MapParser("mapdefines/test.wdef");
         //p.doParse();
         p.doParseIncludes();

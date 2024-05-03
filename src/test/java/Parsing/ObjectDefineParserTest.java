@@ -1,13 +1,12 @@
-package Parsing.ObjectDefineParser;
+package Parsing;
 
+import Parsing.ObjectDefineParser.ObjectDefineParser;
 import Parsing.Parser.ParsingException;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ObjectDefineParserTest {
     @BeforeAll

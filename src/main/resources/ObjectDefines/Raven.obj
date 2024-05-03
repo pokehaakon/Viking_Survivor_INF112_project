@@ -4,15 +4,13 @@ $RavenAnimation = Define Animation:
     State: MOVING $RAVEN_GIF
     state: IDLE $RAVEN_GIF
     initial: MOVING
-
-
+    Scale: 10
 
 $RavenStats = Define Stats:
     HP: 10.0
     Speed: 10
     Damage: 5.0
     resistance: 0.0
-    scale: 10
 
 $RavenShape = Define Shape:
     Type: Circle
@@ -35,12 +33,12 @@ $Weapon_RavenStructure = Define Structure:
     density: 1.0
     friction: 0
     isSensor: true
+
 $Weapon_RavenStats = Define Stats:
     HP: 10.0
     Speed: 100
     Damage: 5.0
     resistance: 0.0
-    scale: 10
 
 
 $RAVEN = Define Actor:

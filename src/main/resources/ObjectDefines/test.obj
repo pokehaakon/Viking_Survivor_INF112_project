@@ -24,16 +24,17 @@ $RavenAnimation = Define Animation:
                                     # the second is a path to either a gif or an image.
     state: IDLE raven.gif           # multiple states can be defined, note that only one state can be capitalized
     initial: MOVING                 # optional: default value is the capitalized state given
+    Scale: 5.0                      # a scale to set the scale of the sprite/gif
 
 $OrcAnimation = Define Animation:
     State: MOVING orc.gif
+    Scale: 5.0
 
 $RavenStats = Define Stats:
     HP: 100.0                       # starting HP value
     Speed: 70.0                     # speed
     Damage: 10.0                    # the damage the enemy inflicts
     resistance: 0.0                 # optional: default value is 0.0
-    scale: 5.0                      # optional: scale of the enemy, scales both sprite and hitbox, default value is 1.0
 
 $RavenShape = Define Shape:
     Type: Circle                    # The type of the shape, this can be 'Circle, Square or Polygon'
@@ -75,8 +76,6 @@ $ORC = Define Actor:                # this defines a new enemy with name 'testEn
     Stats: $RavenStats              # this must be a Stats.
     Structure: $RavenStructure      # this must be a Structure.
 
-
 $TREE = Define Object:              # this is how we define GameObjects
     Animation: $RavenAnimation      # this defines the animation
     Structure: $RavenStructure      # this defines the structure
-    Scale: 2.0                      # as objects do not get a scale from stats, it is needed here

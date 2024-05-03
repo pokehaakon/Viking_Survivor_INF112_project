@@ -26,8 +26,8 @@ public class MapParser extends TextParser {
         if(!filename.endsWith(".wdef")) throw new IllegalArgumentException(filename + " must end with '.wdef'");
     }
 
-    public MapParser(char[] text) {
-        super(text);
+    public MapParser(char[] text, String name) {
+        super(text, name);
     }
 
     public Map<String, String> doParseDefines() {

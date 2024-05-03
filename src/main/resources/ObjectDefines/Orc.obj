@@ -2,13 +2,13 @@ $ORC_GIF = orc.gif
 
 $OrcAnimation = Define Animation:
     State: MOVING $ORC_GIF
+    Scale: 17.0
 
 $OrcStats = Define Stats:
     HP: 30.0
     Speed: 20.0
     Damage: 10.0
     resistance: 0.0
-    scale: 17.0
 
 $OrcShape = Define Shape:
     Type: Circle

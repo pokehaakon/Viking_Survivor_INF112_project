@@ -26,9 +26,9 @@ public class ObjectDefineParser extends TextParser {
         if(!filename.endsWith(".obj")) throw new IllegalArgumentException(filename + " must end with '.obj'");
     }
 
-    public ObjectDefineParser(char[] text) {
-        super(text);
-    }
+//    public ObjectDefineParser(char[] text) {
+//        super(text);
+//    }
 
     /**
      * Parses everything between a '#' and newline
@@ -180,12 +180,9 @@ public class ObjectDefineParser extends TextParser {
 
             AnimationDefinition animationDefinition = getVarValueFromBodyCastAsT(body, "Animation", AnimationDefinition.class);
             StructureDefinition structureDefinition = getVarValueFromBodyCastAsT(body, "Structure", StructureDefinition.class);
-            float scale =  lookupAndMakeToTIfVarOrMakeToT(
-                    getFieldValueFromBody(body, "Scale"),
-                    Float::parseFloat
-            );
 
-            return ObjectDefinition.of(animationDefinition, structureDefinition, scale);
+
+            return ObjectDefinition.of(animationDefinition, structureDefinition);
         });
     }
 
@@ -222,7 +219,12 @@ public class ObjectDefineParser extends TextParser {
                         );
             }
 
-            return AnimationDefinition.of(stateStringMap, state);
+            float scale =  lookupAndMakeToTIfVarOrMakeToT(
+                    getFieldValueFromBody(body, "Scale"),
+                    Float::parseFloat
+            );
+
+            return AnimationDefinition.of(stateStringMap, state, scale);
         });
     }
 
@@ -304,11 +306,7 @@ public class ObjectDefineParser extends TextParser {
                     .map(Float::parseFloat)
                     .orElse(1.0f);
 
-            float scale = getFirst(body, e -> e.getValue0().equals("scale"))
-                    .map(Pair::getValue1)
-                    .map(Float::parseFloat)
-                    .orElse(1.0f);
-            return StatsDefinition.of(hp, speed, damage, resistance, scale);
+            return StatsDefinition.of(hp, speed, damage, resistance);
         });
     }
 

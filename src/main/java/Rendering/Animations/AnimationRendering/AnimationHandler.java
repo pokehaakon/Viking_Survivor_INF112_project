@@ -1,5 +1,6 @@
 package Rendering.Animations.AnimationRendering;
 
+import Parsing.ObjectDefineParser.Defines.AnimationDefinition;
 import Rendering.Animations.AnimationState;
 import com.badlogic.gdx.graphics.Color;
 
@@ -52,6 +53,10 @@ public class AnimationHandler {
         animationRender = AnimationRender.of(type, animationMap, scale);
         animationRender.setAnimation(animationState);
 
+    }
+
+    public AnimationHandler(AnimationDefinition definition) {
+        this(definition.stateStringMap, definition.initial, definition.scale);
     }
 
     /**

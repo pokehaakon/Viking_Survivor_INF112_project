@@ -1,5 +1,7 @@
 $Animation = Define Animation:
     State: IDLE tree.png
+    Scale: 20
+
 
 $Shape = Define Shape:
     Type: Circle
@@ -16,5 +18,4 @@ $Structure = Define Structure:
 
 $TREE = Define Object:
     Animation: $Animation
-    Scale: 20
     Structure: $Structure

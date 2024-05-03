@@ -21,8 +21,8 @@ public class ActorDefinition {
     @Override
     public String toString() {
         return "ActorDefinition("
-                + "\n\tanimationDefinition: "+ animationDefinition
-                + "\n\tstatsDefinition" + statsDefinition
-                + "\n\tstructureDefinition" + structureDefinition + "\n)";
+                + "\n\tAnimationDefinition: "+ animationDefinition
+                + "\n\tStatsDefinition" + statsDefinition
+                + "\n\tStructureDefinition" + structureDefinition + "\n)";
     }
 }

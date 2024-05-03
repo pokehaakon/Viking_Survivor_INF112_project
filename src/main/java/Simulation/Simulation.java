@@ -23,8 +23,8 @@ import java.util.concurrent.locks.Lock;
 
 import static Contexts.GameContext.SPAWN_RECT;
 import static Tools.ListTools.removeDestroyed;
-import static Tools.RollingSum.millisToFrames;
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
+import static VikingSurvivor.app.HelloWorld.millisToFrames;
 import static com.badlogic.gdx.scenes.scene2d.ui.Table.Debug.actor;
 
 public class Simulation implements Runnable {
@@ -119,7 +119,7 @@ public class Simulation implements Runnable {
                                 FilterTool.Category.ENEMY,
                                 player.getSpeed() + weapon.getSpeed(),
                                 player,
-                                millisToFrames(100,SET_FPS),
+                                millisToFrames(100),
                                 actors,
                                 SPAWN_RECT));
 

@@ -2,13 +2,14 @@ $Wolf_gif=wolf.gif
 
 $Animation = Define Animation:
     State: MOVING $Wolf_gif
+    Scale: 14.0
+
 
 $Stats = Define Stats:
     HP: 25.0
     Speed: 50.0
     Damage: 10.0
     resistance: 0.0
-    scale: 14.0
 
 $Shape = Define Shape:
     Type: Circle

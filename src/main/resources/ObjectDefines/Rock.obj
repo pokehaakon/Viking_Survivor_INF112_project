@@ -1,8 +1,10 @@
 $Animation_1 = Define Animation:
     State: IDLE rock_1.png
+    Scale: 20
 
 $Animation_2 = Define Animation:
     State: IDLE rock_2.png
+    Scale: 20
 
 $Shape = Define Shape:
     Type: Circle
@@ -19,10 +21,8 @@ $Structure = Define Structure:
 
 $ROCK_1 = Define Object:
     Animation: $Animation_1
-    Scale: 20
     Structure: $Structure
 
 $ROCK_2 = Define Object:
     Animation: $Animation_2
-    Scale: 20
     Structure: $Structure

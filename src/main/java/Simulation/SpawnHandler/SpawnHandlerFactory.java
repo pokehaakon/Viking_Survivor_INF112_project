@@ -22,8 +22,8 @@ import static GameObjects.ObjectActions.OutOfBoundsActions.deSpawnIfOutOfBounds;
 import static GameObjects.ObjectActions.PickupActions.giveHP;
 import static GameObjects.ObjectActions.PickupActions.giveXP;
 import static Simulation.Coordinates.SpawnCoordinates.randomPointOutsideScreenRect;
-import static Tools.RollingSum.millisToFrames;
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
+import static VikingSurvivor.app.HelloWorld.millisToFrames;
 
 public class SpawnHandlerFactory {
 
@@ -57,7 +57,7 @@ public class SpawnHandlerFactory {
                 spawnPickupsIfKilled(0.1f,"SKULL_PICKUP", activeActors,actorPool,
                         PickupActions.startTemporaryActionChange(
                                 FilterTool.Category.WEAPON,
-                                (millisToFrames(5000,SET_FPS)),
+                                millisToFrames(5000),
                                 activeActors,
                                 WeaponActions.orbitActor(0.4f,10,  player, 0, 0)
                         )
@@ -92,7 +92,7 @@ public class SpawnHandlerFactory {
                                     WeaponActions.fireAtClosestActor(
                                             FilterTool.Category.PLAYER,
                                             e.getSpeed()+weapon.getSpeed(),
-                                            e, millisToFrames(400*i, SET_FPS),
+                                            e, millisToFrames(400*i),
                                             activeActors,
                                             SPAWN_RECT)
                                     );

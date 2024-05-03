@@ -3,13 +3,13 @@
 $Animation = Define Animation:
     State: IDLE knife.gif
     state: MOVING knife.gif
+    Scale: 20
 
 $Stats = Define Stats:
     HP: 1.0
     Speed: 1.0
     Damage: 10
     resistance: 0.0
-    scale: 20
 
 $Shape = Define Shape:
     Type: Circle

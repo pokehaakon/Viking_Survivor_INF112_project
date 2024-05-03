@@ -5,12 +5,15 @@ $skull_gif=scull.gif
 
 $HP_Animation = Define Animation:
     State: IDLE $hp_gif
+    Scale: 15
 
 $XP_Animation = Define Animation:
     State: IDLE $xp_gif
+    Scale: 11
 
 $SKULL_Animation = Define Animation:
     State: IDLE $skull_gif
+    Scale: 7
 
 $Shape = Define Shape:
     Type: Circle
@@ -30,21 +33,18 @@ $SKULL_Stats = Define Stats:
     Speed: 0
     Damage: 0
     resistance: 0
-    scale: 7
 
 $XP_Stats = Define Stats:
     HP: 0
     Speed: 0
     Damage: 0
     resistance: 0
-    scale: 11
 
 $HP_Stats = Define Stats:
     HP: 0
     Speed: 0
     Damage: 0
     resistance: 0
-    scale: 15
 
 $HP_PICKUP = Define Actor:
     Animation: $HP_Animation

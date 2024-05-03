@@ -9,26 +9,26 @@ import java.util.List;
 public class TextParser extends GenericParser<Character, String> {
 
     public TextParser(String filename) {
-        this((Gdx.files.internal(filename).readString().replace('\r', '\n') + "\n").toCharArray());
+        this((Gdx.files.internal(filename).readString().replace('\r', '\n') + "\n").toCharArray(), filename);
     }
 
-    public TextParser(char[] text) {
+    public TextParser(char[] text, String name) {
         super(
-                new CharArrayStream(text),
-                (l) -> {
-                    StringBuilder b = new StringBuilder();
-                    for (Character c : l) {
-                        b.append(c);
-                    }
-                    return b.toString();
-                },
-                (s) -> {
-                    List<Character> cs = new ArrayList<>(s.length());
-                    for(int i = 0; i < s.length(); i++) {
-                        cs.add(s.charAt(i));
-                    }
-                    return cs;
+            new CharArrayStream(text, name),
+            (l) -> {
+                StringBuilder b = new StringBuilder();
+                for (Character c : l) {
+                    b.append(c);
                 }
+                return b.toString();
+            },
+            (s) -> {
+                List<Character> cs = new ArrayList<>(s.length());
+                for(int i = 0; i < s.length(); i++) {
+                    cs.add(s.charAt(i));
+                }
+                return cs;
+            }
         );
     }
 

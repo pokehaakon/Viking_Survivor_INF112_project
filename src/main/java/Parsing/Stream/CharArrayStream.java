@@ -6,29 +6,33 @@ import java.util.Arrays;
 
 public class CharArrayStream implements Streamable<Character> {
     private final char[] text;
+    private final String name;
     private int head = 0;
     private int lineCount = 0;
     private int colCount = 0;
     private char currentChar;
-    public CharArrayStream(String s) {
+    public CharArrayStream(String s, String name) {
         text = s.replace("\r", "").toCharArray();
         currentChar = text[head];
+        this.name = name;
     }
-    public CharArrayStream(char[] s) {
+    public CharArrayStream(char[] s, String name) {
         text = s;
         currentChar = text[head];
+        this.name = name;
     }
 
-    private CharArrayStream(char[] text, int head, int lineCount, int colCount, char currentChar) {
+    private CharArrayStream(char[] text, int head, int lineCount, int colCount, char currentChar, String name) {
         this.text = text;
         this.head = head;
         this.lineCount = lineCount;
         this.colCount = colCount;
         this.currentChar = currentChar;
+        this.name = name;
     }
     @Override
     public Streamable<Character> copy() {
-        return new CharArrayStream(text, head, lineCount, colCount, currentChar);
+        return new CharArrayStream(text, head, lineCount, colCount, currentChar, name);
     }
 
     @Override
@@ -93,7 +97,7 @@ public class CharArrayStream implements Streamable<Character> {
             b.append(' ');
         b.append('^');
 
-    return b.toString() + (atEOF() ? "\n: atEOF" : "");
+    return b + (atEOF() ? "\n: atEOF" : "") + "\n in file: " + name;
     }
 
     @Override

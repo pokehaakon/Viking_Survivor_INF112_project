@@ -5,13 +5,13 @@ $PlayerAnimation = Define Animation:
     State: MOVING $PLAYER_MOVING
     state: IDLE $PLAYER_IDLE
     initial: IDLE
+    Scale: 10
 
 $PlayerStats = Define Stats:
     HP: 1000.0
     Speed: 70
     Damage: 15.0
     resistance: 0.0
-    scale: 10
 
 $PlayerShape = Define Shape:
     Type: Circle

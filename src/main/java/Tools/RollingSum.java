@@ -61,8 +61,4 @@ public class RollingSum {
         return sum;
     }
 
-    public static float millisToFrames(float millis, float FPS) {
-        return (millis*FPS /1000);
-    }
-
 }
