@@ -99,7 +99,6 @@ public class ObjectContactListener implements ContactListener {
             System.out.println("PICKUPCOLLISION");
             //Actor player = (Actor) getObjectWithCategory(b1, b2, PLAYER);
             Actor pickup = (Actor) getObjectWithCategory(b1, b2, PICKUP);
-            //TODO fix pickups
             //player.pickup(pickup);
             pickup.kill();
             //System.out.println("PICKUP COLLISION");

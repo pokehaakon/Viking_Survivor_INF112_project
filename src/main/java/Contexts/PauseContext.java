@@ -2,6 +2,7 @@ package Contexts;
 
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.KeyStates;
+import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -52,7 +53,7 @@ class PauseContext extends Context {
     public void show() {
 
     }
-
+    @ExcludeFromGeneratedCoverage
     @Override
     public void render(float delta) {
         batch.begin();

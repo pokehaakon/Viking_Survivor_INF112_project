@@ -2,6 +2,7 @@ package Rendering.Animations.AnimationRendering;
 
 import GameObjects.GameObject;
 import Rendering.Animations.AnimationState;
+import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
 
-
+@ExcludeFromGeneratedCoverage
 public class GIFRender implements AnimationRender {
 
     private final Map<AnimationState, GifPair> animationMovement = new EnumMap<>(AnimationState.class);

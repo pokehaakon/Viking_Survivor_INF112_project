@@ -1,5 +1,6 @@
 package Rendering.Animations.AnimationRendering;
 
+import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.function.Consumer;
 
+@ExcludeFromGeneratedCoverage
 public abstract class Sprites {
     private static final Map<String, Sprite> spriteMap = new HashMap<>();
     private static final Queue<Runnable> todos = new ArrayDeque<>();

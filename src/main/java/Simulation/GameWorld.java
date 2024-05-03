@@ -10,6 +10,7 @@ import Parsing.ObjectDefineParser.Defines.ObjectDefinition;
 import Parsing.ObjectDefineParser.ObjectDefineParser;
 import Parsing.SpawnFrame;
 import Simulation.SpawnHandler.SpawnHandlerFactory;
+import Tools.ExcludeFromGeneratedCoverage;
 import Tools.Pool.ObjectPool;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -99,6 +100,7 @@ public class GameWorld implements Disposable {
         nextFrame = timeFrames.size() == frameIndex ? Long.MAX_VALUE : timeFrames.get(frameIndex).getValue0();
     }
 
+    @ExcludeFromGeneratedCoverage
     public void render(OrthographicCamera camera) {
         map.renderTiledMap(camera);
     }

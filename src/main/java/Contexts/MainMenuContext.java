@@ -1,6 +1,7 @@
 package Contexts;
 
 import InputProcessing.ContextualInputProcessor;
+import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -29,6 +30,7 @@ class MainMenuContext extends Context{
     private Texture mmTexture;
     private Image backgroundImage;
 
+    @ExcludeFromGeneratedCoverage
     public MainMenuContext(String name, SpriteBatch batch, ContextualInputProcessor iProc) {
         super(name, iProc);
         this.batch = batch;
@@ -154,6 +156,7 @@ class MainMenuContext extends Context{
 
     }
 
+    @ExcludeFromGeneratedCoverage
     @Override
     public void render(float delta) {
         batch.begin();

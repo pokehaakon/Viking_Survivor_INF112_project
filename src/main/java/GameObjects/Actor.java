@@ -3,6 +3,7 @@ package GameObjects;
 import GameObjects.ObjectActions.Action;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
 import Rendering.Animations.AnimationState;
+import Tools.ExcludeFromGeneratedCoverage;
 import Tools.FilterTool;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -193,6 +194,9 @@ public class Actor extends GameObject implements IActor {
     }
 
 
+    /**
+     * updates the boolean movingLeft
+     */
     public void updateDirectionState() {
         float vx = getBody().getLinearVelocity().x;
         if (vx == 0) return;
@@ -207,7 +211,9 @@ public class Actor extends GameObject implements IActor {
         hitByIDs.clear();
     }
 
-
+    /**
+     * Updates the animation if needed
+     */
     public void updateAnimationState() {
         var newState = getBody().getLinearVelocity().len() == 0.0f ? AnimationState.IDLE : AnimationState.MOVING;
 
@@ -236,6 +242,7 @@ public class Actor extends GameObject implements IActor {
         inCoolDown = false;
     }
 
+    @ExcludeFromGeneratedCoverage
     @Override
     public void draw(SpriteBatch batch, long frame) {
         if(isInCoolDown()) {batch.setColor(Color.RED);}

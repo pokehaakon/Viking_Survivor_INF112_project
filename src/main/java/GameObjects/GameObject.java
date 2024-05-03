@@ -3,6 +3,7 @@ package GameObjects;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
 import Rendering.Animations.AnimationState;
 import Tools.BodyTool;
+import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -78,6 +79,7 @@ public class GameObject implements IGameObject {
         body.setUserData(this);
     }
 
+    @ExcludeFromGeneratedCoverage
     @Override
     public void draw(SpriteBatch batch, long frame) {
         if (!body.isActive()) return;

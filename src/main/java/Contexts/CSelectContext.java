@@ -1,6 +1,7 @@
 package Contexts;
 
 import InputProcessing.ContextualInputProcessor;
+import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -49,7 +50,7 @@ class CSelectContext extends Context{
     public void show() {
 
     }
-
+    @ExcludeFromGeneratedCoverage
     @Override
     public void render(float delta) {
         batch.begin();

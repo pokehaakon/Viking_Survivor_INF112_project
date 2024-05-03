@@ -2,6 +2,7 @@ package GameObjects;
 
 import Rendering.Animations.AnimationRendering.AnimationHandler;
 import Rendering.Animations.AnimationState;
+import Tools.ExcludeFromGeneratedCoverage;
 import Tools.Pool.Poolable;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;

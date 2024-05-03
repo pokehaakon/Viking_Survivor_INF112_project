@@ -13,6 +13,7 @@ import Rendering.Animations.AnimationRendering.Sprites;
 import Simulation.GameWorld;
 import Simulation.ObjectContactListener;
 import Simulation.Simulation;
+import Tools.ExcludeFromGeneratedCoverage;
 import Tools.Pool.ObjectPool;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
@@ -89,6 +90,7 @@ public class GameContext extends Context {
     private final Label timerLabel;
     private final Table weaponTable;
 
+
     public GameContext(String name, SpriteBatch batch, OrthographicCamera camera, ContextualInputProcessor iProc) {
         super(name, iProc);
 
@@ -100,8 +102,6 @@ public class GameContext extends Context {
         camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
 
         level = 0;
-
-
 
         this.keyStates = new KeyStates();
         this.setInputProcessor(
@@ -171,8 +171,8 @@ public class GameContext extends Context {
         }
 
         //setupHUD
-        {
 
+        {
             //      Create top XP bar:
             // XP bar style
             ProgressBar.ProgressBarStyle xpBarStyle = new ProgressBar.ProgressBarStyle();
@@ -243,29 +243,9 @@ public class GameContext extends Context {
         simThread = new Thread(sim);
         simThread.start();
 
-        //spawnRandomEnemies(1, EnemyActions.chasePlayer(player));
     }
 
-
-
-
-
-//    private void updateCamera(Vector2 player, int viewportWidth, int viewportHeight, TiledMap map, float tiledMapScale) {
-//        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
-//        float mapHeight = layer.getHeight() * layer.getTileHeight() * tiledMapScale;
-//        float mapWidth = layer.getWidth() * layer.getTileWidth() * tiledMapScale;
-//
-//        if(player.x < viewportWidth / 2f) camera.position.x = viewportWidth / 2f;
-//        else if(player.x > mapWidth - viewportWidth / 2f) camera.position.x = mapWidth - viewportWidth / 2f;
-//        else camera.position.x = player.x;
-//
-//        if(player.y < viewportHeight / 2f) camera.position.y = viewportHeight / 2f;
-//        else if(player.y > mapHeight - viewportHeight / 2f) camera.position.y = mapHeight - viewportHeight / 2f;
-//        else camera.position.y = player.y;
-//
-//        camera.update();
-//    }
-
+    @ExcludeFromGeneratedCoverage
     @Override
     public void render(float delta) {
 
@@ -276,7 +256,6 @@ public class GameContext extends Context {
 
         previousFrameStart = System.nanoTime();
 
-        //while (0 != synchronizer.get()){continue;}
 
         //lock ensures that the simulation does not step!
         renderLock.lock();
@@ -296,6 +275,7 @@ public class GameContext extends Context {
         batch.begin();
 
         AtomicInteger i = new AtomicInteger(1);
+
         Stream.concat(objects.stream(), actors.stream()).forEach(obj -> {
             if(i.getAndIncrement() % 100 == 0) batch.flush();
             obj.draw(batch, frameCount);
