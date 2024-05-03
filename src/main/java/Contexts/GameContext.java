@@ -17,10 +17,7 @@ import Tools.ExcludeFromGeneratedCoverage;
 import Tools.Pool.ObjectPool;
 import Tools.RollingSum;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -56,6 +53,7 @@ public class GameContext extends Context {
     public final SpriteBatch batch;
     public final Lock renderLock;
     public final OrthographicCamera camera;
+    public final OrthographicCamera HUDcamera;
     public final BitmapFont font;
     public final Simulation sim;
     public final Thread simThread;
@@ -100,6 +98,13 @@ public class GameContext extends Context {
         this.camera = camera;
         camera.viewportHeight = Gdx.graphics.getHeight() * zoomLevel;
         camera.viewportWidth = Gdx.graphics.getWidth() * zoomLevel;
+
+        HUDcamera = new OrthographicCamera();
+        HUDcamera.viewportHeight = camera.viewportHeight;
+        HUDcamera.viewportWidth = camera.viewportWidth;
+        HUDcamera.update();
+//        HUDcamera.viewportHeight = Gdx.graphics.getHeight();
+//        HUDcamera.viewportWidth = Gdx.graphics.getWidth();
 
         level = 1;
 
@@ -197,8 +202,8 @@ public class GameContext extends Context {
 
             xpBar = new ProgressBar(0, 100 * level, 1, false, xpBarStyle);
             xpBar.setValue(0);
-            xpBar.setPosition(camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - 2);
-            xpBar.setWidth(camera.viewportWidth);
+            xpBar.setPosition(HUDcamera.position.x - HUDcamera.viewportWidth / 2, HUDcamera.position.y + HUDcamera.viewportHeight / 2 - 2);
+            xpBar.setWidth(HUDcamera.viewportWidth);
 
             //      Create HP bar:
             // HP bar style
@@ -222,7 +227,7 @@ public class GameContext extends Context {
 
             hpBar = new ProgressBar(0, player.getHP(), 1, false, hpBarStyle);
             hpBar.setValue(player.getHP());
-            hpBar.setPosition(camera.position.x, camera.position.y);
+            hpBar.setPosition(HUDcamera.position.x, HUDcamera.position.y);
             hpBar.setWidth(10);
 
             //      Create level counter
@@ -284,6 +289,7 @@ public class GameContext extends Context {
 
         TargetCamera.updateCamera(origin, camera, gMap);
         previousFramePlayerSpeed = player.getBody().getLinearVelocity().cpy().scl(1f / Simulation.SET_UPS);
+        //batch.setProjectionMatrix(camera.combined);
 
         // Save player position for further use
 
@@ -296,8 +302,10 @@ public class GameContext extends Context {
             obj.draw(batch, frameCount);
         });
 
-
+        //HUDcamera.position.set(camera.position);
+        //HUDcamera.update();
         if(!gameOver) {
+            batch.setProjectionMatrix(HUDcamera.combined);
             //      XP bar and level
             long xpAmount = Simulation.EXP.get();
 
@@ -311,16 +319,14 @@ public class GameContext extends Context {
                 player.setDamage(player.getDamage() + 2);
             }
             xpBar.setValue(xpAmount);
-
-            xpBar.setPosition(camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - 2);
-            levelLabel.setPosition(camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - 2);
+            xpBar.setPosition(HUDcamera.position.x - HUDcamera.viewportWidth / 2, HUDcamera.position.y + HUDcamera.viewportHeight / 2 - 2);
+            levelLabel.setPosition(HUDcamera.position.x - HUDcamera.viewportWidth / 2, HUDcamera.position.y + HUDcamera.viewportHeight / 2 - 2);
             xpBar.draw(batch, 1);
             levelLabel.draw(batch, 1);
 
             // HP bar
             hpBar.setValue(player.getHP());
-
-            hpBar.setPosition(origin.x - 4, origin.y - 8);
+            hpBar.setPosition(HUDcamera.position.x - 4, HUDcamera.position.y - 8);
             hpBar.draw(batch, 1);
 
             // Clock
@@ -329,10 +335,11 @@ public class GameContext extends Context {
             int minutes = elapsedSeconds / 60;
             int seconds = elapsedSeconds % 60;
             timerLabel.setText(String.format("%02d:%02d", minutes, seconds));
-            timerLabel.setPosition(camera.position.x - 5, camera.position.y + 27);
+            timerLabel.setPosition(HUDcamera.position.x - 5, HUDcamera.position.y + 27);
             timerLabel.draw(batch, 1);
         }
 
+        batch.setProjectionMatrix(camera.combined);
 
         batch.setColor(Color.WHITE);
 

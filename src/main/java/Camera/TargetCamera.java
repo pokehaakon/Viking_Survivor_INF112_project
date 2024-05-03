@@ -33,7 +33,7 @@ public class TargetCamera {
         else cam.position.y = Math.min(target.y, mapHeight - cam.viewportHeight / 2);
 
         //cam.position.y *= zoomLevel;
-
         cam.update();
+
     }
 }
