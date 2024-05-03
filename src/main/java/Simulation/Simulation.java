@@ -6,6 +6,7 @@ import GameObjects.GameObject;
 import GameObjects.ObjectActions.WeaponActions;
 import InputProcessing.KeyStates;
 import Simulation.Coordinates.SpawnCoordinates;
+import Tools.ExcludeFromGeneratedCoverage;
 import Tools.FilterTool;
 import com.badlogic.gdx.math.Vector2;
 
@@ -40,6 +41,7 @@ public class Simulation implements Runnable {
         this.context = context;
     }
 
+    @ExcludeFromGeneratedCoverage(reason = "not really testable :)")
     @Override
     public void run() {
         long lastFrameStart;

@@ -91,6 +91,7 @@ public class GameContext extends Context {
     private final Table weaponTable;
 
 
+    @ExcludeFromGeneratedCoverage(reason = "functionality covered elsewhere")
     public GameContext(SpriteBatch batch, OrthographicCamera camera, ContextualInputProcessor iProc) {
         super(iProc);
 
