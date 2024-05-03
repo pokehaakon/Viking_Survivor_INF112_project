@@ -3,82 +3,60 @@ package Simulation;
 import Contexts.GameContext;
 import GameObjects.Actor;
 import GameObjects.GameObject;
-import GameObjects.ObjectActions.PickupActions;
 import GameObjects.ObjectActions.WeaponActions;
 import InputProcessing.KeyStates;
 import Simulation.Coordinates.SpawnCoordinates;
 import Tools.FilterTool;
-import Tools.Pool.ObjectPool;
-import Tools.RollingSum;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.TimeUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Lock;
 
 
 import static Contexts.GameContext.SPAWN_RECT;
 import static Tools.ListTools.removeDestroyed;
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
 import static VikingSurvivor.app.HelloWorld.millisToFrames;
-import static com.badlogic.gdx.scenes.scene2d.ui.Table.Debug.actor;
 
 public class Simulation implements Runnable {
-    public static final AtomicLong EXP = new AtomicLong();
-    public static final int SET_UPS = 60;
-    Random random;
-    private final Lock renderLock;
-    private final KeyStates keyStates;
-    private final World world;
-    private final RollingSum updateTime;
-    private final RollingSum UPS;
-    private final GameContext context;
-    private final Actor player;
-    private final ObjectPool<Actor> actorPool;
-    private final ObjectPool<GameObject> objectPool;
-    private final List<Actor> actors;
-    private final List<GameObject> objects;
-    private final AtomicLong synchronizer;
-    private final GameWorld gameWorld;
+    static public final AtomicLong EXP = new AtomicLong();
+    static public final int SET_UPS = 60;
 
-    private static final List<Float> DISTANCES_BETWEEN_TERRAIN = List.of(30f,60f,90f);
+    static private final List<Float> DISTANCES_BETWEEN_TERRAIN = List.of(30f,60f,90f);
+    static private final float TERRAIN_SPAWN_FRAME_INTERVAL = (float) ((1000) * SET_FPS) / 1000;
+    static private final long DELTA_TIME_FRAME = 1_000_000_000/SET_UPS; // sec / update * 10^9 nanosec / sec
+
+    private final Random random = new Random();
+    private final GameContext context;
 
     private boolean quit = false;
     private boolean paused = false;
     private long frame = 0;
-
-
-    private final static float TERRAIN_SPAWN_FRAME_INTERVAL = (float) ((1000) * SET_FPS) / 1000;
-    private float LAST_TERRAIN_SPAWN_FRAME;
+    private long LAST_TERRAIN_SPAWN_FRAME;
 
 
     public Simulation(GameContext context) {
         this.context = context;
-        renderLock = context.getRenderLock();
-        keyStates = context.getKeyStates();
-        world = context.getWorld();
-        updateTime = context.getUpdateTime();
-        UPS = context.getUPS();
-        synchronizer = context.getSynchronizer();
-        player = context.getPlayer();
-        actorPool = context.getActorPool();
-        actors = context.getDrawableActors();
+//        renderLock = context.getRenderLock();
+//        keyStates = context.getKeyStates();
+//        world = context.getWorld();
+//        updateTime = context.getUpdateTime();
+//        UPS = context.getUPS();
+//        synchronizer = context.getSynchronizer();
+//        player = context.getPlayer();
+//        actorPool = context.getActorPool();
+//        actors = context.getActors();
+//
+//        objectPool = context.objectPool;
+//        objects = context.objects;
+//
+//        gameWorld = context.gameWorld;
 
-        objectPool = context.getObjectPool();
-        objects = context.getDrawableObjects();
-        gameWorld = context.getGameWorld();
-
-        random = new Random();
     }
 
     @Override
     public void run() {
-
-        long dt = 1_000_000_000/SET_UPS; // sec / update * 10^9 nanosec / sec
         long lastFrameStart;
 
 
@@ -90,12 +68,12 @@ public class Simulation implements Runnable {
             lastFrameStart = System.nanoTime();
             long t0 = System.nanoTime();
 
-            if (keyStates.getState(KeyStates.GameKey.QUIT)) stopSim();
+            if (context.keyStates.getState(KeyStates.GameKey.QUIT)) stopSim();
 
 
 
-            for(int i = 0; i < actors.size();i++) {
-                Actor actor = actors.get(i);
+            for(int i = 0; i < context.actors.size();i++) {
+                Actor actor = context.actors.get(i);
                 actor.doAction();
                 actor.updateDirectionState();
                 actor.updateAnimationState();
@@ -114,69 +92,71 @@ public class Simulation implements Runnable {
 
             // spawn weapon
             if (frame == 0) {
-                Actor weapon = actorPool.get("KNIFE");
+                Actor weapon = context.actorPool.get("KNIFE");
                 weapon.getAnimationHandler().rotate(25f);
                 weapon.addAction(
                         WeaponActions.fireAtClosestActor(
                                 FilterTool.Category.ENEMY,
-                                player.getSpeed() + weapon.getSpeed(),
-                                player,
+                                context.player.getSpeed() + weapon.getSpeed(),
+                                context.player,
                                 millisToFrames(100),
-                                actors,
+                                context.actors,
                                 SPAWN_RECT));
 
-                actors.add(weapon);
+                context.actors.add(weapon);
             }
 
 
 
-            doSpinSleep(lastFrameStart, dt);
-            UPS.add(System.nanoTime() - lastFrameStart);
-            while (frame > synchronizer.get()){continue;}
-            renderLock.lock();
+            doSpinSleep(lastFrameStart, DELTA_TIME_FRAME);
+            context.UPS.add(System.nanoTime() - lastFrameStart);
 
-            gameWorld.act(frame);
+            //while (frame > context.synchronizer.get()){continue;}
+            while (1 != context.synchronizer.get()){continue;}
+            context.renderLock.lock();
 
-            world.step(1/(float) 60, 10, 10);
+            context.gameWorld.act(frame);
 
-
-            removeDestroyed(actors, actorPool, true);
-            removeDestroyed(objects, objectPool, true);
+            context.world.step(1/(float) 60, 10, 10);
 
 
-            renderLock.unlock();
+            removeDestroyed(context.actors, context.actorPool, true);
+            removeDestroyed(context.objects, context.objectPool, true);
+
+            context.synchronizer.decrementAndGet();
+            context.renderLock.unlock();
             long simTimeToUpdate = System.nanoTime() - t0;
 
 
-            updateTime.add(simTimeToUpdate);
+            context.UpdateTime.add(simTimeToUpdate);
 
             frame++;
 
-            if(player.getHP() <= 0) {
+            if(context.player.getHP() <= 0) {
                 context.gameOver();
                 stopSim();
             }
 
-            }
+        }
 
     }
 
     private void doSpinSleep(long lastFrameStart, long dt) {
-        while(lastFrameStart + dt - System.nanoTime() > 0) {}
+        while(lastFrameStart + dt - System.nanoTime() > 0) {continue;}
     }
 
 
     private void spawnTerrain(String terrainName, int num, List<Float> distancesBetweenSpawn) {
 
         float randomDistance = distancesBetweenSpawn.get(random.nextInt(distancesBetweenSpawn.size()));
-        List<Vector2> occupiedSpawns =  SpawnCoordinates.getOccupiedPositions(objects);
-        List<Vector2> availableSpawns = SpawnCoordinates.fixedSpawnPoints(num, GameContext.SPAWN_RECT,randomDistance,player.getBody().getPosition(),occupiedSpawns);
+        List<Vector2> occupiedSpawns =  SpawnCoordinates.getOccupiedPositions(context.objects);
+        List<Vector2> availableSpawns = SpawnCoordinates.fixedSpawnPoints(num, GameContext.SPAWN_RECT,randomDistance,context.player.getBody().getPosition(),occupiedSpawns);
 
         for(Vector2 spawn: availableSpawns) {
-            GameObject terrain = objectPool.get(terrainName);
-            terrain.setPosition(spawn);;
+            GameObject terrain = context.objectPool.get(terrainName);
+            terrain.setPosition(spawn);
 
-            objects.add(terrain);
+            context.objects.add(terrain);
 
         }
 
@@ -195,10 +175,11 @@ public class Simulation implements Runnable {
     public void unpause() {
         paused = false;
     }
-    public long getFrameNumber() {
-        return frame;
-    }
 
+//    public long getFrameNumber() {
+//        return frame;
+//    }
+//    public boolean isPaused() {return paused;}
 }
 
 
