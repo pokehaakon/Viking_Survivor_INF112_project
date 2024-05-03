@@ -55,6 +55,7 @@ public class GameContext extends Context {
     public final OrthographicCamera camera;
     public final OrthographicCamera HUDcamera;
     public final BitmapFont font;
+    public final Texture fontTexture;
     public final Simulation sim;
     public final Thread simThread;
     public float level;
@@ -91,6 +92,8 @@ public class GameContext extends Context {
     @ExcludeFromGeneratedCoverage(reason = "functionality covered elsewhere")
     public GameContext(SpriteBatch batch, OrthographicCamera camera, ContextualInputProcessor iProc) {
         super(iProc);
+
+
 
         ObjectFactory.empty();
 
@@ -134,10 +137,13 @@ public class GameContext extends Context {
             UPS = new RollingSum(60 * 3);
         }
 
-        font = new BitmapFont();
+        fontTexture = new Texture(Gdx.files.internal("font.png"), true);
+        fontTexture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear);
+
+        font = new BitmapFont(Gdx.files.internal("font.fnt"), new TextureRegion(fontTexture), false);
         font.setColor(Color.RED);
-        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        font.getData().setScale(0.1f);
+        font.getRegion().getTexture().setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear);
+        font.getData().setScale(1/10f);
 
         renderLock = new ReentrantLock(true);
         synchronizer = new AtomicLong();
@@ -202,8 +208,8 @@ public class GameContext extends Context {
 
             xpBar = new ProgressBar(0, 100 * level, 1, false, xpBarStyle);
             xpBar.setValue(0);
-            xpBar.setPosition(HUDcamera.position.x - HUDcamera.viewportWidth / 2, HUDcamera.position.y + HUDcamera.viewportHeight / 2 - 2);
-            xpBar.setWidth(HUDcamera.viewportWidth);
+            xpBar.setPosition(HUDcamera.position.x - HUDcamera.viewportWidth / 2, HUDcamera.position.y + HUDcamera.viewportHeight / 2);
+            xpBar.setWidth(HUDcamera.viewportWidth + 1.5f);
 
             //      Create HP bar:
             // HP bar style
@@ -228,28 +234,28 @@ public class GameContext extends Context {
             hpBar = new ProgressBar(0, player.getHP(), 1, false, hpBarStyle);
             hpBar.setValue(player.getHP());
             hpBar.setPosition(HUDcamera.position.x, HUDcamera.position.y);
-            hpBar.setWidth(10);
+            hpBar.setWidth(HUDcamera.viewportWidth + 1.5f);
 
             //      Create level counter
             Skin lvlSkin = new Skin();
-            BitmapFont lvlFont = new BitmapFont();
+            BitmapFont lvlFont = new BitmapFont(Gdx.files.internal("font.fnt"), new TextureRegion(fontTexture), false);
             lvlFont.setColor(Color.WHITE);
-            lvlFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-            lvlFont.getData().setScale(1/8f);
+            lvlFont.getRegion().getTexture().setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear);
+            lvlFont.getData().setScale(0.09f);
 
             lvlSkin.add("default", lvlFont, BitmapFont.class);
             Label.LabelStyle lvlLabelStyle = new Label.LabelStyle();
             lvlLabelStyle.font = lvlFont;
             lvlSkin.add("default", lvlLabelStyle, Label.LabelStyle.class);
 
-            levelLabel = new Label("Level: "+ (int) level, lvlSkin);
+            levelLabel = new Label(" LEVEL: "+ (int) level, lvlSkin);
 
             // Clock
             Skin tmSkin = new Skin();
-            BitmapFont tmFont = new BitmapFont();
+            BitmapFont tmFont = new BitmapFont(Gdx.files.internal("font.fnt"), new TextureRegion(fontTexture), false);
             tmFont.setColor(Color.WHITE);
-            tmFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-            tmFont.getData().setScale(0.33f);
+            tmFont.getRegion().getTexture().setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear);
+            tmFont.getData().setScale(1/5f);
             tmSkin.add("default", tmFont, BitmapFont.class);
 
             Label.LabelStyle tmLabelStyle = new Label.LabelStyle();
@@ -291,7 +297,6 @@ public class GameContext extends Context {
         previousFramePlayerSpeed = player.getBody().getLinearVelocity().cpy().scl(1f / Simulation.SET_UPS);
         //batch.setProjectionMatrix(camera.combined);
 
-        // Save player position for further use
 
         batch.begin();
 
@@ -315,18 +320,18 @@ public class GameContext extends Context {
                 Simulation.EXP.set(xpAmount);
                 level += 1;
                 xpBar.setRange(0, level * 100);
-                levelLabel.setText("Level: " + (int) level);
+                levelLabel.setText("LEV EL: " + (int) level);
                 player.setDamage(player.getDamage() + 2);
             }
             xpBar.setValue(xpAmount);
-            xpBar.setPosition(HUDcamera.position.x - HUDcamera.viewportWidth / 2, HUDcamera.position.y + HUDcamera.viewportHeight / 2 - 2);
+            xpBar.setPosition(HUDcamera.position.x - HUDcamera.viewportWidth / 2 - 0.6f, HUDcamera.position.y + HUDcamera.viewportHeight / 2 - 2);
             levelLabel.setPosition(HUDcamera.position.x - HUDcamera.viewportWidth / 2, HUDcamera.position.y + HUDcamera.viewportHeight / 2 - 2);
             xpBar.draw(batch, 1);
             levelLabel.draw(batch, 1);
 
             // HP bar
             hpBar.setValue(player.getHP());
-            hpBar.setPosition(HUDcamera.position.x - 4, HUDcamera.position.y - 8);
+            hpBar.setPosition(HUDcamera.position.x - HUDcamera.viewportWidth / 2 - 0.6f, HUDcamera.position.y + HUDcamera.viewportHeight / 2 - 3);
             hpBar.draw(batch, 1);
 
             // Clock
@@ -335,7 +340,7 @@ public class GameContext extends Context {
             int minutes = elapsedSeconds / 60;
             int seconds = elapsedSeconds % 60;
             timerLabel.setText(String.format("%02d:%02d", minutes, seconds));
-            timerLabel.setPosition(HUDcamera.position.x - 5, HUDcamera.position.y + 27);
+            timerLabel.setPosition(HUDcamera.position.x - 5, HUDcamera.position.y + 30);
             timerLabel.draw(batch, 1);
         }
 
@@ -347,10 +352,14 @@ public class GameContext extends Context {
             debugRenderer.render(world, camera.combined);
 
             // Performance statistics
-            font.draw(batch, "FPS: " + String.format("%.1f", 1_000_000_000F/FPS.avg()), origin.x -500, origin.y -420);
-            font.draw(batch, "UPS: " + String.format("%.1f",1_000_000_000F/UPS.avg()), origin.x -500, origin.y -440);
-            font.draw(batch, "US/F: " + String.format("%.0f",FrameTime.avg()/1_000), origin.x -500, origin.y -460);
-            font.draw(batch, "US/U: " + String.format("%.0f",UpdateTime.avg()/1_000), origin.x -500, origin.y -480);
+            font.draw(batch, "FPS: " + String.format(" %.1f", 1_000_000_000F / FPS.avg()),
+                    HUDcamera.position.x - HUDcamera.viewportWidth / 2 + 1, HUDcamera.position.y - HUDcamera.viewportHeight / 2 + 5);
+            font.draw(batch, "UPS: " + String.format(" %.1f", 1_000_000_000F / UPS.avg()),
+                    HUDcamera.position.x - HUDcamera.viewportWidth / 2 + 1, HUDcamera.position.y - HUDcamera.viewportHeight / 2 + 4);
+            font.draw(batch, "US/F: " + String.format(" %.0f", FrameTime.avg() / 1_000),
+                    HUDcamera.position.x - HUDcamera.viewportWidth / 2 + 1, HUDcamera.position.y - HUDcamera.viewportHeight / 2 + 3);
+            font.draw(batch, "US/U: " + String.format(" %.0f", UpdateTime.avg() / 1_000),
+                    HUDcamera.position.x - HUDcamera.viewportWidth / 2 + 1, HUDcamera.position.y - HUDcamera.viewportHeight / 2 + 2);
         }
 
         if(gameOver) {

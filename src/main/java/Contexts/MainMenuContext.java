@@ -23,6 +23,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
+import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
+import static VikingSurvivor.app.Main.SCREEN_WIDTH;
 
 class MainMenuContext extends Context{
     private final SpriteBatch batch;
@@ -40,7 +42,7 @@ class MainMenuContext extends Context{
         // Input listener for possible use of ContextualInputListener for buttons
         //setupInputListener();
 
-        // Stage is created im constructor since render is called before stage initialization
+        // Stage is created in constructor since render is called before stage initialization
         this.stage = new Stage();
         // Load the texture
         mmTexture = new Texture(Gdx.files.internal("assets/MainMenu1.jpg"));
@@ -61,7 +63,7 @@ class MainMenuContext extends Context{
 
 
         // Create a table to layout the buttons
-        table = new Table().padTop(700);
+        table = new Table().padTop(720);
         table.setFillParent(true);
         table.setBackground(backgroundImage.getDrawable());
 
@@ -72,9 +74,9 @@ class MainMenuContext extends Context{
         Button exitButton = new Button(buttonStyle);
 
         // Add buttons to table
-        table.add(startButton).width(250).height(55).padLeft(10).spaceBottom(30).row();
-        table.add(optionsButton).width(250).height(60).padLeft(10).spaceBottom(30).row();
-        table.add(exitButton).width(250).height(60).padLeft(10).spaceBottom(20);
+        table.add(startButton).width(470).height(60).padLeft(10).spaceBottom(30).row();
+        table.add(optionsButton).width(470).height(60).padLeft(10).spaceBottom(35).row();
+        table.add(exitButton).width(470).height(60).padLeft(10).spaceBottom(20);
 
 
         exitButton.addListener(new ChangeListener() {
