@@ -51,7 +51,7 @@ public class GameContext extends Context {
     static public final Vector2 SPAWN_RECT = (new Vector2(SCREEN_WIDTH, SCREEN_HEIGHT)).scl(zoomLevel * 1.05f);
     static public final Vector2 DE_SPAWN_RECT = SPAWN_RECT.cpy().scl(1.3f);
 
-    private static final boolean SHOW_DEBUG_RENDER_INFO = false; //not working!!!
+    public static boolean SHOW_DEBUG_RENDER_INFO = false;
 
     public final SpriteBatch batch;
     public final Lock renderLock;
@@ -118,13 +118,17 @@ public class GameContext extends Context {
 
         //setupDebug
         {
-            debugRenderer = new Box2DDebugRenderer();
+            if (SHOW_DEBUG_RENDER_INFO)
+                debugRenderer = new Box2DDebugRenderer();
+            else
+                debugRenderer = null;
 
             UpdateTime = new RollingSum(60*3);
             FrameTime = new RollingSum(60*3);
             FPS = new RollingSum(60 * 3);
             UPS = new RollingSum(60 * 3);
         }
+
         font = new BitmapFont();
         font.setColor(Color.RED);
         renderLock = new ReentrantLock(true);
@@ -154,7 +158,7 @@ public class GameContext extends Context {
             actorPool = objectPool.createSubPool(actorFactory);
 
 
-            gameWorld = new GameWorld("mapdefines/demo.wdef", actorPool, objectPool, actors, objects);
+            gameWorld = new GameWorld("mapdefines/demo.wdef", actorPool, actors);
             gMap = gameWorld.getGameMap();
             gMap.createMapBorder(world);
 
@@ -280,7 +284,7 @@ public class GameContext extends Context {
         long renderStartTime = System.nanoTime();
         ScreenUtils.clear(Color.GREEN);
 
-        gameWorld.render(camera, delta);
+        gameWorld.render(camera);
 
         Vector2 origin = player.getBody().getPosition().cpy().add(previousFramePlayerSpeed);
 

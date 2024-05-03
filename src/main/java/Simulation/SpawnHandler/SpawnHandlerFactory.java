@@ -22,30 +22,25 @@ import static GameObjects.ObjectActions.OutOfBoundsActions.deSpawnIfOutOfBounds;
 import static GameObjects.ObjectActions.PickupActions.giveHP;
 import static GameObjects.ObjectActions.PickupActions.giveXP;
 import static Simulation.Coordinates.SpawnCoordinates.randomPointOutsideScreenRect;
-import static VikingSurvivor.app.HelloWorld.SET_FPS;
 import static VikingSurvivor.app.HelloWorld.millisToFrames;
 
 public class SpawnHandlerFactory {
 
     private final ObjectPool<Actor> actorPool;
-    private final ObjectPool<GameObject> terrainPool;
+//    private final ObjectPool<GameObject> terrainPool;
 
     private final List<Actor> activeActors;
-    private final List<GameObject> activeTerrain;
+//    private final List<GameObject> activeTerrain;
     private final Actor player;
 
     public SpawnHandlerFactory(Actor player,
                                ObjectPool<Actor> actorPool,
-                               ObjectPool<GameObject> terrainPool,
-                               List<Actor> activeActors,
-                               List<GameObject> activeTerrain
+                               List<Actor> activeActors
         ) {
 
         this.player = player;
         this.actorPool = actorPool;
-        this.terrainPool = terrainPool;
         this.activeActors = activeActors;
-        this.activeTerrain = activeTerrain;
     }
 
 
@@ -119,7 +114,7 @@ public class SpawnHandlerFactory {
             );
             case CONTINUOUS -> new ContinuousSpawnHandler(
                 args,
-                    actorName,
+                actorName,
                 e -> {
                     e.addAction(chaseActor(player), destroyIfDefeated(), deSpawnIfOutOfBounds(player, DE_SPAWN_RECT));
                     e.addDieAction(dropActions);
