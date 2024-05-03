@@ -4,6 +4,8 @@ import GameObjects.ObjectActions.Action;
 import Rendering.Animations.AnimationRendering.AnimationHandler;
 import Rendering.Animations.AnimationState;
 import Tools.FilterTool;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 
 import java.util.*;
@@ -232,6 +234,13 @@ public class Actor extends GameObject implements IActor {
         resetActions();
         resetDieActions();
         inCoolDown = false;
+    }
+
+    @Override
+    public void draw(SpriteBatch batch, long frame) {
+        if(isInCoolDown()) {batch.setColor(Color.RED);}
+        super.draw(batch, frame);
+        if(isInCoolDown()) {batch.setColor(Color.WHITE);}
     }
 
     public Map<Integer, Long> getHitByIDs() {

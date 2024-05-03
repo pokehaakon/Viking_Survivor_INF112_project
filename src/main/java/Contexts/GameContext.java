@@ -34,10 +34,12 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
 import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
@@ -289,20 +291,11 @@ public class GameContext extends Context {
 
         batch.begin();
 
-        int i = 1;
-        for(GameObject object : objects) {
-            if(i++ % 100 == 0) batch.flush();
-            object.draw(batch, frameCount);
-        }
-
-        for (Actor actor : actors) {
-            if(i++ % 100 == 0) batch.flush();
-            if(actor.isInCoolDown()) {
-                batch.setColor(Color.RED);
-            }
-            actor.draw(batch, frameCount);
-            batch.setColor(Color.WHITE);
-        }
+        AtomicInteger i = new AtomicInteger(1);
+        Stream.concat(objects.stream(), actors.stream()).forEach(obj -> {
+            if(i.getAndIncrement() % 100 == 0) batch.flush();
+            obj.draw(batch, frameCount);
+        });
 
 
         if(!gameOver) {

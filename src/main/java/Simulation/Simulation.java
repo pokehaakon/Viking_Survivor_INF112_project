@@ -111,8 +111,7 @@ public class Simulation implements Runnable {
             doSpinSleep(lastFrameStart, DELTA_TIME_FRAME);
             context.UPS.add(System.nanoTime() - lastFrameStart);
 
-            //while (frame > context.synchronizer.get()){continue;}
-            while (1 != context.synchronizer.get()){continue;}
+            while (frame > context.synchronizer.get()){continue;}
             context.renderLock.lock();
 
             context.gameWorld.act(frame);
@@ -123,7 +122,7 @@ public class Simulation implements Runnable {
             removeDestroyed(context.actors, context.actorPool, true);
             removeDestroyed(context.objects, context.objectPool, true);
 
-            context.synchronizer.decrementAndGet();
+            //context.synchronizer.decrementAndGet();
             context.renderLock.unlock();
             long simTimeToUpdate = System.nanoTime() - t0;
 
