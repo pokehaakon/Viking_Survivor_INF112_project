@@ -129,7 +129,9 @@ Det betyr selvsagt ikke at ikke alle har bidratt. Det har blitt utført mye tidk
 
 Resultatet er likevel en ganske åpenbar skeivfordeling i hva den enkelte har bidratt med. Vi har hatt flere måneder på å snu denne utviklingen, men det har virket som hvert enkelt medlem  rett og slett har vært ganske tilfreds med slik situasjonen har utartet seg.
 
-Sluttproduktet er vi imidlertid fornøyd med. Spillet flyter godt uten lagg, og strukturen gjør det lett å eskalere og legge til objekter og funksjonalitet.  Vi skulle nok ønske at vi fikk mer tid til å legge til flere kule funksjoner, levler etc, for å skape et enda mer gjennomført produkt.
+Sluttproduktet er vi imidlertid fornøyd med. Spillet flyter godt uten lagg, og strukturen gjør det lett å eskalere og legge til objekter og funksjonalitet. Vi har laget en demo på rundt 2 minutter som viser fram forskjellige enemies, pickups og actions, og en boss. Spillet oppfyller også alle kravene.
+
+Vi skulle nok ønske at vi fikk mer tid til å legge til flere kule funksjoner, levler etc, for å skape et enda mer gjennomført produkt.
 
 
 

@@ -21,6 +21,8 @@ public abstract class ListTools {
             ls.set(j, null);
         }
     }
+
+
     public static <T extends GameObject> void removeDestroyed(List<T> ls, IPool<T> pool, boolean compress) {
         int i = 0;
         for (var obj : ls) {

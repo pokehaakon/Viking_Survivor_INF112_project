@@ -138,7 +138,7 @@ class WeaponActionsTest {
     @Test
     void fireAtClosestEnemy_startIntervalOne() {
         weapon.setPosition(testPlayer.getPosition());
-        // frame interval 0
+
         weapon.addAction(customFireAtClosestEnemyAction(
                 1,
                 new Vector2(10,10)));

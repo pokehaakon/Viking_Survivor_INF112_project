@@ -123,12 +123,12 @@ public abstract class WeaponActions {
     public static Action fireAtClosestActor(FilterTool.Category category,float speed, Actor actor, int frameInterval, List<Actor> actors, Vector2 boundSquare) {
         AtomicLong framesSinceLastThrow = new AtomicLong(0);
 
-        // want to an aimbot for a short distance after the weapon leaves player
+        // want an aimbot for a short distance after the weapon leaves player
         float CHASE_THRESHOLD = 5;
 
         return (weapon) -> {
-            Actor closestEnemy = getClosestActor(actor, actors, category);
-            if (closestEnemy == null) {
+            Actor closestActor = getClosestActor(actor, actors, category);
+            if (closestActor == null) {
                 if(weapon.getBody().isActive())weapon.getBody().setActive(false);
                 return;
             }
@@ -148,8 +148,7 @@ public abstract class WeaponActions {
                         weapon.getPosition().x, weapon.getPosition().y)
                         <= CHASE_THRESHOLD
                 )
-
-                {chaseActor(closestEnemy,speed).act(weapon);}
+                {chaseActor(closestActor,speed).act(weapon);};
             }
 
             if (weapon.outOfBounds(actor, boundSquare) || attackedByWeapon(weapon, actors)) {
