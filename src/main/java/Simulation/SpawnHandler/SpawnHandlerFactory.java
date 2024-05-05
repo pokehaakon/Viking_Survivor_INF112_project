@@ -71,7 +71,7 @@ public class SpawnHandlerFactory {
                     args,
                     actorName,
                     e -> {
-                        e.addAction( destroyIfDefeated());
+                        e.addAction(chaseActor(player), destroyIfDefeated());
                         e.setPosition(randomPointOutsideScreenRect(player.getPosition()));
 
                         for(int i = 0; i < 6; i++) {
