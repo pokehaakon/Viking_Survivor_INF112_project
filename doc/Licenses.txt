@@ -1,7 +1,17 @@
-Kilde for gifs brukt i spillet:
+SOURCES
 
-Brukt Pixilart.com til å håndtegne gifs fra bunnen av
-Laget av Hallvard: https://www.pixilart.com/haelz/gallery
+Brukt Pixilart.com til å håndtegne gifs enkelte gifs
+Pixilart profilen til Hallvard: https://www.pixilart.com/haelz/gallery
+
+Pixilart profilen inneholder følgende gifs:
+"HP_Pickup.gif"
+"Knife.gif"
+"Player.gif"
+"wolf.gif"
+"raven.gif"
+"orc.gif"
+"pickupOrb.gif"
+
 
 
 "Knife Stab Sound Effect [FREE USE].mp3"
