@@ -3,6 +3,7 @@ package Simulation.Coordinates;
 import Simulation.Coordinates.SwarmCoordinates;
 import com.badlogic.gdx.math.Vector2;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -28,6 +29,19 @@ class SwarmCoordinatesTest {
 
     @Test
     void getSwarmCoordinates() {
+        // Define the parameters for the test
+        Vector2 startPoint = new Vector2(0, 0);
+        SpawnCoordinates.SwarmType swarmType = SpawnCoordinates.SwarmType.LINE;
+        int size = 5;
+        float spacing = 1;
+        Vector2 target = new Vector2(10, 10);
+
+        // Call the method to test
+        List<Vector2> result = SwarmCoordinates.getSwarmCoordinates(startPoint, swarmType, size, spacing, target);
+
+        // Check the result
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(size, result.size());
     }
 
     @Test
@@ -36,7 +50,6 @@ class SwarmCoordinatesTest {
             int randomSize = new Random(123).nextInt(30);
             int sideLength = (int) (Math.ceil(Math.sqrt(randomSize)));
             List<Vector2> swarm = SwarmCoordinates.squareSwarm(randomSize, new Vector2(0,0),1);
-
 
             assertEquals(Math.pow(sideLength, 2), swarm.size());
         }
