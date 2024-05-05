@@ -10,7 +10,7 @@
 	<!--Viking Survivor-->
 	<name>VikingSurvivor</name>
 	<!-- FIXME change it to the project's website -->
-	<url>http://www.example.com</url>
+	<url>https://git.app.uib.no/virtuellviking/inf112.24v.libgdx-template</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.release>17</maven.compiler.release>
