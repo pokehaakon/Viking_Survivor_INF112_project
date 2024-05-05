@@ -43,15 +43,15 @@ class GameMapTest {
 
     @Test
     void testGetMiddleOfMapPosition() {
-        GameMap map = new GameMap("assets/testMap.tmx", 1/4f);
+        GameMap map = new GameMap("TiledMap/damaged_roads_map.tmx", 1/4f);
         // testMap.tmx has height/width of 1024px, with the scale 1/4 this turn out to be 256px
-        Vector2 middleOfMap = new Vector2(256 / 2f, 256 / 2f);
-        assertEquals(map.getMiddleOfMapPosition(), middleOfMap);
+        Vector2 middleOfMap = new Vector2(256f, 256f);
+        assertEquals(middleOfMap, map.getMiddleOfMapPosition());
     }
 
     @Test
     void testMapBorder() {
-        GameMap map = new GameMap("assets/testMap.tmx", 1/4f);
+        GameMap map = new GameMap("TiledMap/damaged_roads_map.tmx", 1/4f);
         World world = new World(new Vector2(0,0),true);
         map.createMapBorder(world);
 
@@ -60,9 +60,9 @@ class GameMapTest {
 
         ArrayList<Vector2> vertices = new ArrayList<>();
         vertices.add(new Vector2(0,0));
-        vertices.add(new Vector2(0,256));
-        vertices.add(new Vector2(256,256));
-        vertices.add(new Vector2(256,0));
+        vertices.add(new Vector2(0,512));
+        vertices.add(new Vector2(512,512));
+        vertices.add(new Vector2(512,0));
         vertices.add(new Vector2(0,0));
 
         ArrayList<Vector2> mapVertices = new ArrayList<>();

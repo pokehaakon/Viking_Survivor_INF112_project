@@ -7,7 +7,7 @@ $include ObjectDefines/Pickups.obj
 $include ObjectDefines/Tree.obj
 $include ObjectDefines/Wolf.obj
 
-!MAP_PATH=assets/damaged_roads_map.tmx
+!MAP_PATH=TiledMap/damaged_roads_map.tmx
 !PLAYER_NAME=PLAYER
 
 00:00:
