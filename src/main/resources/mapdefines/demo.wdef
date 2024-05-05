@@ -14,15 +14,8 @@ $include ObjectDefines/Rock.obj
 !PLAYER_NAME=PLAYER
 
 00:03:
-    #BOSS_RAVEN; BOSS size:1 maxSpawnEachFrame:1
 
-    #ORC; SWARM size:15 type:LINE delay:1 speedMultiplier:10
     RAVEN; CONTINUOUS size:20 maxSpawnEachFrame:1
-
-
-    #RAVEN; WAVE 10 20
-    #RAVEN; SWARM size:20 type:LINE
-
 
 00:20:
     RAVEN; CONTINUOUS size:5 maxSpawnEachFrame:1
@@ -36,7 +29,6 @@ $include ObjectDefines/Rock.obj
 
 01:30:
     BOSS_RAVEN; BOSS size:1 maxSpawnEachFrame:1
-    #BOSS_RAVEN; WAVE size:1 maxSpawnEachFrame:1
 
 01:40:
 

@@ -79,18 +79,21 @@ public class Simulation implements Runnable {
 
             // spawn weapon
             if (frame == 0) {
-                Actor weapon = context.actorPool.get("KNIFE");
-                weapon.getAnimationHandler().rotate(25f);
-                weapon.addAction(
-                        WeaponActions.fireAtClosestActor(
-                                FilterTool.Category.ENEMY,
-                                context.player.getSpeed() + weapon.getSpeed(),
-                                context.player,
-                                millisToFrames(100),
-                                context.actors,
-                                SPAWN_RECT));
+                    Actor weapon = context.actorPool.get("KNIFE");
+                    weapon.getAnimationHandler().rotate(25f);
+                    weapon.setPosition(context.player.getPosition());
+                    weapon.addAction(
+                            WeaponActions.fireAtClosestActor(
+                                    FilterTool.Category.ENEMY,
+                                    context.player.getSpeed() + weapon.getSpeed(),
+                                    context.player,
+                                    millisToFrames(200),
+                                    context.actors,
+                                    SPAWN_RECT));
 
-                context.actors.add(weapon);
+                    context.actors.add(weapon);
+
+
             }
 
 

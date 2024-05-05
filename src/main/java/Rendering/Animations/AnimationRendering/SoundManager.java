@@ -1,5 +1,6 @@
 package Rendering.Animations.AnimationRendering;
 
+import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 
@@ -10,6 +11,7 @@ import java.util.Objects;
 /**
  * Store the game sounds
  */
+@ExcludeFromGeneratedCoverage
 public abstract class SoundManager {
 
 

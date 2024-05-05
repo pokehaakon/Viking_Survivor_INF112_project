@@ -120,33 +120,46 @@ public abstract class WeaponActions {
      * @return a weapon action
      */
     public static Action fireAtClosestActor(FilterTool.Category category,float speed, Actor actor, int frameInterval, List<Actor> actors, Vector2 boundSquare) {
-        AtomicLong framesSinceLastThrow = new AtomicLong(frameInterval);
+        AtomicLong framesSinceLastThrow = new AtomicLong(0);
+
+        // want to an aimbot for a short distance after the weapon leaves player
+        float CHASE_THRESHOLD = 5;
 
         return (weapon) -> {
             Actor closestEnemy = getClosestActor(actor, actors, category);
-            if (closestEnemy == null) return;
-
-            if (!actors.contains(actor)) {
-                weapon.destroy();
+            if (closestEnemy == null) {
+                if(weapon.getBody().isActive())weapon.getBody().setActive(false);
+                return;
             }
 
-            if (framesSinceLastThrow.getAndIncrement() <= 0) {
-                if (!weapon.getBody().isActive()) {
-                    weapon.getBody().setActive(true);
-                }
-                weapon.setPosition(actor.getBody().getPosition());
-                chaseActorCustomSpeed(closestEnemy, speed).act(weapon);
+            if (!actors.contains(actor)) weapon.destroy();
+
+            if(framesSinceLastThrow.getAndIncrement() < frameInterval) {
+                weapon.setPosition(actor.getPosition());
+                if(weapon.getBody().isActive())weapon.getBody().setActive(false);
+
+            }
+            else {
+                if(!weapon.getBody().isActive())weapon.getBody().setActive(true);
+
+                if(Vector2.dst(
+                        actor.getPosition().x, actor.getPosition().y,
+                        weapon.getPosition().x, weapon.getPosition().y)
+                        <= CHASE_THRESHOLD)
+
+                {chaseActorCustomSpeed(closestEnemy,speed).act(weapon);}
             }
 
-            if (weapon.outOfBounds(actor, boundSquare) || attackedByWeapon(weapon, actors) || weapon.getHP() <= 0) {
-                framesSinceLastThrow.set(-frameInterval);
-                weapon.setPosition(actor.getBody().getPosition());
-                weapon.getBody().setActive(false);
+            if (weapon.outOfBounds(actor, boundSquare)
+                    || attackedByWeapon(weapon, actors)
+                    || weapon.getHP() <= 0) {
+
+                framesSinceLastThrow.set(0);
+
             }
+
         };
     }
-
-
 
 
 }

@@ -26,8 +26,8 @@ $RavenStructure = Define Structure:
     isSensor: false
 
 $Weapon_RavenStructure = Define Structure:
-    Filter: ENEMY PLAYER
-    Category: ENEMY
+    Filter: PLAYER
+    Category: BOSS_WEAPON
     Shape: $RavenShape
     BodyType: DynamicBody
     density: 1.0

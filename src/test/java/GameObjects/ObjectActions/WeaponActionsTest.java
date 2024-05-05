@@ -123,7 +123,7 @@ class WeaponActionsTest {
 
     @Test
     void fireAtClosestEnemy_startIntervalZero() {
-
+        weapon.setPosition(testPlayer.getPosition());
         // frame interval 0
         weapon.addAction(customFireAtClosestEnemyAction(
                 0,
@@ -135,6 +135,24 @@ class WeaponActionsTest {
         assertNotEquals(weapon.getPosition(),testPlayer.getPosition());
 
     }
+    @Test
+    void fireAtClosestEnemy_startIntervalOne() {
+        weapon.setPosition(testPlayer.getPosition());
+        // frame interval 0
+        weapon.addAction(customFireAtClosestEnemyAction(
+                1,
+                new Vector2(10,10)));
+
+
+        weapon.doAction();
+        step(world);
+        assertEquals(weapon.getPosition(),testPlayer.getPosition());
+
+        weapon.doAction();
+        step(world);
+        assertNotEquals(weapon.getPosition(), testPlayer.getPosition());
+
+    }
 
     @Test
     void fireAtClosestEnemy_whenOutOfBounds() {
@@ -143,8 +161,8 @@ class WeaponActionsTest {
         weapon.setPosition(new Vector2(10,10));
         weapon.doAction();
         step(world);
-        assertFalse(weapon.getBody().isActive());
         assertEquals(testPlayer.getPosition(),weapon.getPosition());
+        assertFalse(weapon.getBody().isActive());
     }
     @Test
     void fireAtClosestEnemy_whenAttackEnemy() {
@@ -154,8 +172,8 @@ class WeaponActionsTest {
         weapon.doAction();
         step(world);
 
-        assertFalse(weapon.getBody().isActive());
         assertEquals(testPlayer.getPosition(),weapon.getPosition());
+        assertFalse(weapon.getBody().isActive());
     }
 
     @Test
@@ -165,8 +183,8 @@ class WeaponActionsTest {
         weapon.doAction();
         step(world);
 
-        assertFalse(weapon.getBody().isActive());
         assertEquals(testPlayer.getPosition(),weapon.getPosition());
+        assertFalse(weapon.getBody().isActive());
     }
 
     @Test

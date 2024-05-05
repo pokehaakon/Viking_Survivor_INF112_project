@@ -15,6 +15,7 @@ public class ObjectContactListener implements ContactListener {
     static final private short playerAndEnemyMask = FilterTool.combineMaskEnums(PLAYER, ENEMY);
     static final private short weaponAndEnemyMask = FilterTool.combineMaskEnums(WEAPON, ENEMY);
     static final private short playerAndPickupMask = FilterTool.combineMaskEnums(PLAYER, PICKUP);
+    static final private short playerAndBossWeaponMask = FilterTool.combineMaskEnums(PLAYER,BOSS_WEAPON);
 
     /**
      * returns true if the category bits between b1 and b2 covers the mask
@@ -36,6 +37,14 @@ public class ObjectContactListener implements ContactListener {
         return XYCollision(b1, b2, playerAndEnemyMask);
     }
 
+    /**
+     * @param b1 first body
+     * @param b2 second body
+     * @return true if collision occurs between player and boss weapon, false otherwise
+     */
+    static private boolean playerBossWeaponCollision(Body b1, Body b2) {
+        return XYCollision(b1, b2, playerAndBossWeaponMask);
+    }
     /**
      * @param b1 first body
      * @param b2 second body
@@ -78,17 +87,22 @@ public class ObjectContactListener implements ContactListener {
 
             if (!player.isInCoolDown()) {
                 enemy.attack(player);
-                player.startCoolDown(millisToFrames(1000,SET_FPS));
-                //System.out.println("PLAYER COLLISION");
+                player.startCoolDown(millisToFrames(500,SET_FPS));
             }
         }
         else if (playerPickupCollision(b1, b2)) {
-            System.out.println("PICKUPCOLLISION");
-            //Actor player = (Actor) getObjectWithCategory(b1, b2, PLAYER);
             Actor pickup = (Actor) getObjectWithCategory(b1, b2, PICKUP);
-            //player.pickup(pickup);
             pickup.kill();
-            //System.out.println("PICKUP COLLISION");
+        }
+
+        else if(playerBossWeaponCollision(b1,b2)) {
+            Actor weapon = (Actor) getObjectWithCategory(b1,b2,BOSS_WEAPON);
+            Actor player = (Actor) getObjectWithCategory(b1,b2,PLAYER);
+            weapon.attack(player);
+            player.startCoolDown(millisToFrames(500, SET_FPS));
+            SoundManager.playSoundEffect(SoundManager.ATTACK_SOUND);
+
+
         }
     }
 

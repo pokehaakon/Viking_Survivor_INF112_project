@@ -157,6 +157,7 @@ public class Actor extends GameObject implements IActor {
         if(frameDuration <= 0) {
             throw new IllegalArgumentException("Frame duration must be a positive number of frames");
         }
+        if(inCoolDown) return;
         inCoolDown = true;
         framesLeftOfCoolDown = frameDuration;
     }
@@ -192,7 +193,7 @@ public class Actor extends GameObject implements IActor {
 
 
     /**
-     * updates the boolean movingLeft
+     * updates the boolean movingLeft,  depdendent on objects velocity vector
      */
     public void updateDirectionState() {
         float vx = getBody().getLinearVelocity().x;
@@ -247,9 +248,5 @@ public class Actor extends GameObject implements IActor {
         if(isInCoolDown()) {batch.setColor(Color.WHITE);}
     }
 
-    @ExcludeFromGeneratedCoverage(reason = "not used")
-    public Map<Integer, Long> getHitByIDs() {
-        return hitByIDs;
-    }
 
 }

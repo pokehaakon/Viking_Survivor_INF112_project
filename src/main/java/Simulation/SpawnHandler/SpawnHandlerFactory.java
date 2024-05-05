@@ -76,7 +76,7 @@ public class SpawnHandlerFactory {
 
                         for(int i = 0; i < 6; i++) {
                             Actor weapon = actorPool.get("WEAPON_RAVEN");
-
+                            weapon.setPosition(e.getPosition());
                             weapon.addAction(
                                     WeaponActions.fireAtClosestActor(
                                             FilterTool.Category.PLAYER,

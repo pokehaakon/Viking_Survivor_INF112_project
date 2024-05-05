@@ -122,7 +122,7 @@ Prosjektet har vært en lærerik opplevelse. Vi startet med et godt utgangspunkt
 
 I begynnelsen var arbeidet litt upresist. Mangel på erfaring med prosjektarbeid førte til ustrukturert kommunikasjon og vage retningslinjer, som resulterte i noen ineffektive møter.
 
-Som tiden gikk  opplevde vi bedre flyt og engasjement, etterhvert som vi ble mer kjent med de konkrete verktøyene og strukturerene som var nødvendig for å lage spillet. Dette gjorde det lettere å ta ansvar for våre roller.
+Som tiden gikk  opplevde vi bedre noe bedre flyt og engasjement, etterhvert som vi ble mer kjent med de konkrete verktøyene og struktuerene som var nødvendig for å lage spillet. Dette gjorde det lettere å ta ansvar for våre roller.
 
 Fordelingen av arbeidsoppgaver var naturligvis utfordrende, da det var variasjon i timeplaner, faglig kunnskap og engasjement. Likevel følte alle seg involvert og bidro på sin måte.
 
