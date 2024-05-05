@@ -21,6 +21,10 @@ sterk kan Vidar bli før han skal møte Odin.
 * `src/resources/rock_1.png` - Eilif
 * `src/resources/rock_2.png` - Eilif
 
+Initially generated with Microsoft Designer (https://www.bing.com/new/termsofuse), then edited:
+*  `src/resources/MainMenu.jpg` - Andreas  
+*  `src/resources/Settings.jpg` - Andreas
+
 
 # INF112 libGDX + Maven template 
 Simple skeleton with [libGDX](https://libgdx.com/). 
