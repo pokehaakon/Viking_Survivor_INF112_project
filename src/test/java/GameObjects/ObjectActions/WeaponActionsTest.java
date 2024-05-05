@@ -176,16 +176,6 @@ class WeaponActionsTest {
         assertFalse(weapon.getBody().isActive());
     }
 
-    @Test
-    void fireAtClosestEnemy_whenHPisZero() {
-        weapon.addAction(customFireAtClosestEnemyAction(1,new Vector2(5,5)));
-        weapon.setHP(0);
-        weapon.doAction();
-        step(world);
-
-        assertEquals(testPlayer.getPosition(),weapon.getPosition());
-        assertFalse(weapon.getBody().isActive());
-    }
 
     @Test
     void testOrbitActor() {

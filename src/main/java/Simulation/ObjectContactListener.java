@@ -87,7 +87,7 @@ public class ObjectContactListener implements ContactListener {
 
             if (!player.isInCoolDown()) {
                 enemy.attack(player);
-                player.startCoolDown(millisToFrames(500,SET_FPS));
+                player.startCoolDown(millisToFrames(1000,SET_FPS));
             }
         }
         else if (playerPickupCollision(b1, b2)) {

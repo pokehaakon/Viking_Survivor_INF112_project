@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 
-import static GameObjects.ObjectActions.MovementActions.chaseActorCustomSpeed;
+import static GameObjects.ObjectActions.MovementActions.chaseActor;
+
 
 import static Tools.FilterTool.isInCategory;
 
@@ -110,7 +111,7 @@ public abstract class WeaponActions {
 
 
     /**
-     * Fires at closest enemy. If weapon hits enemy or is out of bounds, the weapon returns to owners position
+     * Fires at closest actor. If weapon hits actor, is out of bounds, the weapon returns to owners position
      * @param category the object category you wish to fire at
      * @param speed weapon speed
      * @param actor the actor which fires the weapon
@@ -145,15 +146,13 @@ public abstract class WeaponActions {
                 if(Vector2.dst(
                         actor.getPosition().x, actor.getPosition().y,
                         weapon.getPosition().x, weapon.getPosition().y)
-                        <= CHASE_THRESHOLD)
+                        <= CHASE_THRESHOLD
+                )
 
-                {chaseActorCustomSpeed(closestEnemy,speed).act(weapon);}
+                {chaseActor(closestEnemy,speed).act(weapon);}
             }
 
-            if (weapon.outOfBounds(actor, boundSquare)
-                    || attackedByWeapon(weapon, actors)
-                    || weapon.getHP() <= 0) {
-
+            if (weapon.outOfBounds(actor, boundSquare) || attackedByWeapon(weapon, actors)) {
                 framesSinceLastThrow.set(0);
 
             }

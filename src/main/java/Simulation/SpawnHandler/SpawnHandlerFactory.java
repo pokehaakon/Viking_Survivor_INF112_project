@@ -41,9 +41,12 @@ public class SpawnHandlerFactory {
 
 
     public ISpawnHandler create(String actorName, SpawnType spawnType, List<String> args) {
-        //TODO do this better :)
-        List<Action> dropActions = List.of(spawnPickupsIfKilled(0.1f,"HP_PICKUP", activeActors, actorPool, giveHP(player,10,1000)),
+
+
+         final List<Action> DROP_ACTIONS = List.of(
+                 spawnPickupsIfKilled(0.1f,"HP_PICKUP", activeActors, actorPool, giveHP(player,10,1000)),
                 spawnPickupsIfKilled(0.4f,"XP_PICKUP", activeActors, actorPool, giveXP(10)),
+
                 spawnPickupsIfKilled(0.1f,"SKULL_PICKUP", activeActors,actorPool,
                         PickupActions.startTemporaryActionChange(
                                 FilterTool.Category.WEAPON,
@@ -60,7 +63,7 @@ public class SpawnHandlerFactory {
                     actorName,
                     e -> {
                         e.addAction(destroyIfDefeated(), deSpawnIfOutOfBounds(player, DE_SPAWN_RECT.cpy().scl(2)));
-                        e.addDieAction(dropActions);
+                        e.addDieAction(DROP_ACTIONS);
                     },
                     () -> player.getBody().getPosition(),
                     actorPool,
@@ -71,13 +74,15 @@ public class SpawnHandlerFactory {
                     args,
                     actorName,
                     e -> {
-                        e.addAction(chaseActor(player), destroyIfDefeated());
+                        e.addAction(chaseActor(player, e.getSpeed()), destroyIfDefeated());
                         e.setPosition(randomPointOutsideScreenRect(player.getPosition()));
 
+                        // adding random number of weapon to boss
                         for(int i = 0; i < 6; i++) {
                             Actor weapon = actorPool.get("WEAPON_RAVEN");
                             weapon.setPosition(e.getPosition());
                             weapon.addAction(
+                                    destroyIfDefeated(),
                                     WeaponActions.fireAtClosestActor(
                                             FilterTool.Category.PLAYER,
                                             e.getSpeed()+weapon.getSpeed(),
@@ -85,6 +90,7 @@ public class SpawnHandlerFactory {
                                             activeActors,
                                             SPAWN_RECT)
                                     );
+
                             activeActors.add(weapon);
 
                         }
@@ -99,8 +105,8 @@ public class SpawnHandlerFactory {
                     args,
                     actorName,
                     e -> {
-                        e.addAction(chaseActor(player), destroyIfDefeated(), deSpawnIfOutOfBounds(player, DE_SPAWN_RECT));
-                        e.addDieAction(dropActions);
+                        e.addAction(chaseActor(player, e.getSpeed()), destroyIfDefeated(), deSpawnIfOutOfBounds(player, DE_SPAWN_RECT));
+                        e.addDieAction(DROP_ACTIONS);
                         e.setPosition(randomPointOutsideScreenRect(player.getBody().getPosition()));
                     },
                     actorPool,
@@ -110,8 +116,8 @@ public class SpawnHandlerFactory {
                 args,
                 actorName,
                 e -> {
-                    e.addAction(chaseActor(player), destroyIfDefeated(), deSpawnIfOutOfBounds(player, DE_SPAWN_RECT));
-                    e.addDieAction(dropActions);
+                    e.addAction(chaseActor(player, e.getSpeed()), destroyIfDefeated(), deSpawnIfOutOfBounds(player, DE_SPAWN_RECT));
+                    e.addDieAction(DROP_ACTIONS);
                     e.setPosition(randomPointOutsideScreenRect(player.getBody().getPosition()));
                 },
                 actorPool,

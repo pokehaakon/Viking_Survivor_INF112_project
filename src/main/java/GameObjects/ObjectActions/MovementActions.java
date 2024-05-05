@@ -18,28 +18,18 @@ public abstract class MovementActions {
      * Chases an Actor by moving towards its current position
      * @param actor object to be chased
      */
-    public static Action chaseActor(Actor actor) {
+    public static Action chaseActor(Actor actor, float speed) {
         return (e) -> {
             var vel = e.getBody().getLinearVelocity();
             vel
                 .set(actor.getBody().getPosition())
                 .sub(e.getBody().getWorldCenter())
-                .setLength(e.getSpeed());
+                .setLength(speed);
             e.getBody().setLinearVelocity(vel);
 
         };
     }
-    public static Action chaseActorCustomSpeed(Actor actor, float speed) {
-        return (e) -> {
-            var vel = e.getBody().getLinearVelocity();
-            vel
-                    .set(actor.getBody().getPosition())
-                    .sub(e.getBody().getWorldCenter())
-                    .setLength(speed);
-            e.getBody().setLinearVelocity(vel);
 
-        };
-    }
 
 
 
