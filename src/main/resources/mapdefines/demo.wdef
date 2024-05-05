@@ -10,7 +10,7 @@ $include ObjectDefines/Wolf.obj
 $include ObjectDefines/Rock.obj
 
 
-!MAP_PATH=assets/damaged_roads_map.tmx
+!MAP_PATH=TiledMap/damaged_roads_map.tmx
 !PLAYER_NAME=PLAYER
 
 00:03:
