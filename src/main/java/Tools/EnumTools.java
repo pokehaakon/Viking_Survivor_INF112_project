@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public abstract class EnumTools {
+
+    /**
+     * Returns an array of all the string values of an enum
+     */
     public static <E extends Enum<E>> String[] enumToStrings(Class<E> e) {
         E[] values = e.getEnumConstants();
         String[] strings = new String[values.length];
@@ -16,10 +20,4 @@ public abstract class EnumTools {
         return strings;
     }
 
-    public abstract static class HashMapTool {
-
-        public static <V, K> Map<V, K> mapFromPairs(List<Pair<V, K>> pairs) {
-            return pairs.stream().collect(Collectors.toMap(Pair::getValue0, Pair::getValue1));
-        }
-    }
 }
