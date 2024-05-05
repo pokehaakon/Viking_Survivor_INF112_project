@@ -37,12 +37,8 @@ public class ContextFactory implements Disposable {
 
     private Context spawnContext(String contextName) { //this is the only place where context instances are bound to contextNames!
         return switch (contextName) {
-            //case "GAME" -> new GameContext(contextName, batch, camera, iProc);
-            case "ReleaseCandidate" -> new GameContext(batch, camera, iProc);
+            case "GAME" -> new GameContext(batch, camera, iProc);
             case "MAINMENU" -> new MainMenuContext(contextName, batch, iProc);
-            case "PAUSEMENU" -> new PauseContext(contextName, batch, iProc);
-            case "CSELECT" -> new CSelectContext(contextName, batch, iProc);
-            //case "Training" -> new TrainingContext(contextName,batch, camera, iProc);
             default -> throw new RuntimeException("ContextFactory cannot make context: " + contextName);
         };
     }

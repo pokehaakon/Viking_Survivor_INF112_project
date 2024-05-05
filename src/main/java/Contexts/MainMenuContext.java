@@ -23,8 +23,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
-import static VikingSurvivor.app.Main.SCREEN_HEIGHT;
-import static VikingSurvivor.app.Main.SCREEN_WIDTH;
 
 class MainMenuContext extends Context{
     private final SpriteBatch batch;
@@ -45,7 +43,7 @@ class MainMenuContext extends Context{
         // Stage is created in constructor since render is called before stage initialization
         this.stage = new Stage();
         // Load the texture
-        mmTexture = new Texture(Gdx.files.internal("assets/MainMenu1.jpg"));
+        mmTexture = new Texture(Gdx.files.internal("MainMenu.jpg"));
         backgroundImage = new Image(mmTexture);
 
         // Creating a transparent drawable. Might be needed for buttons to be clickable.
@@ -88,9 +86,8 @@ class MainMenuContext extends Context{
         startButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Start game button clicked!");
-                iProc.removeContext("ReleaseCandidate");
-                iProc.setContext("ReleaseCandidate");
+                iProc.removeContext("GAME");
+                iProc.setContext("GAME");
             }
         });
         optionsButton.addListener(new ClickListener() {

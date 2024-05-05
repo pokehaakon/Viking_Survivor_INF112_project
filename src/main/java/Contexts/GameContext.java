@@ -66,6 +66,7 @@ public class GameContext extends Context {
     private long frameCount = 0;
     private long previousFrameStart = System.nanoTime();
     private boolean gameOver = false;
+    private boolean stopSim = false;
     private Vector2 previousFramePlayerSpeed = Vector2.Zero;
 
     public final RollingSum UpdateTime;
@@ -87,6 +88,7 @@ public class GameContext extends Context {
     private final ProgressBar hpBar;
     private final Label levelLabel;
     private final Label timerLabel;
+    private final Label gameoverLabel;
 
 
     @ExcludeFromGeneratedCoverage(reason = "functionality covered elsewhere")
@@ -208,7 +210,6 @@ public class GameContext extends Context {
 
             xpBar = new ProgressBar(0, 100 * level, 1, false, xpBarStyle);
             xpBar.setValue(0);
-            xpBar.setPosition(HUDcamera.position.x - HUDcamera.viewportWidth / 2, HUDcamera.position.y + HUDcamera.viewportHeight / 2);
             xpBar.setWidth(HUDcamera.viewportWidth + 1.5f);
 
             //      Create HP bar:
@@ -233,36 +234,52 @@ public class GameContext extends Context {
 
             hpBar = new ProgressBar(0, player.getHP(), 1, false, hpBarStyle);
             hpBar.setValue(player.getHP());
-            hpBar.setPosition(HUDcamera.position.x, HUDcamera.position.y);
             hpBar.setWidth(HUDcamera.viewportWidth + 1.5f);
 
             //      Create level counter
             Skin lvlSkin = new Skin();
             BitmapFont lvlFont = new BitmapFont(Gdx.files.internal("font.fnt"), new TextureRegion(fontTexture), false);
-            lvlFont.setColor(Color.WHITE);
+
             lvlFont.getRegion().getTexture().setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear);
             lvlFont.getData().setScale(0.09f);
 
-            lvlSkin.add("default", lvlFont, BitmapFont.class);
+            lvlSkin.add("lvlStyle", lvlFont, BitmapFont.class);
             Label.LabelStyle lvlLabelStyle = new Label.LabelStyle();
             lvlLabelStyle.font = lvlFont;
-            lvlSkin.add("default", lvlLabelStyle, Label.LabelStyle.class);
+            lvlSkin.add("lvlStyle", lvlLabelStyle, Label.LabelStyle.class);
 
-            levelLabel = new Label(" LEVEL: "+ (int) level, lvlSkin);
+            levelLabel = new Label(" LEVEL: "+ (int) level, lvlSkin, "lvlStyle");
+
 
             // Clock
             Skin tmSkin = new Skin();
             BitmapFont tmFont = new BitmapFont(Gdx.files.internal("font.fnt"), new TextureRegion(fontTexture), false);
-            tmFont.setColor(Color.WHITE);
+
             tmFont.getRegion().getTexture().setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear);
             tmFont.getData().setScale(1/5f);
-            tmSkin.add("default", tmFont, BitmapFont.class);
+            tmSkin.add("tmStyle", tmFont, BitmapFont.class);
 
             Label.LabelStyle tmLabelStyle = new Label.LabelStyle();
-            tmLabelStyle.font = tmSkin.getFont("default");
-            tmSkin.add("default", tmLabelStyle, Label.LabelStyle.class);
+            tmLabelStyle.font = tmFont;
+            tmSkin.add("tmStyle", tmLabelStyle, Label.LabelStyle.class);
 
-            timerLabel = new Label("00 : 00", tmSkin);
+            timerLabel = new Label("00 : 00", tmSkin, "tmStyle");
+
+
+            // Game Over
+            Skin goSkin = new Skin();
+            BitmapFont goFont = new BitmapFont(Gdx.files.internal("font.fnt"), new TextureRegion(fontTexture), false);
+
+            goFont.getRegion().getTexture().setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear);
+            goFont.getData().setScale(1/2f);
+            goSkin.add("goStyle", goFont, BitmapFont.class);
+
+            Label.LabelStyle goLabelStyle = new Label.LabelStyle();
+            goLabelStyle.font = goFont;
+            goSkin.add("goStyle", goLabelStyle, Label.LabelStyle.class);
+
+            gameoverLabel = new Label("GAME OVER", goSkin, "goStyle");
+            gameoverLabel.setColor(Color.RED);
         }
 
         sim = new Simulation(this);
@@ -295,7 +312,6 @@ public class GameContext extends Context {
 
         TargetCamera.updateCamera(origin, camera, gMap);
         previousFramePlayerSpeed = player.getBody().getLinearVelocity().cpy().scl(1f / Simulation.SET_UPS);
-        //batch.setProjectionMatrix(camera.combined);
 
 
         batch.begin();
@@ -307,10 +323,9 @@ public class GameContext extends Context {
             obj.draw(batch, frameCount);
         });
 
-        //HUDcamera.position.set(camera.position);
-        //HUDcamera.update();
+        batch.setProjectionMatrix(HUDcamera.combined);
+
         if(!gameOver) {
-            batch.setProjectionMatrix(HUDcamera.combined);
             //      XP bar and level
             long xpAmount = Simulation.EXP.get();
 
@@ -342,15 +357,11 @@ public class GameContext extends Context {
             timerLabel.setText(String.format("%02d:%02d", minutes, seconds));
             timerLabel.setPosition(HUDcamera.position.x - 5, HUDcamera.position.y + 30);
             timerLabel.draw(batch, 1);
+
+
         }
 
-        batch.setProjectionMatrix(camera.combined);
-
-        batch.setColor(Color.WHITE);
-
         if (SHOW_DEBUG_RENDER_INFO) {
-            debugRenderer.render(world, camera.combined);
-
             // Performance statistics
             font.draw(batch, "FPS: " + String.format(" %.1f", 1_000_000_000F / FPS.avg()),
                     HUDcamera.position.x - HUDcamera.viewportWidth / 2 + 1, HUDcamera.position.y - HUDcamera.viewportHeight / 2 + 5);
@@ -362,25 +373,25 @@ public class GameContext extends Context {
                     HUDcamera.position.x - HUDcamera.viewportWidth / 2 + 1, HUDcamera.position.y - HUDcamera.viewportHeight / 2 + 2);
         }
 
-        if(gameOver) {
-            font.getData().setScale(2);
-            font.draw(batch, "GAME OVER",  camera.position.x, camera.position.y);
+        if (stopSim) {
+            try {Thread.sleep(200 * 15);} catch (InterruptedException ignored) {}
+            sim.stopSim();
+            getContextualInputProcessor().setContext("MAINMENU");
         }
-        batch.end();
 
+        if (gameOver) {
+            gameoverLabel.setPosition(HUDcamera.position.x -28, HUDcamera.position.y - 5);
+            gameoverLabel.draw(batch, 1);
+            stopSim = true;
+        }
+
+        batch.end();
         frameCount++;
         synchronizer.incrementAndGet();
         renderLock.unlock();
-
         FrameTime.add(System.nanoTime() - renderStartTime);
-
-
-        if(gameOver) {
-            sim.stopSim();
-            try {Thread.sleep(100 * 15);} catch (InterruptedException ignored) {}
-            getContextualInputProcessor().setContext("MAINMENU");
-        }
     }
+
 
 
     @Override
