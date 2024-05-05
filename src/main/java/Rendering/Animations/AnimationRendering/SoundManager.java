@@ -3,6 +3,7 @@ package Rendering.Animations.AnimationRendering;
 import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.google.common.collect.ListMultimap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,8 @@ public abstract class SoundManager {
 
     private static final Map<String, Sound> soundEffects = new HashMap<>();
     private static final Map<String, Sound> music = new HashMap<>();
+
+    private static boolean isMuted = false;
 
     static{
         soundEffects.put(ATTACK_SOUND, Gdx.audio.newSound(Gdx.files.internal(ATTACK_SOUND)));
@@ -41,7 +44,9 @@ public abstract class SoundManager {
         if(Objects.isNull(sound)) {
             throw new NullPointerException("Can not play when sound is null!");
         }
-        sound.play();
+        if (!isMuted) {
+            sound.play();
+        }
     }
 
     public static void dispose() {
@@ -51,7 +56,12 @@ public abstract class SoundManager {
         soundEffects.clear();
     }
 
+    public static void mute () {
+        isMuted = true;
+    }
 
-
+    public static void unmute () {
+        isMuted = false;
+    }
 
 }

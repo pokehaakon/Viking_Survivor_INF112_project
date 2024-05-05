@@ -2,6 +2,7 @@ package Contexts;
 
 import InputProcessing.ContextualInputProcessor;
 import InputProcessing.DefaultInputProcessor;
+import Rendering.Animations.AnimationRendering.SoundManager;
 import Tools.ExcludeFromGeneratedCoverage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -11,20 +12,20 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-class MainMenuContext extends Context{
+class SettingsContext extends Context{
     private final SpriteBatch batch;
     private Stage stage;
     private Table table;
@@ -32,7 +33,7 @@ class MainMenuContext extends Context{
     private Image backgroundImage;
 
     @ExcludeFromGeneratedCoverage
-    public MainMenuContext(String name, SpriteBatch batch, ContextualInputProcessor iProc) {
+    public SettingsContext(String name, SpriteBatch batch, ContextualInputProcessor iProc) {
         super(iProc);
         this.batch = batch;
 
@@ -43,7 +44,7 @@ class MainMenuContext extends Context{
         // Stage is created in constructor since render is called before stage initialization
         this.stage = new Stage();
         // Load the texture
-        mmTexture = new Texture(Gdx.files.internal("MainMenu.jpg"));
+        mmTexture = new Texture(Gdx.files.internal("Settings.jpg"));
         backgroundImage = new Image(mmTexture);
 
         // Creating a transparent drawable. Might be needed for buttons to be clickable.
@@ -61,39 +62,49 @@ class MainMenuContext extends Context{
 
 
         // Create a table to layout the buttons
-        table = new Table().padTop(720);
+        table = new Table().padTop(490);
         table.setFillParent(true);
         table.setBackground(backgroundImage.getDrawable());
 
+        //      Mute CheckBox
+        // Checkbox unchecked/checked style
+        Skin muteSkin = new Skin();
 
-        // Create buttons
-        Button startButton = new Button(buttonStyle);
-        Button optionsButton = new Button(buttonStyle);
-        Button exitButton = new Button(buttonStyle);
+        muteSkin.add("mute_checked", new TextureRegion(new Texture(Gdx.files.internal("MuteChecked.png"))));
+        muteSkin.add("mute_unchecked", new TextureRegion(new Texture(Gdx.files.internal("MuteUnchecked.png"))));
 
-        // Add buttons to table
-        table.add(startButton).width(470).height(60).padLeft(10).spaceBottom(30).row();
-        table.add(optionsButton).width(470).height(60).padLeft(10).spaceBottom(35).row();
-        table.add(exitButton).width(470).height(60).padLeft(10).spaceBottom(20);
+        ImageButton.ImageButtonStyle muteStyle = new ImageButton.ImageButtonStyle();
 
+        muteStyle.imageUp = muteSkin.getDrawable("mute_unchecked");
+        muteStyle.imageChecked = muteSkin.getDrawable("mute_checked");
 
-        exitButton.addListener(new ChangeListener() {
-            @Override
-            public void changed (ChangeEvent click, Actor exitButton) {
-                Gdx.app.exit();
-            }
-        });
-        startButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                iProc.removeContext("GAME");
-                iProc.setContext("GAME");
-            }
-        });
-        optionsButton.addListener(new ClickListener() {
+        // Create checkbox
+        ImageButton muteButton = new ImageButton(muteStyle);
+
+        // Add button to table
+        table.add(muteButton).padBottom(20).row();
+
+        // Create back button
+        Button backButton = new Button(buttonStyle);
+        table.add(backButton).width(620).height(90).padRight(20).spaceBottom(20);
+
+        // Mute/unmute game on click
+        muteButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                iProc.setContext("SETTINGS");
+                if(muteButton.isChecked()){
+
+                    SoundManager.mute();
+                } else {
+                    SoundManager.unmute();
+                }
+            }
+        });
+
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                iProc.setContext("MAINMENU");
             }
         });
 
@@ -102,27 +113,9 @@ class MainMenuContext extends Context{
         stage.addActor(table);
 
         InputMultiplexer multiplexer = new InputMultiplexer();
-		multiplexer.addProcessor(stage);
-        //multiplexer.addProcessor(createInputProcessor());
-        //Gdx.input.setInputProcessor(stage);
+        multiplexer.addProcessor(stage);
         this.setInputProcessor(multiplexer);
     }
-
-//
-//    private InputProcessor createInputProcessor() {
-//        Context me = this;
-//        return new DefaultInputProcessor() {
-//            @Override
-//            public boolean keyDown(int keycode) {
-//
-//                return switch (keycode) {
-//                    case Input.Keys.S -> {System.out.println("S button clicked!"); yield true;}
-//                    case Input.Keys.ESCAPE -> {Gdx.app.exit(); yield true;}
-//                    default -> false;
-//                };
-//            }
-//        };
-//    }
 
     @Override
     public void show() {

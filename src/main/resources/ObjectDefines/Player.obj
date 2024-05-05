@@ -8,7 +8,7 @@ $PlayerAnimation = Define Animation:
     Scale: 10
 
 $PlayerStats = Define Stats:
-    HP: 50.0
+    HP: 200.0
     Speed: 70
     Damage: 20.0
     resistance: 0.0

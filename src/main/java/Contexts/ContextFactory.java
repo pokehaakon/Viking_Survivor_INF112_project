@@ -39,6 +39,7 @@ public class ContextFactory implements Disposable {
         return switch (contextName) {
             case "GAME" -> new GameContext(batch, camera, iProc);
             case "MAINMENU" -> new MainMenuContext(contextName, batch, iProc);
+            case "SETTINGS" -> new SettingsContext(contextName, batch, iProc);
             default -> throw new RuntimeException("ContextFactory cannot make context: " + contextName);
         };
     }
