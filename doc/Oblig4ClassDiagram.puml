@@ -188,7 +188,7 @@ package Parsing {
             - char[] text
             - int head
         }
-    }
+
 
     abstract class GenericParser<StreamType, ReturnType> {
         - Function<List<StreamType>, ReturnType> wrapper
