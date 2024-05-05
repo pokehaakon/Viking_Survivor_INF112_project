@@ -26,6 +26,7 @@ Initially generated with Microsoft Designer (https://www.bing.com/new/termsofuse
 *  `src/resources/Settings.jpg` - Andreas
 
 * `GifDecoder` - Johannes Borchardt [Apache 2.0]
+* `Knife Stab Sound Effect [FREE USE].mp3` - https://www.youtube.com/watch?v=AjJEhMtqDzE (free of use)
 
 
 # INF112 libGDX + Maven template 

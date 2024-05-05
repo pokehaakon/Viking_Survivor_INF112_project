@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static Tools.EnumTools.HashMapTool.mapFromPairs;
+import static Tools.HashMapTool.mapFromPairs;
 import static Tools.EnumTools.enumToStrings;
 
 public class MapParser extends TextParser {
@@ -30,18 +30,30 @@ public class MapParser extends TextParser {
         super(text, name);
     }
 
-    public Map<String, String> doParseDefines() {
-        if (defines != null) return defines;
-        defines = parseDefines();
-        return defines;
-    }
-
+    /**
+     * Parses the 'include' block of the 'wdef'
+     * @return the includes
+     */
     public List<String> doParseIncludes() {
         if (includes != null) return includes;
         includes = parseIncludes();
         return includes;
     }
 
+    /**
+     * Parses the 'define' block of the 'wdef'
+     * @return the defines
+     */
+    public Map<String, String> doParseDefines() {
+        if (defines != null) return defines;
+        defines = parseDefines();
+        return defines;
+    }
+
+    /**
+     * parses the 'timeFrame' block of the 'wdef'
+     * @return the time frames
+     */
     public List<Pair<Long, List<SpawnFrame>>> doParseTimeFrames() {
         if (timeFrames != null) return timeFrames;
         timeFrames = parseTimeFrames();
