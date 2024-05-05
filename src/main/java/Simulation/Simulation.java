@@ -10,12 +10,14 @@ import Tools.ExcludeFromGeneratedCoverage;
 import Tools.FilterTool;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 
 import static Contexts.GameContext.SPAWN_RECT;
+import static Tools.FilterTool.isInCategory;
 import static Tools.ListTools.removeDestroyed;
 import static VikingSurvivor.app.HelloWorld.SET_FPS;
 import static VikingSurvivor.app.HelloWorld.millisToFrames;

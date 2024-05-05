@@ -117,19 +117,19 @@ Dette hadde vært en god forbedring for å unngå at noen faller litt bak mens a
 
 **Retrospektiv: Hvordan har prosjektet gått?**
 
+Prosjektet har vært en lærerik opplevelse. Vi kjente en god kjemi innad i gruppen helt fra starten av, og det virket som om alle var motitverte for å lage et solid sluttprodukt. Vi ble fort enige om at et spill inpirert av Vampire Surivors virket både gøy og oppnåelig.
 
-Prosjektet har vært en lærerik opplevelse. Vi startet med et godt utgangspunkt og god gruppekjemi, og alle var motiverte til å jobbe hardt. Vi ble fort enige om at et spill inpirert av Vampire Surivors virket både gøy og oppnåelig. 
+I startfasen var arbeidet veldig upresist. Vi var flinke til å møte opp på fysiske møter, men ustrukturert kommunikasjon og vage retningslinjer førte til at disse møtene ble ganske ineffektive. Vi var lite aktive på discord, og vi var dårlige på å dele med resten av gruppen om hva den enkelte jobbet med. Vi møtte da opp på gruppene uten noen sans for hva som hadde blitt gjort siden sist, og hva som burde gjøres til neste gang.
 
-I begynnelsen var arbeidet litt upresist. Mangel på erfaring med prosjektarbeid førte til ustrukturert kommunikasjon og vage retningslinjer, som resulterte i noen ineffektive møter.
+Det tok ikke lang tid før det stakk seg ut enkelte medlemmer i gruppen som viste både et engasjement og arbeidsvilje på et ganske annet nivå enn resten. Avgjørelsene deretter føltes aldri ut som de ble gjort i felleskap , men mer av individuelle stemmer som ledet an og en noe passiv gruppe som fulgte etter. I tillegg skjønte gruppen fort at særlig ett individ skilte seg ut med en overlegen faglig kompetanse. Denne personen satte spillets rammeverk og struktur helt fra starten av, og i retrospekt var det nok litt unødvendig avansert med tanke på spillets visjon. Enkelte satte seg fort inn i denne mer avanserte kodestilen og kunne bidra selvstendig, men dessverre virket som at andre i gruppen datt litt av lasset allerede fra starten av, og kom seg aldri helt opp igjen.
 
-Som tiden gikk  opplevde vi bedre noe bedre flyt og engasjement, etterhvert som vi ble mer kjent med de konkrete verktøyene og struktuerene som var nødvendig for å lage spillet. Dette gjorde det lettere å ta ansvar for våre roller.
+Dette sporet fortsatte bare videre i prosjektperioden. Kontrastene i gruppen bare vokste, og dette ble veldig tydelig i gruppedynamikken. De fysiske møtene besto etter hvert av et par stykker som diskuterte implementasjoner og videre planlegging, mens resten hørte på. Dette var naturligvis ganske ugunstig med tanke på faglig læringsutbytte. Her ligger imidlertid ansvaret hos begge parter. De dominerende stemmene kunne hatt fellesskapet mer i fokus og latt andre slippe mer til, selv om det kunne bety å ofre mer "optimal" kode. Samtidig var det mangel på initiativ og lærelyst hos den andre parten.
 
-Fordelingen av arbeidsoppgaver var naturligvis utfordrende, da det var variasjon i timeplaner, faglig kunnskap og engasjement. Likevel følte alle seg involvert og bidro på sin måte.
+Det betyr selvsagt ikke at ikke alle har bidratt. Det har blitt utført mye tidkrevende arbeid i form av UI og visuell design, men som ikke nødvendigvis gjenspeiles i antall linjer med kode eller commits. Likevel er dette en veldig viktig del av helhetsinntrykket.
 
-Vi er tilfredse med sluttresultatet. Selv om det var mange endringer underveis, landet vi på et spill vi er stolte av. Rammeverket og strukturen gjør det veldig lett å eskalere spillet, og vi skulle ønsket vi fikk litt bedre tid til å legge til flere kule funksjoner og spillobjekter.
+Resultatet er likevel en ganske åpenbar skeivfordeling i hva den enkelte har bidratt med. Vi har hatt flere måneder på å snu denne utviklingen, men det har virket som hvert enkelt medlem  rett og slett har vært ganske tilfreds med slik situasjonen har utartet seg.
 
-Vi erkjenner at det er ting vi kunne gjort annerledes. Vi burde ha vært tydeligere med oppgaver og bedre med dokumentasjon og commits. Dette ville unngått overlapping i arbeidet.
+Sluttproduktet er vi imidlertid fornøyd med. Spillet flyter godt uten lagg, og strukturen gjør det lett å eskalere og legge til objekter og funksjonalitet.  Vi skulle nok ønske at vi fikk mer tid til å legge til flere kule funksjoner, levler etc, for å skape et enda mer gjennomført produkt.
 
-Det har også vært en utfordring å finne balansen mellom god og konsis kode, samt respektere ulike skrivestiler. Vi måtte unngå å bli for rigid med en bestemt kodepraksis og heller la hver enkelt få uttrykke seg innenfor funksjonelle rammer.
 
 

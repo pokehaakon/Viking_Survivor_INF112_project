@@ -79,7 +79,7 @@ public abstract class WeaponActions {
         float closestDistance = Integer.MAX_VALUE;
 
         for(Actor actor : actors) {
-            if(isInCategory(actor.getBody(), category)) {
+            if(isInCategory(actor.getBody(), category) && actor.getBody().isActive()) {
                 float newDistance = Vector2.dst(
                         actorPosition.x,actorPosition.y,
                         actor.getBody().getPosition().x, actor.getBody().getPosition().y);
