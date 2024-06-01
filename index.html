@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viking Survivors</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #c9e1f8;
+            color: #333;
+        }
+        header {
+            background-color: #0a1c54;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+        main {
+            padding: 2em;
+            text-align: center;
+            position: relative;
+        }
+        footer {
+            background-color: #0a1c54;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+        ul {
+            display: inline-block;
+            text-align: left;
+            list-style-position: inside;
+            padding: 0;
+        }
+        img.character-gif {
+            max-width: 100%;
+            height: auto;
+            margin-top: -190px;
+            margin-left: 850px;
+        }
+        img.homescreen-png {
+            width: 300px;
+            height: 300px;
+            position: absolute;
+            top: 400px;
+            right: 1100px;
+        }
+        img.pickup-orb, img.hp-pickup, img.scull {
+            width: 100px; /* Set a specific width for consistency */
+            height: 100px; /* Set a specific height for consistency */
+            position: absolute;
+            top: 450px; /* Adjusted to position below the title */
+        }
+        img.pickup-orb {
+            left: 420px;
+            width: 250px;
+            height: 250px;
+        }
+        img.hp-pickup {
+            left: 590px; /* Adjust the position as necessary */
+            width: 250px;
+            height: 250px;
+        }
+        img.scull {
+            left: 820px; /* Adjust the position as necessary */
+            top: 520px;
+        }
+        .vidar-heading {
+            padding-left: 900px;
+            margin-top: 120px;
+        }
+        .pickup-title {
+            position: absolute;
+            top: 400px;
+            left: 360px;
+            width: 700px;
+            text-align: center;
+            font-size: 1.5em;
+            color: #0a1c54;
+        }
+        .controls {
+            margin-top: -150px; /* Adjust this value to position below the images */
+            text-align: center;
+            font-size: 1.5em;
+            color: #0a1c54;
+        }
+        .controls ul {
+            list-style: none;
+            padding: 0;
+        }
+        .controls li {
+            margin: 0.5em 0;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Viking Survivors</h1>
+</header>
+<main>
+    <h2>Om spillet</h2>
+    <p>"Viking Vidar" har blitt etterlatt i England, og må forsvare seg selv mot horder av engelskmenn og andre unaturlige
+        skapninger - Vidar sin skjebne er satt i stein, og steinen faller mot Valhalla, det eneste spørsmålet er hvor
+        sterk kan Vidar bli før han skal møte Odin.</p>
+    <h2>Egenskaper</h2>
+    <ul>
+        <li>Default attack: Vidar kaster knivene sine mot fiender som nærmer seg. Disse blir automatisk kastet</li>
+        <li>Skull power-up: Dersom Vidar plukker opp en "skull" vil han slå villt rundt seg med knivene og drepe alle som kommer i nærheten av han.</li>
+        <li>XP og HP power-ups: Dersom Vidar plukker opp en HP-pickup vil han heale en viss andel HP. Hvis Vidar samler opp nok XP-pickups vil han etterhvert "level up". For hver level blir Vidar sterkere</li>
+    </ul>
+    <h2 class="vidar-heading">Karakteren Vidar</h2>
+    <img src="src/main/resources/vikingright.gif" alt="Character Walking" class="character-gif">
+    <img src="src/main/resources/homescreen.png" alt="Character Image" class="homescreen-png">
+    <h3 class="pickup-title">Pickups</h3>
+    <img src="src/main/resources/pickupOrb.gif" alt="Pickup Orb" class="pickup-orb">
+    <img src="src/main/resources/HP_Pickup.gif" alt="HP Pickup" class="hp-pickup">
+    <img src="src/main/resources/scull.gif" alt="Scull" class="scull">
+    <div class="controls">
+        <h3>Controls</h3>
+        <ul>
+            <li>[W, A, S, D] for spiller bevegelse, og UI navigering</li>
+            <li>Mus for UI navigering</li>
+            <li>[Esc] for å avslutte spillet</li>
+        </ul>
+    </div>
+</main>
+<footer>
+    &copy; 2024 Viking Survivors. All rights reserved.
+</footer>
+</body>
+</html>
